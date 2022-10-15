@@ -35,20 +35,16 @@ abstract class GenerateStdLibTask : DefaultTask() {
     fun execute(inputChanges: InputChanges) {
 
         val parser = CSVParser.parse(inputDir.file("flows.csv").map { it.asFile }.get(), defaultCharset(), DEFAULT)
-        // TODO : use category to create files ex: geography, emission to..., for now using CAS NUMBER
         val substances = parser.distinctBy { it[1] }
 
         val outputFile = outputDir.file("substances.jar").get().asFile
         val outputJarFile = ZipFile(outputFile)
-
         substances.forEach { generateZipEntry(outputJarFile, it) }
-
         outputJarFile.close()
     }
 
     fun generateLcaFile(csvRecord: CSVRecord): String {
         val escapedName = csvRecord[1].replace("\"", "\\\"")
-
         return """
             substance "$escapedName" {
                 meta {
@@ -61,8 +57,9 @@ abstract class GenerateStdLibTask : DefaultTask() {
     }
 
     fun generateZipEntry(zipFile: ZipFile, csvRecord: CSVRecord) {
+        val fileName = csvRecord[1].replace("/", "|");
         val parameters = ZipParameters()
-        parameters.fileNameInZip = "${csvRecord[1]}.lca"
+        parameters.fileNameInZip = "$fileName.lca"
         zipFile.addStream(generateLcaFile(csvRecord).byteInputStream(), parameters)
     }
 }
