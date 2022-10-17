@@ -33,10 +33,8 @@ abstract class GenerateStdLibTask : DefaultTask() {
 
     @TaskAction
     fun execute(inputChanges: InputChanges) {
-
         val parser = CSVParser.parse(inputDir.file("flows.csv").map { it.asFile }.get(), defaultCharset(), DEFAULT)
         val substances = parser.distinctBy { it[1] }
-
         val outputFile = outputDir.file("substances.jar").get().asFile
         val outputJarFile = ZipFile(outputFile)
         substances.forEach { generateZipEntry(outputJarFile, it) }
