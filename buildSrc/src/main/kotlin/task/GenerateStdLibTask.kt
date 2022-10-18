@@ -2,6 +2,7 @@ package task
 
 import net.lingala.zip4j.ZipFile
 import net.lingala.zip4j.model.ZipParameters
+import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVFormat.DEFAULT
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
@@ -33,11 +34,24 @@ abstract class GenerateStdLibTask : DefaultTask() {
 
     @TaskAction
     fun execute(inputChanges: InputChanges) {
-        val parser = CSVParser.parse(inputDir.file("flows.csv").map { it.asFile }.get(), defaultCharset(), DEFAULT)
-        val substances = parser.distinctBy { it[1] }
+        val format = CSVFormat.Builder.create().setHeader().build()
+        val parser = CSVParser.parse(
+            inputDir.file("flows.csv")
+                .map { it.asFile }.get(), defaultCharset(), format
+        )
+        val substances = parser.sortedBy { it[1] }
         val outputFile = outputDir.file("substances.jar").get().asFile
         val outputJarFile = ZipFile(outputFile)
-        substances.forEach { generateZipEntry(outputJarFile, it) }
+        var currentFileName = substances[0].lcaFileName()
+        var fileContent = ""
+        for(record in substances) {
+            if(record.lcaFileName() != currentFileName) {
+                generateZipEntry(outputJarFile, currentFileName, fileContent)
+                currentFileName = record.lcaFileName()
+                fileContent = ""
+            }
+            fileContent = fileContent.plus(generateLcaFile(record)).plus("\n\n")
+        }
         outputJarFile.close()
     }
 
@@ -45,19 +59,54 @@ abstract class GenerateStdLibTask : DefaultTask() {
         val escapedName = csvRecord[1].replace("\"", "\\\"")
         return """
             substance "$escapedName" {
+                
+                type: ${csvRecord[4].toType()}
+                compartment: "${csvRecord[5].toCompartment()}"
+                ${if (csvRecord[7].isNotEmpty()) "subCompartment: \"${csvRecord[6].toSubCompartment()}\"" else ""}
+                unit: ${csvRecord[8]}
+                
                 meta {
+                    - dimension: "${csvRecord[7].trim()}"
                     - generator: "kleis-lca-generator"
-                    - casNumber: "${csvRecord[2]}"
-                    - ecNumber: "${csvRecord[3]}"
+                    - casNumber: "${csvRecord[2].trim()}"
+                    - ecNumber: "${csvRecord[3].trim()}"
                 }
             }
         """.trimIndent()
     }
 
-    fun generateZipEntry(zipFile: ZipFile, csvRecord: CSVRecord) {
-        val fileName = csvRecord[1].replace("/", "|");
+    fun generateZipEntry(zipFile: ZipFile, currentFileName: String, zipEntryContent: String) {
         val parameters = ZipParameters()
-        parameters.fileNameInZip = "$fileName.lca"
-        zipFile.addStream(generateLcaFile(csvRecord).byteInputStream(), parameters)
+        parameters.fileNameInZip = "$currentFileName.lca"
+        zipFile.addStream(zipEntryContent.byteInputStream(), parameters)
     }
 }
+
+fun String.toType(): String {
+    return when (this) {
+        "Emissions" -> "emissions"
+        "Resources" -> "resources"
+        "Land use" -> "land_use"
+        else -> throw IllegalStateException("${this} is not proper type")
+    }
+}
+
+fun String.toCompartment(): String {
+    return when (this) {
+        "Emissions to soil" -> "soil"
+        "Emissions to water", "Resources from water" -> "water"
+        "Emissions to air", "Resources from air" -> "air"
+        "Resources from ground" -> "ground"
+        "Emissions to industrial soil" -> "industrial soil"
+        "Resources from biosphere" -> "biosphere"
+        "Land occupation" -> "land occupation"
+        "Land transformation" -> "land transformation"
+        else -> throw IllegalStateException("${this} is not proper compartment")
+    }
+}
+
+fun String.toSubCompartment(): String { // TODO : do a correct mapping ...
+    return this
+}
+
+fun CSVRecord.lcaFileName(): String = this[1].replace("/", "|");
