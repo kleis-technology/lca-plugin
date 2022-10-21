@@ -58,11 +58,9 @@ abstract class GenerateStdLibTask : DefaultTask() {
     fun generateLcaFile(csvRecord: CSVRecord): String {
         val escapedName = csvRecord[1].replace("\"", "\\\"")
         return """
-            substance "$escapedName" {
+            substance "$escapedName", "${csvRecord[5].toCompartment()}", "${csvRecord[6].toSubCompartment()}" {
                 
                 type: ${csvRecord[4].toType()}
-                compartment: "${csvRecord[5].toCompartment()}"
-                ${if (csvRecord[7].isNotEmpty()) "subCompartment: \"${csvRecord[6].toSubCompartment()}\"" else ""}
                 unit: ${csvRecord[8]}
                 
                 meta {
