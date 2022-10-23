@@ -26,7 +26,7 @@ abstract class GenerateStdLibTask : DefaultTask() {
     abstract val outputDir: DirectoryProperty
 
     init {
-        group = "com.kleis"
+        group = "ch.kleis"
         description = "generateStdLib"
         inputDir.convention(this.project.layout.projectDirectory.dir("src/main/stdlib"))
         outputDir.convention(this.project.layout.buildDirectory.dir("stdlib"))
