@@ -1,6 +1,7 @@
 package task
 
 import net.lingala.zip4j.ZipFile
+import net.lingala.zip4j.io.outputstream.ZipOutputStream
 import net.lingala.zip4j.model.ZipParameters
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
@@ -10,8 +11,10 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.*
 import org.gradle.work.Incremental
 import org.gradle.work.InputChanges
+import java.io.FileOutputStream
 import java.nio.charset.Charset.defaultCharset
 import java.util.zip.GZIPInputStream
+import kotlin.streams.asSequence
 
 abstract class GenerateEmissionFactorsTask : DefaultTask() {
 
@@ -23,6 +26,8 @@ abstract class GenerateEmissionFactorsTask : DefaultTask() {
     @get:OutputDirectory
     abstract val outputDir: DirectoryProperty
 
+    private val csvFormat = CSVFormat.Builder.create().setHeader().build()
+
     init {
         group = "ch.kleis"
         description = "generateEmissionFactors"
@@ -32,52 +37,61 @@ abstract class GenerateEmissionFactorsTask : DefaultTask() {
 
     @TaskAction
     fun execute(inputChanges: InputChanges) {
+
+        val outputFile = outputDir.file("emissions_factors.jar").get().asFile
+        val outputJarStream = ZipOutputStream(FileOutputStream(outputFile))
+
+        val substances = loadAllRecords()
+            .groupingBy { it.substanceId() }
+            .fold({ _: String, element: CSVRecord -> Impact() },
+                { _: String, accumulator: Impact, element: CSVRecord -> accumulator.factor(element)})
+
+        substances.values.groupingBy { it.lcaFileName }
+            .fold("") { accumulator: String, element: Impact ->
+                accumulator.plus(element.fileContent).plus("\n\n")
+            }
+            .forEach { entry -> generateZipEntry(outputJarStream, entry.key, entry.value) }
+
+
+        /*val substances = loadSubstances()
         val format = CSVFormat.Builder.create().setHeader().build()
         val parser = CSVParser.parse(
-            GZIPInputStream(inputDir.file("factors.csv.gz")
-                .map { it.asFile }.get().inputStream()), defaultCharset(), format
+            GZIPInputStream(
+                inputDir.file("factors.csv.gz")
+                    .map { it.asFile }.get().inputStream()
+            ), defaultCharset(), format
         )
-        val substances = parser.sortedBy { it[1] }
+        val factors = parser.stream()
         val outputFile = outputDir.file("emissions_factors.jar").get().asFile
-        val outputJarFile = ZipFile(outputFile)
-        var currentFileName = substances[0].lcaFileName()
-        var fileContent = ""
-        for(record in substances) {
-            if(record.lcaFileName() != currentFileName) {
-                generateZipEntry(outputJarFile, currentFileName, fileContent)
-                currentFileName = record.lcaFileName()
-                fileContent = ""
+        val outputJarStream = ZipOutputStream(FileOutputStream(outputFile))
+        factors.asSequence()
+            .groupingBy { it.substanceId() }
+            .fold({ key: String, element: CSVRecord -> Impact(element) },
+                { _, accumulator: Impact, element: CSVRecord -> accumulator.factor(element) })
+            .values.groupingBy { it.lcaFileName }
+            .fold("") { accumulator: String, element: Impact ->
+                accumulator.plus(element.fileContent).plus("\n\n")
             }
-            fileContent = fileContent.plus(generateLcaFile(record)).plus("\n\n")
-        }
-        outputJarFile.close()
+            .forEach { entry -> generateZipEntry(outputJarStream, entry.key, entry.value) }
+*/
+        outputJarStream.close()
     }
 
-    fun generateLcaFile(csvRecord: CSVRecord): String {
-        val escapedName = csvRecord[1].replace("\"", "\\\"")
-        return """
-            substance "$escapedName", "${csvRecord[5].toCompartment()}", "${csvRecord[6].toSubCompartment()}" {
-                
-                type: ${csvRecord[4].toType()}
-                unit: ${csvRecord[8]}
-                
-                meta {
-                    - dimension: "${csvRecord[7].trim()}"
-                    - generator: "kleis-lca-generator"
-                    - casNumber: "${csvRecord[2].trim()}"
-                    - ecNumber: "${csvRecord[3].trim()}"
-                }
-            }
-        """.trimIndent()
 
-        """
-            
-        """.trimIndent()
-    }
-
-    fun generateZipEntry(zipFile: ZipFile, currentFileName: String, zipEntryContent: String) {
-        val parameters = ZipParameters()
-        parameters.fileNameInZip = "$currentFileName.lca"
-        zipFile.addStream(zipEntryContent.byteInputStream(), parameters)
+    private fun loadAllRecords(): Sequence<CSVRecord> {
+        val flowCSVParser = CSVParser.parse(
+            GZIPInputStream(
+                inputDir.file("flows.csv.gz")
+                    .map { it.asFile }.get().inputStream()
+            ), defaultCharset(), csvFormat
+        )
+        val factorsCSVParser = CSVParser.parse(
+            GZIPInputStream(
+                inputDir.file("factors.csv.gz")
+                    .map { it.asFile }.get().inputStream()
+            ), defaultCharset(), csvFormat
+        )
+        return (flowCSVParser.stream().asSequence() +
+                factorsCSVParser.stream().asSequence())
     }
 }
