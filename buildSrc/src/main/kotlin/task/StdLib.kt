@@ -28,8 +28,47 @@ fun CSVRecord.compartment(): String {
     }
 }
 
+fun CSVRecord.subCompartment(): String =
+    when (this["FLOW_class2"]) {
+        "Emissions to non-agricultural soil" -> "non-agricultural"
+        "Emissions to water, unspecified (long-term)" -> "long-term"
+        "Emissions to air, indoor" -> "indoor"
+        "Emissions to agricultural soil" -> "agricultural"
+        "Emissions to non-urban air or from high stacks",
+        "Emissions to non-urban air high stack" -> "non-urban high stack"
+
+        "Emissions to non-urban air low stack" -> "non-urban low stack"
+        "Emissions to non-urban air very high stack" -> "non-urban very high stack"
+        "Emissions to non-urban air close to ground" -> "non-urban close ground"
+
+        "Emissions to urban air high stack" -> "urban high stack"
+        "Emissions to urban air very high stack" -> "urban very high stack"
+        "Emissions to urban air low stack" -> "urban low stack"
+        "Emissions to urban air close to ground" -> "urban air close to ground"
+        "Emissions to air, indoor" -> "indoor"
+        "Emissions to air, unspecified (long-term)" -> "long-term"
+        "Emissions to soil, unspecified", "Emissions to water, unspecified", "Emissions to air, unspecified", "" -> ""
+        "Emissions to sea water" -> "sea water"
+        "Emissions to fresh water" -> "fresh water"
+        "Emissions to lower stratosphere and upper troposphere" -> "lower stratosphere and upper troposphere"
+        "Non-renewable energy resources from ground", "Non-renewable element resources from ground",
+        "Non-renewable material resources from ground", "Non-renewable element resources from water",
+        "Non-renewable material resources from water" -> "non-renewable"
+
+        "Renewable material resources from air", "Renewable element resources from air",
+        "Renewable energy resources from biosphere" , "Renewable energy resources from ground",
+        "Renewable energy resources from air", "Renewable energy resources from water",
+        "Renewable material resources from water", "Renewable material resources from biosphere",
+        "Renewable material resources from ground" -> "renewable"
+
+        "Other emissions to industrial soil" -> "other"
+
+        else -> throw IllegalStateException("${this} is not proper sub-compartment")
+    }
+
+
 fun CSVRecord.isSubstance(): Boolean = this.isMapped("FLOW_propertyUnit")
-fun CSVRecord.subCompartment(): String = this["FLOW_class2"]
+
 fun CSVRecord.unit(): String = this["FLOW_propertyUnit"].trim()
 fun CSVRecord.dimension(): String = this["FLOW_property"].trim()
 fun CSVRecord.lcaFileName(): String = this["FLOW_name"]
@@ -69,12 +108,19 @@ internal class Impact() {
         return this;
     }
 
-    private fun padStart(str: String, pad: Int) : String {
+    private fun padStart(str: String, pad: Int): String {
         return str.padStart(str.length + pad)
     }
 
     fun factorsContent(pad: Int = 4): String = factorRecords
-        .map { "|".plus(padStart("- \"${it.methodName()}\" ${it.methodLocation()} ${it.characterizationFactor()}", pad)) }
+        .map {
+            "|".plus(
+                padStart(
+                    "- \"${it.methodName()}\" ${it.methodLocation()} ${it.characterizationFactor()}",
+                    pad
+                )
+            )
+        }
         .joinToString("\n")
 
     val factorsSection: String
