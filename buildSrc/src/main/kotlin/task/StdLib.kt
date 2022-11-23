@@ -32,7 +32,7 @@ fun CSVRecord.subCompartment(): String =
     when (this["FLOW_class2"]) {
         "Emissions to non-agricultural soil" -> "non-agricultural"
         "Emissions to water, unspecified (long-term)" -> "long-term"
-        "Emissions to air, indoor" -> "indoor"
+
         "Emissions to agricultural soil" -> "agricultural"
         "Emissions to non-urban air or from high stacks",
         "Emissions to non-urban air high stack" -> "non-urban high stack"
@@ -82,9 +82,16 @@ fun CSVRecord.characterizationFactor(): String = this["CF EF3.1"]
 fun CSVRecord.methodName(): String = this["LCIAMethod_name"].trim()
 fun CSVRecord.methodLocation(): String = this["LCIAMethod_location"].trim()
 
-fun CSVRecord.substanceId(): String = """
-    "${this.substanceName()}", "${this.compartment()}", "${this.subCompartment()}"
-""".trimIndent()
+fun CSVRecord.substanceId(): String {
+    var id = if (this.subCompartment().isEmpty()) {
+        listOf(this.substanceName(), this.compartment())
+    } else {
+        listOf(this.substanceName(), this.compartment(), this.subCompartment())
+    }.joinToString()
+    return "\"$id\""
+}
+
+
 
 fun generateZipEntry(outputStream: ZipOutputStream, currentFileName: String, zipEntryContent: String) {
     val parameters = ZipParameters()
@@ -152,6 +159,9 @@ internal class Impact() {
 
     val substanceBody: String
         get() = """
+            |    name: "${substanceRecord?.substanceName()}"
+            |    compartment: "${substanceRecord?.compartment()}"
+            |    sub_compartment: "${substanceRecord?.subCompartment()}"
             |    type: ${substanceRecord?.type()}
             |    unit: ${substanceRecord?.unit()}
             |    

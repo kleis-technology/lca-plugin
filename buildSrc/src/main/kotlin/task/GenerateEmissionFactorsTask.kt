@@ -52,28 +52,6 @@ abstract class GenerateEmissionFactorsTask : DefaultTask() {
             }
             .forEach { entry -> generateZipEntry(outputJarStream, entry.key, entry.value) }
 
-
-        /*val substances = loadSubstances()
-        val format = CSVFormat.Builder.create().setHeader().build()
-        val parser = CSVParser.parse(
-            GZIPInputStream(
-                inputDir.file("factors.csv.gz")
-                    .map { it.asFile }.get().inputStream()
-            ), defaultCharset(), format
-        )
-        val factors = parser.stream()
-        val outputFile = outputDir.file("emissions_factors.jar").get().asFile
-        val outputJarStream = ZipOutputStream(FileOutputStream(outputFile))
-        factors.asSequence()
-            .groupingBy { it.substanceId() }
-            .fold({ key: String, element: CSVRecord -> Impact(element) },
-                { _, accumulator: Impact, element: CSVRecord -> accumulator.factor(element) })
-            .values.groupingBy { it.lcaFileName }
-            .fold("") { accumulator: String, element: Impact ->
-                accumulator.plus(element.fileContent).plus("\n\n")
-            }
-            .forEach { entry -> generateZipEntry(outputJarStream, entry.key, entry.value) }
-*/
         outputJarStream.close()
     }
 
