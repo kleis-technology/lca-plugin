@@ -47,7 +47,7 @@ abstract class GenerateEmissionFactorsTask : DefaultTask() {
                 { _: String, accumulator: Impact, element: CSVRecord -> accumulator.factor(element)})
 
         substances.values.groupingBy { it.lcaFileName }
-            .fold("") { accumulator: String, element: Impact ->
+            .fold("package ef31\n\n") { accumulator: String, element: Impact ->
                 accumulator.plus(element.fileContent).plus("\n\n")
             }
             .forEach { entry -> generateZipEntry(outputJarStream, entry.key, entry.value) }
