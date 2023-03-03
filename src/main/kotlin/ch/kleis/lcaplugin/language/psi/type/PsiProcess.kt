@@ -27,7 +27,7 @@ interface PsiProcess : PsiUIDOwner {
             .map { it.psi as PsiBlock }
     }
 
-    fun getReferenceExchange(): PsiReferenceExchange {
-        return node.findChildByType(LcaTypes.REFERENCE_EXCHANGE)?.psi as PsiReferenceExchange
+    fun getReferenceExchange(): PsiExplicitExchange {
+        return node.findChildByType(LcaTypes.REFERENCE_EXCHANGE)?.psi as PsiExplicitExchange
     }
 }

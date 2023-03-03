@@ -51,6 +51,8 @@ class LcaLangAbstractParser(
             .flatMap { it.getLocalAssignments() }
             .associate { Pair(it.getUid().name!!, coreExpression(it.getCoreExpression())) }
 
+        // processes
+
         val psiProcesses = files
             .flatMap { it.getProcesses() }
 
@@ -61,24 +63,37 @@ class LcaLangAbstractParser(
         val processes = psiProcesses
             .associate { Pair(it.getUid().name!!, process(it)) }
 
-        val substancesAsProduct = files
-            .flatMap { it.getSubstances() }
-            .associate { Pair(it.getUid().name!!, getProductFromSubstance(it)) }
+        // substances
 
-        val substancesAsProcess = files
+        val psiSubstances = files
             .flatMap { it.getSubstances() }
-            .filter { it.hasEmissionFactors() }
-            .associate { Pair(it.getUid().name!! + "_process", getProcessFromSubstance(it)) }
+
+        val substancesAsProduct = psiSubstances
+            .associate { Pair(it.getUid().name!!, substanceOf(it)) }
+
+        val substancesAsProcess = psiSubstances
+            .filter { it.hasExchanges() }
+            .associate { Pair(it.getUid().name!! + "_process", characterizationProcessOf(it)) }
+
+        val indicators = psiSubstances
+            .flatMap { indicatorsOf(it) }
+            .associateBy { it.name }
+
+        // system
 
         val systems = files
             .flatMap { it.getSystems() }
             .filter { it.getUid() != null }
             .associate { Pair(it.getUid()?.name!!, system(it)) }
 
+        // units
+
         val units = files
             .flatMap { it.getUnitLiterals() }
             .filter { it.getUid() != null }
             .associate { Pair(it.getUid()?.name!!, unitLiteral(it)) }
+
+        // definitions
 
         val definitions = globals
             .plus(units)
@@ -87,6 +102,7 @@ class LcaLangAbstractParser(
             .plus(systems)
             .plus(substancesAsProduct)
             .plus(substancesAsProcess)
+            .plus(indicators)
 
         val imports = files
             .flatMap { it.getImports() }
@@ -157,13 +173,12 @@ class LcaLangAbstractParser(
 
     private fun process(psiProcess: PsiProcess): Expression {
         val locals = locals(psiProcess.getLocalAssignments())
-        val referenceProduct = referenceProductOf(psiProcess)
         val params = params(psiProcess.getParameters())
         val blocks = psiProcess.getBlocks().map { block(it) }
         val includes = psiProcess.getIncludes().map { include(it) }
 
         var result: Expression = EProcess(
-            listOf(exchange(psiProcess.getReferenceExchange()))
+            listOf(exchange(psiProcess.getReferenceExchange(), Polarity.POSITIVE))
                 .plus(blocks)
                 .plus(includes)
         )
@@ -177,42 +192,67 @@ class LcaLangAbstractParser(
     }
 
 
-    private fun getProductFromSubstance(psiSubstance: PsiSubstance): Expression {
+    private fun substanceOf(psiSubstance: PsiSubstance): EProduct {
         return EProduct(
             psiSubstance.getUid().name!!,
             unit(psiSubstance.getReferenceUnitField().getValue())
         )
     }
 
-    private fun getProcessFromSubstance(psiSubstance: PsiSubstance): Expression {
-        val productVar = EVar(psiSubstance.getUid().name!!)
-        val productQuantity = EQuantity(1.0, unit(psiSubstance.getReferenceUnitField().getValue()))
-        val productExchange = EExchange(productQuantity, productVar)
+    private fun referenceExchangeOf(psiSubstance: PsiSubstance): EExchange {
+        val s = EVar(psiSubstance.name!!)
+        val q = EQuantity(1.0, unit(psiSubstance.getReferenceUnitField().getValue()))
+        return EExchange(q, s)
+    }
 
-        val emissionFactorExchanges = psiSubstance.getEmissionFactors()
-            ?.getExchanges()
-            ?.map { exchange(it, Polarity.POSITIVE) }
-        val emissionBlock = EBlock(emissionFactorExchanges!!)
+    private fun characterizationProcessOf(psiSubstance: PsiSubstance): EProcess {
+        val referenceExchange = referenceExchangeOf(psiSubstance)
 
-        return EProcess(listOf(productExchange, emissionBlock))
+        val emissionFactorExchanges = psiSubstance
+            .getExchanges()
+            .map { exchange(it, Polarity.NEGATIVE) }
+        val emissionBlock = EBlock(emissionFactorExchanges)
+
+        return EProcess(listOf(referenceExchange, emissionBlock))
+    }
+
+
+    private fun indicatorsOf(psiSubstance: PsiSubstance): Collection<EProduct> {
+        return psiSubstance.getExchanges()
+            .map {
+                EProduct(
+                    it.name!!,
+                    unit(it.getUnit()),
+                )
+            }
     }
 
     private fun referenceProductOf(psiProcess: PsiProcess): EProduct {
         return referenceProductOf(psiProcess.getReferenceExchange())
     }
 
-    private fun referenceProductOf(psiReferenceExchange: PsiReferenceExchange): EProduct {
+    private fun referenceProductOf(psiReferenceExchange: PsiExplicitExchange): EProduct {
         return EProduct(
             psiReferenceExchange.name!!,
             unit(psiReferenceExchange.getUnit()),
         )
     }
 
-    private fun exchange(psiReferenceExchange: PsiReferenceExchange): Expression {
-        return EExchange(
-            EQuantity(psiReferenceExchange.getAmount(), unit(psiReferenceExchange.getUnit())),
-            variable(psiReferenceExchange.name!!)
-        )
+    private fun exchange(
+        psiReferenceExchange: PsiExplicitExchange,
+        polarity: Polarity,
+    ): Expression {
+        return when(polarity) {
+            Polarity.POSITIVE -> EExchange(
+                EQuantity(psiReferenceExchange.getAmount(), unit(psiReferenceExchange.getUnit())),
+                variable(psiReferenceExchange.name!!)
+            )
+
+            Polarity.NEGATIVE -> EExchange(
+                EQuantity(-psiReferenceExchange.getAmount(), unit(psiReferenceExchange.getUnit())),
+                variable(psiReferenceExchange.name!!)
+            )
+        }
     }
 
     private fun exchange(

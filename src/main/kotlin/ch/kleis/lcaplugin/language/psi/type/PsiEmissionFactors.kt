@@ -5,8 +5,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 
 interface PsiEmissionFactors: PsiElement {
-    fun getExchanges(): Collection<PsiExchange> {
-        return node.getChildren(TokenSet.create(LcaTypes.EXCHANGE))
-            .map { it.psi as PsiExchange }
+    fun getExchanges(): Collection<PsiExplicitExchange> {
+        return node.getChildren(TokenSet.create(LcaTypes.EXPLICIT_EXCHANGE))
+            .map { it.psi as PsiExplicitExchange }
     }
 }

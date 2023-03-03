@@ -100,7 +100,7 @@ coreExpr ::= process
 substance ::= SUBSTANCE_KEYWORD uid LBRACE
     nameField
     compartmentField
-    subCompartmentField
+    subCompartmentField?
     referenceUnitField
     emission_factors?
     meta_block?
@@ -117,7 +117,7 @@ subCompartmentField ::= SUB_COMPARTMENT_KEYWORD EQUAL STRING_LITERAL {
     implements=["ch.kleis.lcaplugin.language.psi.type.field.PsiStringLiteralField"]
     mixin="ch.kleis.lcaplugin.language.psi.mixin.field.PsiStringLiteralFieldMixin"
 }
-emission_factors ::= EMISSION_FACTORS_KEYWORD LBRACE (exchange)* RBRACE {
+emission_factors ::= EMISSION_FACTORS_KEYWORD LBRACE (explicitExchange)* RBRACE {
     implements=["ch.kleis.lcaplugin.language.psi.type.PsiEmissionFactors"]
     mixin="ch.kleis.lcaplugin.language.psi.mixin.PsiEmissionFactorsMixin"
 }
@@ -151,8 +151,12 @@ LBRACE params? referenceExchange (
 }
 
 referenceExchange ::= REFERENCE_KEYWORD NUMBER unit uid {
-    implements=["ch.kleis.lcaplugin.language.psi.type.PsiReferenceExchange"]
-    mixin="ch.kleis.lcaplugin.language.psi.mixin.PsiReferenceExchangeMixin"
+    implements=["ch.kleis.lcaplugin.language.psi.type.PsiExplicitExchange"]
+    mixin="ch.kleis.lcaplugin.language.psi.mixin.PsiExplicitExchangeMixin"
+}
+explicitExchange ::= NUMBER unit uid {
+    implements=["ch.kleis.lcaplugin.language.psi.type.PsiExplicitExchange"]
+    mixin="ch.kleis.lcaplugin.language.psi.mixin.PsiExplicitExchangeMixin"
 }
 
 system ::= SYSTEM_KEYWORD uid?

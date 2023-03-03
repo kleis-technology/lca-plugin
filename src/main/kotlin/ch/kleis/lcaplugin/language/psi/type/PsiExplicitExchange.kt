@@ -5,7 +5,7 @@ import ch.kleis.lcaplugin.language.psi.type.unit.PsiUnit
 import ch.kleis.lcaplugin.psi.LcaTypes
 import java.lang.Double.parseDouble
 
-interface PsiReferenceExchange : PsiUIDOwner {
+interface PsiExplicitExchange : PsiUIDOwner {
     fun getAmount(): Double {
         return parseDouble(node.findChildByType(LcaTypes.NUMBER)!!.psi.text)
     }
