@@ -17,7 +17,9 @@ class LcaLangAbstractParserTest : ParsingTestCase("", "lca", LcaParserDefinition
             package hello
             
             process a {
-                1 kg carrot
+                products {
+                    1 kg carrot
+                }
                 
                 inputs {
                     10 l water
@@ -36,7 +38,11 @@ class LcaLangAbstractParserTest : ParsingTestCase("", "lca", LcaParserDefinition
         // then
         val expected = EProcess(
             listOf(
-                EExchange(EQuantity(1.0, EVar("kg")), EVar("carrot")),
+                EBlock(
+                    listOf(
+                        EExchange(EQuantity(1.0, EVar("kg")), EVar("carrot")),
+                    )
+                ),
                 EBlock(
                     listOf(
                         EExchange(ENeg(EQuantity(10.0, EVar("l"))), EVar("water")),
@@ -44,85 +50,14 @@ class LcaLangAbstractParserTest : ParsingTestCase("", "lca", LcaParserDefinition
                 )
             )
         )
-        TestCase.assertEquals(expected, actual)
-    }
-
-    @Test
-    fun testParse_localProducts() {
-        // given
-        val file = parseFile(
-            "hello", """
-            package hello
-            
-            unit kg {
-                symbol = "kg"
-                scale = 1.0
-                dimension = "mass"
-            }
-            
-            system main {
-                let {
-                    p = product {
-                        name = "p"
-                        reference_unit = kg
-                    }
-                }
-                
-                process {
-                    1 kg p
-                }
-            }
-        """.trimIndent()
-        ) as LcaFile
-        val parser = LcaLangAbstractParser {
-            listOf(file)
-        }
-
-        // when
-        val (pkg, _) = parser.collect("hello")
-        val actual = pkg.definitions["main"]!!
-
-        // then
-        val expected = EProcess(
-            listOf(
-                EExchange(EQuantity(1.0, EVar("kg")), EVar("carrot")),
-                EBlock(
-                    listOf(
-                        EExchange(ENeg(EQuantity(10.0, EVar("l"))), EVar("water")),
-                    )
-                )
-            )
-        )
-        TestCase.assertEquals(expected, actual)
-    }
-
-    @Test
-    fun testIndicatorParse_shouldReturnAProduct() {
-        // given
-        val file = parseFile("climateChange","""
-            package climateChange
-            
-            indicator climate_change {
-                name = "Climate change"
-                reference_unit = kg
-            }
-        """.trimIndent()
-        ) as LcaFile
-        val parser = LcaLangAbstractParser {
-            listOf(file)
-        }
-        // when
-        val (pkg, _) = parser.collect("climateChange")
-        val actual = pkg.definitions["climate_change"]!!
-        // then
-        val expected = EProduct("climate_change", EVar("kg"))
         TestCase.assertEquals(expected, actual)
     }
 
     @Test
     fun testSubstanceParse_shouldReturnAProduct() {
         // given
-        val file = parseFile("substances","""
+        val file = parseFile(
+            "substances", """
             package substances
             
             substance phosphate {
@@ -147,7 +82,8 @@ class LcaLangAbstractParserTest : ParsingTestCase("", "lca", LcaParserDefinition
     @Test
     fun testSubstanceParse_shouldReturnAProcess() {
         // given
-        val file = parseFile("substances","""
+        val file = parseFile(
+            "substances", """
             package substances
             
             substance phosphate {
@@ -169,22 +105,27 @@ class LcaLangAbstractParserTest : ParsingTestCase("", "lca", LcaParserDefinition
         val (pkg, _) = parser.collect("substances")
         val actual = pkg.definitions["phosphate_process"]!!
         // then
-        val expected = EProcess(listOf(
-            EExchange(EQuantity(1.0, EVar("kg")), EVar("phosphate")),
-            EBlock(listOf(
-                    EExchange(
-                        EQuantity(1.0,EVar("kg")),
-                        EVar("climate_change")
+        val expected = EProcess(
+            listOf(
+                EExchange(EQuantity(1.0, EVar("kg")), EVar("phosphate")),
+                EBlock(
+                    listOf(
+                        EExchange(
+                            EQuantity(1.0, EVar("kg")),
+                            EVar("climate_change")
+                        )
                     )
-                ))
-            ))
+                )
+            )
+        )
         TestCase.assertEquals(expected, actual)
     }
 
     @Test
     fun testSubstanceParse_shouldNotReturnAProcessWhenNoEmissionFactors() {
         // given
-        val file = parseFile("substances","""
+        val file = parseFile(
+            "substances", """
             package substances
             
             substance phosphate {
@@ -206,7 +147,8 @@ class LcaLangAbstractParserTest : ParsingTestCase("", "lca", LcaParserDefinition
     @Test
     fun testSubstanceParse_shouldNotReturnAProcessThatProduceTheSubstance() {
         // given
-        val file = parseFile("substances","""
+        val file = parseFile(
+            "substances", """
             package substances
              
             substance phosphate {
@@ -228,17 +170,22 @@ class LcaLangAbstractParserTest : ParsingTestCase("", "lca", LcaParserDefinition
         val (pkg, _) = parser.collect("substances")
         val actual = pkg.definitions["phosphate_process"]!!
         // then
-        val expected = EProcess(listOf(
-            EExchange(
-                EQuantity(1.0, EVar("kg")),
-                EVar("phosphate")),
-            EBlock(
-                listOf(
+        val expected = EProcess(
+            listOf(
                 EExchange(
-                    EQuantity(1.0,EVar("kg")),
-                    EVar("climate_change")
+                    EQuantity(1.0, EVar("kg")),
+                    EVar("phosphate")
+                ),
+                EBlock(
+                    listOf(
+                        EExchange(
+                            EQuantity(1.0, EVar("kg")),
+                            EVar("climate_change")
+                        )
+                    )
                 )
-            ))))
+            )
+        )
         TestCase.assertEquals(expected, actual)
     }
 

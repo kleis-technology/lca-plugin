@@ -51,10 +51,7 @@ class LcaLangAbstractParser(
             .flatMap { it.getLocalAssignments() }
             .associate { Pair(it.getUid().name!!, coreExpression(it.getCoreExpression())) }
 
-        val products = files
-            .flatMap { it.getProducts() }
-            .filter { it.getUid() != null }
-            .associate { Pair(it.getUid()?.name!!, product(it)) }
+        val products = emptyMap<String, Expression>()
 
         val processes = files
             .flatMap { it.getProcesses() }
@@ -222,19 +219,6 @@ class LcaLangAbstractParser(
         )
     }
 
-    private fun product(psiProduct: PsiProduct): Expression {
-        val unit = unit(psiProduct.getReferenceUnitField().getValue())
-        val name = psiProduct.getUid()?.name ?: run {
-            val result = "product_$productCount"
-            productCount += 1
-            result
-        }
-        return EProduct(
-            name,
-            unit
-        )
-    }
-
     private fun quantity(quantity: PsiQuantity): Expression {
         val term = qTerm(quantity.getTerm())
         return when (quantity.getOperationType()) {
@@ -316,7 +300,6 @@ class LcaLangAbstractParser(
         return when (coreExpression.getExpressionType()) {
             CoreExpressionType.SYSTEM -> system(coreExpression.asSystem())
             CoreExpressionType.PROCESS -> process(coreExpression.asProcess())
-            CoreExpressionType.PRODUCT -> product(coreExpression.asProduct())
             CoreExpressionType.UNIT -> unit(coreExpression.asUnit())
             CoreExpressionType.QUANTITY -> quantity(coreExpression.asQuantity())
             CoreExpressionType.VARIABLE -> variable(coreExpression.asVariable())
