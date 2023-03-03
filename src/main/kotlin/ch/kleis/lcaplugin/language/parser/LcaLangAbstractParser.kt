@@ -59,8 +59,7 @@ class LcaLangAbstractParser(
             .associateBy { it.name }
 
         val processes = psiProcesses
-            .filter { it.getUid() != null }
-            .associate { Pair(it.getUid()?.name!!, process(it)) }
+            .associate { Pair(it.getUid().name!!, process(it)) }
 
         val substancesAsProduct = files
             .flatMap { it.getSubstances() }

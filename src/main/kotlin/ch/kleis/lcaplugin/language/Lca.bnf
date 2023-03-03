@@ -140,7 +140,7 @@ referenceUnitField ::= REFERENCE_UNIT_KEYWORD EQUAL unit {
     mixin="ch.kleis.lcaplugin.language.psi.mixin.field.PsiUnitFieldMixin"
 }
 
-process ::= PROCESS_KEYWORD uid?
+process ::= PROCESS_KEYWORD uid
 LBRACE params? referenceExchange (
     params
     | block
@@ -158,7 +158,6 @@ referenceExchange ::= REFERENCE_KEYWORD NUMBER unit uid {
 system ::= SYSTEM_KEYWORD uid?
 LBRACE (
     params
-    | process
     | system
     | include
     | let )* RBRACE {

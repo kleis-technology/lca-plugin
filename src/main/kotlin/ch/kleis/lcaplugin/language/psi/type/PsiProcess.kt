@@ -1,13 +1,10 @@
 package ch.kleis.lcaplugin.language.psi.type
 
+import ch.kleis.lcaplugin.language.psi.type.trait.PsiUIDOwner
 import ch.kleis.lcaplugin.psi.LcaTypes
-import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 
-interface PsiProcess : PsiElement {
-    fun getUid(): PsiUID? {
-        return node.findChildByType(LcaTypes.UID)?.psi as PsiUID?
-    }
+interface PsiProcess : PsiUIDOwner {
 
     fun getParameters(): Collection<PsiParameter> {
         return node.getChildren(TokenSet.create(LcaTypes.PARAMS))

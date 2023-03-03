@@ -8,7 +8,7 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiNameIdentifierOwner
 
 interface PsiUIDOwner : PsiNameIdentifierOwner {
-    fun getUID(): PsiUID? {
+    fun getUid(): PsiUID {
         return node.findChildByType(LcaTypes.UID)?.psi as PsiUID
     }
 
@@ -31,6 +31,6 @@ interface PsiUIDOwner : PsiNameIdentifierOwner {
     }
 
     override fun getNameIdentifier(): PsiElement? {
-        return getUID()
+        return getUid()
     }
 }
