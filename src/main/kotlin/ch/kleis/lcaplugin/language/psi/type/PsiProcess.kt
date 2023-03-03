@@ -25,13 +25,12 @@ interface PsiProcess : PsiElement {
             .map { it.psi as PsiInclude }
     }
 
-    fun getExchanges(): Collection<PsiExchange> {
-        return node.getChildren(TokenSet.create(LcaTypes.EXCHANGE))
-            .map { it.psi as PsiExchange }
-    }
-
     fun getBlocks(): Collection<PsiBlock> {
         return node.getChildren(TokenSet.create(LcaTypes.BLOCK))
             .map { it.psi as PsiBlock }
+    }
+
+    fun getReferenceExchange(): PsiReferenceExchange {
+        return node.findChildByType(LcaTypes.REFERENCE_EXCHANGE)?.psi as PsiReferenceExchange
     }
 }

@@ -17,9 +17,7 @@ class LcaLangAbstractParserTest : ParsingTestCase("", "lca", LcaParserDefinition
             package hello
             
             process a {
-                products {
-                    1 kg carrot
-                }
+                ref 1 kg carrot
                 
                 inputs {
                     10 l water
@@ -38,11 +36,7 @@ class LcaLangAbstractParserTest : ParsingTestCase("", "lca", LcaParserDefinition
         // then
         val expected = EProcess(
             listOf(
-                EBlock(
-                    listOf(
-                        EExchange(EQuantity(1.0, EVar("kg")), EVar("carrot")),
-                    )
-                ),
+                EExchange(EQuantity(1.0, EVar("kg")), EVar("carrot")),
                 EBlock(
                     listOf(
                         EExchange(ENeg(EQuantity(10.0, EVar("l"))), EVar("water")),

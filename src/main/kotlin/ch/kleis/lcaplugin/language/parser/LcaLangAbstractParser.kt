@@ -51,23 +51,25 @@ class LcaLangAbstractParser(
             .flatMap { it.getLocalAssignments() }
             .associate { Pair(it.getUid().name!!, coreExpression(it.getCoreExpression())) }
 
-        val products = emptyMap<String, Expression>()
-
-        val processes = files
+        val psiProcesses = files
             .flatMap { it.getProcesses() }
+
+        val products = psiProcesses
+            .map { referenceProductOf(it) }
+            .associateBy { it.name }
+
+        val processes = psiProcesses
             .filter { it.getUid() != null }
             .associate { Pair(it.getUid()?.name!!, process(it)) }
 
         val substancesAsProduct = files
             .flatMap { it.getSubstances() }
-            .filter { it.getUid() != null }
-            .associate { Pair(it.getUid()?.name!!, getProductFromSubstance(it)) }
+            .associate { Pair(it.getUid().name!!, getProductFromSubstance(it)) }
 
         val substancesAsProcess = files
             .flatMap { it.getSubstances() }
             .filter { it.hasEmissionFactors() }
-            .filter { it.getUid() != null }
-            .associate { Pair(it.getUid()?.name!!+"_process", getProcessFromSubstance(it)) }
+            .associate { Pair(it.getUid().name!! + "_process", getProcessFromSubstance(it)) }
 
         val systems = files
             .flatMap { it.getSystems() }
@@ -156,13 +158,13 @@ class LcaLangAbstractParser(
 
     private fun process(psiProcess: PsiProcess): Expression {
         val locals = locals(psiProcess.getLocalAssignments())
+        val referenceProduct = referenceProductOf(psiProcess)
         val params = params(psiProcess.getParameters())
         val blocks = psiProcess.getBlocks().map { block(it) }
-        val exchanges = psiProcess.getExchanges().map { exchange(it, Polarity.POSITIVE) }
         val includes = psiProcess.getIncludes().map { include(it) }
 
         var result: Expression = EProcess(
-            exchanges
+            listOf(exchange(psiProcess.getReferenceExchange()))
                 .plus(blocks)
                 .plus(includes)
         )
@@ -174,6 +176,7 @@ class LcaLangAbstractParser(
         }
         return result
     }
+
 
     private fun getProductFromSubstance(psiSubstance: PsiSubstance): Expression {
         return EProduct(
@@ -193,6 +196,24 @@ class LcaLangAbstractParser(
         val emissionBlock = EBlock(emissionFactorExchanges!!)
 
         return EProcess(listOf(productExchange, emissionBlock))
+    }
+
+    private fun referenceProductOf(psiProcess: PsiProcess): EProduct {
+        return referenceProductOf(psiProcess.getReferenceExchange())
+    }
+
+    private fun referenceProductOf(psiReferenceExchange: PsiReferenceExchange): EProduct {
+        return EProduct(
+            psiReferenceExchange.name!!,
+            unit(psiReferenceExchange.getUnit()),
+        )
+    }
+
+    private fun exchange(psiReferenceExchange: PsiReferenceExchange): Expression {
+        return EExchange(
+            EQuantity(psiReferenceExchange.getAmount(), unit(psiReferenceExchange.getUnit())),
+            variable(psiReferenceExchange.name!!)
+        )
     }
 
     private fun exchange(

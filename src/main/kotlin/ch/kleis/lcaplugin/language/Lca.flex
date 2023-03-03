@@ -92,7 +92,6 @@ FormulaContent = [^}]*
 <YYINITIAL> "dimension"                   { return LcaTypes.DIMENSION_KEYWORD; }
 <YYINITIAL> "param"             { return LcaTypes.PARAMETER_KEYWORD; }
 <YYINITIAL> "params"             { return LcaTypes.PARAMETERS_KEYWORD; }
-<YYINITIAL> "products"             { return LcaTypes.PRODUCTS_KEYWORD; }
 <YYINITIAL> "coproducts"             { return LcaTypes.COPRODUCTS_KEYWORD; }
 <YYINITIAL> "inputs"             { return LcaTypes.INPUTS_KEYWORD; }
 <YYINITIAL> "emissions"             { return LcaTypes.EMISSIONS_KEYWORD; }
