@@ -18,6 +18,7 @@
       PROCESS_KEYWORD = 'process'
       SYMBOL_KEYWORD = 'symbol'
       SUBSTANCE_KEYWORD = 'substance'
+      REFERENCE_KEYWORD = 'reference'
       COMPARTMENT_KEYWORD = 'compartment'
       SUB_COMPARTMENT_KEYWORD = 'sub-compartment'
       EMISSION_FACTORS_KEYWORD = 'emission-factors'
@@ -141,13 +142,18 @@ referenceUnitField ::= REFERENCE_UNIT_KEYWORD EQUAL unit {
 }
 
 process ::= PROCESS_KEYWORD uid?
-LBRACE (
+LBRACE params? referenceExchange (
     params
     | block
     | include
     | let )* RBRACE {
     implements=["ch.kleis.lcaplugin.language.psi.type.PsiProcess"]
     mixin="ch.kleis.lcaplugin.language.psi.mixin.PsiProcessMixin"
+}
+
+referenceExchange ::= REFERENCE_KEYWORD NUMBER unit uid {
+    implements=["ch.kleis.lcaplugin.language.psi.type.PsiReferenceExchange"]
+    mixin="ch.kleis.lcaplugin.language.psi.mixin.PsiReferenceExchangeMixin"
 }
 
 system ::= SYSTEM_KEYWORD uid?

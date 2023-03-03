@@ -85,6 +85,7 @@ FormulaContent = [^}]*
 <YYINITIAL> "template"                { return LcaTypes.TEMPLATE_KEYWORD; }
 <YYINITIAL> "name"                { return LcaTypes.NAME_KEYWORD; }
 <YYINITIAL> "unit"                   { return LcaTypes.UNIT_KEYWORD; }
+<YYINITIAL> "ref"                   { return LcaTypes.REFERENCE_KEYWORD; }
 <YYINITIAL> "reference_unit"                   { return LcaTypes.REFERENCE_UNIT_KEYWORD; }
 <YYINITIAL> "symbol"                   { return LcaTypes.SYMBOL_KEYWORD; }
 <YYINITIAL> "scale"                   { return LcaTypes.SCALE_KEYWORD; }

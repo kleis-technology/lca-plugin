@@ -103,7 +103,6 @@ class LcaLangAbstractParser(
         )
     }
 
-
     private fun unitLiteral(psiUnitLiteral: PsiUnitLiteral): Expression {
         return EUnit(
             psiUnitLiteral.getSymbolField().getValue(),
