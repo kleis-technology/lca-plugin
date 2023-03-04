@@ -17,11 +17,6 @@ interface PsiProcess : PsiUIDOwner {
             .map { it.psi as PsiAssignment }
     }
 
-    fun getIncludes(): Collection<PsiInclude> {
-        return node.getChildren(TokenSet.create(LcaTypes.INCLUDE))
-            .map { it.psi as PsiInclude }
-    }
-
     fun getBlocks(): Collection<PsiBlock> {
         return node.getChildren(TokenSet.create(LcaTypes.BLOCK))
             .map { it.psi as PsiBlock }

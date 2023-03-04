@@ -144,7 +144,6 @@ process ::= PROCESS_KEYWORD uid
 LBRACE params? referenceExchange (
     params
     | block
-    | include
     | let )* RBRACE {
     implements=["ch.kleis.lcaplugin.language.psi.type.PsiProcess"]
     mixin="ch.kleis.lcaplugin.language.psi.mixin.PsiProcessMixin"

@@ -175,12 +175,10 @@ class LcaLangAbstractParser(
         val locals = locals(psiProcess.getLocalAssignments())
         val params = params(psiProcess.getParameters())
         val blocks = psiProcess.getBlocks().map { block(it) }
-        val includes = psiProcess.getIncludes().map { include(it) }
 
         var result: Expression = EProcess(
             listOf(exchange(psiProcess.getReferenceExchange(), Polarity.POSITIVE))
                 .plus(blocks)
-                .plus(includes)
         )
         if (locals.isNotEmpty()) {
             result = ELet(locals, result)
