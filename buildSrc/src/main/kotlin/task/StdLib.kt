@@ -56,7 +56,7 @@ fun CSVRecord.subCompartment(): String =
         "Non-renewable material resources from water" -> "non-renewable"
 
         "Renewable material resources from air", "Renewable element resources from air",
-        "Renewable energy resources from biosphere" , "Renewable energy resources from ground",
+        "Renewable energy resources from biosphere", "Renewable energy resources from ground",
         "Renewable energy resources from air", "Renewable energy resources from water",
         "Renewable material resources from water", "Renewable material resources from biosphere",
         "Renewable material resources from ground" -> "renewable"
@@ -69,29 +69,50 @@ fun CSVRecord.subCompartment(): String =
 
 fun CSVRecord.isSubstance(): Boolean = this.isMapped("FLOW_propertyUnit")
 
-fun CSVRecord.unit(): String = this["FLOW_propertyUnit"].trim()
-fun CSVRecord.dimension(): String = this["FLOW_property"].trim()
+fun CSVRecord.unit(): String {
+    val raw = if (this.isSubstance()) sanitizeString(this["FLOW_propertyUnit"].trim()) else "u"
+    return when (raw) {
+        "Item(s)" -> "piece"
+        "kg*a" -> "kg*year"
+        "m2*a" -> "m2*year"
+        "m3*a" -> "m3*year"
+        else -> raw
+    }
+}
+
+fun CSVRecord.dimension(): String = this["FLOW_property"].trim().lowercase()
 fun CSVRecord.lcaFileName(): String = this["FLOW_name"]
     .replace("/", "|").replace("\\", "|");
 
-fun CSVRecord.substanceName(): String = this["FLOW_name"].replace("\"", "\\\"")
+fun CSVRecord.substanceDisplayName(): String = this["FLOW_name"].replace("\"", "\\\"")
 fun CSVRecord.casNumber(): String = this["FLOW_casnumber"].trim()
 fun CSVRecord.ecNumber(): String = this["FLOW_ecnumber"].trim()
 
 fun CSVRecord.characterizationFactor(): String = this["CF EF3.1"]
-fun CSVRecord.methodName(): String = this["LCIAMethod_name"].trim()
+fun CSVRecord.methodName(): String = sanitizeString(this["LCIAMethod_name"].trim())
 fun CSVRecord.methodLocation(): String = this["LCIAMethod_location"].trim()
 
 fun CSVRecord.substanceId(): String {
     var id = if (this.subCompartment().isEmpty()) {
-        listOf(this.substanceName(), this.compartment())
+        listOf(this.substanceDisplayName(), this.compartment())
     } else {
-        listOf(this.substanceName(), this.compartment(), this.subCompartment())
+        listOf(this.substanceDisplayName(), this.compartment(), this.subCompartment())
     }.joinToString()
-    return "\"$id\""
+    return sanitizeString(id)
 }
 
 
+fun sanitizeString(s: String): String {
+    if (s.isBlank()) {
+        return s
+    }
+    val r = if (s[0].isDigit()) "_$s" else s
+    val spaces = """\s+""".toRegex()
+    val nonAlphaNumeric = """[^a-zA-Z0-9]+""".toRegex()
+    return r.replace(spaces, "_")
+        .replace(nonAlphaNumeric, "_")
+        .trimEnd('_')
+}
 
 fun generateZipEntry(outputStream: ZipOutputStream, currentFileName: String, zipEntryContent: String) {
     val parameters = ZipParameters()
@@ -101,7 +122,7 @@ fun generateZipEntry(outputStream: ZipOutputStream, currentFileName: String, zip
     outputStream.closeEntry();
 }
 
-internal class Impact() {
+class Impact() {
 
     val factorRecords = mutableListOf<CSVRecord>()
     var substanceRecord: CSVRecord? = null
@@ -119,31 +140,23 @@ internal class Impact() {
         return str.padStart(str.length + pad)
     }
 
-    fun factorsContent(pad: Int = 4): String = factorRecords
+    fun impactsContent(pad: Int = 4): String = factorRecords
+        .filter { it.methodLocation().isBlank() }
         .map {
             "|".plus(
                 padStart(
-                    "- \"${it.methodName()}\" ${it.methodLocation()} ${it.characterizationFactor()}",
+                    "${it.characterizationFactor()} ${it.unit()} ${it.methodName()}",
                     pad
                 )
             )
         }
         .joinToString("\n")
 
-    val factorsSection: String
+    val impactsSubsection: String
         get() = if (factorRecords.size > 0) {
             """
-            |factors ${factorRecords.first().substanceId()} : ef31 {
-            ${factorsContent()}    
-            |}
-        """.trimMargin()
-        } else ""
-
-    val factorsSubSection: String
-        get() = if (factorRecords.size > 0) {
-            """
-            |    factors : ef31 {
-            ${factorsContent(8)}    
+            |    impacts {
+            ${impactsContent(8)}    
             |    }
         """.trimMargin()
         } else ""
@@ -159,26 +172,25 @@ internal class Impact() {
 
     val substanceBody: String
         get() = """
-            |    name: "${substanceRecord?.substanceName()}"
-            |    compartment: "${substanceRecord?.compartment()}"
-            |    sub_compartment: "${substanceRecord?.subCompartment()}"
-            |    type: ${substanceRecord?.type()}
-            |    unit: ${substanceRecord?.unit()}
+            |    name = "${substanceRecord?.substanceDisplayName()}"
+            |    compartment = "${substanceRecord?.compartment()}"
+            |    sub_compartment = "${substanceRecord?.subCompartment()}"
+            |    reference_unit = ${substanceRecord?.unit()}
             |    
-            |$factorsSubSection
+            |$impactsSubsection
             |    
             |    meta {
-            |        - dimension: "${substanceRecord?.dimension()}"
-            |        - generator: "kleis-lca-generator"
-            |        - casNumber: "${substanceRecord?.casNumber()}"
-            |        - ecNumber: "${substanceRecord?.ecNumber()}"
+            |        type = "${substanceRecord?.type()}"
+            |        generator = "kleis-lca-generator"
+            |        casNumber = "${substanceRecord?.casNumber()}"
+            |        ecNumber = "${substanceRecord?.ecNumber()}"
             |    }
             """.trimMargin()
 
     val fileContent: String
-        get() = substanceRecord?.run { substanceContent } ?: factorsSection
+        get() = substanceRecord?.run { substanceContent } ?: ""
 
     val lcaFileName: String
-        get() = substanceRecord?.lcaFileName() ?: factorRecords.first().lcaFileName()
+        get() = sanitizeString(substanceRecord?.lcaFileName() ?: factorRecords.first().lcaFileName())
 
 }
