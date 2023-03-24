@@ -98,7 +98,7 @@ fun CSVRecord.substanceId(): String {
     } else {
         listOf(this.substanceDisplayName(), this.compartment(), this.subCompartment())
     }.joinToString()
-    return sanitizeString(id)
+    return sanitizeString(id).lowercase()
 }
 
 
