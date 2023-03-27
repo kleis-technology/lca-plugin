@@ -38,11 +38,13 @@ class Prelude {
             EUnitLiteral("ml", 1.0e-6, volume),
             EUnitLiteral("Bq", 1.0, radioactivity),
             EUnitLiteral("kBq", 1000.0, radioactivity),
-            EUnitLiteral("s", 1.0, time),
-            EUnitLiteral("min", 60.0, time),
-            EUnitLiteral("hour", 3600.0, time),
-            EUnitLiteral("day", 24 * 3600.0, time),
-            EUnitLiteral("year", 365 * 24 * 3600.0, time),
+
+            EUnitLiteral("s", 1.0/3600.0, time),
+            EUnitLiteral("min", 1.0/60.0, time),
+            EUnitLiteral("hour", 1.0, time),
+            EUnitLiteral("day", 24.0, time),
+            EUnitLiteral("year", 365 * 24.0, time),
+
             EUnitLiteral("Wh", 1.0, energy),
             EUnitLiteral("kWh", 1.0e3, energy),
             EUnitLiteral("MWh", 1.0e6, energy),
