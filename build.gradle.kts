@@ -16,7 +16,7 @@ plugins {
     // Gradle Qodana Plugin
     id("org.jetbrains.qodana") version "0.1.13"
     // Gradle Grammar kit Plugin
-    id("org.jetbrains.grammarkit") version "2021.2.2"
+    id("org.jetbrains.grammarkit") version "2022.3.1"
     // Arrow optics auto-generation Plugin
     id("com.google.devtools.ksp") version "1.8.10-1.0.9"
 }
