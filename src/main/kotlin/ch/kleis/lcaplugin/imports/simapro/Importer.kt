@@ -24,6 +24,27 @@ class Importer(private val settings: LcaImportSettings) {
                 if (block.isProcessBlock) {
                     val process = block.asProcessBlock()
                     // ...
+                } else if (block.isElementaryFlowBlock) { // Resources / Substances ?
+                    val elementary = block.asElementaryFlowBlock()
+                    SubstanceRenderer().render(elementary, writer)
+                } else if (block.isQuantityBlock) { // Dimensions => no need
+                    val elementary = block.asQuantityBlock()
+                    // ...
+                } else if (block.isCalculatedParameterBlock) { // Ecoinvent => empty
+                    val elementary = block.asCalculatedParameterBlock()
+                    // ...
+                } else if (block.isInputParameterBlock) { // Ecoinvent => empty
+                    val elementary = block.asInputParameterBlock()
+                    // ...
+                } else if (block.isProductStageBlock) {// Ecoinvent => empty
+                    val elementary = block.asProductStageBlock()
+                    // ...
+                } else if (block.isSystemDescriptionBlock) {// Ecoinvent => entete de library
+                    val elementary = block.asSystemDescriptionBlock()
+                    // ...
+                } else if (block.isImpactMethodBlock) {
+                    val impact = block.asImpactMethodBlock()
+                    // ...
                 } else if (block.isUnitBlock) {
                     if (settings.importUnits) {
                         val unitBlock = block.asUnitBlock()

@@ -78,7 +78,16 @@ class ModelWriter(private val packageName: String, private val rootFolder: Strin
             .replace("*", "_m_")
             .replace("+", "_p_")
             .replace("&", "_a_")
+            .replace(">", "_more_")
+            .replace("<", "_less_")
             .replace(nonAlphaNumeric, "_")
             .trimEnd('_')
+    }
+
+    fun compactText(s: String): String {
+        if (s.isBlank()) {
+            return s
+        }
+        return s.trimEnd('\n').trimEnd()
     }
 }
