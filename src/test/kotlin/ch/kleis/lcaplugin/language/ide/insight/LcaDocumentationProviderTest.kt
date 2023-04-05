@@ -9,7 +9,7 @@ import com.jetbrains.rd.util.first
 import junit.framework.TestCase
 import org.junit.Test
 
-class LcaBioExchangeDocumentationProviderTest : BasePlatformTestCase() {
+class LcaDocumentationProviderTest : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
         return ""
     }
@@ -28,7 +28,7 @@ class LcaBioExchangeDocumentationProviderTest : BasePlatformTestCase() {
         )
         val file = PsiManager.getInstance(project).findFile(virtualFile) as LcaFile
         val substance = file.getSubstances().first()
-        val sut = LcaBioExchangeDocumentationProvider()
+        val sut = LcaDocumentationProvider()
 
         // When
         val result = sut.generateDoc(substance, substance)
@@ -72,14 +72,15 @@ class LcaBioExchangeDocumentationProviderTest : BasePlatformTestCase() {
                 reference_unit = kg
                 meta{
                     author = "Alain Colas"
-                    description = "Propan-1-ol..."
+                    description = "Propan-1-ol...
+            with a return"
                 }
             }
         """.trimIndent()
         )
         val file = PsiManager.getInstance(project).findFile(virtualFile) as LcaFile
         val substance = file.getSubstances().first()
-        val sut = LcaBioExchangeDocumentationProvider()
+        val sut = LcaDocumentationProvider()
 
         // When
         val result = sut.generateDoc(substance, substance)
@@ -111,7 +112,7 @@ class LcaBioExchangeDocumentationProviderTest : BasePlatformTestCase() {
         </table>
         </div>
         <div class='content'>
-        <span style="">Propan-1-ol...</span></div>
+        <span style="">Propan-1-ol...<br>with a return</span></div>
         <div class='content'>
         <table class='sections'>
         <tr>
@@ -149,7 +150,7 @@ class LcaBioExchangeDocumentationProviderTest : BasePlatformTestCase() {
             .getFactor()
             .getPrimitive()
             .getRef() as LcaQuantityRef
-        val sut = LcaBioExchangeDocumentationProvider()
+        val sut = LcaDocumentationProvider()
 
         // When
         val result = sut.generateDoc(ref, ref)
@@ -201,7 +202,7 @@ class LcaBioExchangeDocumentationProviderTest : BasePlatformTestCase() {
             .getFactor()
             .getPrimitive()
             .getRef() as LcaQuantityRef
-        val sut = LcaBioExchangeDocumentationProvider()
+        val sut = LcaDocumentationProvider()
 
         // When
         val result = sut.generateDoc(ref, ref)
@@ -252,7 +253,7 @@ class LcaBioExchangeDocumentationProviderTest : BasePlatformTestCase() {
             .getFactor()
             .getPrimitive()
             .getRef() as LcaQuantityRef
-        val sut = LcaBioExchangeDocumentationProvider()
+        val sut = LcaDocumentationProvider()
 
         // When
         val result = sut.generateDoc(ref, ref)
@@ -303,7 +304,7 @@ class LcaBioExchangeDocumentationProviderTest : BasePlatformTestCase() {
             .getFactor()
             .getPrimitive()
             .getRef() as LcaQuantityRef
-        val sut = LcaBioExchangeDocumentationProvider()
+        val sut = LcaDocumentationProvider()
 
         // When
         val result = sut.generateDoc(ref, ref)
@@ -354,7 +355,7 @@ class LcaBioExchangeDocumentationProviderTest : BasePlatformTestCase() {
             .getFactor()
             .getPrimitive()
             .getRef() as LcaQuantityRef
-        val sut = LcaBioExchangeDocumentationProvider()
+        val sut = LcaDocumentationProvider()
 
         // When
         val result = sut.generateDoc(ref, ref)
@@ -409,7 +410,7 @@ class LcaBioExchangeDocumentationProviderTest : BasePlatformTestCase() {
             .getFromProcessConstraint()!!
             .getPsiArguments().first()
             .getParameterRef()
-        val sut = LcaBioExchangeDocumentationProvider()
+        val sut = LcaDocumentationProvider()
 
         // When
         val result = sut.generateDoc(ref, ref)
@@ -455,7 +456,7 @@ class LcaBioExchangeDocumentationProviderTest : BasePlatformTestCase() {
         )
         val file = PsiManager.getInstance(project).findFile(virtualFile) as LcaFile
         val carrotInputExchange = file.getProcesses().first().getProducts().first()
-        val sut = LcaBioExchangeDocumentationProvider()
+        val sut = LcaDocumentationProvider()
 
         // When
         val result = sut.generateDoc(carrotInputExchange, carrotInputExchange)
@@ -503,7 +504,7 @@ class LcaBioExchangeDocumentationProviderTest : BasePlatformTestCase() {
         )
         val file = PsiManager.getInstance(project).findFile(virtualFile) as LcaFile
         val process = file.getProcesses().first() as LcaProcess
-        val sut = LcaBioExchangeDocumentationProvider()
+        val sut = LcaDocumentationProvider()
 
         // When
         val result = sut.generateDoc(process, process)
@@ -555,7 +556,7 @@ class LcaBioExchangeDocumentationProviderTest : BasePlatformTestCase() {
         )
         val file = PsiManager.getInstance(project).findFile(virtualFile) as LcaFile
         val process = file.getProcesses().first() as LcaProcess
-        val sut = LcaBioExchangeDocumentationProvider()
+        val sut = LcaDocumentationProvider()
 
         // When
         val result = sut.generateDoc(process, process)
