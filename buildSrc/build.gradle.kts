@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.apache.commons:commons-csv:1.9.0")
+    implementation("org.apache.commons:commons-csv:1.10.0")
     implementation("net.lingala.zip4j:zip4j:2.11.2")
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 }
