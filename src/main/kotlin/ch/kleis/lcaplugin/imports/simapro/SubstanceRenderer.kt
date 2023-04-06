@@ -8,7 +8,7 @@ import org.openlca.simapro.csv.refdata.ElementaryFlowRow
 class SubstanceRenderer : Renderer<ElementaryFlowBlock> {
     override fun render(block: ElementaryFlowBlock, writer: ModelWriter) {
         val compartimentRaw = block.type().compartment().lowercase()
-        val compartiment = writer.sanitizeString(compartimentRaw)
+        val compartiment = ModelWriter.sanitizeString(compartimentRaw)
 //            if (block.type() == ElementaryFlowType.EMISSIONS_TO_AIR) {
 //            "air"
 //        } else if (block.type() == ElementaryFlowType.EMISSIONS_TO_SOIL) {
@@ -32,8 +32,8 @@ class SubstanceRenderer : Renderer<ElementaryFlowBlock> {
     }
 
     private fun render(element: ElementaryFlowRow, compartiment: String, writer: ModelWriter) {
-        val uid = writer.sanitizeString("${element.name()}-$compartiment")
-        val description = writer.compactText(element.comment())
+        val uid = ModelWriter.sanitizeString("${element.name()}-$compartiment")
+        val description = ModelWriter.compactText(element.comment())
         writer.write(
             "substances/$compartiment.lca",
             """
