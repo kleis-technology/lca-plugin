@@ -16,7 +16,7 @@ class LcaFileCollector(
         private val LOG = Logger.getInstance(LcaFileCollector::class.java)
     }
 
-    fun collect(file: LcaFile): List<LcaFile> {
+    fun collect(file: LcaFile): List<LcaFile> { // TODO Collect Symbole instead of files ?
         val result = HashMap<String, LcaFile>()
         LOG.info("Start recursive collect")
         recursiveCollect(result, file)
