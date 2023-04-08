@@ -5,6 +5,7 @@ import ch.kleis.lcaplugin.language.psi.type.ref.*
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import kotlinx.collections.immutable.toImmutableList
 
 class LcaFileCollector(
     private val refFileResolver: (PsiElement) -> LcaFile? = { ref ->
@@ -16,23 +17,22 @@ class LcaFileCollector(
     }
 
     fun collect(file: LcaFile): List<LcaFile> {
-        val result = ArrayList<LcaFile>()
+        val result = HashMap<String, LcaFile>()
         LOG.info("Start recursive collect")
         recursiveCollect(result, file)
         LOG.info("End recursive collect")
-        return result
+        return result.values.toImmutableList()
     }
 
-    private fun recursiveCollect(accumulator: ArrayList<LcaFile>, file: LcaFile) {
-        val h = file.virtualFile.path
-        val visited = accumulator.map { it.virtualFile.path }
-        if (visited.contains(h)) {
-            return
-        }
-        accumulator.add(file)
-        val deps = dependenciesOf(file)
-        for (dep in deps) {
-            recursiveCollect(accumulator, dep)
+    private fun recursiveCollect(accumulator: MutableMap<String, LcaFile>, file: LcaFile) {
+        val k = file.virtualFile.path
+        val visited = accumulator[k]
+        if (visited == null) {
+            accumulator[k] = file
+            val deps = dependenciesOf(file)
+            for (dep in deps) {
+                recursiveCollect(accumulator, dep)
+            }
         }
     }
 
