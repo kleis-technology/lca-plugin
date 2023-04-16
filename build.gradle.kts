@@ -1,3 +1,5 @@
+import com.google.devtools.ksp.gradle.KspTask
+import com.google.devtools.ksp.gradle.KspTaskJvm
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import task.GenerateEmissionFactorsTask30
@@ -183,4 +185,8 @@ tasks {
     clean {
         delete("${rootDir}/src/main/gen")
     }
+}
+
+afterEvaluate {
+    tasks.findByName("kspKotlin")?.mustRunAfter(tasks.generateLexer, tasks.generateParser)
 }
