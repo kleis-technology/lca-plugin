@@ -1,3 +1,0 @@
-FLOW_uuid,FLOW_name,LCIAMethod_uuid,LCIAMethod_name,LCIAMethod_meanvalue,LCIAMethod_location,FLOW_class0,FLOW_class1,FLOW_class2,LCIAMethod_derivation,LCIAMethod_direction
-08cd2c20-7a70-4847-8093-46658d17296a,"(-)-(3ar,5as,9as,9br)-3a,6,6,9a-tetramethyldodecahydronaphtho[2,1-b]furan",ee1082d1-b0f7-43ca-a1f0-21e2a4a74511,"Ecotoxicity, freshwater",1199.7,,Emissions,Emissions to water,"Emissions to water, unspecified",CALCULATED,OUTPUT
-08cd2c20-7a70-4847-8093-46658d17296a,"(-)-(3ar,5as,9as,9br)-3a,6,6,9a-tetramethyldodecahydronaphtho[2,1-b]furan",6800f5d3-7284-4ba3-8eb6-e3ab3ade7995,"Ecotoxicity, freshwater_organics",1199.7,,Emissions,Emissions to water,"Emissions to water, unspecified",CALCULATED,OUTPUT
