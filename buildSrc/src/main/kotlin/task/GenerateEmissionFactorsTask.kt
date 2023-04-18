@@ -32,11 +32,11 @@ class GenerateEmissionFactorsTask<T : EFRecord>(val inputDir: DirectoryProperty,
         val substances = loadAllRecords(shortVersion)
             .map { constructor(it) }
             .groupingBy { it.substanceId() }
-            .fold({ _: String, _: T -> SubstanceWithImpact() },
-                { _: String, accumulator: SubstanceWithImpact, element: T -> accumulator.factor(element) })
+            .fold({ _: String, _: T -> SubstanceWithImpactAccumulator() },
+                { _: String, accumulator: SubstanceWithImpactAccumulator, element: T -> accumulator.addElement(element) })
 
         return substances.values.groupingBy { it.lcaFileName }
-            .fold("package ef$shortVersion\n\n") { accumulator: String, element: SubstanceWithImpact ->
+            .fold("package ef$shortVersion\n\n") { accumulator: String, element: SubstanceWithImpactAccumulator ->
                 accumulator.plus(element.fileContent).plus("\n\n")
             }
     }

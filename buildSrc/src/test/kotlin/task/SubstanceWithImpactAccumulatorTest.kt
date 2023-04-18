@@ -11,7 +11,7 @@ import java.io.File
 import java.io.InputStream
 import java.util.concurrent.Callable
 
-class SubstanceWithImpactTest {
+class SubstanceWithImpactAccumulatorTest {
 
     @Test
     fun substance31() {
@@ -33,6 +33,7 @@ class SubstanceWithImpactTest {
                 substance _3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene_soil_non_agricultural {
 
                     name = "((3-(sec-butyl)-4-(decyloxy)phenyl)methanetriyl)tribenzene"
+                    type = Emission
                     compartment = "soil"
                     sub_compartment = "non-agricultural"
                     reference_unit = kg
@@ -43,7 +44,6 @@ class SubstanceWithImpactTest {
                     }
 
                     meta {
-                        type = "emissions"
                         generator = "kleis-lca-generator"
                         casNumber = "1404190-37-9"
                         ecNumber = "801-941-7"
@@ -77,6 +77,7 @@ class SubstanceWithImpactTest {
                 substance _3ar_5as_9as_9br_3a_6_6_9a_tetramethyldodecahydronaphtho_2_1_b_furan_water {
 
                     name = "(-)-(3ar,5as,9as,9br)-3a,6,6,9a-tetramethyldodecahydronaphtho[2,1-b]furan"
+                    type = Emission
                     compartment = "water"
 
                     reference_unit = kg
@@ -87,7 +88,6 @@ class SubstanceWithImpactTest {
                     }
                 
                     meta {
-                        type = "emissions"
                         generator = "kleis-lca-generator"
                         casNumber = "6790-58-5"
                         ecNumber = "229-861-2"

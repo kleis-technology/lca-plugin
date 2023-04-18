@@ -5,9 +5,9 @@ import org.apache.commons.csv.CSVRecord
 sealed class EFRecord(val record: CSVRecord) {
     fun type(): String {
         return when (record["FLOW_class0"]) {
-            "Emissions" -> "emissions"
-            "Resources" -> "resources"
-            "Land use" -> "land_use"
+            "Emissions" -> "Emission"
+            "Resources" -> "Resource"
+            "Land use" -> "Land_use"
             else -> throw IllegalStateException("${this} is not proper type")
         }
     }
