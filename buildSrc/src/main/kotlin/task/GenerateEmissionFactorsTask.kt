@@ -42,19 +42,17 @@ class GenerateEmissionFactorsTask<T : EFRecord>(val inputDir: DirectoryProperty,
     }
 
     private fun loadAllRecords(shortVersion: String): Sequence<CSVRecord> {
-        val flowCSVParser = CSVParser.parse(
+        val flowCSVSequence = getCSVSequence("flows.$shortVersion.csv.gz")
+        val factorsCSVSequence = getCSVSequence("factors.$shortVersion.csv.gz")
+        return (flowCSVSequence + factorsCSVSequence)
+    }
+
+    private fun getCSVSequence(fileName: String): Sequence<CSVRecord> {
+        return CSVParser.parse(
             GZIPInputStream(
-                inputDir.file("flows.$shortVersion.csv.gz")
+                inputDir.file(fileName)
                     .map { it.asFile }.get().inputStream()
             ), Charset.defaultCharset(), csvFormat
-        )
-        val factorsCSVParser = CSVParser.parse(
-            GZIPInputStream(
-                inputDir.file("factors.$shortVersion.csv.gz")
-                    .map { it.asFile }.get().inputStream()
-            ), Charset.defaultCharset(), csvFormat
-        )
-        return (flowCSVParser.stream().asSequence() +
-                factorsCSVParser.stream().asSequence())
+        ).stream().asSequence()
     }
 }
