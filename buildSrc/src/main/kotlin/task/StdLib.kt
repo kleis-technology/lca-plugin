@@ -18,7 +18,15 @@ fun sanitizeString(s: String): String {
 
 fun generateZipEntry(outputStream: ZipOutputStream, currentFileName: String, zipEntryContent: String) {
     val parameters = ZipParameters()
-    parameters.fileNameInZip = "$currentFileName.lca"
+    if (currentFileName.contains("/")) {
+        val index = currentFileName.indexOf("/")
+        val folderParam = ZipParameters()
+        folderParam.fileNameInZip = currentFileName.substring(0, index)
+        outputStream.putNextEntry(folderParam)
+        parameters.fileNameInZip = "$currentFileName"
+    } else {
+        parameters.fileNameInZip = "$currentFileName.lca"
+    }
     outputStream.putNextEntry(parameters)
     outputStream.write(zipEntryContent.encodeToByteArray())
     outputStream.closeEntry()

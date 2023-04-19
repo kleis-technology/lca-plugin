@@ -34,11 +34,14 @@ class GenerateEmissionFactorsTask<T : EFRecord>(val inputDir: DirectoryProperty,
             .groupingBy { it.substanceId() }
             .fold({ _: String, _: T -> SubstanceWithImpactAccumulator() },
                 { _: String, accumulator: SubstanceWithImpactAccumulator, element: T -> accumulator.addElement(element) })
-
+        val dict = listOf("Name;Type;Compartment;SubCompartment").plus(
+            substances.values
+                .map { "${it.substanceName};${it.substanceType};${it.substanceCompartment};${it.substanceSubCompartment}" }
+        ).joinToString("\n")
         return substances.values.groupingBy { it.lcaFileName }
             .fold("package ef$shortVersion\n\n") { accumulator: String, element: SubstanceWithImpactAccumulator ->
                 accumulator.plus(element.fileContent).plus("\n\n")
-            }
+            }.plus("META-INF/dictionary.csv" to dict)
     }
 
     private fun loadAllRecords(shortVersion: String): Sequence<CSVRecord> {

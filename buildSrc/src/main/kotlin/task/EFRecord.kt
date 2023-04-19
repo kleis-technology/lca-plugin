@@ -40,6 +40,7 @@ sealed class EFRecord(val record: CSVRecord) {
         .replace("/", "|").replace("\\", "|")
 
     fun substanceDisplayName(): String = record["FLOW_name"].replace("\"", "\\\"")
+    fun substanceName(): String = sanitizeString(record["FLOW_name"].replace("\"", "\\\""))
     fun casNumber(): String = record["FLOW_casnumber"].trim()
     fun ecNumber(): String = record["FLOW_ecnumber"].trim()
     fun methodName(): String = sanitizeString(record["LCIAMethod_name"].trim())
