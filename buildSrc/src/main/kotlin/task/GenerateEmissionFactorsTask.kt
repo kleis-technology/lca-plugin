@@ -1,75 +1,58 @@
 package task
 
-import net.lingala.zip4j.ZipFile
 import net.lingala.zip4j.io.outputstream.ZipOutputStream
-import net.lingala.zip4j.model.ZipParameters
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
-import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.tasks.*
-import org.gradle.work.Incremental
-import org.gradle.work.InputChanges
 import java.io.FileOutputStream
-import java.nio.charset.Charset.defaultCharset
+import java.nio.charset.Charset
 import java.util.zip.GZIPInputStream
 import kotlin.streams.asSequence
 
-abstract class GenerateEmissionFactorsTask : DefaultTask() {
+class GenerateEmissionFactorsTask<T : EFRecord>(val inputDir: DirectoryProperty, val outputDir: DirectoryProperty) {
 
-    @get:Incremental
-    @get:PathSensitive(PathSensitivity.NAME_ONLY)
-    @get:InputDirectory
-    abstract val inputDir: DirectoryProperty
 
-    @get:OutputDirectory
-    abstract val outputDir: DirectoryProperty
+    protected val csvFormat = CSVFormat.Builder.create().setHeader().build()
 
-    private val csvFormat = CSVFormat.Builder.create().setHeader().build()
+    fun createLibArchive(shortVersion: String, longVersion: String, constructor: (r: CSVRecord) -> T) {
 
-    init {
-        group = "ch.kleis"
-        description = "generateEmissionFactors"
-        inputDir.convention(this.project.layout.projectDirectory.dir("src/main/stdlib"))
-        outputDir.convention(this.project.layout.buildDirectory.dir("stdlib"))
-    }
-
-    @TaskAction
-    fun execute(inputChanges: InputChanges) {
-
-        val outputFile = outputDir.file("emissions_factors.jar").get().asFile
+        val outputFile = outputDir.file("emissions_factors$longVersion.jar").get().asFile
         val outputJarStream = ZipOutputStream(FileOutputStream(outputFile))
 
-        val substances = loadAllRecords()
-            .groupingBy { it.substanceId() }
-            .fold({ _: String, element: CSVRecord -> Impact() },
-                { _: String, accumulator: Impact, element: CSVRecord -> accumulator.factor(element)})
-
-        substances.values.groupingBy { it.lcaFileName }
-            .fold("package ef31\n\n") { accumulator: String, element: Impact ->
-                accumulator.plus(element.fileContent).plus("\n\n")
+        createSubstrancesAsString(shortVersion, constructor)
+            .forEach { entry ->
+                generateZipEntry(outputJarStream, entry.key, entry.value)
             }
-            .forEach { entry -> generateZipEntry(outputJarStream, entry.key, entry.value) }
 
         outputJarStream.close()
     }
 
+    fun createSubstrancesAsString(shortVersion: String, constructor: (r: CSVRecord) -> T): Map<String, String> {
+        val substances = loadAllRecords(shortVersion)
+            .map { constructor(it) }
+            .groupingBy { it.substanceId() }
+            .fold({ _: String, _: T -> SubstanceWithImpact() },
+                { _: String, accumulator: SubstanceWithImpact, element: T -> accumulator.factor(element) })
 
-    private fun loadAllRecords(): Sequence<CSVRecord> {
-        val flowCSVParser = CSVParser.parse(
+        return substances.values.groupingBy { it.lcaFileName }
+            .fold("package ef$shortVersion\n\n") { accumulator: String, element: SubstanceWithImpact ->
+                accumulator.plus(element.fileContent).plus("\n\n")
+            }
+    }
+
+    private fun loadAllRecords(shortVersion: String): Sequence<CSVRecord> {
+        val flowCSVSequence = getCSVSequence("flows.$shortVersion.csv.gz")
+        val factorsCSVSequence = getCSVSequence("factors.$shortVersion.csv.gz")
+        return (flowCSVSequence + factorsCSVSequence)
+    }
+
+    private fun getCSVSequence(fileName: String): Sequence<CSVRecord> {
+        return CSVParser.parse(
             GZIPInputStream(
-                inputDir.file("flows.csv.gz")
+                inputDir.file(fileName)
                     .map { it.asFile }.get().inputStream()
-            ), defaultCharset(), csvFormat
-        )
-        val factorsCSVParser = CSVParser.parse(
-            GZIPInputStream(
-                inputDir.file("factors.csv.gz")
-                    .map { it.asFile }.get().inputStream()
-            ), defaultCharset(), csvFormat
-        )
-        return (flowCSVParser.stream().asSequence() +
-                factorsCSVParser.stream().asSequence())
+            ), Charset.defaultCharset(), csvFormat
+        ).stream().asSequence()
     }
 }
