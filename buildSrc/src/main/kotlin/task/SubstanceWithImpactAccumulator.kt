@@ -1,11 +1,11 @@
 package task
 
-class SubstanceWithImpact {
+class SubstanceWithImpactAccumulator {
 
     private val factorRecords = mutableListOf<EFRecord>()
     private var substanceRecord: EFRecord? = null
 
-    fun factor(element: EFRecord): SubstanceWithImpact {
+    fun addElement(element: EFRecord): SubstanceWithImpactAccumulator {
         if (element.isSubstance()) {
             substanceRecord = element
         } else {
@@ -62,6 +62,7 @@ class SubstanceWithImpact {
     private val substanceBody: String
         get() = """
             |    name = "${substanceRecord?.substanceDisplayName()}"
+            |    type = ${substanceRecord?.type()}
             |    compartment = "${substanceRecord?.compartment()}"
             |${getSubCompartiment()}
             |    reference_unit = ${substanceRecord?.unit()}
@@ -69,7 +70,6 @@ class SubstanceWithImpact {
             |$impactsSubsection
             |
             |    meta {
-            |        type = "${substanceRecord?.type()}"
             |        generator = "kleis-lca-generator"
             |        casNumber = "${substanceRecord?.casNumber()}"
             |        ecNumber = "${substanceRecord?.ecNumber()}"
