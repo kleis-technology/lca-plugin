@@ -19,9 +19,9 @@ sealed class EFRecord(val record: CSVRecord) {
         val raw = if (this.isSubstance()) sanitizeString(record["FLOW_propertyUnit"].trim()) else "u"
         return when (raw) {
             "Item(s)" -> "piece"
-            "kg*a" -> "kg*year"
-            "m2*a" -> "m2*year"
-            "m3*a" -> "m3*year"
+            "kg_a" -> "kga"
+            "m2_a" -> "m2a"
+            "m3_a" -> "m3a"
             else -> raw
         }
     }
@@ -43,7 +43,12 @@ sealed class EFRecord(val record: CSVRecord) {
     fun substanceName(): String = sanitizeString(record["FLOW_name"].replace("\"", "\\\""))
     fun casNumber(): String = record["FLOW_casnumber"].trim()
     fun ecNumber(): String = record["FLOW_ecnumber"].trim()
-    fun methodName(): String = sanitizeString(record["LCIAMethod_name"].trim())
+    fun methodName(): String {
+        val san = sanitizeString(record["LCIAMethod_name"].trim())
+        // Hack to avoid conflict between
+        return if (san == "Land_use") "Land_Use" else san
+    }
+
     fun methodLocation(): String = record["LCIAMethod_location"].trim()
 
     fun compartment(): String {
