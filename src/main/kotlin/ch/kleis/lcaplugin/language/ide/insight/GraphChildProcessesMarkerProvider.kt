@@ -1,6 +1,6 @@
 package ch.kleis.lcaplugin.language.ide.insight
 
-import ch.kleis.lcaplugin.actions.GraphChildProcessesAction
+import ch.kleis.lcaplugin.ide.assess.GraphChildProcessesAction
 import ch.kleis.lcaplugin.language.psi.isProcess
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider

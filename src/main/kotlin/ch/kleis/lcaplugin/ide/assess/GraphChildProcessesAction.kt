@@ -1,4 +1,4 @@
-package ch.kleis.lcaplugin.actions
+package ch.kleis.lcaplugin.ide.assess
 
 import ch.kleis.lcaplugin.core.graph.Graph
 import ch.kleis.lcaplugin.core.graph.GraphLink

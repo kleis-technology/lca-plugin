@@ -138,7 +138,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                 TestCase.assertEquals(Dimension.None.getDefaultUnitValue(), cf.output.quantity().unit)
 
                 TestCase.assertEquals("co2", input.name())
-                TestCase.assertEquals(3.0, cf.input.quantity().amount)
+                TestCase.assertEquals(3.0, cf.input.quantity().amount, 0.0001)
                 TestCase.assertEquals(DimensionFixture.mass.getDefaultUnitValue(), cf.input.quantity().unit)
             }
         }
@@ -195,7 +195,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                 TestCase.assertEquals(Dimension.None.getDefaultUnitValue(), cf.output.quantity().unit)
 
                 TestCase.assertEquals("co2", input.name())
-                TestCase.assertEquals(3.0, cf.input.quantity().amount)
+                TestCase.assertEquals(3.0, cf.input.quantity().amount, 0.0001)
                 TestCase.assertEquals(DimensionFixture.mass.getDefaultUnitValue(), cf.input.quantity().unit)
             }
         }
@@ -258,7 +258,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                 TestCase.assertEquals(Dimension.None.getDefaultUnitValue(), cf.output.quantity().unit)
 
                 TestCase.assertEquals("co2", input.name())
-                TestCase.assertEquals(13.0, cf.input.quantity().amount)
+                TestCase.assertEquals(13.0, cf.input.quantity().amount, 0.00001);
                 TestCase.assertEquals(DimensionFixture.mass.getDefaultUnitValue(), cf.input.quantity().unit)
             }
         }

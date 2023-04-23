@@ -5,6 +5,7 @@ import ch.kleis.lcaplugin.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaplugin.core.lang.value.SystemValue
 import ch.kleis.lcaplugin.core.matrix.*
 import ch.kleis.lcaplugin.core.matrix.impl.Solver
+import com.intellij.openapi.diagnostic.Logger
 
 class Assessment(
     system: SystemValue,
@@ -14,6 +15,10 @@ class Assessment(
     private val controllableMatrix: ControllableMatrix
     private val observablePorts: IndexedCollection<MatrixColumnIndex>
     private val controllablePorts: IndexedCollection<MatrixColumnIndex>
+
+    companion object {
+        private val LOG = Logger.getInstance(Assessment::class.java)
+    }
 
     init {
         val allocatedSystem = Allocation().apply(system)
@@ -55,7 +60,10 @@ class Assessment(
     }
 
     fun inventory(): InventoryResult {
-        val data = solver.solve(this.observableMatrix.matrix, this.controllableMatrix.matrix.negate()) ?: return InventoryError("The system cannot be solved")
+        LOG.info("Start solver ${this.observableMatrix.matrix.rowDim()} rows, ${this.observableMatrix.matrix.colDim()} cols")
+        val data = solver.solve(this.observableMatrix.matrix, this.controllableMatrix.matrix.negate())
+            ?: return InventoryError("The system cannot be solved")
+        LOG.info("End solver with $data")
         return InventoryMatrix(this.observablePorts, this.controllablePorts, data)
     }
 
