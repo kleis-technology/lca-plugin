@@ -1,1 +1,1 @@
-ch.kleis.lcaplugin.compute.matrix.impl.ojalgo.OjalgoMatrixFactory
+ch.kleis.lcaplugin.compute.matrix.impl.breeze.BreezeMatrixFactory

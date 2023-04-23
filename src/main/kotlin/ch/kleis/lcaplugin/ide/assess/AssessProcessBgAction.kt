@@ -1,4 +1,4 @@
-package ch.kleis.lcaplugin.actions
+package ch.kleis.lcaplugin.ide.assess
 
 import ch.kleis.lcaplugin.core.assessment.Assessment
 import ch.kleis.lcaplugin.core.lang.evaluator.Evaluator
@@ -9,34 +9,47 @@ import ch.kleis.lcaplugin.language.parser.LcaFileCollector
 import ch.kleis.lcaplugin.language.parser.LcaLangAbstractParser
 import ch.kleis.lcaplugin.language.psi.LcaFile
 import ch.kleis.lcaplugin.ui.toolwindow.LcaResult
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.LangDataKeys
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.ContentFactory
 
-class AssessProcessAction(private val processName: String) : AnAction() {
-    override fun actionPerformed(e: AnActionEvent) {
-        val project = e.project ?: return
-        val file = e.getData(LangDataKeys.PSI_FILE) as LcaFile? ?: return
-        val collector = LcaFileCollector()
-        val parser = LcaLangAbstractParser(
-            collector.collect(file)
-        )
 
-        try {
+class AssessProcessBgAction(private val project: Project, private val file: LcaFile, private val processName: String) :
+    Task.Backgroundable(project, "Assessing $processName", true) {
+
+    override fun run(progressIndicator: ProgressIndicator) {
+        progressIndicator.isIndeterminate = true;
+
+        val parser: LcaLangAbstractParser = runReadAction {
+            val collector = LcaFileCollector()
+            LcaLangAbstractParser(
+                collector.collect(file)
+            )
+        }
+        if (progressIndicator.isCanceled) return;
+        val result = try {
             val symbolTable = parser.load()
+            if (progressIndicator.isCanceled) return;
             val entryPoint = symbolTable.getTemplate(processName)!!
+            if (progressIndicator.isCanceled) return;
             val system = Evaluator(symbolTable).eval(entryPoint)
+            if (progressIndicator.isCanceled) return;
             val assessment = Assessment(system)
-            val result = assessment.inventory()
-            displayToolWindow(project, result)
+            if (progressIndicator.isCanceled) return;
+            assessment.inventory()
         } catch (e: EvaluatorException) {
-            val result = InventoryError(e.message ?: "evaluator: unknown error")
-            displayToolWindow(project, result)
+            InventoryError(e.message ?: "evaluator: unknown error")
         } catch (e: NoSuchElementException) {
-            val result = InventoryError(e.message ?: "evaluator: unknown error")
+            InventoryError(e.message ?: "evaluator: unknown error")
+        } catch (e: IllegalArgumentException) {
+            InventoryError("evaluator: system can not be resolved")
+        }
+
+        ApplicationManager.getApplication().invokeLater {
             displayToolWindow(project, result)
         }
     }
@@ -49,6 +62,5 @@ class AssessProcessAction(private val processName: String) : AnAction() {
         toolWindow.contentManager.setSelectedContent(content)
         toolWindow.show()
     }
+
 }
-
-

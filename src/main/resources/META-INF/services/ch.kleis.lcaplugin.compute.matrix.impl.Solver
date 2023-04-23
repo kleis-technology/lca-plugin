@@ -1,1 +1,1 @@
-ch.kleis.lcaplugin.compute.matrix.impl.ojalgo.OjalgoSolver
+ch.kleis.lcaplugin.compute.matrix.impl.breeze.BreezeSolver

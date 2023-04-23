@@ -7,6 +7,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import kotlinx.collections.immutable.toImmutableList
 
+@Deprecated(message = "collector should be more efficient, only collect process needed")
 class LcaFileCollector(
     private val refFileResolver: (PsiElement) -> LcaFile? = { ref ->
         ref.reference?.resolve()?.containingFile as LcaFile?

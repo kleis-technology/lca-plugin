@@ -1,9 +1,10 @@
 package ch.kleis.lcaplugin.core.matrix.impl
 
 import ch.kleis.lcaplugin.core.matrix.MatrixFixture
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+import org.junit.Assert
+import org.junit.Assert.*
 import org.junit.Test
+import java.lang.IllegalArgumentException
 
 class SolverTest {
     private val precision = 1e-6
@@ -36,7 +37,7 @@ class SolverTest {
         )
     }
 
-    @Test
+    @Test()
     fun solve_whenZeroCols() {
         // given
         val a = MatrixFactory.INSTANCE.zero(0, 3)
@@ -48,12 +49,14 @@ class SolverTest {
             )
         )
 
-        // when
-        val c = Solver.INSTANCE.solve(a, b)!!
+        // expect
+        try {
+            Solver.INSTANCE.solve(a, b)!!
+            fail("should have thrown IllegalArgumentException")
+        } catch (e : IllegalArgumentException) {
+            assertEquals("requirement failed: CSCMatrix Multiplication Dimension Mismatch: a.cols == b.rows (0 != 3)", e.message)
+        }
 
-        // then
-        assertEquals(c.rowDim(), a.rowDim())
-        assertEquals(c.colDim(), b.colDim())
     }
 
     @Test
@@ -73,11 +76,13 @@ class SolverTest {
             )
         )
 
-        // when
-        val c = Solver.INSTANCE.solve(a, b)
-
-        // then
-        assertNull(c)
+        // expect
+        try {
+            Solver.INSTANCE.solve(a, b)!!
+            fail("should have thrown IllegalArgumentException")
+        } catch (e : IllegalArgumentException) {
+            assertEquals("requirement failed: CSCMatrix Multiplication Dimension Mismatch: a.cols == b.rows (3 != 2)", e.message)
+        }
     }
 
     private fun assertMatrixEqual(actual: Matrix, expected: Array<Double>) {

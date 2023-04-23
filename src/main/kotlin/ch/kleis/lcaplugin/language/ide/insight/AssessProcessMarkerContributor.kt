@@ -1,6 +1,6 @@
 package ch.kleis.lcaplugin.language.ide.insight
 
-import ch.kleis.lcaplugin.actions.AssessProcessAction
+import ch.kleis.lcaplugin.ide.assess.AssessProcessAction
 import ch.kleis.lcaplugin.language.psi.type.PsiProcess
 import ch.kleis.lcaplugin.psi.LcaTypes
 import com.intellij.execution.lineMarker.RunLineMarkerContributor
