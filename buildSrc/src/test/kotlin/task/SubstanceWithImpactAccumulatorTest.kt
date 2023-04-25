@@ -100,6 +100,28 @@ class SubstanceWithImpactAccumulatorTest {
         Assertions.assertEquals(expected, actual[key])
     }
 
+    @Test
+    fun test_index_is_present() {
+        // given
+        val inputDir = mockk<DirectoryProperty>()
+        registerMockFiles(inputDir, "flows.31.csv.gz")
+        registerMockFiles(inputDir, "factors.31.csv.gz")
+        val outDir = mockk<DirectoryProperty>()
+        val sut = GenerateEmissionFactorsTask<EF31Record>(inputDir, outDir)
+
+        // when
+        val actual = sut.createSubstrancesAsString("31") { i -> EF31Record(i) }
+
+        // then
+        val key = "META-INF/dictionary.csv"
+        val expected = """
+                Name;Type;Compartment;SubCompartment
+                _3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene;Emission;soil;non-agricultural
+                """.trimIndent()
+        Assertions.assertEquals(expected, actual[key])
+    }
+
+
     private fun registerMockFiles(inputDir: DirectoryProperty, fileName: String) {
         val flowFile = File("src/test/resources/$fileName")
         val regularFile = mockk<RegularFile>()

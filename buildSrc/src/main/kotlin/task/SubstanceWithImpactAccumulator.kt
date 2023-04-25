@@ -14,6 +14,49 @@ class SubstanceWithImpactAccumulator {
         return this
     }
 
+
+    val fileContent: String
+        get() = substanceRecord?.run { substanceContent } ?: ""
+
+    val lcaFileName: String
+        get() = sanitizeString(substanceRecord?.lcaFileName() ?: factorRecords.first().lcaFileName())
+
+    val substanceName: String
+        get() = substanceRecord?.substanceName() ?: ""
+    val substanceType: String
+        get() = substanceRecord?.type() ?: ""
+    val substanceCompartment: String
+        get() = substanceRecord?.compartment() ?: ""
+    val substanceSubCompartment: String
+        get() = substanceRecord?.subCompartment() ?: ""
+
+    private val substanceContent: String
+        get() = """
+            |substance ${substanceRecord?.substanceId()} {
+            |
+            |$substanceBody
+            |
+            |}
+        """.trimMargin()
+
+
+    private val substanceBody: String
+        get() = """
+            |    name = "${substanceRecord?.substanceDisplayName()}"
+            |    type = $substanceType
+            |    compartment = "$substanceCompartment"
+            |${getSubCompartiment()}
+            |    reference_unit = ${substanceRecord?.unit()}
+            |
+            |$impactsSubsection
+            |
+            |    meta {
+            |        generator = "kleis-lca-generator"
+            |        casNumber = "${substanceRecord?.casNumber()}"
+            |        ecNumber = "${substanceRecord?.ecNumber()}"
+            |    }
+            """.trimMargin()
+
     private fun padStart(str: String, pad: Int): String {
         return str.padStart(str.length + pad)
     }
@@ -40,17 +83,8 @@ class SubstanceWithImpactAccumulator {
         """.trimMargin()
         } else ""
 
-    private val substanceContent: String
-        get() = """
-            |substance ${substanceRecord?.substanceId()} {
-            |
-            |$substanceBody
-            |
-            |}
-        """.trimMargin()
-
     private fun getSubCompartiment(): String {
-        val sub = substanceRecord?.subCompartment()
+        val sub = substanceSubCompartment
         @Suppress("SameParameterValue")
         return if (sub.isNullOrBlank()) {
             ""
@@ -59,27 +93,5 @@ class SubstanceWithImpactAccumulator {
         }
     }
 
-    private val substanceBody: String
-        get() = """
-            |    name = "${substanceRecord?.substanceDisplayName()}"
-            |    type = ${substanceRecord?.type()}
-            |    compartment = "${substanceRecord?.compartment()}"
-            |${getSubCompartiment()}
-            |    reference_unit = ${substanceRecord?.unit()}
-            |
-            |$impactsSubsection
-            |
-            |    meta {
-            |        generator = "kleis-lca-generator"
-            |        casNumber = "${substanceRecord?.casNumber()}"
-            |        ecNumber = "${substanceRecord?.ecNumber()}"
-            |    }
-            """.trimMargin()
-
-    val fileContent: String
-        get() = substanceRecord?.run { substanceContent } ?: ""
-
-    val lcaFileName: String
-        get() = sanitizeString(substanceRecord?.lcaFileName() ?: factorRecords.first().lcaFileName())
 
 }
