@@ -1,6 +1,8 @@
 package ch.kleis.lcaplugin.core.lang.evaluator.reducer
 
-import ch.kleis.lcaplugin.core.lang.*
+import ch.kleis.lcaplugin.core.lang.Dimension
+import ch.kleis.lcaplugin.core.lang.Register
+import ch.kleis.lcaplugin.core.lang.SymbolTable
 import ch.kleis.lcaplugin.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaplugin.core.lang.expression.*
 import ch.kleis.lcaplugin.core.lang.fixture.DimensionFixture
@@ -74,9 +76,11 @@ class QuantityExpressionReducerTest {
     fun reduce_whenLiteral_shouldReduceUnit() {
         // given
         val quantityEnvironment = Register.empty<QuantityExpression>()
-        val unitEnvironment = Register<UnitExpression>(hashMapOf(
-            Pair("kg", UnitFixture.kg)
-        ))
+        val unitEnvironment = Register<UnitExpression>(
+            hashMapOf(
+                Pair("kg", UnitFixture.kg)
+            )
+        )
         val quantity = EQuantityLiteral(1.0, EUnitRef("kg"))
         val reducer = QuantityExpressionReducer(quantityEnvironment, unitEnvironment)
 
@@ -121,7 +125,7 @@ class QuantityExpressionReducerTest {
             reducer.reduce(EQuantityAdd(a, b))
             fail("should have thrown")
         } catch (e: EvaluatorException) {
-            assertEquals("incompatible dimensions: mass[1.0] vs length[1.0]", e.message)
+            assertEquals("incompatible dimensions: mass vs length", e.message)
         }
     }
 
@@ -158,7 +162,7 @@ class QuantityExpressionReducerTest {
             reducer.reduce(EQuantitySub(a, b))
             fail("should have thrown")
         } catch (e: EvaluatorException) {
-            assertEquals("incompatible dimensions: mass[1.0] vs length[1.0]", e.message)
+            assertEquals("incompatible dimensions: mass vs length", e.message)
         }
     }
 
@@ -176,7 +180,8 @@ class QuantityExpressionReducerTest {
         val actual = reducer.reduce(EQuantityMul(a, b))
 
         // then
-        val expected = EQuantityLiteral(4.0,
+        val expected = EQuantityLiteral(
+            4.0,
             EUnitLiteral(
                 "person.km",
                 1.0 * 1000.0,
@@ -200,7 +205,8 @@ class QuantityExpressionReducerTest {
         val actual = reducer.reduce(EQuantityDiv(a, b))
 
         // then
-        val expected = EQuantityLiteral(2.0,
+        val expected = EQuantityLiteral(
+            2.0,
             EUnitLiteral(
                 "km/hour",
                 1000.0 / 3600.0,
@@ -223,7 +229,8 @@ class QuantityExpressionReducerTest {
         val actual = reducer.reduce(EQuantityPow(a, 2.0))
 
         // then
-        val expected = EQuantityLiteral(16.0,
+        val expected = EQuantityLiteral(
+            16.0,
             EUnitLiteral(
                 "km^(2.0)",
                 1e6,
@@ -238,9 +245,11 @@ class QuantityExpressionReducerTest {
         // given
         val a = EQuantityRef("a")
         val reducer = QuantityExpressionReducer(
-            Register(hashMapOf(
-                Pair("a", EQuantityLiteral(1.0, UnitFixture.kg))
-            )),
+            Register(
+                hashMapOf(
+                    Pair("a", EQuantityLiteral(1.0, UnitFixture.kg))
+                )
+            ),
             Register.empty(),
         )
 
@@ -257,7 +266,7 @@ class QuantityExpressionReducerTest {
      */
 
     @Test
-    fun reduce_whenUnitComposition_shouldReturnEUnitLiteral(){
+    fun reduce_whenUnitComposition_shouldReturnEUnitLiteral() {
         // given
         val kg = EUnitLiteral("kg", 1.0, Dimension.of("mass"))
         val quantityConversion = EQuantityLiteral(2.2, kg)
@@ -274,7 +283,7 @@ class QuantityExpressionReducerTest {
     }
 
     @Test
-    fun reduce_whenUnitComposition_shouldRespectScaling(){
+    fun reduce_whenUnitComposition_shouldRespectScaling() {
         // given
         val g = EUnitLiteral("g", 1.0E-3, Dimension.of("mass"))
         val quantityConversion = EQuantityLiteral(2200.0, g)
@@ -326,7 +335,7 @@ class QuantityExpressionReducerTest {
 
         // when
         val actual = reducer.reduceUnit(unit)
-        
+
         // then
         val expected = UnitFixture.kg
         assertEquals(expected, actual)
