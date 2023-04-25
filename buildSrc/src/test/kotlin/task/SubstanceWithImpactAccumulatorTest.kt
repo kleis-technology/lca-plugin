@@ -110,7 +110,7 @@ class SubstanceWithImpactAccumulatorTest {
         val sut = GenerateEmissionFactorsTask<EF31Record>(inputDir, outDir)
 
         // when
-        val actual = sut.createSubstrancesAsString("31") { i -> EF31Record(i) }
+        val actual = sut.createSubstancesAsString("31") { i -> EF31Record(i) }
 
         // then
         val key = "META-INF/dictionary.csv"
