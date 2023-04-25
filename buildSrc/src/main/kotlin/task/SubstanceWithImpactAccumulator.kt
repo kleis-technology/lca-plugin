@@ -51,9 +51,9 @@ class SubstanceWithImpactAccumulator {
             |$impactsSubsection
             |
             |    meta {
-            |        generator = "kleis-lca-generator"
-            |        casNumber = "${substanceRecord?.casNumber()}"
-            |        ecNumber = "${substanceRecord?.ecNumber()}"
+            |        "generator" = "kleis-lca-generator"
+            |        "casNumber" = "${substanceRecord?.casNumber()}"
+            |        "ecNumber" = "${substanceRecord?.ecNumber()}"
             |    }
             """.trimMargin()
 

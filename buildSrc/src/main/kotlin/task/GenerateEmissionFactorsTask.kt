@@ -20,7 +20,7 @@ class GenerateEmissionFactorsTask<T : EFRecord>(val inputDir: DirectoryProperty,
         val outputFile = outputDir.file("emissions_factors$longVersion.jar").get().asFile
         val outputJarStream = ZipOutputStream(FileOutputStream(outputFile))
 
-        createSubstrancesAsString(shortVersion, constructor)
+        createSubstancesAsString(shortVersion, constructor)
             .forEach { entry ->
                 generateZipEntry(outputJarStream, entry.key, entry.value)
             }
@@ -28,7 +28,7 @@ class GenerateEmissionFactorsTask<T : EFRecord>(val inputDir: DirectoryProperty,
         outputJarStream.close()
     }
 
-    fun createSubstrancesAsString(shortVersion: String, constructor: (r: CSVRecord) -> T): Map<String, String> {
+    fun createSubstancesAsString(shortVersion: String, constructor: (r: CSVRecord) -> T): Map<String, String> {
         val substances = loadAllRecords(shortVersion)
             .map { constructor(it) }
             .groupingBy { it.substanceId() }
