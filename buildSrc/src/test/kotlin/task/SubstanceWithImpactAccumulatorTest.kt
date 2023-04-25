@@ -23,7 +23,7 @@ class SubstanceWithImpactAccumulatorTest {
         val sut = GenerateEmissionFactorsTask<EF31Record>(inputDir, outDir)
 
         // when
-        val actual = sut.createSubstrancesAsString("31") { i -> EF31Record(i) }
+        val actual = sut.createSubstancesAsString("31") { i -> EF31Record(i) }
 
         // then
         val key = "_3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene"
@@ -44,9 +44,9 @@ class SubstanceWithImpactAccumulatorTest {
                     }
 
                     meta {
-                        generator = "kleis-lca-generator"
-                        casNumber = "1404190-37-9"
-                        ecNumber = "801-941-7"
+                        "generator" = "kleis-lca-generator"
+                        "casNumber" = "1404190-37-9"
+                        "ecNumber"  = "801-941-7"
                     }
 
                 }
@@ -67,7 +67,7 @@ class SubstanceWithImpactAccumulatorTest {
         val sut = GenerateEmissionFactorsTask<EF30Record>(inputDir, outDir)
 
         // when
-        val actual = sut.createSubstrancesAsString("30") { i -> EF30Record(i) }
+        val actual = sut.createSubstancesAsString("30") { i -> EF30Record(i) }
 
         // then
         val key = "_3ar_5as_9as_9br_3a_6_6_9a_tetramethyldodecahydronaphtho_2_1_b_furan"
@@ -88,9 +88,9 @@ class SubstanceWithImpactAccumulatorTest {
                     }
                 
                     meta {
-                        generator = "kleis-lca-generator"
-                        casNumber = "6790-58-5"
-                        ecNumber = "229-861-2"
+                        "generator" = "kleis-lca-generator"
+                        "casNumber" = "6790-58-5"
+                        "ecNumber"  = "229-861-2"
                     }
 
                 }
@@ -110,7 +110,7 @@ class SubstanceWithImpactAccumulatorTest {
         val sut = GenerateEmissionFactorsTask<EF31Record>(inputDir, outDir)
 
         // when
-        val actual = sut.createSubstrancesAsString("31") { i -> EF31Record(i) }
+        val actual = sut.createSubstancesAsString("31") { i -> EF31Record(i) }
 
         // then
         val key = "META-INF/dictionary.csv"
