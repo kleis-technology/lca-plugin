@@ -1,6 +1,7 @@
 package ch.kleis.lcaplugin.core.lang
 
 import ch.kleis.lcaplugin.core.lang.value.UnitValue
+import kotlin.math.round
 
 class InvalidPowerException : Throwable("", null, false, false)
 
@@ -17,27 +18,81 @@ class Dimension(elements: Map<String, Double>) {
         return if (basic.value == 1.0) {
             basic.key
         } else {
-            val power = try {
-                if (basic.value == (basic.value.toLong()).toDouble()) {
-                    toPower(String.format("%d", basic.value.toLong()))
+            val power =
+                if (basic.value == round(basic.value)) {
+                    toPower(String.format("%d", basic.value.toLong())) ?: "^[${basic.value}]"
                 } else {
                     "^[${basic.value}]"
                 }
-            } catch (e: InvalidPowerException) {
-                "^[${basic.value}]"
-            }
             "${basic.key}$power"
         }
     }
 
-    private fun toPower(f: String): String {
-        return f.map { c ->
-            convert(c)
-        }.joinToString("")
+    private fun toPower(f: String): String? {
+        // Parallel, no assumption on order, Iterable<A>.reduce only requires A to be a Semigroup
+        // However, kotlin has no mapReduce, so we loose some optimization by evaluating eagerly the map even once a
+        // null is found.
+        val pureKotlin = f.map{ convert(it)}.reduce{ mAcc, mS ->
+            mAcc?.let { acc ->
+                mS?.let { s ->
+                    acc.plus(s) }
+            }
+        }
+
+        // Using a left fold and that String is a Monoid (with "" as the empty element).
+        // Short-circuits the evaluation of the transformation, guarantees order but cannot parallelize.
+        // Note that here some smart compilers paired with lazy collections would short-circuit the rest of the fold
+        // on first null.
+        val otherPureKotlin = f.fold("") { acc: String?, c: Char ->
+            acc?.let {
+                convert(c)?.let { superC ->
+                    it.plus(superC)
+                }
+            }
+        }
+
+        // Magic! If only we had proper types... Arrow 1.2.0 ?
+        val withFunctionalStuff: String? = f.foldMap{ convert(it) }
+
+        return pureKotlin
     }
 
-    private fun convert(c: Char): String {
-        val result: Int = when (c) {
+    /* Functional approach:
+     * - see https://stackoverflow.com/questions/3242361/what-is-called-and-what-does-it-do
+     * - see https://hackage.haskell.org/package/base-4.18.0.0/docs/Prelude.html#v:foldMap
+     * - see https://en.wikipedia.org/wiki/Absorbing_element
+     *
+     * (note that I tried implementing this demo using interfaces and classes to mimic the
+     * traits (scala) / class (haskell) concept, but type parameters in kotlin are too weak.
+     *
+     * We consider Monoids with an absorbing elements and show that String? is one:
+     * class Semigroup a => MonoidWithAbsorbing a where
+     *  mempty :: a is the empty element
+     *  mabsorbing :: a is the absorbing element
+     *  mappend :: a -> a -> a (also written <>)
+     *
+     * and forall x :: a, mempty <> x = x <> mempty = x
+     *     forall x :: a, mabsorbing <> x = x <> mabsorbing = mabsorbing
+     *     forall x, y, z :: a, x <> (y <> z) = (x <> y) <> z
+     *
+     */
+    private fun mStringMempty(): String? = ""
+    private fun mStringMabsorbing(): String? = null
+    private fun mStringMappend(mA: String?, mB: String?): String? =
+            mA?.let { a -> mB?.let { b -> a.plus(b) }}
+
+    /* Secondly, we consider the class Foldable t where
+     *  foldMap :: Monoid m => t a -> (a -> m) -> m
+     * and show that we have Foldable String (here implemented with String? as monoid,
+     * because type generics in kotlin are *horrible*):
+     */
+    private fun String.foldMap(operation: (Char) -> String?): String? =
+        this.fold(mStringMempty()) { acc, elem -> mStringMappend(acc, operation(elem)) }
+
+    /* End functional demo */
+
+    private fun convert(c: Char): String? {
+        val result: Int? = when (c) {
             '0' -> 0x2070
             '1' -> 0x00B9
             '2' -> 0x00B2
@@ -45,9 +100,9 @@ class Dimension(elements: Map<String, Double>) {
             in '4'..'9' -> 0x2070 + (c.code - 48)
             '.' -> 0x02D9
             '-' -> 0x207B
-            else -> throw InvalidPowerException()
+            else -> null
         }
-        return Character.toChars(result).joinToString("")
+        return result?.let { Character.toString(it) }
     }
 
 
@@ -106,9 +161,7 @@ class Dimension(elements: Map<String, Double>) {
 
         other as Dimension
 
-        if (elements != other.elements) return false
-
-        return true
+        return elements != other.elements
     }
 
     override fun hashCode(): Int {
