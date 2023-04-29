@@ -1,6 +1,7 @@
 package ch.kleis.lcaplugin.language.ide.syntax
 
-import ch.kleis.lcaplugin.language.parser.LcaLexerAdapter
+import ch.kleis.lcaplugin.LcaLanguage
+import ch.kleis.lcaplugin.grammar.LcaLangLexer
 import ch.kleis.lcaplugin.psi.LcaTypes.*
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
@@ -10,6 +11,7 @@ import com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributes
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
+import org.antlr.intellij.adaptor.lexer.ANTLRLexerAdaptor
 
 
 class LcaSyntaxHighlighter : SyntaxHighlighterBase() {
@@ -33,7 +35,7 @@ class LcaSyntaxHighlighter : SyntaxHighlighterBase() {
     }
 
     override fun getHighlightingLexer(): Lexer {
-        return LcaLexerAdapter()
+        return ANTLRLexerAdaptor(LcaLanguage.INSTANCE, LcaLangLexer(null))
     }
 
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {

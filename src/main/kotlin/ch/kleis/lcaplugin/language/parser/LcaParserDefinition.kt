@@ -1,10 +1,9 @@
 package ch.kleis.lcaplugin.language.parser
 
 import ch.kleis.lcaplugin.LcaLanguage
-import ch.kleis.lcaplugin.grammar.SampleLanguageParser
+import ch.kleis.lcaplugin.grammar.LcaLangLexer
+import ch.kleis.lcaplugin.grammar.LcaLangParser
 import ch.kleis.lcaplugin.language.psi.LcaFile
-import ch.kleis.lcaplugin.psi.LcaTypes
-import ch.kleis.lcaplugin.psi.LcaTypes.STRING_LITERAL
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser
@@ -14,9 +13,18 @@ import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.stubs.PsiFileStubImpl
+import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.IStubFileElementType
 import com.intellij.psi.tree.TokenSet
+import org.antlr.intellij.adaptor.lexer.ANTLRLexerAdaptor
+import org.antlr.intellij.adaptor.lexer.PSIElementTypeFactory
+import org.antlr.intellij.adaptor.lexer.RuleIElementType
+import org.antlr.intellij.adaptor.lexer.TokenIElementType
+import org.antlr.intellij.adaptor.parser.ANTLRParserAdaptor
+import org.antlr.intellij.adaptor.psi.ANTLRPsiNode
+import org.antlr.v4.runtime.Parser
+import org.antlr.v4.runtime.tree.ParseTree
 
 class LcaParserDefinition : ParserDefinition {
     companion object {
@@ -24,12 +32,20 @@ class LcaParserDefinition : ParserDefinition {
     }
 
     override fun createLexer(project: Project?): Lexer {
-        return LcaLexerAdapter()
+        val lexer = LcaLangLexer(null)
+        return ANTLRLexerAdaptor(LcaLanguage.INSTANCE, lexer)
     }
 
     override fun createParser(project: Project?): PsiParser {
-        val p = SampleLanguageParser(null)
-        return ch.kleis.lcaplugin.language.parser.LcaParser()
+        val parser = LcaLangParser(null)
+        return object : ANTLRParserAdaptor(LcaLanguage.INSTANCE, parser)  {
+            override fun parse(parser: Parser?, root: IElementType?): ParseTree {
+                if (root !is IFileElementType) {
+                    throw UnsupportedOperationException()
+                }
+                return (parser as LcaLangParser).lcaFile()
+            }
+        }
     }
 
     override fun getFileNodeType(): IFileElementType {
@@ -37,20 +53,31 @@ class LcaParserDefinition : ParserDefinition {
     }
 
     override fun getCommentTokens(): TokenSet {
-        return TokenSet.create(
-            LcaTypes.COMMENT_BLOCK_START,
-            LcaTypes.COMMENT_CONTENT,
-            LcaTypes.COMMENT_BLOCK_END,
-            LcaTypes.COMMENT_LINE
+        return PSIElementTypeFactory.createTokenSet(
+            LcaLanguage.INSTANCE,
+            LcaLangLexer.COMMENT,
+            LcaLangLexer.LINE_COMMENT,
         )
     }
 
     override fun getStringLiteralElements(): TokenSet {
-        return TokenSet.create(STRING_LITERAL)
+        return PSIElementTypeFactory.createTokenSet(
+            LcaLanguage.INSTANCE,
+            LcaLangLexer.STRING_LITERAL,
+        )
     }
 
-    override fun createElement(node: ASTNode?): PsiElement {
-        return LcaTypes.Factory.createElement(node)
+    override fun createElement(node: ASTNode): PsiElement {
+        val elType = node.elementType
+        if (elType is TokenIElementType) {
+            return ANTLRPsiNode(node)
+        }
+        if (elType !is RuleIElementType) {
+            return ANTLRPsiNode(node)
+        }
+        return when (elType.ruleIndex) {
+            else -> ANTLRPsiNode(node)
+        }
     }
 
     override fun createFile(viewProvider: FileViewProvider): PsiFile {
