@@ -1,6 +1,7 @@
 package ch.kleis.lcaplugin.language.parser
 
 import ch.kleis.lcaplugin.LcaLanguage
+import ch.kleis.lcaplugin.grammar.SampleLanguageParser
 import ch.kleis.lcaplugin.language.psi.LcaFile
 import ch.kleis.lcaplugin.psi.LcaTypes
 import ch.kleis.lcaplugin.psi.LcaTypes.STRING_LITERAL
@@ -27,6 +28,7 @@ class LcaParserDefinition : ParserDefinition {
     }
 
     override fun createParser(project: Project?): PsiParser {
+        val p = SampleLanguageParser(null)
         return ch.kleis.lcaplugin.language.parser.LcaParser()
     }
 

@@ -23,6 +23,7 @@ plugins {
     id("com.google.devtools.ksp") version "1.8.10-1.0.9"
     // JSON serialization tools for graph visualization
     kotlin("plugin.serialization") version "1.8.10"
+    id("antlr")
 }
 
 group = properties("pluginGroup")
@@ -36,7 +37,10 @@ repositories {
 sourceSets {
     main {
         java {
-            srcDirs("src/main/gen")
+            srcDirs("src/main/gen", "src/main/antlr")
+        }
+        antlr {
+            srcDirs("src/main/antlr")
         }
     }
 }
@@ -62,6 +66,11 @@ dependencies {
 
     testImplementation("io.mockk:mockk:1.13.4")
     testImplementation(kotlin("test-junit"))
+
+    antlr("org.antlr:antlr4:4.7.2") { // use ANTLR version 4
+        exclude("com.ibm.icu", "icu4j")
+    }
+    implementation("org.antlr:antlr4-intellij-adaptor:0.1")
 }
 
 
@@ -106,6 +115,15 @@ tasks {
         gradleVersion = properties("gradleVersion")
     }
 
+    generateGrammarSource {
+        outputDirectory = file("src/main/gen")
+        arguments = arguments.plus( // https://github.com/antlr/antlr4/blob/master/doc/tool-options.md
+            listOf(
+                "-package", "ch.kleis.lcaplugin.grammar",
+            )
+        )
+    }
+
     generateParser {
         source.set("src/main/kotlin/ch/kleis/lcaplugin/language/Lca.bnf")
         targetRoot.set("src/main/gen")
@@ -125,6 +143,7 @@ tasks {
     }
 
     compileKotlin {
+        dependsOn("generateGrammarSource")
         dependsOn("generateLexer")
         dependsOn("generateParser")
         dependsOn("generateEmissionFactors30")
