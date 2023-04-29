@@ -3,7 +3,6 @@ package ch.kleis.lcaplugin.language.psi.stub.global_assignment
 import ch.kleis.lcaplugin.LcaLanguage
 import ch.kleis.lcaplugin.language.psi.stub.LcaStubIndexKeys
 import ch.kleis.lcaplugin.language.psi.type.PsiGlobalAssignment
-import ch.kleis.lcaplugin.psi.impl.LcaGlobalAssignmentImpl
 import com.intellij.lang.LighterAST
 import com.intellij.lang.LighterASTNode
 import com.intellij.psi.PsiElement
@@ -31,7 +30,8 @@ class GlobalAssignmentStubElementType(debugName: String) :
     }
 
     override fun createPsi(stub: GlobalAssignmentStub): PsiGlobalAssignment {
-        return LcaGlobalAssignmentImpl(stub, this)
+//        return LcaGlobalAssignmentImpl(stub, this)
+        TODO()
     }
 
     override fun indexStub(stub: GlobalAssignmentStub, sink: IndexSink) {

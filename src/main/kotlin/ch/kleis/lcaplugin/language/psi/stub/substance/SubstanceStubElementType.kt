@@ -3,7 +3,6 @@ package ch.kleis.lcaplugin.language.psi.stub.substance
 import ch.kleis.lcaplugin.LcaLanguage
 import ch.kleis.lcaplugin.language.psi.stub.LcaStubIndexKeys
 import ch.kleis.lcaplugin.language.psi.type.PsiSubstance
-import ch.kleis.lcaplugin.psi.impl.LcaSubstanceImpl
 import com.intellij.lang.LighterAST
 import com.intellij.lang.LighterASTNode
 import com.intellij.psi.PsiElement
@@ -29,7 +28,8 @@ class SubstanceStubElementType(debugName: String) : ILightStubElementType<Substa
     }
 
     override fun createPsi(stub: SubstanceStub): PsiSubstance {
-        return LcaSubstanceImpl(stub, this)
+//        return LcaSubstanceImpl(stub, this)
+        TODO()
     }
 
     override fun indexStub(stub: SubstanceStub, sink: IndexSink) {

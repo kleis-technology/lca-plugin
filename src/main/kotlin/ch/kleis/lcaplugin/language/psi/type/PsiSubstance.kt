@@ -8,7 +8,7 @@ import ch.kleis.lcaplugin.language.psi.type.field.PsiSubstanceTypeField
 import ch.kleis.lcaplugin.language.psi.type.field.PsiUnitField
 import ch.kleis.lcaplugin.language.psi.type.ref.PsiSubstanceRef
 import ch.kleis.lcaplugin.language.psi.type.trait.BlockMetaOwner
-import ch.kleis.lcaplugin.psi.LcaTypes
+import ch.kleis.lcaplugin.psi.LcaElementTypes
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.StubBasedPsiElement
@@ -16,7 +16,7 @@ import com.intellij.psi.tree.TokenSet
 
 interface PsiSubstance : BlockMetaOwner, PsiNameIdentifierOwner, StubBasedPsiElement<SubstanceStub> {
     fun getSubstanceRef(): PsiSubstanceRef {
-        return node.findChildByType(LcaTypes.SUBSTANCE_REF)?.psi as PsiSubstanceRef
+        return node.findChildByType(LcaElementTypes.SUBSTANCE_REF)?.psi as PsiSubstanceRef
     }
 
     override fun getName(): String {
@@ -33,31 +33,31 @@ interface PsiSubstance : BlockMetaOwner, PsiNameIdentifierOwner, StubBasedPsiEle
     }
 
     fun getNameField(): PsiStringLiteralField {
-        return node.findChildByType(LcaTypes.NAME_FIELD)?.psi as PsiStringLiteralField
+        return node.findChildByType(LcaElementTypes.NAME_FIELD)?.psi as PsiStringLiteralField
     }
 
     fun getTypeField(): PsiSubstanceTypeField {
-        return node.findChildByType(LcaTypes.TYPE_FIELD)?.psi as PsiSubstanceTypeField
+        return node.findChildByType(LcaElementTypes.TYPE_FIELD)?.psi as PsiSubstanceTypeField
     }
 
     fun getCompartmentField(): PsiStringLiteralField {
-        return node.findChildByType(LcaTypes.COMPARTMENT_FIELD)?.psi as PsiStringLiteralField
+        return node.findChildByType(LcaElementTypes.COMPARTMENT_FIELD)?.psi as PsiStringLiteralField
     }
 
     fun getSubcompartmentField(): PsiStringLiteralField? {
-        return node.findChildByType(LcaTypes.SUB_COMPARTMENT_FIELD)?.psi as PsiStringLiteralField?
+        return node.findChildByType(LcaElementTypes.SUB_COMPARTMENT_FIELD)?.psi as PsiStringLiteralField?
     }
 
     fun getReferenceUnitField(): PsiUnitField {
-        return node.findChildByType(LcaTypes.REFERENCE_UNIT_FIELD)?.psi as PsiUnitField
+        return node.findChildByType(LcaElementTypes.REFERENCE_UNIT_FIELD)?.psi as PsiUnitField
     }
 
     fun hasImpacts(): Boolean {
-        return node.findChildByType(LcaTypes.BLOCK_IMPACTS) != null
+        return node.findChildByType(LcaElementTypes.BLOCK_IMPACTS) != null
     }
 
     fun getBlockImpacts(): Collection<PsiBlockImpacts> {
-        return node.getChildren(TokenSet.create(LcaTypes.BLOCK_IMPACTS))
+        return node.getChildren(TokenSet.create(LcaElementTypes.BLOCK_IMPACTS))
             .map { it.psi as PsiBlockImpacts }
     }
 

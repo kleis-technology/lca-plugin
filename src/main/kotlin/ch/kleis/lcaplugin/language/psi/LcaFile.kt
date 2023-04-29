@@ -2,17 +2,17 @@ package ch.kleis.lcaplugin.language.psi
 
 import ch.kleis.lcaplugin.LcaFileType
 import ch.kleis.lcaplugin.LcaLanguage
+import ch.kleis.lcaplugin.grammar.LcaLangParser
+import ch.kleis.lcaplugin.language.parser.LcaLangTokenSets
 import ch.kleis.lcaplugin.language.psi.type.*
 import ch.kleis.lcaplugin.language.psi.type.quantity.PsiQuantity
 import ch.kleis.lcaplugin.language.psi.type.unit.PsiUnitDefinition
-import ch.kleis.lcaplugin.psi.LcaTypes
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveState
 import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.tree.TokenSet
 
 class LcaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LcaLanguage.INSTANCE) {
     override fun getFileType(): FileType {
@@ -24,38 +24,41 @@ class LcaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LcaLan
     }
 
     fun getPackageName(): String {
-        return (node.findChildByType(LcaTypes.PACKAGE)?.psi as PsiPackage?)?.name
+        return node.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_pkg))
+            .firstOrNull()
+            ?.let { it as PsiPackage }
+            ?.name
             ?: "default"
     }
 
     fun getImports(): Collection<PsiImport> {
-        return node.getChildren(TokenSet.create(LcaTypes.IMPORT))
+        return node.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_pkgImport))
             .map { it.psi as PsiImport }
     }
 
     fun getProcesses(): Collection<PsiProcess> {
-        return node.getChildren(TokenSet.create(LcaTypes.PROCESS))
+        return node.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_process))
             .map { it.psi as PsiProcess }
     }
 
     fun getSubstances(): Collection<PsiSubstance> {
-        return node.getChildren(TokenSet.create(LcaTypes.SUBSTANCE))
+        return node.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_substance))
             .map { it.psi as PsiSubstance }
     }
 
     fun getGlobalAssignments(): Collection<Pair<String, PsiQuantity>> {
-        return node.getChildren(TokenSet.create(LcaTypes.GLOBAL_VARIABLES))
+        return node.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_globalVariables))
             .map { it.psi as PsiGlobalVariables }
             .flatMap { it.getEntries() }
     }
 
     fun getUnitDefinitions(): Collection<PsiUnitDefinition> {
-        return node.getChildren(TokenSet.create(LcaTypes.UNIT_DEFINITION))
+        return node.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_unitDefinition))
             .map { it.psi as PsiUnitDefinition }
     }
 
     fun getPsiGlobalVariablesBlocks(): Collection<PsiGlobalVariables> {
-        return node.getChildren(TokenSet.create(LcaTypes.GLOBAL_VARIABLES))
+        return node.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_globalVariables))
             .map { it.psi as PsiGlobalVariables }
     }
 

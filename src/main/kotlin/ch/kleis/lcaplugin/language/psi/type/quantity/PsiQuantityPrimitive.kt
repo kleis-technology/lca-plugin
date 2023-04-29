@@ -1,7 +1,8 @@
 package ch.kleis.lcaplugin.language.psi.type.quantity
 
 import ch.kleis.lcaplugin.language.psi.type.ref.PsiQuantityRef
-import ch.kleis.lcaplugin.psi.LcaTypes
+import ch.kleis.lcaplugin.psi.LcaElementTypes
+import ch.kleis.lcaplugin.psi.LcaTokenTypes
 import com.intellij.psi.PsiElement
 import java.lang.Double.parseDouble
 
@@ -11,20 +12,20 @@ enum class QuantityPrimitiveType {
 
 interface PsiQuantityPrimitive : PsiElement {
     fun getType(): QuantityPrimitiveType {
-        return node.findChildByType(LcaTypes.NUMBER)?.let { QuantityPrimitiveType.LITERAL }
-            ?: node.findChildByType(LcaTypes.QUANTITY)?.let { QuantityPrimitiveType.PAREN }
+        return node.findChildByType(LcaTokenTypes.NUMBER)?.let { QuantityPrimitiveType.LITERAL }
+            ?: node.findChildByType(LcaElementTypes.QUANTITY)?.let { QuantityPrimitiveType.PAREN }
             ?: QuantityPrimitiveType.QUANTITY_REF
     }
 
     fun getAmount(): Double {
-        return node.findChildByType(LcaTypes.NUMBER)?.psi?.text?.let { parseDouble(it) }!!
+        return node.findChildByType(LcaTokenTypes.NUMBER)?.psi?.text?.let { parseDouble(it) }!!
     }
 
     fun getQuantityInParen(): PsiQuantity {
-        return node.findChildByType(LcaTypes.QUANTITY)?.psi as PsiQuantity
+        return node.findChildByType(LcaElementTypes.QUANTITY)?.psi as PsiQuantity
     }
 
     fun getRef(): PsiQuantityRef {
-        return node.findChildByType(LcaTypes.QUANTITY_REF)?.psi as PsiQuantityRef
+        return node.findChildByType(LcaElementTypes.QUANTITY_REF)?.psi as PsiQuantityRef
     }
 }

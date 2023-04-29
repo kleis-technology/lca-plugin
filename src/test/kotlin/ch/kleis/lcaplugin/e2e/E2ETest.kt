@@ -34,7 +34,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         ) as LcaFile
 
         // when
-        val actual = file.getProcesses().first().getBlockMetaList().first().metaAssignmentList
+        val actual = file.getProcesses().first().getBlockMetaList().first().getAssignments().toList()
 
         // then
         TestCase.assertEquals("unit", actual[0].name)

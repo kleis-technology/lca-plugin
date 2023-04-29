@@ -3,7 +3,6 @@ package ch.kleis.lcaplugin.language.psi.stub.process
 import ch.kleis.lcaplugin.LcaLanguage
 import ch.kleis.lcaplugin.language.psi.stub.LcaStubIndexKeys
 import ch.kleis.lcaplugin.language.psi.type.PsiProcess
-import ch.kleis.lcaplugin.psi.impl.LcaProcessImpl
 import com.intellij.lang.LighterAST
 import com.intellij.lang.LighterASTNode
 import com.intellij.psi.PsiElement
@@ -31,7 +30,8 @@ class ProcessStubElementType(debugName: String) :
     }
 
     override fun createPsi(stub: ProcessStub): PsiProcess {
-        return LcaProcessImpl(stub, this)
+//        return LcaProcessImpl(stub, this)
+        TODO()
     }
 
     override fun indexStub(stub: ProcessStub, sink: IndexSink) {

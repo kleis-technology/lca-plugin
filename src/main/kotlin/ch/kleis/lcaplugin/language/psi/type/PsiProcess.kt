@@ -9,7 +9,7 @@ import ch.kleis.lcaplugin.language.psi.type.exchange.PsiTechnoProductExchangeWit
 import ch.kleis.lcaplugin.language.psi.type.quantity.PsiQuantity
 import ch.kleis.lcaplugin.language.psi.type.ref.PsiProcessTemplateRef
 import ch.kleis.lcaplugin.language.psi.type.trait.BlockMetaOwner
-import ch.kleis.lcaplugin.psi.LcaTypes
+import ch.kleis.lcaplugin.psi.LcaElementTypes
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.ResolveState
@@ -19,7 +19,7 @@ import com.intellij.psi.tree.TokenSet
 
 interface PsiProcess : StubBasedPsiElement<ProcessStub>, PsiNameIdentifierOwner, BlockMetaOwner {
     fun getProcessTemplateRef(): PsiProcessTemplateRef {
-        return node.findChildByType(LcaTypes.PROCESS_TEMPLATE_REF)?.psi as PsiProcessTemplateRef
+        return node.findChildByType(LcaElementTypes.PROCESS_TEMPLATE_REF)?.psi as PsiProcessTemplateRef
     }
 
     override fun getName(): String {
@@ -36,62 +36,62 @@ interface PsiProcess : StubBasedPsiElement<ProcessStub>, PsiNameIdentifierOwner,
     }
 
     fun getParameters(): Map<String, PsiQuantity> {
-        return node.getChildren(TokenSet.create(LcaTypes.PARAMS))
+        return node.getChildren(TokenSet.create(LcaElementTypes.PARAMS))
             .map { it.psi as PsiParameters }
             .flatMap { it.getEntries() }
             .toMap()
     }
 
     fun getProducts(): Collection<PsiTechnoProductExchange> {
-        return node.getChildren(TokenSet.create(LcaTypes.BLOCK_PRODUCTS))
+        return node.getChildren(TokenSet.create(LcaElementTypes.BLOCK_PRODUCTS))
             .map { it.psi as PsiBlockProducts }
             .flatMap { it.getExchanges() }
     }
 
     fun getProductsWithAllocation(): Collection<PsiTechnoProductExchangeWithAllocateField> {
-        return node.getChildren(TokenSet.create(LcaTypes.BLOCK_PRODUCTS))
+        return node.getChildren(TokenSet.create(LcaElementTypes.BLOCK_PRODUCTS))
             .map { it.psi as PsiBlockProducts }
             .flatMap { it.getExchangesWithAllocateField() }
     }
 
     fun getInputs(): Collection<PsiTechnoInputExchange> {
-        return node.getChildren(TokenSet.create(LcaTypes.BLOCK_INPUTS))
+        return node.getChildren(TokenSet.create(LcaElementTypes.BLOCK_INPUTS))
             .map { it.psi as PsiBlockInputs }
             .flatMap { it.getExchanges() }
     }
 
     fun getEmissions(): Collection<PsiBioExchange> {
-        return node.getChildren(TokenSet.create(LcaTypes.BLOCK_EMISSIONS))
+        return node.getChildren(TokenSet.create(LcaElementTypes.BLOCK_EMISSIONS))
             .map { it.psi as PsiBlockEmissions }
             .flatMap { it.getExchanges() }
     }
 
     fun getLandUse(): Collection<PsiBioExchange> {
-        return node.getChildren(TokenSet.create(LcaTypes.BLOCK_LAND_USE))
+        return node.getChildren(TokenSet.create(LcaElementTypes.BLOCK_LAND_USE))
             .map { it.psi as PsiBlockLandUse }
             .flatMap { it.getExchanges() }
     }
 
     fun getResources(): Collection<PsiBioExchange> {
-        return node.getChildren(TokenSet.create(LcaTypes.BLOCK_RESOURCES))
+        return node.getChildren(TokenSet.create(LcaElementTypes.BLOCK_RESOURCES))
             .map { it.psi as PsiBlockResources }
             .flatMap { it.getExchanges() }
     }
 
     fun getVariables(): Map<String, PsiQuantity> {
-        return node.getChildren(TokenSet.create(LcaTypes.VARIABLES))
+        return node.getChildren(TokenSet.create(LcaElementTypes.VARIABLES))
             .map { it.psi as PsiVariables }
             .flatMap { it.getEntries() }
             .toMap()
     }
 
     fun getPsiVariablesBlocks(): Collection<PsiVariables> {
-        return node.getChildren(TokenSet.create(LcaTypes.VARIABLES))
+        return node.getChildren(TokenSet.create(LcaElementTypes.VARIABLES))
             .map { it.psi as PsiVariables }
     }
 
     fun getPsiParametersBlocks(): Collection<PsiParameters> {
-        return node.getChildren(TokenSet.create(LcaTypes.PARAMS))
+        return node.getChildren(TokenSet.create(LcaElementTypes.PARAMS))
             .map { it.psi as PsiParameters }
     }
 

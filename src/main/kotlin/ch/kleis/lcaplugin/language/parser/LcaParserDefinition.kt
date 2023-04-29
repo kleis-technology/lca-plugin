@@ -53,18 +53,11 @@ class LcaParserDefinition : ParserDefinition {
     }
 
     override fun getCommentTokens(): TokenSet {
-        return PSIElementTypeFactory.createTokenSet(
-            LcaLanguage.INSTANCE,
-            LcaLangLexer.COMMENT,
-            LcaLangLexer.LINE_COMMENT,
-        )
+        return LcaLangTokenSets.COMMENTS
     }
 
     override fun getStringLiteralElements(): TokenSet {
-        return PSIElementTypeFactory.createTokenSet(
-            LcaLanguage.INSTANCE,
-            LcaLangLexer.STRING_LITERAL,
-        )
+        return LcaLangTokenSets.STRING_LITERALS
     }
 
     override fun createElement(node: ASTNode): PsiElement {
@@ -76,6 +69,7 @@ class LcaParserDefinition : ParserDefinition {
             return ANTLRPsiNode(node)
         }
         return when (elType.ruleIndex) {
+            LcaLangParser.RULE_pkg -> TODO("implement me and other rules")
             else -> ANTLRPsiNode(node)
         }
     }

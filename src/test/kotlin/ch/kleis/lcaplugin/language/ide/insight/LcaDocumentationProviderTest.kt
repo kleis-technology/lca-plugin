@@ -1,8 +1,6 @@
 package ch.kleis.lcaplugin.language.ide.insight
 
 import ch.kleis.lcaplugin.language.psi.LcaFile
-import ch.kleis.lcaplugin.psi.LcaProcess
-import ch.kleis.lcaplugin.psi.LcaQuantityRef
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.jetbrains.rd.util.first
@@ -159,7 +157,7 @@ class LcaDocumentationProviderTest : BasePlatformTestCase() {
             .getTerm()
             .getFactor()
             .getPrimitive()
-            .getRef() as LcaQuantityRef
+            .getRef()
         val sut = LcaDocumentationProvider()
 
         // When
@@ -211,7 +209,7 @@ class LcaDocumentationProviderTest : BasePlatformTestCase() {
             .getTerm()
             .getFactor()
             .getPrimitive()
-            .getRef() as LcaQuantityRef
+            .getRef()
         val sut = LcaDocumentationProvider()
 
         // When
@@ -262,7 +260,7 @@ class LcaDocumentationProviderTest : BasePlatformTestCase() {
             .getTerm()
             .getFactor()
             .getPrimitive()
-            .getRef() as LcaQuantityRef
+            .getRef()
         val sut = LcaDocumentationProvider()
 
         // When
@@ -313,7 +311,7 @@ class LcaDocumentationProviderTest : BasePlatformTestCase() {
             .getTerm()
             .getFactor()
             .getPrimitive()
-            .getRef() as LcaQuantityRef
+            .getRef()
         val sut = LcaDocumentationProvider()
 
         // When
@@ -364,7 +362,7 @@ class LcaDocumentationProviderTest : BasePlatformTestCase() {
             .getTerm()
             .getFactor()
             .getPrimitive()
-            .getRef() as LcaQuantityRef
+            .getRef()
         val sut = LcaDocumentationProvider()
 
         // When
@@ -513,7 +511,7 @@ class LcaDocumentationProviderTest : BasePlatformTestCase() {
         """.trimIndent()
         )
         val file = PsiManager.getInstance(project).findFile(virtualFile) as LcaFile
-        val process = file.getProcesses().first() as LcaProcess
+        val process = file.getProcesses().first()
         val sut = LcaDocumentationProvider()
 
         // When
@@ -565,7 +563,7 @@ class LcaDocumentationProviderTest : BasePlatformTestCase() {
         """.trimIndent()
         )
         val file = PsiManager.getInstance(project).findFile(virtualFile) as LcaFile
-        val process = file.getProcesses().first() as LcaProcess
+        val process = file.getProcesses().first()
         val sut = LcaDocumentationProvider()
 
         // When

@@ -2,12 +2,12 @@ package ch.kleis.lcaplugin.language.ide.find_usage
 
 import ch.kleis.lcaplugin.LcaLanguage
 import ch.kleis.lcaplugin.grammar.LcaLangLexer
+import ch.kleis.lcaplugin.language.parser.LcaLangTokenSets
 import ch.kleis.lcaplugin.language.psi.type.PsiGlobalAssignment
 import ch.kleis.lcaplugin.language.psi.type.PsiSubstance
 import ch.kleis.lcaplugin.language.psi.type.exchange.PsiTechnoInputExchange
 import ch.kleis.lcaplugin.language.psi.type.exchange.PsiTechnoProductExchange
 import ch.kleis.lcaplugin.language.psi.type.unit.PsiUnitDefinition
-import ch.kleis.lcaplugin.psi.LcaTypes.*
 import com.intellij.lang.cacheBuilder.DefaultWordsScanner
 import com.intellij.lang.cacheBuilder.WordsScanner
 import com.intellij.lang.findUsages.FindUsagesProvider
@@ -26,8 +26,8 @@ class LcaFindUsagesProvider : FindUsagesProvider {
     override fun getWordsScanner(): WordsScanner =
         DefaultWordsScanner(
             ANTLRLexerAdaptor(LcaLanguage.INSTANCE, LcaLangLexer(null)),
-            TokenSet.create(IDENTIFIER),
-            TokenSet.create(COMMENT_LINE, COMMENT_CONTENT, COMMENT_BLOCK_START, COMMENT_BLOCK_END),
+            LcaLangTokenSets.ID,
+            LcaLangTokenSets.STRING_LITERALS,
             TokenSet.EMPTY,
         )
 

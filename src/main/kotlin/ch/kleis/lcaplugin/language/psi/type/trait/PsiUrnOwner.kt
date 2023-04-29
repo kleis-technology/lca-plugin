@@ -2,7 +2,7 @@ package ch.kleis.lcaplugin.language.psi.type.trait
 
 import ch.kleis.lcaplugin.LcaFileType
 import ch.kleis.lcaplugin.language.psi.type.PsiUrn
-import ch.kleis.lcaplugin.psi.LcaTypes
+import ch.kleis.lcaplugin.psi.LcaElementTypes
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
@@ -10,7 +10,7 @@ import com.intellij.psi.PsiNameIdentifierOwner
 
 interface PsiUrnOwner : PsiNameIdentifierOwner {
     fun getUrn(): PsiUrn {
-        return node.findChildByType(LcaTypes.URN)?.psi as PsiUrn?
+        return node.findChildByType(LcaElementTypes.URN)?.psi as PsiUrn?
             ?: throw IllegalStateException()
     }
 
@@ -23,7 +23,7 @@ interface PsiUrnOwner : PsiNameIdentifierOwner {
     }
 
     override fun setName(name: String): PsiElement {
-        val urnElement: ASTNode? = node.findChildByType(LcaTypes.URN)
+        val urnElement: ASTNode? = node.findChildByType(LcaElementTypes.URN)
         if (urnElement != null) {
             val newUrnElement = PsiFileFactory.getInstance(project)
                 .createFileFromText(

@@ -2,17 +2,17 @@ package ch.kleis.lcaplugin.language.psi.type.exchange
 
 import ch.kleis.lcaplugin.language.psi.type.quantity.PsiQuantity
 import ch.kleis.lcaplugin.language.psi.type.ref.PsiProductRef
-import ch.kleis.lcaplugin.psi.LcaTypes
+import ch.kleis.lcaplugin.psi.LcaElementTypes
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 
 interface PsiTechnoProductExchange : PsiNameIdentifierOwner {
     fun getProductRef(): PsiProductRef {
-        return node.findChildByType(LcaTypes.PRODUCT_REF)?.psi as PsiProductRef
+        return node.findChildByType(LcaElementTypes.PRODUCT_REF)?.psi as PsiProductRef
     }
 
     fun getQuantity(): PsiQuantity {
-        return node.findChildByType(LcaTypes.QUANTITY)?.psi as PsiQuantity
+        return node.findChildByType(LcaElementTypes.QUANTITY)?.psi as PsiQuantity
     }
 
     override fun getName(): String {

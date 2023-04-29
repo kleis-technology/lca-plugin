@@ -17,8 +17,6 @@ plugins {
     id("org.jetbrains.changelog") version "2.0.0"
     // Gradle Qodana Plugin
     id("org.jetbrains.qodana") version "0.1.13"
-    // Gradle Grammar kit Plugin
-    id("org.jetbrains.grammarkit") version "2021.2.2"
     // Arrow optics auto-generation Plugin
     id("com.google.devtools.ksp") version "1.8.10-1.0.9"
     // JSON serialization tools for graph visualization
@@ -124,19 +122,6 @@ tasks {
         )
     }
 
-    generateParser {
-        source.set("src/main/kotlin/ch/kleis/lcaplugin/language/Lca.bnf")
-        targetRoot.set("src/main/gen")
-        pathToParser.set("ch/kleis/lcaplugin/language/parser/LcaParser.java")
-        pathToPsiRoot.set("ch/kleis/lcaplugin/psi")
-    }
-
-    generateLexer {
-        source.set("src/main/kotlin/ch/kleis/lcaplugin/language/Lca.flex")
-        targetDir.set("src/main/gen/ch/kleis/lcaplugin/language")
-        targetClass.set("parser.LcaLexer")
-    }
-
     task<GenerateEmissionFactorsTask31>("generateEmissionFactors31") {
     }
     task<GenerateEmissionFactorsTask30>("generateEmissionFactors30") {
@@ -144,8 +129,6 @@ tasks {
 
     compileKotlin {
         dependsOn("generateGrammarSource")
-        dependsOn("generateLexer")
-        dependsOn("generateParser")
         dependsOn("generateEmissionFactors30")
         dependsOn("generateEmissionFactors31")
     }
@@ -211,5 +194,5 @@ tasks {
 }
 
 afterEvaluate {
-    tasks.findByName("kspKotlin")?.mustRunAfter(tasks.generateLexer, tasks.generateParser)
+    tasks.findByName("kspKotlin")?.mustRunAfter(tasks.generateGrammarSource)
 }

@@ -4,7 +4,7 @@ import ch.kleis.lcaplugin.language.psi.LcaFile
 import ch.kleis.lcaplugin.language.psi.factory.LcaFileFactory
 import ch.kleis.lcaplugin.language.psi.factory.LcaUIDFactory
 import ch.kleis.lcaplugin.language.psi.type.PsiUID
-import ch.kleis.lcaplugin.psi.LcaTypes
+import ch.kleis.lcaplugin.psi.LcaElementTypes
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
@@ -16,7 +16,7 @@ interface PsiUIDOwner : PsiNameIdentifierOwner {
     }
 
     fun getUID(): PsiUID {
-        return node.findChildByType(LcaTypes.UID)?.psi as PsiUID
+        return node.findChildByType(LcaElementTypes.UID)?.psi as PsiUID
     }
 
     override fun getName(): String {
@@ -24,7 +24,7 @@ interface PsiUIDOwner : PsiNameIdentifierOwner {
     }
 
     override fun setName(name: String): PsiElement {
-        val uidNode: ASTNode? = node.findChildByType(LcaTypes.UID)
+        val uidNode: ASTNode? = node.findChildByType(LcaElementTypes.UID)
         if (uidNode != null) {
             val newIdentifier = LcaUIDFactory(
                 LcaFileFactory(project)::createFile

@@ -1,6 +1,11 @@
 package ch.kleis.lcaplugin.language.ide.syntax
 
-import ch.kleis.lcaplugin.psi.*
+import ch.kleis.lcaplugin.language.psi.type.PsiParameters
+import ch.kleis.lcaplugin.language.psi.type.PsiProcess
+import ch.kleis.lcaplugin.language.psi.type.PsiVariables
+import ch.kleis.lcaplugin.language.psi.type.block.*
+import ch.kleis.lcaplugin.language.psi.type.unit.PsiUnitDefinition
+import ch.kleis.lcaplugin.psi.LcaTokenTypes
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
@@ -16,19 +21,19 @@ class LcaFoldingBuilder : FoldingBuilderEx(), DumbAware {
         val descriptors = ArrayList<FoldingDescriptor>()
         val blocks = PsiTreeUtil.findChildrenOfAnyType(
             root,
-            LcaProcess::class.java,
-            LcaParams::class.java,
-            LcaVariables::class.java,
-            LcaBlockProducts::class.java,
-            LcaBlockInputs::class.java,
-            LcaBlockEmissions::class.java,
-            LcaBlockResources::class.java,
-            LcaBlockImpacts::class.java,
-            LcaUnitDefinition::class.java,
+            PsiProcess::class.java,
+            PsiParameters::class.java,
+            PsiVariables::class.java,
+            PsiBlockProducts::class.java,
+            PsiBlockInputs::class.java,
+            PsiBlockEmissions::class.java,
+            PsiBlockResources::class.java,
+            PsiBlockImpacts::class.java,
+            PsiUnitDefinition::class.java,
         )
         blocks.forEach { block ->
             val braces = PsiTreeUtil.collectElements(block) {
-                it.elementType == LcaTypes.LBRACE || it.elementType == LcaTypes.RBRACE
+                it.elementType == LcaTokenTypes.LBRACE || it.elementType == LcaTokenTypes.RBRACE
             }
 
             if (braces.size > 1) {

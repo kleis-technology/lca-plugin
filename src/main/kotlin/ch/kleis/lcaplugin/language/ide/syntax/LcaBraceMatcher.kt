@@ -1,6 +1,7 @@
 package ch.kleis.lcaplugin.language.ide.syntax
 
-import ch.kleis.lcaplugin.psi.LcaTypes
+import ch.kleis.lcaplugin.psi.LcaElementTypes
+import ch.kleis.lcaplugin.psi.LcaTokenTypes
 import com.intellij.lang.BracePair
 import com.intellij.lang.PairedBraceMatcher
 import com.intellij.psi.PsiFile
@@ -10,9 +11,9 @@ class LcaBraceMatcher : PairedBraceMatcher {
 
     override fun getPairs(): Array<BracePair> {
         return arrayOf(
-            BracePair(LcaTypes.LBRACE, LcaTypes.RBRACE, true),
-            BracePair(LcaTypes.LSQBRACE, LcaTypes.RSQBRACE, true),
-            BracePair(LcaTypes.LPAREN, LcaTypes.RPAREN, true),
+            BracePair(LcaTokenTypes.LBRACE, LcaTokenTypes.RBRACE, true),
+            BracePair(LcaTokenTypes.LSQBRACE, LcaTokenTypes.RSQBRACE, true),
+            BracePair(LcaTokenTypes.LPAREN, LcaTokenTypes.RPAREN, true),
         )
     }
 

@@ -3,7 +3,6 @@ package ch.kleis.lcaplugin.language.psi.stub.techno_product_exchange
 import ch.kleis.lcaplugin.LcaLanguage
 import ch.kleis.lcaplugin.language.psi.stub.LcaStubIndexKeys
 import ch.kleis.lcaplugin.language.psi.type.exchange.PsiTechnoProductExchange
-import ch.kleis.lcaplugin.psi.impl.LcaTechnoProductExchangeImpl
 import com.intellij.lang.LighterAST
 import com.intellij.lang.LighterASTNode
 import com.intellij.psi.PsiElement
@@ -46,7 +45,8 @@ class TechnoProductExchangeElementType(debugName: String) : ILightStubElementTyp
     }
 
     override fun createPsi(stub: TechnoProductExchangeStub): PsiTechnoProductExchange {
-        return LcaTechnoProductExchangeImpl(stub, this)
+//        return LcaTechnoProductExchangeImpl(stub, this)
+        TODO()
     }
 
     override fun indexStub(stub: TechnoProductExchangeStub, sink: IndexSink) {
