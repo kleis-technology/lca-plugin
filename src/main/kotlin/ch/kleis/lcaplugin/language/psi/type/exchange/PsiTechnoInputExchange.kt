@@ -3,8 +3,10 @@ package ch.kleis.lcaplugin.language.psi.type.exchange
 import ch.kleis.lcaplugin.language.psi.type.PsiFromProcessConstraint
 import ch.kleis.lcaplugin.language.psi.type.ref.PsiProductRef
 import ch.kleis.lcaplugin.psi.LcaElementTypes
+import com.intellij.extapi.psi.ASTWrapperPsiElement
+import com.intellij.lang.ASTNode
 
-interface PsiTechnoInputExchange : PsiExchange {
+class PsiTechnoInputExchange(node: ASTNode) : ASTWrapperPsiElement(node), PsiExchange {
     fun getProductRef(): PsiProductRef {
         return node.findChildByType(LcaElementTypes.PRODUCT_REF)?.psi as PsiProductRef
     }

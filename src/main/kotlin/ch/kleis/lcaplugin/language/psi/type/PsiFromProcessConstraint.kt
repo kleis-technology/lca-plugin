@@ -4,10 +4,12 @@ import ch.kleis.lcaplugin.language.psi.type.exchange.PsiArgument
 import ch.kleis.lcaplugin.language.psi.type.quantity.PsiQuantity
 import ch.kleis.lcaplugin.language.psi.type.ref.PsiProcessTemplateRef
 import ch.kleis.lcaplugin.psi.LcaElementTypes
+import com.intellij.extapi.psi.ASTWrapperPsiElement
+import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 
-interface PsiFromProcessConstraint : PsiElement {
+class PsiFromProcessConstraint(node: ASTNode) : ASTWrapperPsiElement(node), PsiElement {
     fun getProcessTemplateRef(): PsiProcessTemplateRef {
         return node.findChildByType(LcaElementTypes.PROCESS_TEMPLATE_REF)?.psi as PsiProcessTemplateRef
     }

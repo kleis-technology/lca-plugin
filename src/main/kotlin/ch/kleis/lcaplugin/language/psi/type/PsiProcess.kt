@@ -10,14 +10,19 @@ import ch.kleis.lcaplugin.language.psi.type.quantity.PsiQuantity
 import ch.kleis.lcaplugin.language.psi.type.ref.PsiProcessTemplateRef
 import ch.kleis.lcaplugin.language.psi.type.trait.BlockMetaOwner
 import ch.kleis.lcaplugin.psi.LcaElementTypes
+import com.intellij.extapi.psi.StubBasedPsiElementBase
+import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.ResolveState
-import com.intellij.psi.StubBasedPsiElement
 import com.intellij.psi.scope.PsiScopeProcessor
+import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.TokenSet
 
-interface PsiProcess : StubBasedPsiElement<ProcessStub>, PsiNameIdentifierOwner, BlockMetaOwner {
+class PsiProcess : StubBasedPsiElementBase<ProcessStub>, PsiNameIdentifierOwner, BlockMetaOwner {
+    constructor(node: ASTNode) : super(node)
+    constructor(stub: ProcessStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
+
     fun getProcessTemplateRef(): PsiProcessTemplateRef {
         return node.findChildByType(LcaElementTypes.PROCESS_TEMPLATE_REF)?.psi as PsiProcessTemplateRef
     }
@@ -95,6 +100,10 @@ interface PsiProcess : StubBasedPsiElement<ProcessStub>, PsiNameIdentifierOwner,
             .map { it.psi as PsiParameters }
     }
 
+    override fun getBlockMetaList(): List<PsiBlockMeta> {
+        TODO("Not yet implemented")
+    }
+
     override fun processDeclarations(
         processor: PsiScopeProcessor,
         state: ResolveState,
@@ -115,4 +124,5 @@ interface PsiProcess : StubBasedPsiElement<ProcessStub>, PsiNameIdentifierOwner,
 
         return true
     }
+
 }

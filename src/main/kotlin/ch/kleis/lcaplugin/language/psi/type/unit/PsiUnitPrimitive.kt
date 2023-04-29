@@ -3,13 +3,15 @@ package ch.kleis.lcaplugin.language.psi.type.unit
 import ch.kleis.lcaplugin.language.psi.type.ref.PsiUnitRef
 import ch.kleis.lcaplugin.psi.LcaElementTypes
 import ch.kleis.lcaplugin.psi.LcaTokenTypes
+import com.intellij.extapi.psi.ASTWrapperPsiElement
+import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
 enum class UnitPrimitiveType {
     DEFINITION, PAREN, VARIABLE
 }
 
-interface PsiUnitPrimitive : PsiElement {
+class PsiUnitPrimitive(node: ASTNode) : ASTWrapperPsiElement(node), PsiElement {
     fun getType(): UnitPrimitiveType {
         return node.findChildByType(LcaElementTypes.UNIT_DEFINITION)?.let { UnitPrimitiveType.DEFINITION }
             ?: node.findChildByType(LcaTokenTypes.LPAREN)?.let { UnitPrimitiveType.PAREN }

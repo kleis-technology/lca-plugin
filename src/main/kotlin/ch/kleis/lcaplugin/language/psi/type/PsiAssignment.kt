@@ -3,10 +3,12 @@ package ch.kleis.lcaplugin.language.psi.type
 import ch.kleis.lcaplugin.language.psi.type.quantity.PsiQuantity
 import ch.kleis.lcaplugin.language.psi.type.ref.PsiQuantityRef
 import ch.kleis.lcaplugin.psi.LcaElementTypes
+import com.intellij.extapi.psi.ASTWrapperPsiElement
+import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 
-interface PsiAssignment : PsiNameIdentifierOwner {
+class PsiAssignment(node: ASTNode) : ASTWrapperPsiElement(node), PsiNameIdentifierOwner {
     fun getQuantityRef(): PsiQuantityRef {
         return node.findChildByType(LcaElementTypes.QUANTITY_REF)?.psi as PsiQuantityRef
     }

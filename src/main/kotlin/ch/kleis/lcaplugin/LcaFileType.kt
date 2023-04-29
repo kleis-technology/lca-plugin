@@ -4,10 +4,10 @@ package ch.kleis.lcaplugin
 import com.intellij.openapi.fileTypes.LanguageFileType
 import javax.swing.Icon
 
-class LcaFileType : LanguageFileType(ch.kleis.lcaplugin.LcaLanguage.Companion.INSTANCE) {
+class LcaFileType : LanguageFileType(LcaLanguage.INSTANCE) {
 
     companion object {
-        val INSTANCE = ch.kleis.lcaplugin.LcaFileType()
+        val INSTANCE = LcaFileType()
     };
 
     override fun getName(): String {

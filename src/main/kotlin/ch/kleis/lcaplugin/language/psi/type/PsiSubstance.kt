@@ -2,6 +2,7 @@ package ch.kleis.lcaplugin.language.psi.type
 
 import ch.kleis.lcaplugin.language.psi.stub.substance.SubstanceStub
 import ch.kleis.lcaplugin.language.psi.type.block.PsiBlockImpacts
+import ch.kleis.lcaplugin.language.psi.type.block.PsiBlockMeta
 import ch.kleis.lcaplugin.language.psi.type.exchange.PsiImpactExchange
 import ch.kleis.lcaplugin.language.psi.type.field.PsiStringLiteralField
 import ch.kleis.lcaplugin.language.psi.type.field.PsiSubstanceTypeField
@@ -9,12 +10,18 @@ import ch.kleis.lcaplugin.language.psi.type.field.PsiUnitField
 import ch.kleis.lcaplugin.language.psi.type.ref.PsiSubstanceRef
 import ch.kleis.lcaplugin.language.psi.type.trait.BlockMetaOwner
 import ch.kleis.lcaplugin.psi.LcaElementTypes
+import com.intellij.extapi.psi.StubBasedPsiElementBase
+import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.StubBasedPsiElement
+import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.TokenSet
 
-interface PsiSubstance : BlockMetaOwner, PsiNameIdentifierOwner, StubBasedPsiElement<SubstanceStub> {
+class PsiSubstance : BlockMetaOwner, PsiNameIdentifierOwner, StubBasedPsiElementBase<SubstanceStub> {
+    constructor(node: ASTNode) : super(node)
+    constructor(stub: SubstanceStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
+
     fun getSubstanceRef(): PsiSubstanceRef {
         return node.findChildByType(LcaElementTypes.SUBSTANCE_REF)?.psi as PsiSubstanceRef
     }
@@ -64,5 +71,9 @@ interface PsiSubstance : BlockMetaOwner, PsiNameIdentifierOwner, StubBasedPsiEle
     fun getImpactExchanges(): Collection<PsiImpactExchange> {
         return getBlockImpacts()
             .flatMap { it.getExchanges() }
+    }
+
+    override fun getBlockMetaList(): List<PsiBlockMeta> {
+        TODO("Not yet implemented")
     }
 }

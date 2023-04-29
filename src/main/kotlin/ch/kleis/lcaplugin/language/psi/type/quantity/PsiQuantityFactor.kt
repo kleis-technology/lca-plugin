@@ -2,9 +2,11 @@ package ch.kleis.lcaplugin.language.psi.type.quantity
 
 import ch.kleis.lcaplugin.psi.LcaElementTypes
 import ch.kleis.lcaplugin.psi.LcaTokenTypes
+import com.intellij.extapi.psi.ASTWrapperPsiElement
+import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
-interface PsiQuantityFactor : PsiElement {
+class PsiQuantityFactor(node: ASTNode) : ASTWrapperPsiElement(node), PsiElement {
     fun getPrimitive(): PsiQuantityPrimitive {
         return node.findChildByType(LcaElementTypes.QUANTITY_PRIMITIVE)?.psi as PsiQuantityPrimitive
     }

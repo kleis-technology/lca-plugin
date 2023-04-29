@@ -5,15 +5,20 @@ import ch.kleis.lcaplugin.language.psi.type.field.PsiAliasForField
 import ch.kleis.lcaplugin.language.psi.type.field.PsiStringLiteralField
 import ch.kleis.lcaplugin.language.psi.type.ref.PsiUnitRef
 import ch.kleis.lcaplugin.psi.LcaElementTypes
+import com.intellij.extapi.psi.StubBasedPsiElementBase
+import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
-import com.intellij.psi.StubBasedPsiElement
+import com.intellij.psi.stubs.IStubElementType
 
 enum class UnitDefinitionType {
     LITERAL, ALIAS
 }
 
-interface PsiUnitDefinition : PsiNameIdentifierOwner, StubBasedPsiElement<UnitStub> {
+class PsiUnitDefinition : PsiNameIdentifierOwner, StubBasedPsiElementBase<UnitStub> {
+    constructor(node: ASTNode) : super(node)
+    constructor(stub: UnitStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
+
     fun getUnitRef(): PsiUnitRef {
         return node.findChildByType(LcaElementTypes.UNIT_REF)?.psi as PsiUnitRef
     }

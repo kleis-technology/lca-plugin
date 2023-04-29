@@ -1,14 +1,17 @@
 package ch.kleis.lcaplugin.language.psi.type
 
 import ch.kleis.lcaplugin.psi.LcaTokenTypes
+import com.intellij.extapi.psi.ASTWrapperPsiElement
+import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 
-interface PsiMetaAssignment : PsiElement {
-    val name: String
-        get() = getKey()
+class PsiMetaAssignment(node: ASTNode) : ASTWrapperPsiElement(node), PsiElement {
+    override fun getName(): String {
+        return getKey()
+    }
 
-    fun getKey(): String {
+    private fun getKey(): String {
         return node.getChildren(TokenSet.create(LcaTokenTypes.STRING_LITERAL))[0].text.trim('"')
     }
 

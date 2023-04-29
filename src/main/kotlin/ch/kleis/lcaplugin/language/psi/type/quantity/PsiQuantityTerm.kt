@@ -3,9 +3,11 @@ package ch.kleis.lcaplugin.language.psi.type.quantity
 import ch.kleis.lcaplugin.language.psi.type.enums.MultiplicativeOperationType
 import ch.kleis.lcaplugin.psi.LcaElementTypes
 import ch.kleis.lcaplugin.psi.LcaTokenTypes
+import com.intellij.extapi.psi.ASTWrapperPsiElement
+import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
-interface PsiQuantityTerm : PsiElement {
+class PsiQuantityTerm(node: ASTNode) : ASTWrapperPsiElement(node), PsiElement {
     fun getFactor(): PsiQuantityFactor {
         return node.findChildByType(LcaElementTypes.QUANTITY_FACTOR)?.psi as PsiQuantityFactor
     }
