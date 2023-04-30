@@ -2,38 +2,7 @@ package ch.kleis.lcaplugin.language.ide.syntax
 
 import ch.kleis.lcaplugin.LcaLanguage
 import ch.kleis.lcaplugin.grammar.LcaLangLexer
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.ALIAS_FOR_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.ALLOCATE_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.COMMENT_BLOCK_END
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.COMMENT_BLOCK_START
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.COMMENT_CONTENT
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.COMMENT_LINE
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.COMPARTMENT_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.DIMENSION_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.EMISSIONS_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.FROM_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.IDENTIFIER
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.IMPACTS_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.IMPORT_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.INDICATOR_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.INPUTS_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.LAND_USE_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.META_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.NAME_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.NUMBER
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.PACKAGE_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.PARAMETERS_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.PROCESS_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.PRODUCTS_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.REFERENCE_UNIT_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.RESOURCES_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.STRING_LITERAL
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.SUBSTANCE_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.SUB_COMPARTMENT_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.SYMBOL_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.TYPE_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.UNIT_KEYWORD
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.VARIABLES_KEYWORD
+import ch.kleis.lcaplugin.language.parser.LcaTypes
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.HighlighterColors.BAD_CHARACTER
@@ -71,27 +40,42 @@ class LcaSyntaxHighlighter : SyntaxHighlighterBase() {
 
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {
         return when (tokenType) {
-            PACKAGE_KEYWORD, PROCESS_KEYWORD, INDICATOR_KEYWORD, SUBSTANCE_KEYWORD, IMPACTS_KEYWORD, META_KEYWORD, PARAMETERS_KEYWORD,
-            FROM_KEYWORD, ALLOCATE_KEYWORD,
-            UNIT_KEYWORD, IMPORT_KEYWORD,
-            VARIABLES_KEYWORD, LAND_USE_KEYWORD,
-            PRODUCTS_KEYWORD, INPUTS_KEYWORD,
-            EMISSIONS_KEYWORD, RESOURCES_KEYWORD -> KEYWORD_KEYS
+            LcaTypes.token(LcaLangLexer.PACKAGE_KEYWORD),
+            LcaTypes.token(LcaLangLexer.PROCESS_KEYWORD),
+            LcaTypes.token(LcaLangLexer.SUBSTANCE_KEYWORD),
+            LcaTypes.token(LcaLangLexer.IMPACTS_KEYWORD),
+            LcaTypes.token(LcaLangLexer.META_KEYWORD),
+            LcaTypes.token(LcaLangLexer.PARAMETERS_KEYWORD),
+            LcaTypes.token(LcaLangLexer.FROM_KEYWORD),
+            LcaTypes.token(LcaLangLexer.ALLOCATE_KEYWORD),
+            LcaTypes.token(LcaLangLexer.UNIT_KEYWORD),
+            LcaTypes.token(LcaLangLexer.IMPORT_KEYWORD),
+            LcaTypes.token(LcaLangLexer.VARIABLES_KEYWORD),
+            LcaTypes.token(LcaLangLexer.LAND_USE_KEYWORD),
+            LcaTypes.token(LcaLangLexer.PRODUCTS_KEYWORD),
+            LcaTypes.token(LcaLangLexer.INPUTS_KEYWORD),
+            LcaTypes.token(LcaLangLexer.EMISSIONS_KEYWORD),
+            LcaTypes.token(LcaLangLexer.RESOURCES_KEYWORD) -> KEYWORD_KEYS
 
-            IDENTIFIER -> IDENTIFIER_KEYS
+            LcaTypes.token(LcaLangLexer.ID) -> IDENTIFIER_KEYS
 
-            STRING_LITERAL -> STRING_LITERAL_KEYS
+            LcaTypes.token(LcaLangLexer.STRING_LITERAL) -> STRING_LITERAL_KEYS
 
-            DIMENSION_KEYWORD, ALIAS_FOR_KEYWORD,
-            REFERENCE_UNIT_KEYWORD,
-            SYMBOL_KEYWORD, NAME_KEYWORD,
-            TYPE_KEYWORD, COMPARTMENT_KEYWORD, SUB_COMPARTMENT_KEYWORD -> FIELD_KEYS
+            LcaTypes.token(LcaLangLexer.DIMENSION_KEYWORD),
+            LcaTypes.token(LcaLangLexer.ALIAS_FOR_KEYWORD),
+            LcaTypes.token(LcaLangLexer.REFERENCE_UNIT_KEYWORD),
+            LcaTypes.token(LcaLangLexer.SYMBOL_KEYWORD),
+            LcaTypes.token(LcaLangLexer.NAME_KEYWORD),
+            LcaTypes.token(LcaLangLexer.TYPE_KEYWORD),
+            LcaTypes.token(LcaLangLexer.COMPARTMENT_KEYWORD),
+            LcaTypes.token(LcaLangLexer.SUB_COMPARTMENT_KEYWORD) -> FIELD_KEYS
 
             TokenType.BAD_CHARACTER -> BAD_CHARACTER_KEYS
 
-            NUMBER -> NUMBER_KEYS
+            LcaTypes.token(LcaLangLexer.NUMBER) -> NUMBER_KEYS
 
-            COMMENT_BLOCK_START, COMMENT_BLOCK_END, COMMENT_LINE, COMMENT_CONTENT -> BLOCK_COMMENT_KEYS
+            LcaTypes.token(LcaLangLexer.COMMENT),
+            LcaTypes.token(LcaLangLexer.LINE_COMMENT) -> BLOCK_COMMENT_KEYS
 
             else -> EMPTY_KEYS
         }

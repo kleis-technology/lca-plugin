@@ -1,23 +1,24 @@
 package ch.kleis.lcaplugin.language.psi.type.quantity
 
+import ch.kleis.lcaplugin.grammar.LcaLangLexer
+import ch.kleis.lcaplugin.grammar.LcaLangParser
+import ch.kleis.lcaplugin.language.parser.LcaTypes
 import ch.kleis.lcaplugin.language.psi.type.enums.AdditiveOperationType
-import ch.kleis.lcaplugin.psi.LcaElementTypes
-import ch.kleis.lcaplugin.psi.LcaTokenTypes
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
 class PsiQuantity(node: ASTNode) : ASTWrapperPsiElement(node), PsiElement {
     fun getTerm(): PsiQuantityTerm {
-        return node.findChildByType(LcaElementTypes.QUANTITY_TERM)?.psi as PsiQuantityTerm
+        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_quantityTerm))?.psi as PsiQuantityTerm
     }
 
     fun getOperationType(): AdditiveOperationType? {
-        return node.findChildByType(LcaTokenTypes.PLUS)?.let { AdditiveOperationType.ADD}
-            ?: node.findChildByType(LcaTokenTypes.MINUS)?.let { AdditiveOperationType.SUB }
+        return node.findChildByType(LcaTypes.token(LcaLangLexer.PLUS))?.let { AdditiveOperationType.ADD}
+            ?: node.findChildByType(LcaTypes.token(LcaLangLexer.MINUS))?.let { AdditiveOperationType.SUB }
     }
 
     fun getNext(): PsiQuantity? {
-        return node.findChildByType(LcaElementTypes.QUANTITY)?.psi as PsiQuantity?
+        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_quantity))?.psi as PsiQuantity?
     }
 }

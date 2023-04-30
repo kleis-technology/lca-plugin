@@ -1,10 +1,11 @@
 package ch.kleis.lcaplugin.language.psi.type.unit
 
+import ch.kleis.lcaplugin.grammar.LcaLangParser
+import ch.kleis.lcaplugin.language.parser.LcaTypes
 import ch.kleis.lcaplugin.language.psi.stub.unit.UnitStub
 import ch.kleis.lcaplugin.language.psi.type.field.PsiAliasForField
 import ch.kleis.lcaplugin.language.psi.type.field.PsiStringLiteralField
 import ch.kleis.lcaplugin.language.psi.type.ref.PsiUnitRef
-import ch.kleis.lcaplugin.psi.LcaElementTypes
 import com.intellij.extapi.psi.StubBasedPsiElementBase
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
@@ -20,7 +21,7 @@ class PsiUnitDefinition : PsiNameIdentifierOwner, StubBasedPsiElementBase<UnitSt
     constructor(stub: UnitStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
     fun getUnitRef(): PsiUnitRef {
-        return node.findChildByType(LcaElementTypes.UNIT_REF)?.psi as PsiUnitRef
+        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_unitRef))?.psi as PsiUnitRef
     }
 
     override fun getName(): String {
@@ -37,19 +38,19 @@ class PsiUnitDefinition : PsiNameIdentifierOwner, StubBasedPsiElementBase<UnitSt
     }
 
     fun getSymbolField(): PsiStringLiteralField {
-        return node.findChildByType(LcaElementTypes.SYMBOL_FIELD)?.psi as PsiStringLiteralField
+        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_symbolField))?.psi as PsiStringLiteralField
     }
 
     fun getDimensionField(): PsiStringLiteralField {
-        return node.findChildByType(LcaElementTypes.DIM_FIELD)?.psi as PsiStringLiteralField
+        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_dimField))?.psi as PsiStringLiteralField
     }
 
     fun getAliasForField(): PsiAliasForField {
-        return node.findChildByType(LcaElementTypes.ALIAS_FOR_FIELD)?.psi as PsiAliasForField
+        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_aliasForField))?.psi as PsiAliasForField
     }
 
     fun getType(): UnitDefinitionType {
-        return node.findChildByType(LcaElementTypes.ALIAS_FOR_FIELD)?.let { UnitDefinitionType.ALIAS }
+        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_aliasForField))?.let { UnitDefinitionType.ALIAS }
             ?: UnitDefinitionType.LITERAL
     }
 }

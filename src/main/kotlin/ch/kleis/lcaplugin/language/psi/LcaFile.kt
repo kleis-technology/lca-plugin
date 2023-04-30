@@ -25,7 +25,7 @@ class LcaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LcaLan
     }
 
     fun getPackageName(): String {
-        return node.findChildByType(LcaTypes.of(LcaLangParser.RULE_pkg))
+        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_pkg))
             ?.let { it.psi as PsiPackage }
             ?.name
             ?: "default"

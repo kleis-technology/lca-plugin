@@ -1,11 +1,12 @@
 package ch.kleis.lcaplugin.language.ide.syntax
 
+import ch.kleis.lcaplugin.grammar.LcaLangLexer
+import ch.kleis.lcaplugin.language.parser.LcaTypes
 import ch.kleis.lcaplugin.language.psi.type.PsiParameters
 import ch.kleis.lcaplugin.language.psi.type.PsiProcess
 import ch.kleis.lcaplugin.language.psi.type.PsiVariables
 import ch.kleis.lcaplugin.language.psi.type.block.*
 import ch.kleis.lcaplugin.language.psi.type.unit.PsiUnitDefinition
-import ch.kleis.lcaplugin.psi.LcaTokenTypes
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
@@ -33,7 +34,7 @@ class LcaFoldingBuilder : FoldingBuilderEx(), DumbAware {
         )
         blocks.forEach { block ->
             val braces = PsiTreeUtil.collectElements(block) {
-                it.elementType == LcaTokenTypes.LBRACE || it.elementType == LcaTokenTypes.RBRACE
+                it.elementType == LcaTypes.token(LcaLangLexer.LBRACE) || it.elementType == LcaTypes.token(LcaLangLexer.RBRACE)
             }
 
             if (braces.size > 1) {

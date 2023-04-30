@@ -1,5 +1,7 @@
 package ch.kleis.lcaplugin.language.psi.type
 
+import ch.kleis.lcaplugin.grammar.LcaLangParser
+import ch.kleis.lcaplugin.language.parser.LcaTypes
 import ch.kleis.lcaplugin.language.psi.stub.substance.SubstanceStub
 import ch.kleis.lcaplugin.language.psi.type.block.PsiBlockImpacts
 import ch.kleis.lcaplugin.language.psi.type.block.PsiBlockMeta
@@ -9,12 +11,10 @@ import ch.kleis.lcaplugin.language.psi.type.field.PsiSubstanceTypeField
 import ch.kleis.lcaplugin.language.psi.type.field.PsiUnitField
 import ch.kleis.lcaplugin.language.psi.type.ref.PsiSubstanceRef
 import ch.kleis.lcaplugin.language.psi.type.trait.BlockMetaOwner
-import ch.kleis.lcaplugin.psi.LcaElementTypes
 import com.intellij.extapi.psi.StubBasedPsiElementBase
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
-import com.intellij.psi.StubBasedPsiElement
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.TokenSet
 
@@ -23,7 +23,7 @@ class PsiSubstance : BlockMetaOwner, PsiNameIdentifierOwner, StubBasedPsiElement
     constructor(stub: SubstanceStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
     fun getSubstanceRef(): PsiSubstanceRef {
-        return node.findChildByType(LcaElementTypes.SUBSTANCE_REF)?.psi as PsiSubstanceRef
+        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_substanceRef))?.psi as PsiSubstanceRef
     }
 
     override fun getName(): String {
@@ -40,31 +40,31 @@ class PsiSubstance : BlockMetaOwner, PsiNameIdentifierOwner, StubBasedPsiElement
     }
 
     fun getNameField(): PsiStringLiteralField {
-        return node.findChildByType(LcaElementTypes.NAME_FIELD)?.psi as PsiStringLiteralField
+        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_nameField))?.psi as PsiStringLiteralField
     }
 
     fun getTypeField(): PsiSubstanceTypeField {
-        return node.findChildByType(LcaElementTypes.TYPE_FIELD)?.psi as PsiSubstanceTypeField
+        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_typeField))?.psi as PsiSubstanceTypeField
     }
 
     fun getCompartmentField(): PsiStringLiteralField {
-        return node.findChildByType(LcaElementTypes.COMPARTMENT_FIELD)?.psi as PsiStringLiteralField
+        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_compartmentField))?.psi as PsiStringLiteralField
     }
 
     fun getSubcompartmentField(): PsiStringLiteralField? {
-        return node.findChildByType(LcaElementTypes.SUB_COMPARTMENT_FIELD)?.psi as PsiStringLiteralField?
+        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_subCompartmentField))?.psi as PsiStringLiteralField?
     }
 
     fun getReferenceUnitField(): PsiUnitField {
-        return node.findChildByType(LcaElementTypes.REFERENCE_UNIT_FIELD)?.psi as PsiUnitField
+        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_referenceUnitField))?.psi as PsiUnitField
     }
 
     fun hasImpacts(): Boolean {
-        return node.findChildByType(LcaElementTypes.BLOCK_IMPACTS) != null
+        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_block_impacts)) != null
     }
 
     fun getBlockImpacts(): Collection<PsiBlockImpacts> {
-        return node.getChildren(TokenSet.create(LcaElementTypes.BLOCK_IMPACTS))
+        return node.getChildren(TokenSet.create(LcaTypes.rule(LcaLangParser.RULE_block_impacts)))
             .map { it.psi as PsiBlockImpacts }
     }
 

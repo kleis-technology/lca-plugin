@@ -1,41 +1,9 @@
 package ch.kleis.lcaplugin.language.ide.style
 
 import ch.kleis.lcaplugin.LcaLanguage.Companion.INSTANCE
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.ASSIGNMENT
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.BIO_EXCHANGE
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.BLOCK_EMISSIONS
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.BLOCK_INPUTS
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.BLOCK_META
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.BLOCK_PRODUCTS
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.BLOCK_RESOURCES
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.GLOBAL_ASSIGNMENT
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.GLOBAL_VARIABLES
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.IMPORT
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.INDICATOR_REF
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.PARAMS
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.PROCESS
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.PROCESS_TEMPLATE_REF
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.PRODUCT_REF
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.SUBSTANCE
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.SUBSTANCE_REF
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.TECHNO_INPUT_EXCHANGE
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.TECHNO_PRODUCT_EXCHANGE
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.UNIT_DEFINITION
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.UNIT_REF
-import ch.kleis.lcaplugin.psi.LcaElementTypes.Companion.VARIABLES
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.COMMENT_BLOCK_END
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.COMMENT_CONTENT
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.EQUAL
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.IDENTIFIER
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.LBRACE
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.LPAREN
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.MINUS
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.NUMBER
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.PLUS
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.RBRACE
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.RPAREN
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.SLASH
-import ch.kleis.lcaplugin.psi.LcaTokenTypes.Companion.STAR
+import ch.kleis.lcaplugin.grammar.LcaLangLexer
+import ch.kleis.lcaplugin.grammar.LcaLangParser
+import ch.kleis.lcaplugin.language.parser.LcaTypes
 import com.intellij.formatting.*
 import com.intellij.psi.codeStyle.CodeStyleSettings
 
@@ -43,6 +11,42 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 class LcaFormattingModelBuilder : FormattingModelBuilder {
 
     companion object {
+        private val IMPORT = LcaTypes.rule(LcaLangParser.RULE_pkgImport)
+        private val UNIT_DEFINITION = LcaTypes.rule(LcaLangParser.RULE_unitDefinition)
+        private val PROCESS = LcaTypes.rule(LcaLangParser.RULE_process)
+        private val SUBSTANCE = LcaTypes.rule(LcaLangParser.RULE_substance)
+        private val ASSIGNMENT = LcaTypes.rule(LcaLangParser.RULE_assignment)
+        private val GLOBAL_ASSIGNMENT = LcaTypes.rule(LcaLangParser.RULE_globalAssignment)
+        private val TECHNO_INPUT_EXCHANGE = LcaTypes.rule(LcaLangParser.RULE_technoInputExchange)
+        private val TECHNO_PRODUCT_EXCHANGE = LcaTypes.rule(LcaLangParser.RULE_technoProductExchange)
+        private val BIO_EXCHANGE = LcaTypes.rule(LcaLangParser.RULE_bioExchange)
+        private val UNIT_REF = LcaTypes.rule(LcaLangParser.RULE_unitRef)
+        private val PROCESS_TEMPLATE_REF = LcaTypes.rule(LcaLangParser.RULE_processTemplateRef)
+        private val PARAMS = LcaTypes.rule(LcaLangParser.RULE_params)
+        private val GLOBAL_VARIABLES = LcaTypes.rule(LcaLangParser.RULE_globalVariables)
+        private val VARIABLES = LcaTypes.rule(LcaLangParser.RULE_variables)
+        private val BLOCK_PRODUCTS = LcaTypes.rule(LcaLangParser.RULE_block_products)
+        private val BLOCK_INPUTS = LcaTypes.rule(LcaLangParser.RULE_block_inputs)
+        private val BLOCK_EMISSIONS = LcaTypes.rule(LcaLangParser.RULE_block_emissions)
+        private val BLOCK_RESOURCES = LcaTypes.rule(LcaLangParser.RULE_block_resources)
+        private val BLOCK_META = LcaTypes.rule(LcaLangParser.RULE_block_meta)
+        private val PRODUCT_REF = LcaTypes.rule(LcaLangParser.RULE_productRef)
+        private val SUBSTANCE_REF = LcaTypes.rule(LcaLangParser.RULE_substanceRef)
+        private val INDICATOR_REF = LcaTypes.rule(LcaLangParser.RULE_indicatorRef)
+
+        private val LBRACE = LcaTypes.token(LcaLangLexer.LBRACE)
+        private val RBRACE = LcaTypes.token(LcaLangLexer.RBRACE)
+        private val IDENTIFIER = LcaTypes.token(LcaLangLexer.ID)
+        private val LINE_COMMENT = LcaTypes.token(LcaLangLexer.LINE_COMMENT)
+        private val COMMENT = LcaTypes.token(LcaLangLexer.COMMENT)
+        private val PLUS = LcaTypes.token(LcaLangLexer.PLUS)
+        private val MINUS = LcaTypes.token(LcaLangLexer.MINUS)
+        private val SLASH = LcaTypes.token(LcaLangLexer.SLASH)
+        private val STAR = LcaTypes.token(LcaLangLexer.STAR)
+        private val EQUAL = LcaTypes.token(LcaLangLexer.EQUAL)
+        private val LPAREN = LcaTypes.token(LcaLangLexer.LPAREN)
+        private val RPAREN = LcaTypes.token(LcaLangLexer.RPAREN)
+        private val NUMBER = LcaTypes.token(LcaLangLexer.NUMBER)
 
         private fun createSpaceBuilder(settings: CodeStyleSettings): SpacingBuilder {
             return SpacingBuilder(settings, INSTANCE)
@@ -97,9 +101,9 @@ class LcaFormattingModelBuilder : FormattingModelBuilder {
                 .beforeInside(BLOCK_META, PROCESS)
                 .spacing(0 , 0, 0, true, 1)
                 // Comments
-                .before(COMMENT_CONTENT)
+                .before(COMMENT)
                 .spaces(0)
-                .before(COMMENT_BLOCK_END)
+                .before(LINE_COMMENT)
                 .spaces(0)
                 // Formula
                 .around(PLUS).spaces(1)

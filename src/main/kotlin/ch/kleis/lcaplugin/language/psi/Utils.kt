@@ -1,8 +1,8 @@
 package ch.kleis.lcaplugin.language.psi
 
+import ch.kleis.lcaplugin.grammar.LcaLangParser
+import ch.kleis.lcaplugin.language.parser.LcaTypes
 import ch.kleis.lcaplugin.language.psi.type.PsiProcess
-import ch.kleis.lcaplugin.psi.LcaElementTypes
-import ch.kleis.lcaplugin.psi.LcaTokenTypes
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 
@@ -12,4 +12,4 @@ import com.intellij.psi.util.elementType
  * Checks if a PsiElement is an LCA process.
  */
 fun isProcess(element: PsiElement): Boolean =
-        element.elementType == LcaTokenTypes.PROCESS_KEYWORD && element.parent is PsiProcess
+        element.elementType == LcaTypes.rule(LcaLangParser.RULE_process) && element.parent is PsiProcess
