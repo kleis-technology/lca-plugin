@@ -4,6 +4,7 @@ import ch.kleis.lcaplugin.LcaFileType
 import ch.kleis.lcaplugin.LcaLanguage
 import ch.kleis.lcaplugin.grammar.LcaLangParser
 import ch.kleis.lcaplugin.language.parser.LcaLangTokenSets
+import ch.kleis.lcaplugin.language.parser.LcaTypes
 import ch.kleis.lcaplugin.language.psi.type.*
 import ch.kleis.lcaplugin.language.psi.type.quantity.PsiQuantity
 import ch.kleis.lcaplugin.language.psi.type.unit.PsiUnitDefinition
@@ -24,9 +25,8 @@ class LcaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LcaLan
     }
 
     fun getPackageName(): String {
-        return node.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_pkg))
-            .firstOrNull()
-            ?.let { it as PsiPackage }
+        return node.findChildByType(LcaTypes.of(LcaLangParser.RULE_pkg))
+            ?.let { it.psi as PsiPackage }
             ?.name
             ?: "default"
     }

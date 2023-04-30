@@ -28,6 +28,32 @@ import org.antlr.v4.runtime.tree.ParseTree
 
 class LcaParserDefinition : ParserDefinition {
     companion object {
+        init {
+            PSIElementTypeFactory.defineLanguageIElementTypes(
+                LcaLanguage.INSTANCE,
+                LcaLangLexer.tokenNames,
+                LcaLangParser.ruleNames
+            )
+        }
+
+        val tokens: List<TokenIElementType> = PSIElementTypeFactory.getTokenIElementTypes(LcaLanguage.INSTANCE)
+        val rules: List<RuleIElementType> = PSIElementTypeFactory.getRuleIElementTypes(LcaLanguage.INSTANCE)
+
+        val ID : TokenSet = PSIElementTypeFactory.createTokenSet(
+            LcaLanguage.INSTANCE,
+            LcaLangLexer.ID,
+        )
+
+        val COMMENTS : TokenSet = PSIElementTypeFactory.createTokenSet(
+            LcaLanguage.INSTANCE,
+            LcaLangLexer.COMMENT,
+            LcaLangLexer.LINE_COMMENT,
+        )
+        val STRING_LITERALS : TokenSet = PSIElementTypeFactory.createTokenSet(
+            LcaLanguage.INSTANCE,
+            LcaLangLexer.STRING_LITERAL,
+        )
+
         val FILE = IStubFileElementType<PsiFileStubImpl<LcaFile>>(LcaLanguage.INSTANCE)
     }
 
@@ -38,7 +64,7 @@ class LcaParserDefinition : ParserDefinition {
 
     override fun createParser(project: Project?): PsiParser {
         val parser = LcaLangParser(null)
-        return object : ANTLRParserAdaptor(LcaLanguage.INSTANCE, parser)  {
+        return object : ANTLRParserAdaptor(LcaLanguage.INSTANCE, parser) {
             override fun parse(parser: Parser?, root: IElementType?): ParseTree {
                 if (root !is IFileElementType) {
                     throw UnsupportedOperationException()
@@ -53,11 +79,11 @@ class LcaParserDefinition : ParserDefinition {
     }
 
     override fun getCommentTokens(): TokenSet {
-        return LcaLangTokenSets.COMMENTS
+        return COMMENTS
     }
 
     override fun getStringLiteralElements(): TokenSet {
-        return LcaLangTokenSets.STRING_LITERALS
+        return STRING_LITERALS
     }
 
     override fun createElement(node: ASTNode): PsiElement {
