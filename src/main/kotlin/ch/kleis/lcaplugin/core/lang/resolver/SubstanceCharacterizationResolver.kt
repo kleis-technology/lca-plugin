@@ -9,25 +9,11 @@ class SubstanceCharacterizationResolver(
 ) {
     fun resolve(spec: ESubstanceSpec): ESubstanceCharacterization? {
         val name = spec.name
-        val mType = spec.type
-        val mComp: String? = spec.compartment
-        val mSubcomp: String? = spec.subcompartment
+        val type = spec.type ?: return null
+        val compartment = spec.compartment ?: return null
 
-        /* Required for resolve */
-        if (mComp == null || mType == null) {
-            return null
-        }
-
-        if (mSubcomp == null) {
-            return symbolTable.getSubstanceCharacterization(name, mType, mComp)
-        } else {
-            val mResult = symbolTable.getSubstanceCharacterization(name, mType, mComp, mSubcomp)
-            if (mResult != null) {
-                return mResult
-            } else {
-                return symbolTable.getSubstanceCharacterization(name, mType, mComp)
-            }
-        }
-
+        return spec.subcompartment?.let { subCompartment ->
+            symbolTable.getSubstanceCharacterization(name, type, compartment, subCompartment)
+        } ?: symbolTable.getSubstanceCharacterization(name, type, compartment)
     }
 }
