@@ -47,10 +47,10 @@ class SubstanceCharacterizationResolverTest {
     @Test
     fun resolve_whenTwoDifferentCompartments() {
         // given
-        val propanolAir = SubstanceFixture.substanceWithDefaults(compartment = "air")
+        val propanolAir = SubstanceFixture.propanol.copy(compartment = "air")
         val propanolAirCharacterization = SubstanceCharacterizationFixture.substanceCharacterizationFor(propanolAir)
 
-        val propanolWater = SubstanceFixture.substanceWithDefaults(compartment = "water")
+        val propanolWater = SubstanceFixture.propanol.copy(compartment = "water")
         val propanolWaterCharacterization = SubstanceCharacterizationFixture.substanceCharacterizationFor(propanolWater)
 
         val substanceCharacterizations: Register<ESubstanceCharacterization> = Register.from(
@@ -70,5 +70,33 @@ class SubstanceCharacterizationResolverTest {
 
         // then
         assertEquals(propanolAirCharacterization, actual)
+    }
+
+    @Test
+    fun resolve_whenTwoDifferentSubCompartments() {
+        // given
+        val propanolAirSpaceG = SubstanceFixture.propanol.copy(compartment = "air", subcompartment = "airspace G")
+        val propanolAirSpaceGCharacterization = SubstanceCharacterizationFixture.substanceCharacterizationFor(propanolAirSpaceG)
+
+        val propanolAirSpaceE = SubstanceFixture.propanol.copy(compartment = "air", subcompartment = "airspace E")
+        val propanolAirSpaceECharacterization = SubstanceCharacterizationFixture.substanceCharacterizationFor(propanolAirSpaceE)
+
+        val substanceCharacterizations: Register<ESubstanceCharacterization> = Register.from(
+            mapOf(
+                "a" to propanolAirSpaceGCharacterization,
+                "b" to propanolAirSpaceECharacterization,
+            )
+        )
+
+        val symbolTable = SymbolTable(
+            substanceCharacterizations = substanceCharacterizations,
+        )
+        val resolver = SubstanceCharacterizationResolver(symbolTable)
+
+        // when
+        val actual = resolver.resolve(propanolAirSpaceG)
+
+        // then
+        assertEquals(propanolAirSpaceGCharacterization, actual)
     }
 }
