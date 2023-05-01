@@ -2,6 +2,7 @@ package ch.kleis.lcaplugin.core.lang
 
 import arrow.optics.Every
 import ch.kleis.lcaplugin.core.lang.expression.*
+import ch.kleis.lcaplugin.core.lang.expression.optics.EverySubstanceNameAndCompartment
 
 data class SymbolTable(
     val quantities: Register<QuantityExpression> = Register.empty(),
@@ -9,16 +10,16 @@ data class SymbolTable(
     val processTemplates: Register<EProcessTemplate> = Register.empty(),
     val substanceCharacterizations: Register<ESubstanceCharacterization> = Register.empty(),
 ) {
-    private val templatesIndexedByProductName: Index<EProcessTemplate> = Index(
+    private val templatesIndexedByProductName: Index<String, EProcessTemplate> = Index(
         processTemplates,
         EProcessTemplate.body.products compose
-                Every.list() compose
-                ETechnoExchange.product compose
-                EProductSpec.name
+            Every.list() compose
+            ETechnoExchange.product compose
+            EProductSpec.name
     )
-    private val substanceCharacterizationsIndexedBySubstanceName: Index<ESubstanceCharacterization> = Index(
+    private val substanceCharacterizationsIndexedByPairNameCompartment: Index<Pair<String, String?>, ESubstanceCharacterization> = Index(
         substanceCharacterizations,
-        ESubstanceCharacterization.referenceExchange.substance.name,
+        ESubstanceCharacterization.referenceExchange.substance compose EverySubstanceNameAndCompartment,
     )
 
     companion object {
@@ -41,8 +42,8 @@ data class SymbolTable(
         return substanceCharacterizations[name]
     }
 
-    fun getSubstanceCharacterizationFromSubstanceName(name: String): ESubstanceCharacterization? {
-        return substanceCharacterizationsIndexedBySubstanceName[name]
+    fun getSubstanceCharacterizationFromPairNameCompartment(name: String, compartment: String?): ESubstanceCharacterization? {
+        return substanceCharacterizationsIndexedByPairNameCompartment[Pair(name, compartment)]
     }
 
     fun getTemplateFromProductName(name: String): EProcessTemplate? {

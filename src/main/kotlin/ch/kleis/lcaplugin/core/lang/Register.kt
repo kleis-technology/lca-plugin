@@ -20,7 +20,7 @@ class Register<E> private constructor(
         }
     }
 
-    fun getEntries(optics: PEvery<E, E, String, String>): Map<String, E> {
+    fun <K> getEntries(optics: PEvery<E, E, K, K>): Map<K, E> {
         return data.entries.asSequence()
             .flatMap { entry -> optics.getAll(entry.value).map { value -> value to entry.value } }
             // ensure no duplicate by calling reduce as soon as there is a second element in a group
