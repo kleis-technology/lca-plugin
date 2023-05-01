@@ -32,6 +32,8 @@ class Register<E> private constructor(
         return data[key]
     }
 
+    fun getValues(): Sequence<E> = data.values.asSequence()
+
     override fun toString(): String {
         return "[register<${registerType}>]"
     }
