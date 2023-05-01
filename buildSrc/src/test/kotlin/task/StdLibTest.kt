@@ -2,6 +2,8 @@ package task
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
 
 class StdLibTest {
@@ -55,6 +57,20 @@ class StdLibTest {
         // then
         val expected = "_123abcd"
         assertEquals(expected, actual)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "w123a>bcd, w123a_gt_bcd, Greater than conversion",
+        "w123a<bcd, w123a_lt_bcd, Lesser than conversion",
+        "w123a/bcd, w123a_sl_bcd, Slash conversion",
+    )
+    fun sanitizeString_withSpecialChar_shouldBeReplace(source: String, expected: String, desc: String) {
+        // when
+        val actual = sanitizeString(source)
+
+        // then
+        assertEquals(expected, actual, desc)
     }
 
 }
