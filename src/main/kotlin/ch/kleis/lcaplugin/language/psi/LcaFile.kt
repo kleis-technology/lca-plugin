@@ -25,40 +25,40 @@ class LcaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LcaLan
     }
 
     fun getPackageName(): String {
-        return node.findChildByType(LcaTypes.rule(LcaLangParser.RULE_pkg))
+        return node.firstChildNode.findChildByType(LcaTypes.rule(LcaLangParser.RULE_pkg))
             ?.let { it.psi as PsiPackage }
             ?.name
             ?: "default"
     }
 
     fun getImports(): Collection<PsiImport> {
-        return node.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_pkgImport))
+        return node.firstChildNode.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_pkgImport))
             .map { it.psi as PsiImport }
     }
 
     fun getProcesses(): Collection<PsiProcess> {
-        return node.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_process))
+        return node.firstChildNode.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_process))
             .map { it.psi as PsiProcess }
     }
 
     fun getSubstances(): Collection<PsiSubstance> {
-        return node.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_substance))
+        return node.firstChildNode.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_substance))
             .map { it.psi as PsiSubstance }
     }
 
     fun getGlobalAssignments(): Collection<Pair<String, PsiQuantity>> {
-        return node.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_globalVariables))
+        return node.firstChildNode.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_globalVariables))
             .map { it.psi as PsiGlobalVariables }
             .flatMap { it.getEntries() }
     }
 
     fun getUnitDefinitions(): Collection<PsiUnitDefinition> {
-        return node.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_unitDefinition))
+        return node.firstChildNode.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_unitDefinition))
             .map { it.psi as PsiUnitDefinition }
     }
 
     fun getPsiGlobalVariablesBlocks(): Collection<PsiGlobalVariables> {
-        return node.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_globalVariables))
+        return node.firstChildNode.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_globalVariables))
             .map { it.psi as PsiGlobalVariables }
     }
 
