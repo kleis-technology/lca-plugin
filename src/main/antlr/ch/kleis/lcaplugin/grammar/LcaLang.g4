@@ -1,7 +1,7 @@
 grammar LcaLang;
 
 lcaFile
-	:	pkg? pkgImport* ( process | unitDefinition | substance | globalVariables )* EOF
+	:	pkg? pkgImport* ( process | unitDefinition | substance | globalVariables )*
 	;
 
 pkg
@@ -247,6 +247,15 @@ uid : ID ;
     Lexems
 */
 
+NUMBER
+	:   INT ('.' INT)? EXP?   // 1.35, 1.35E-9, 0.3, 4.5, 1e-10
+	;
+fragment INT : [0-9]+ ;
+fragment EXP :   [Ee] [+\-]? INT ;
+
+STRING_LITERAL :  '"' (ESC | ~["\\])* '"' ;
+fragment ESC :   '\\' ["\bfnrt] ;
+
 PACKAGE_KEYWORD : 'package' ;
 IMPORT_KEYWORD : 'import' ;
 VARIABLES_KEYWORD : 'variables' ;
@@ -295,15 +304,6 @@ LINE_COMMENT : '//' .*? ('\n'|EOF)	-> channel(HIDDEN) ;
 COMMENT      : '/*' .*? '*/'    	-> channel(HIDDEN) ;
 
 ID  : [a-zA-Z_] [a-zA-Z0-9_]* ;
-INT : [0-9]+ ;
-NUMBER
-	:   '-'? INT '.' INT EXP?   // 1.35, 1.35E-9, 0.3, -4.5
-	|   '-'? INT EXP?            // 1e10 -3e4
-	;
-fragment EXP :   [Ee] [+\-]? INT ;
-
-STRING_LITERAL :  '"' (ESC | ~["\\])* '"' ;
-fragment ESC :   '\\' ["\bfnrt] ;
 
 WS : [ \t\n\r]+ -> channel(HIDDEN) ;
 
