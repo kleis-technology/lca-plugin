@@ -22,15 +22,20 @@ class SubstanceReferenceTest : BasePlatformTestCase() {
     fun test_resolve() {
         // given
         val pkgName = "language.psi.reference.subst.test_resolve"
-        val ref = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
+        val substanceSpec = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
             .getEmissions().first()
-            .getSubstanceRef()
+            .getSubstanceSpec()
 
         // when
-        val actual = ref.reference.resolve()
+        val actual = substanceSpec.reference.resolve()
 
         // then
-        val expected = SubstanceKeyIndex.findSubstances(project, "$pkgName.co2_air.co2_air").first()
+        val expected = SubstanceKeyIndex.findSubstances(
+            project,
+            "$pkgName.co2_air.co2_air",
+            "Emission",
+            "air"
+        ).first()
         TestCase.assertEquals(expected, actual)
     }
 
@@ -38,17 +43,24 @@ class SubstanceReferenceTest : BasePlatformTestCase() {
     fun test_getVariants() {
         // given
         val pkgName = "language.psi.reference.subst.test_resolve"
-        val ref = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
+        val spec = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
             .getEmissions().first()
-            .getSubstanceRef()
+            .getSubstanceSpec()
 
         // when
-        val actual = ref.reference
+        val actual = spec.reference
             .variants.map { (it as LookupElementBuilder).lookupString }
             .sorted()
 
         // then
-        val expected = listOf("co2_air", "another_co2_air").sorted()
+        val expected = listOf(
+            "another_co2_air",
+            """another_co2_air(type="Emission", compartment="air", sub_compartment="another")""",
+            """another_co2_air(type="Resource", compartment="air", sub_compartment="another")""",
+            """co2_air""",
+            """co2_air(type="Emission", compartment="air")""",
+            """co2_air(type="Resource", compartment="air")"""
+        ).sorted()
         TestCase.assertEquals(expected, actual)
     }
 }

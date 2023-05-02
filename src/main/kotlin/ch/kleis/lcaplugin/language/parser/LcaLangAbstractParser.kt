@@ -83,7 +83,7 @@ class LcaLangAbstractParser(
         return ESubstanceSpec(
             psiSubstance.getSubstanceRef().name,
             psiSubstance.getNameField().getValue(),
-            SubstanceType.of(psiSubstance.getTypeField().getType()),
+            SubstanceType.of(psiSubstance.getTypeField().getValue()),
             psiSubstance.getCompartmentField().getValue(),
             psiSubstance.getSubcompartmentField()?.getValue(),
             unit(psiSubstance.getReferenceUnitField().getValue())
@@ -162,7 +162,7 @@ class LcaLangAbstractParser(
         return ESubstanceSpec(
             name = psiSubstance.getSubstanceRef().name,
             displayName = psiSubstance.getNameField().getValue(),
-            type = SubstanceType.of(psiSubstance.getTypeField().getType()),
+            type = SubstanceType.of(psiSubstance.getTypeField().getValue()),
             compartment = psiSubstance.getCompartmentField().getValue(),
             subcompartment = psiSubstance.getSubcompartmentField()?.getValue(),
             referenceUnit = unit(psiSubstance.getReferenceUnitField().getValue()),

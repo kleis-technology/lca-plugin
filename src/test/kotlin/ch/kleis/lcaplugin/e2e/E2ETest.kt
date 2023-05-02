@@ -27,7 +27,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                         1 kg a
                     }
                     emissions {
-                        1 kg b(compartment="compartment)
+                        1 kg b(compartment="compartment")
                     }
                 }
                 

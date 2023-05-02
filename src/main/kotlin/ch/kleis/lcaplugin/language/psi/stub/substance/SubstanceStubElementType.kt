@@ -25,7 +25,11 @@ class SubstanceStubElementType(debugName: String) : ILightStubElementType<Substa
     @Suppress("UNCHECKED_CAST")
     override fun createStub(psi: PsiSubstance, parentStub: StubElement<out PsiElement>?): SubstanceStub {
         val fqn = psi.getSubstanceRef().getFullyQualifiedName()
-        return SubstanceStubImpl(parentStub as StubElement<PsiSubstance>, fqn)
+        val type = psi.getTypeField().getValue()
+        val compartment = psi.getCompartmentField().getValue()
+        val subCompartment = psi.getSubcompartmentField()?.getValue()
+        val key = substanceKey(fqn, type, compartment, subCompartment)
+        return SubstanceStubImpl(parentStub as StubElement<PsiSubstance>, key)
     }
 
     override fun createPsi(stub: SubstanceStub): PsiSubstance {
@@ -33,10 +37,10 @@ class SubstanceStubElementType(debugName: String) : ILightStubElementType<Substa
     }
 
     override fun indexStub(stub: SubstanceStub, sink: IndexSink) {
-        sink.occurrence(LcaStubIndexKeys.SUBSTANCES, stub.fqn);
+        sink.occurrence(LcaStubIndexKeys.SUBSTANCES, stub.key);
     }
 
     override fun serialize(stub: SubstanceStub, dataStream: StubOutputStream) {
-        dataStream.writeName(stub.fqn);
+        dataStream.writeName(stub.key);
     }
 }
