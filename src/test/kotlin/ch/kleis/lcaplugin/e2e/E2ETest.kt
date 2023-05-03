@@ -7,7 +7,6 @@ import ch.kleis.lcaplugin.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaplugin.core.lang.expression.EProcessTemplate
 import ch.kleis.lcaplugin.core.lang.expression.EQuantityLiteral
 import ch.kleis.lcaplugin.core.lang.fixture.DimensionFixture
-import ch.kleis.lcaplugin.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaplugin.core.matrix.InventoryError
 import ch.kleis.lcaplugin.core.matrix.InventoryMatrix
 import ch.kleis.lcaplugin.language.parser.LcaLangAbstractParser
@@ -16,7 +15,6 @@ import ch.kleis.lcaplugin.language.psi.LcaFile
 import com.intellij.testFramework.ParsingTestCase
 import junit.framework.TestCase
 import org.junit.Assert
-import kotlin.test.assertContains
 
 class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     fun test_substanceResolution() {
@@ -74,11 +72,11 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                 "compartmentTest", """
                     substance co_2 {
                         name = "carbon dioxyde air"
-                        type = Emission
+                        type = Resource
                         compartment = "air"
                         reference_unit = kg
                         impacts {
-                            5 kg climate_change
+                            3 kg climate_change
                         }
                     }
 
@@ -90,7 +88,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                         sub_compartment = "underground"
                         reference_unit = kg
                         impacts {
-                            -5 kg climate_change
+                            -2 kg climate_change
                         }
                     }
 
@@ -100,8 +98,8 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                             1 kg bar
                         }
                         resources {
-                            4 kg co_2 ( compartment = "air", sub_compartment = "doesNotExist" )
-                            5 kg co_2 ( compartment = "land", sub_compartment = "underground" )
+                            2 kg co_2 ( compartment = "air", sub_compartment = "doesNotExist" )
+                             3 kg co_2 ( compartment = "land", sub_compartment = "underground" )
                         }
                     }
 
@@ -110,7 +108,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                             1 kg foo
                         }
                         inputs {
-                            5 kg bar
+                            2 kg bar
                         }
                      } 
                 """.trimIndent()
@@ -125,15 +123,11 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         when (val result = assessment.inventory()) {
             is InventoryError -> fail("$result")
             is InventoryMatrix -> {
-                val output = result.observablePorts.getElements()
-                val input = result.controllablePorts.getElements().first()
-                val cf = result.value(output.last(), input)
+                val output = result.observablePorts.get("foo from foo{}")
+                val input = result.controllablePorts.get("climate_change")
+                val cf = result.value(output, input)
 
-                assertContains(output.map(MatrixColumnIndex::name), "foo from foo{}")
-                assertContains(output.map(MatrixColumnIndex::name), "bar from bar{}")
-
-                TestCase.assertEquals("climate_change", input.name())
-                TestCase.assertEquals(5.0, cf.input.quantity().amount)
+                TestCase.assertEquals(0.0, cf.input.quantity().amount)
                 TestCase.assertEquals(DimensionFixture.mass.getDefaultUnitValue(), cf.input.quantity().unit)
             }
         }
