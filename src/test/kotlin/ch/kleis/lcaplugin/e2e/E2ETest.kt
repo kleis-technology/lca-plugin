@@ -7,6 +7,7 @@ import ch.kleis.lcaplugin.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaplugin.core.lang.expression.EProcessTemplate
 import ch.kleis.lcaplugin.core.lang.expression.EQuantityLiteral
 import ch.kleis.lcaplugin.core.lang.fixture.DimensionFixture
+import ch.kleis.lcaplugin.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaplugin.core.matrix.InventoryError
 import ch.kleis.lcaplugin.core.matrix.InventoryMatrix
 import ch.kleis.lcaplugin.language.parser.LcaLangAbstractParser
@@ -15,11 +16,12 @@ import ch.kleis.lcaplugin.language.psi.LcaFile
 import com.intellij.testFramework.ParsingTestCase
 import junit.framework.TestCase
 import org.junit.Assert
+import kotlin.test.assertContains
 
 class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     fun test_substanceResolution() {
         val file = parseFile(
-            "hello", """
+                "hello", """
                 process p {
                     products {
                         1 kg a
@@ -67,10 +69,80 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         }
     }
 
+    fun test_resolve_whenUnspecifiedCompartment_ShouldResolveToCompartment() {
+        val file = parseFile(
+                "compartmentTest", """
+                    substance co_2 {
+                        name = "carbon dioxyde air"
+                        type = Emission
+                        compartment = "air"
+                        reference_unit = kg
+                        impacts {
+                            5 kg climate_change
+                        }
+                    }
+
+
+                    substance co_2 {
+                        name = "carbon dioxyde land"
+                        type = Resource
+                        compartment = "land"
+                        sub_compartment = "underground"
+                        reference_unit = kg
+                        impacts {
+                            -5 kg climate_change
+                        }
+                    }
+
+
+                    process bar {
+                        products {
+                            1 kg bar
+                        }
+                        resources {
+                            4 kg co_2 ( compartment = "air", sub_compartment = "doesNotExist" )
+                            5 kg co_2 ( compartment = "land", sub_compartment = "underground" )
+                        }
+                    }
+
+                    process foo {
+                        products {
+                            1 kg foo
+                        }
+                        inputs {
+                            5 kg bar
+                        }
+                     } 
+                """.trimIndent()
+        ) as LcaFile
+        val parser = LcaLangAbstractParser(sequenceOf(file))
+
+        // when
+        val symbolTable = parser.load()
+        val entryPoint = symbolTable.processTemplates["foo"]!!
+        val system = Evaluator(symbolTable).eval(entryPoint)
+        val assessment = Assessment(system)
+        when (val result = assessment.inventory()) {
+            is InventoryError -> fail("$result")
+            is InventoryMatrix -> {
+                val output = result.observablePorts.getElements()
+                val input = result.controllablePorts.getElements().first()
+                val cf = result.value(output.last(), input)
+
+                assertContains(output.map(MatrixColumnIndex::name), "foo from foo{}")
+                assertContains(output.map(MatrixColumnIndex::name), "bar from bar{}")
+
+                TestCase.assertEquals("climate_change", input.name())
+                TestCase.assertEquals(5.0, cf.input.quantity().amount)
+                TestCase.assertEquals(DimensionFixture.mass.getDefaultUnitValue(), cf.input.quantity().unit)
+            }
+        }
+    }
+
     fun test_meta_whenKeywordAsKey() {
         // given
         val file = parseFile(
-            "hello", """
+                "hello", """
                 process p {
                     meta {
                         "unit" = "a"
@@ -93,7 +165,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     fun test_operationPriority() {
         // given
         val file = parseFile(
-            "hello", """
+                "hello", """
             process p {
                 variables {
                     q = 2 m/kg
@@ -136,7 +208,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     fun test_twoInstancesSameTemplate_whenOneImplicit() {
         // given
         val file = parseFile(
-            "hello", """
+                "hello", """
             process office {
                 products {
                     1 piece office
@@ -192,7 +264,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     fun test_twoInstancesSameTemplate_whenExplicit() {
         // given
         val file = parseFile(
-            "hello", """
+                "hello", """
             process office {
                 products {
                     1 piece office
@@ -248,7 +320,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     fun test_manyInstancesSameTemplate() {
         // given
         val file = parseFile(
-            "hello", """
+                "hello", """
             process office {
                 products {
                     1 piece office
@@ -310,7 +382,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     fun test_allocate() {
         // given
         val file = parseFile(
-            "hello", """
+                "hello", """
             process p {
                 products {
                     1 kg out1 allocate 90 percent
@@ -349,7 +421,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     fun test_allocate_whenOneProduct_allocateIsOptional() {
         // given
         val file = parseFile(
-            "hello", """
+                "hello", """
             process p {
                 products {
                     1 kg out
@@ -361,7 +433,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         // when
         val symbolTable = parser.load()
         val actual =
-            (((symbolTable.processTemplates["p"] as EProcessTemplate).body).products[0].allocation as EQuantityLiteral).amount
+                (((symbolTable.processTemplates["p"] as EProcessTemplate).body).products[0].allocation as EQuantityLiteral).amount
         // then
         TestCase.assertEquals(100.0, actual)
     }
@@ -369,7 +441,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     fun test_allocate_whenSecondaryBlock_EmptyBlockIsAllowed() {
         // given
         val file = parseFile(
-            "hello", """
+                "hello", """
             process p {
                 products {
                     1 kg out
@@ -383,7 +455,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         // when
         val symbolTable = parser.load()
         val actual =
-            (((symbolTable.processTemplates["p"] as EProcessTemplate).body).products[0].allocation as EQuantityLiteral).amount
+                (((symbolTable.processTemplates["p"] as EProcessTemplate).body).products[0].allocation as EQuantityLiteral).amount
         // then
         TestCase.assertEquals(100.0, actual)
     }
@@ -391,7 +463,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     fun test_allocate_whenTwoProducts_shouldReturnWeightedResult() {
         // given
         val file = parseFile(
-            "hello", """
+                "hello", """
             process p {
                 products {
                     1 kg out allocate 20 percent
@@ -432,7 +504,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     fun test_unitAlias_whenInfiniteLoop_shouldThrowAnError() {
         // given
         val file = parseFile(
-            "hello", """
+                "hello", """
             unit foo {
                 symbol = "foo"
                 alias_for = 1 foo
@@ -460,7 +532,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     fun test_unitAlias_whenNestedInfiniteLoop_shouldThrowAnError() {
         // given
         val file = parseFile(
-            "hello", """
+                "hello", """
             unit bar {
                 symbol = "bar"
                 alias_for = 1 foo
@@ -493,7 +565,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     fun test_unitAlias_shouldNotThrowAnError() {
         // given
         val file = parseFile(
-            "hello", """
+                "hello", """
             unit bar {
                 symbol = "bar"
                 alias_for = 1 kg
@@ -525,7 +597,7 @@ class E2ETest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     fun test_unitAlias_whenAdditionInAliasForField_shouldNotThrowAnError() {
         // given
         val file = parseFile(
-            "hello", """
+                "hello", """
             unit bar {
                 symbol = "bar"
                 alias_for = 1 kg
