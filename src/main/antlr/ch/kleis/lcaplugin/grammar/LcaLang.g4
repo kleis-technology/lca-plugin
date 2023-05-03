@@ -248,7 +248,7 @@ uid : ID ;
 */
 
 NUMBER
-	:   INT ('.' INT)? EXP?   // 1.35, 1.35E-9, 0.3, 4.5, 1e-10
+	:   [+\-]? INT ('.' INT)? EXP?   // 1.35, 1.35E-9, 0.3, 4.5, 1e-10
 	;
 fragment INT : [0-9]+ ;
 fragment EXP :   [Ee] [+\-]? INT ;
