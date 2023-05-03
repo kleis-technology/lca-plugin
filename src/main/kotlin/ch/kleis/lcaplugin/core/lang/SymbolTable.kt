@@ -17,6 +17,20 @@ data class SymbolTable(
                     EProductSpec.name
     )
 
+    private val substanceCharacterizationsIndexed = buildSubstanceIndex(substanceCharacterizations)
+
+    private fun buildSubstanceIndex(substanceCharacterizations: Register<ESubstanceCharacterization>): Map<Triple<String, SubstanceType, String>, Map<String?, ESubstanceCharacterization>> {
+        fun getName(esc: ESubstanceCharacterization): String = esc.referenceExchange.substance.name
+        fun getType(esc: ESubstanceCharacterization): SubstanceType? = esc.referenceExchange.substance.type
+        fun getCompartment(esc: ESubstanceCharacterization): String? = esc.referenceExchange.substance.compartment
+        fun getSubCompartment(esc: ESubstanceCharacterization): String? = esc.referenceExchange.substance.subCompartment
+
+        return substanceCharacterizations.getValues()
+                .groupBy { Triple(getName(it), getType(it)!!, getCompartment((it))!!) }.mapValues { mapEntry ->
+                    mapEntry.value.associateBy(::getSubCompartment)
+                }
+    }
+
     companion object {
         fun empty() = SymbolTable()
     }
@@ -38,21 +52,11 @@ data class SymbolTable(
         return substanceCharacterizations[name]
     }
 
-    fun getSubstanceCharacterization(name: String, type: SubstanceType, compartment: String): ESubstanceCharacterization? {
-        return substanceCharacterizations.getValues().firstOrNull { sc ->
-            sc.referenceExchange.substance.let {
-                it.name == name && it.type == type && it.compartment == compartment
-            }
-        }
-    }
+    fun getSubstanceCharacterization(name: String, type: SubstanceType, compartment: String): ESubstanceCharacterization? =
+            substanceCharacterizationsIndexed[Triple(name, type, compartment)]?.get(null)
 
-    fun getSubstanceCharacterization(name: String, type: SubstanceType, compartment: String, subCompartment: String): ESubstanceCharacterization? {
-        return substanceCharacterizations.getValues().firstOrNull { sc ->
-            sc.referenceExchange.substance.let {
-                it.name == name && it.type == type && it.compartment == compartment && it.subCompartment == subCompartment
-            }
-        }
-    }
+    fun getSubstanceCharacterization(name: String, type: SubstanceType, compartment: String, subCompartment: String): ESubstanceCharacterization? =
+            substanceCharacterizationsIndexed[Triple(name, type, compartment)]?.get(subCompartment)
 
     fun getTemplateFromProductName(name: String): EProcessTemplate? {
         return templatesIndexedByProductName[name]
