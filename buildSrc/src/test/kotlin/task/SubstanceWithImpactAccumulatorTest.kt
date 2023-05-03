@@ -30,7 +30,7 @@ class SubstanceWithImpactAccumulatorTest {
         val expected = """
                 package ef31
 
-                substance _3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene_soil_non_agricultural {
+                substance _3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene {
 
                     name = "((3-(sec-butyl)-4-(decyloxy)phenyl)methanetriyl)tribenzene"
                     type = Emission
@@ -74,7 +74,7 @@ class SubstanceWithImpactAccumulatorTest {
         val expected = """
                 package ef30
 
-                substance _3ar_5as_9as_9br_3a_6_6_9a_tetramethyldodecahydronaphtho_2_1_b_furan_water {
+                substance _3ar_5as_9as_9br_3a_6_6_9a_tetramethyldodecahydronaphtho_2_1_b_furan {
 
                     name = "(-)-(3ar,5as,9as,9br)-3a,6,6,9a-tetramethyldodecahydronaphtho[2,1-b]furan"
                     type = Emission
