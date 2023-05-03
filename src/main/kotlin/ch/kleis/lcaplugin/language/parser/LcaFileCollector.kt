@@ -2,6 +2,7 @@ package ch.kleis.lcaplugin.language.parser
 
 import ch.kleis.lcaplugin.language.psi.LcaFile
 import ch.kleis.lcaplugin.language.psi.type.ref.*
+import ch.kleis.lcaplugin.language.psi.type.spec.PsiSubstanceSpec
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -54,7 +55,7 @@ class LcaFileCollector(
     private fun allReferences(file: LcaFile): List<PsiElement> {
         return PsiTreeUtil.findChildrenOfAnyType(
             file,
-            PsiSubstanceRef::class.java,
+            PsiSubstanceSpec::class.java,
             PsiQuantityRef::class.java,
             PsiProductRef::class.java,
             PsiProcessTemplateRef::class.java,
