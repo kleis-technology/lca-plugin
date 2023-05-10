@@ -27,8 +27,10 @@ import ch.kleis.lcaplugin.language.psi.type.unit.PsiUnitFactor
 import ch.kleis.lcaplugin.language.psi.type.unit.PsiUnitPrimitive
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
+import com.intellij.lang.PsiBuilder
 import com.intellij.lang.PsiParser
 import com.intellij.lexer.Lexer
+import com.intellij.openapi.progress.ProgressIndicatorProvider
 import com.intellij.openapi.project.Project
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
@@ -42,9 +44,11 @@ import org.antlr.intellij.adaptor.lexer.ANTLRLexerAdaptor
 import org.antlr.intellij.adaptor.lexer.PSIElementTypeFactory
 import org.antlr.intellij.adaptor.lexer.RuleIElementType
 import org.antlr.intellij.adaptor.lexer.TokenIElementType
+import org.antlr.intellij.adaptor.parser.ANTLRParseTreeToPSIConverter
 import org.antlr.intellij.adaptor.parser.ANTLRParserAdaptor
 import org.antlr.intellij.adaptor.psi.ANTLRPsiNode
 import org.antlr.v4.runtime.Parser
+import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.tree.ParseTree
 
 class LcaParserDefinition : ParserDefinition {
@@ -56,6 +60,11 @@ class LcaParserDefinition : ParserDefinition {
                 LcaLangParser.ruleNames
             )
         }
+
+        /**
+         * It is best to initialize element types in this companion object of parser definition,
+         * because these element types must be created before index are initialized.
+         */
 
         val tokens: List<TokenIElementType> = PSIElementTypeFactory.getTokenIElementTypes(LcaLanguage.INSTANCE)
         val rules: List<RuleIElementType> = PSIElementTypeFactory.getRuleIElementTypes(LcaLanguage.INSTANCE)
@@ -102,6 +111,31 @@ class LcaParserDefinition : ParserDefinition {
                 }
                 return (parser as LcaLangParser).lcaFile()
             }
+
+            override fun createListener(
+                parser: Parser?,
+                root: IElementType?,
+                builder: PsiBuilder?
+            ): ANTLRParseTreeToPSIConverter {
+                return object : ANTLRParseTreeToPSIConverter(LcaLanguage.INSTANCE, parser, builder) {
+                    /**
+                     * Mark stub with the appropriate stub element type
+                     * Cf. super.exitEveryRule(ctx)
+                     */
+                    override fun exitEveryRule(ctx: ParserRuleContext) {
+                        ProgressIndicatorProvider.checkCanceled()
+                        val marker = markers.pop()
+                        when (val ruleIndex = ctx.ruleIndex) {
+                            LcaLangParser.RULE_globalAssignment -> marker.done(GLOBAL_ASSIGNMENT)
+                            LcaLangParser.RULE_process -> marker.done(PROCESS)
+                            LcaLangParser.RULE_substance -> marker.done(SUBSTANCE)
+                            LcaLangParser.RULE_technoProductExchange -> marker.done(TECHNO_PRODUCT_EXCHANGE)
+                            LcaLangParser.RULE_unitDefinition -> marker.done(UNIT)
+                            else -> marker.done(rules[ruleIndex])
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -122,82 +156,71 @@ class LcaParserDefinition : ParserDefinition {
     }
 
     override fun createElement(node: ASTNode): PsiElement {
-        val elType = node.elementType
-        if (elType is TokenIElementType) {
-            return ANTLRPsiNode(node)
-        }
-        if (elType !is RuleIElementType) {
-            return ANTLRPsiNode(node)
-        }
-        return when (elType.ruleIndex) {
-            LcaLangParser.RULE_pkg -> PsiPackage(node)
-            LcaLangParser.RULE_pkgImport -> PsiImport(node)
+        return when (node.elementType) {
+            /**
+             * Don't forget the stub element types
+             * (set by the listener in the parser above)
+             */
+            GLOBAL_ASSIGNMENT -> PsiGlobalAssignment(node)
+            PROCESS -> PsiProcess(node)
+            SUBSTANCE -> PsiSubstance(node)
+            TECHNO_PRODUCT_EXCHANGE -> PsiTechnoProductExchange(node)
+            UNIT -> PsiUnitDefinition(node)
 
-            LcaLangParser.RULE_process -> PsiProcess(node)
-            LcaLangParser.RULE_parameterRef -> PsiParameterRef(node)
-            LcaLangParser.RULE_processTemplateRef -> PsiProcessTemplateRef(node)
+            rules[LcaLangParser.RULE_pkg] -> PsiPackage(node)
+            rules[LcaLangParser.RULE_pkgImport] -> PsiImport(node)
+            rules[LcaLangParser.RULE_process] -> PsiProcess(node)
+            rules[LcaLangParser.RULE_parameterRef] -> PsiParameterRef(node)
+            rules[LcaLangParser.RULE_processTemplateRef] -> PsiProcessTemplateRef(node)
+            rules[LcaLangParser.RULE_params] -> PsiParameters(node)
+            rules[LcaLangParser.RULE_assignment] -> PsiAssignment(node)
+            rules[LcaLangParser.RULE_variables] -> PsiVariables(node)
+            rules[LcaLangParser.RULE_block_products] -> PsiBlockProducts(node)
+            rules[LcaLangParser.RULE_technoProductExchange] -> PsiTechnoProductExchange(node)
+            rules[LcaLangParser.RULE_technoProductExchangeWithAllocateField] -> PsiTechnoProductExchangeWithAllocateField(
+                node
+            )
 
-            LcaLangParser.RULE_params -> PsiParameters(node)
-            LcaLangParser.RULE_assignment -> PsiAssignment(node)
-
-            LcaLangParser.RULE_variables -> PsiVariables(node)
-
-            LcaLangParser.RULE_block_products -> PsiBlockProducts(node)
-            LcaLangParser.RULE_technoProductExchange -> PsiTechnoProductExchange(node)
-            LcaLangParser.RULE_technoProductExchangeWithAllocateField -> PsiTechnoProductExchangeWithAllocateField(node)
-
-            LcaLangParser.RULE_block_inputs -> PsiBlockInputs(node)
-            LcaLangParser.RULE_technoInputExchange -> PsiTechnoInputExchange(node)
-            LcaLangParser.RULE_productRef -> PsiProductRef(node)
-            LcaLangParser.RULE_fromProcessConstraint -> PsiFromProcessConstraint(node)
-            LcaLangParser.RULE_comma_sep_arguments -> ANTLRPsiNode(node) // TODO: make rule private or introduce PsiXYZ
-            LcaLangParser.RULE_argument -> PsiArgument(node)
-
-            LcaLangParser.RULE_allocateField -> PsiAllocateField(node)
-
-            LcaLangParser.RULE_block_emissions -> PsiBlockEmissions(node)
-            LcaLangParser.RULE_block_land_use -> PsiBlockLandUse(node)
-            LcaLangParser.RULE_block_resources -> PsiBlockResources(node)
-            LcaLangParser.RULE_bioExchange -> PsiBioExchange(node)
-
-            LcaLangParser.RULE_block_meta -> PsiBlockMeta(node)
-
-            LcaLangParser.RULE_block_impacts -> PsiBlockImpacts(node)
-            LcaLangParser.RULE_impactExchange -> PsiImpactExchange(node)
-            LcaLangParser.RULE_indicatorRef -> PsiIndicatorRef(node)
-
-
-            LcaLangParser.RULE_unitDefinition -> PsiUnitDefinition(node)
-            LcaLangParser.RULE_substance -> PsiSubstance(node)
-            LcaLangParser.RULE_globalVariables -> PsiGlobalVariables(node)
-            LcaLangParser.RULE_globalAssignment -> PsiGlobalAssignment(node)
-            LcaLangParser.RULE_substanceRef -> PsiSubstanceRef(node)
-
-            LcaLangParser.RULE_nameField -> PsiStringLiteralField(node)
-            LcaLangParser.RULE_typeField -> PsiStringLiteralField(node)
-            LcaLangParser.RULE_compartmentField -> PsiStringLiteralField(node)
-            LcaLangParser.RULE_subCompartmentField -> PsiStringLiteralField(node)
-            LcaLangParser.RULE_dimField -> PsiStringLiteralField(node)
-            LcaLangParser.RULE_symbolField -> PsiStringLiteralField(node)
-            LcaLangParser.RULE_referenceUnitField -> PsiUnitField(node)
-            LcaLangParser.RULE_aliasForField -> PsiAliasForField(node)
-
-
-            LcaLangParser.RULE_meta_assignment -> PsiMetaAssignment(node)
-
-            LcaLangParser.RULE_quantityRef -> PsiQuantityRef(node)
-            LcaLangParser.RULE_quantity -> PsiQuantity(node)
-            LcaLangParser.RULE_quantityTerm -> PsiQuantityTerm(node)
-            LcaLangParser.RULE_quantityFactor -> PsiQuantityFactor(node)
-            LcaLangParser.RULE_quantityPrimitive -> PsiQuantityPrimitive(node)
-
-            LcaLangParser.RULE_unit -> PsiUnit(node)
-            LcaLangParser.RULE_unitFactor -> PsiUnitFactor(node)
-            LcaLangParser.RULE_unitPrimitive -> PsiUnitPrimitive(node)
-            LcaLangParser.RULE_unitRef -> PsiUnitRef(node)
-
-            LcaLangParser.RULE_urn -> PsiUrn(node)
-            LcaLangParser.RULE_uid -> PsiUID(node)
+            rules[LcaLangParser.RULE_block_inputs] -> PsiBlockInputs(node)
+            rules[LcaLangParser.RULE_technoInputExchange] -> PsiTechnoInputExchange(node)
+            rules[LcaLangParser.RULE_productRef] -> PsiProductRef(node)
+            rules[LcaLangParser.RULE_fromProcessConstraint] -> PsiFromProcessConstraint(node)
+            rules[LcaLangParser.RULE_comma_sep_arguments] -> ANTLRPsiNode(node) // TODO: make rule private or introduce PsiXYZ
+            rules[LcaLangParser.RULE_argument] -> PsiArgument(node)
+            rules[LcaLangParser.RULE_allocateField] -> PsiAllocateField(node)
+            rules[LcaLangParser.RULE_block_emissions] -> PsiBlockEmissions(node)
+            rules[LcaLangParser.RULE_block_land_use] -> PsiBlockLandUse(node)
+            rules[LcaLangParser.RULE_block_resources] -> PsiBlockResources(node)
+            rules[LcaLangParser.RULE_bioExchange] -> PsiBioExchange(node)
+            rules[LcaLangParser.RULE_block_meta] -> PsiBlockMeta(node)
+            rules[LcaLangParser.RULE_block_impacts] -> PsiBlockImpacts(node)
+            rules[LcaLangParser.RULE_impactExchange] -> PsiImpactExchange(node)
+            rules[LcaLangParser.RULE_indicatorRef] -> PsiIndicatorRef(node)
+            rules[LcaLangParser.RULE_unitDefinition] -> PsiUnitDefinition(node)
+            rules[LcaLangParser.RULE_substance] -> PsiSubstance(node)
+            rules[LcaLangParser.RULE_globalVariables] -> PsiGlobalVariables(node)
+            rules[LcaLangParser.RULE_globalAssignment] -> PsiGlobalAssignment(node)
+            rules[LcaLangParser.RULE_substanceRef] -> PsiSubstanceRef(node)
+            rules[LcaLangParser.RULE_nameField] -> PsiStringLiteralField(node)
+            rules[LcaLangParser.RULE_typeField] -> PsiStringLiteralField(node)
+            rules[LcaLangParser.RULE_compartmentField] -> PsiStringLiteralField(node)
+            rules[LcaLangParser.RULE_subCompartmentField] -> PsiStringLiteralField(node)
+            rules[LcaLangParser.RULE_dimField] -> PsiStringLiteralField(node)
+            rules[LcaLangParser.RULE_symbolField] -> PsiStringLiteralField(node)
+            rules[LcaLangParser.RULE_referenceUnitField] -> PsiUnitField(node)
+            rules[LcaLangParser.RULE_aliasForField] -> PsiAliasForField(node)
+            rules[LcaLangParser.RULE_meta_assignment] -> PsiMetaAssignment(node)
+            rules[LcaLangParser.RULE_quantityRef] -> PsiQuantityRef(node)
+            rules[LcaLangParser.RULE_quantity] -> PsiQuantity(node)
+            rules[LcaLangParser.RULE_quantityTerm] -> PsiQuantityTerm(node)
+            rules[LcaLangParser.RULE_quantityFactor] -> PsiQuantityFactor(node)
+            rules[LcaLangParser.RULE_quantityPrimitive] -> PsiQuantityPrimitive(node)
+            rules[LcaLangParser.RULE_unit] -> PsiUnit(node)
+            rules[LcaLangParser.RULE_unitFactor] -> PsiUnitFactor(node)
+            rules[LcaLangParser.RULE_unitPrimitive] -> PsiUnitPrimitive(node)
+            rules[LcaLangParser.RULE_unitRef] -> PsiUnitRef(node)
+            rules[LcaLangParser.RULE_urn] -> PsiUrn(node)
+            rules[LcaLangParser.RULE_uid] -> PsiUID(node)
 
             else -> ANTLRPsiNode(node)
         }
