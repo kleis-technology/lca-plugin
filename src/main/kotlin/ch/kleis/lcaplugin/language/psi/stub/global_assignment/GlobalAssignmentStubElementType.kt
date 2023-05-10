@@ -30,8 +30,7 @@ class GlobalAssignmentStubElementType(debugName: String) :
     }
 
     override fun createPsi(stub: GlobalAssignmentStub): PsiGlobalAssignment {
-//        return LcaGlobalAssignmentImpl(stub, this)
-        TODO()
+        return PsiGlobalAssignment(stub, this)
     }
 
     override fun indexStub(stub: GlobalAssignmentStub, sink: IndexSink) {

@@ -45,8 +45,7 @@ class TechnoProductExchangeElementType(debugName: String) : ILightStubElementTyp
     }
 
     override fun createPsi(stub: TechnoProductExchangeStub): PsiTechnoProductExchange {
-//        return LcaTechnoProductExchangeImpl(stub, this)
-        TODO()
+        return PsiTechnoProductExchange(stub, this)
     }
 
     override fun indexStub(stub: TechnoProductExchangeStub, sink: IndexSink) {

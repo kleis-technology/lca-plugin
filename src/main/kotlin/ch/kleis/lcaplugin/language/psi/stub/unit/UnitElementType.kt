@@ -35,8 +35,7 @@ class UnitElementType(debugName: String) : ILightStubElementType<
     }
 
     override fun createPsi(stub: UnitStub): PsiUnitDefinition {
-//        return LcaUnitDefinitionImpl(stub, this)
-        TODO()
+        return PsiUnitDefinition(stub, this)
     }
 
     override fun indexStub(stub: UnitStub, sink: IndexSink) {

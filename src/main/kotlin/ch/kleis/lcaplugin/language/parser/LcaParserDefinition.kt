@@ -4,6 +4,11 @@ import ch.kleis.lcaplugin.LcaLanguage
 import ch.kleis.lcaplugin.grammar.LcaLangLexer
 import ch.kleis.lcaplugin.grammar.LcaLangParser
 import ch.kleis.lcaplugin.language.psi.LcaFile
+import ch.kleis.lcaplugin.language.psi.stub.global_assignment.GlobalAssignmentStubElementType
+import ch.kleis.lcaplugin.language.psi.stub.process.ProcessStubElementType
+import ch.kleis.lcaplugin.language.psi.stub.substance.SubstanceStubElementType
+import ch.kleis.lcaplugin.language.psi.stub.techno_product_exchange.TechnoProductExchangeElementType
+import ch.kleis.lcaplugin.language.psi.stub.unit.UnitElementType
 import ch.kleis.lcaplugin.language.psi.type.*
 import ch.kleis.lcaplugin.language.psi.type.block.*
 import ch.kleis.lcaplugin.language.psi.type.exchange.*
@@ -54,6 +59,12 @@ class LcaParserDefinition : ParserDefinition {
 
         val tokens: List<TokenIElementType> = PSIElementTypeFactory.getTokenIElementTypes(LcaLanguage.INSTANCE)
         val rules: List<RuleIElementType> = PSIElementTypeFactory.getRuleIElementTypes(LcaLanguage.INSTANCE)
+
+        val GLOBAL_ASSIGNMENT = GlobalAssignmentStubElementType("globalAssignment")
+        val PROCESS = ProcessStubElementType("process")
+        val SUBSTANCE = SubstanceStubElementType("substance")
+        val TECHNO_PRODUCT_EXCHANGE = TechnoProductExchangeElementType("technoProductExchange")
+        val UNIT = UnitElementType("unit")
 
         val ID: TokenSet = PSIElementTypeFactory.createTokenSet(
             LcaLanguage.INSTANCE,

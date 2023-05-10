@@ -30,8 +30,7 @@ class ProcessStubElementType(debugName: String) :
     }
 
     override fun createPsi(stub: ProcessStub): PsiProcess {
-//        return LcaProcessImpl(stub, this)
-        TODO()
+        return PsiProcess(stub, this)
     }
 
     override fun indexStub(stub: ProcessStub, sink: IndexSink) {

@@ -28,8 +28,7 @@ class SubstanceStubElementType(debugName: String) : ILightStubElementType<Substa
     }
 
     override fun createPsi(stub: SubstanceStub): PsiSubstance {
-//        return LcaSubstanceImpl(stub, this)
-        TODO()
+        return PsiSubstance(stub, this)
     }
 
     override fun indexStub(stub: SubstanceStub, sink: IndexSink) {
