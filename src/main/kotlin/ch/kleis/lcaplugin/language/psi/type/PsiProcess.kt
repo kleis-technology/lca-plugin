@@ -102,7 +102,8 @@ class PsiProcess : StubBasedPsiElementBase<ProcessStub>, PsiNameIdentifierOwner,
     }
 
     override fun getBlockMetaList(): List<PsiBlockMeta> {
-        TODO("Not yet implemented")
+        return node.getChildren(TokenSet.create(LcaTypes.rule(LcaLangParser.RULE_block_meta)))
+            .map { it.psi as PsiBlockMeta }
     }
 
     override fun processDeclarations(

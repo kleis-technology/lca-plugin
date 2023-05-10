@@ -10,6 +10,6 @@ import com.intellij.psi.PsiElement
 class PsiBlockMeta(node: ASTNode) : ASTWrapperPsiElement(node), PsiElement {
     fun getAssignments(): Collection<PsiMetaAssignment> {
         return node.getChildren(LcaLangTokenSets.create(LcaLangParser.RULE_meta_assignment))
-            .map { it as PsiMetaAssignment }
+            .map { it.psi as PsiMetaAssignment }
     }
 }
