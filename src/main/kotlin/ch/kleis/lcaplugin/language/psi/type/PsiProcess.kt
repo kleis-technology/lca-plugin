@@ -16,11 +16,19 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.ResolveState
+import com.intellij.psi.StubBasedPsiElement
 import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.TokenSet
 
-class PsiProcess : StubBasedPsiElementBase<ProcessStub>, PsiNameIdentifierOwner, BlockMetaOwner {
+/**
+ * StubBasedPsiElementBase<X> and StubBasedPsiElement<X> are not related.
+ */
+class PsiProcess :
+    StubBasedPsiElementBase<ProcessStub>,
+    StubBasedPsiElement<ProcessStub>,
+    PsiNameIdentifierOwner,
+    BlockMetaOwner {
     constructor(node: ASTNode) : super(node)
     constructor(stub: ProcessStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 

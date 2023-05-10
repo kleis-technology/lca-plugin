@@ -9,9 +9,11 @@ import com.intellij.extapi.psi.StubBasedPsiElementBase
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
+import com.intellij.psi.StubBasedPsiElement
 import com.intellij.psi.stubs.IStubElementType
 
-class PsiGlobalAssignment : StubBasedPsiElementBase<GlobalAssignmentStub>, PsiNameIdentifierOwner {
+class PsiGlobalAssignment : StubBasedPsiElementBase<GlobalAssignmentStub>, StubBasedPsiElement<GlobalAssignmentStub>,
+    PsiNameIdentifierOwner {
     constructor(node: ASTNode) : super(node)
     constructor(stub: GlobalAssignmentStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 

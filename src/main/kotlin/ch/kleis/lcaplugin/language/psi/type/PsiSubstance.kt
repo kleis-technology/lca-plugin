@@ -15,10 +15,15 @@ import com.intellij.extapi.psi.StubBasedPsiElementBase
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
+import com.intellij.psi.StubBasedPsiElement
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.TokenSet
 
-class PsiSubstance : BlockMetaOwner, PsiNameIdentifierOwner, StubBasedPsiElementBase<SubstanceStub> {
+class PsiSubstance :
+    BlockMetaOwner,
+    PsiNameIdentifierOwner,
+    StubBasedPsiElementBase<SubstanceStub>,
+    StubBasedPsiElement<SubstanceStub> {
     constructor(node: ASTNode) : super(node)
     constructor(stub: SubstanceStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 

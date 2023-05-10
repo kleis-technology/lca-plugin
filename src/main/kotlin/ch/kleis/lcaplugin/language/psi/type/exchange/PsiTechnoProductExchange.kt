@@ -9,9 +9,13 @@ import com.intellij.extapi.psi.StubBasedPsiElementBase
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
+import com.intellij.psi.StubBasedPsiElement
 import com.intellij.psi.stubs.IStubElementType
 
-class PsiTechnoProductExchange : StubBasedPsiElementBase<TechnoProductExchangeStub>, PsiNameIdentifierOwner {
+class PsiTechnoProductExchange :
+    StubBasedPsiElementBase<TechnoProductExchangeStub>,
+    StubBasedPsiElement<TechnoProductExchangeStub>,
+    PsiNameIdentifierOwner {
     constructor(node: ASTNode) : super(node)
     constructor(stub: TechnoProductExchangeStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
