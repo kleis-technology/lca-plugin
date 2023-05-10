@@ -69,6 +69,10 @@ class LcaParserDefinition : ParserDefinition {
             LcaLanguage.INSTANCE,
             LcaLangLexer.STRING_LITERAL,
         )
+        val WHITESPACES: TokenSet = PSIElementTypeFactory.createTokenSet(
+            LcaLanguage.INSTANCE,
+            LcaLangLexer.WS,
+        )
 
         val FILE = IStubFileElementType<PsiFileStubImpl<LcaFile>>(LcaLanguage.INSTANCE)
     }
@@ -96,6 +100,10 @@ class LcaParserDefinition : ParserDefinition {
 
     override fun getCommentTokens(): TokenSet {
         return COMMENTS
+    }
+
+    override fun getWhitespaceTokens(): TokenSet {
+        return WHITESPACES
     }
 
     override fun getStringLiteralElements(): TokenSet {
