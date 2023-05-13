@@ -46,7 +46,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
             fail("should have thrown")
         } catch (e: PsiTypeCheckException) {
             TestCase.assertEquals(
-                """circular dependencies: "1 bar ...", "1 bar ...", "1 bar ...", "1 bar ...", "1 foo ...", "1 foo ...", "1""",
+                """circular dependencies: "1 bar ...", "1 bar ...", "1 bar ...", "1 foo ...", "1 foo ...", "1 foo ...", "b""",
                 e.message
             )
         }
