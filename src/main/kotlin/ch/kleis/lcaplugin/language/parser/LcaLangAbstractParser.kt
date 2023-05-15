@@ -263,7 +263,7 @@ class LcaLangAbstractParser(
     }
 
     private fun quantity(quantity: PsiQuantity): QuantityExpression {
-        val term = qTerm(quantity.getTerm())
+        val term = qMulTerm(quantity.getTerm())
         return when (quantity.getOperationType()) {
             AdditiveOperationType.ADD -> EQuantityAdd(
                 term, quantity(quantity.getNext()!!)
@@ -277,19 +277,18 @@ class LcaLangAbstractParser(
         }
     }
 
-    private fun qTerm(term: PsiQuantityTerm): QuantityExpression {
-        val factor = qFactor(term.getFactor())
-        return when (term.getOperationType()) {
-            MultiplicativeOperationType.MUL -> EQuantityMul(
-                factor, qTerm(term.getNext()!!)
-            )
+    private fun qMulTerm(term: PsiQuantityMulTerm): QuantityExpression {
+        val leftExpression = qDivTerm(term.getLeft())
+        return term.getRight()?.let { multiplier ->
+            EQuantityMul(leftExpression, qMulTerm(multiplier))
+        } ?: leftExpression
+    }
 
-            MultiplicativeOperationType.DIV -> EQuantityDiv(
-                factor, qTerm(term.getNext()!!)
-            )
-
-            null -> factor
-        }
+    private fun qDivTerm(term: PsiQuantityDivideTerm): QuantityExpression {
+        val leftExpression = qFactor(term.getLeft())
+        return term.getRight()?.let { divisor ->
+            EQuantityDiv(leftExpression, qDivTerm(divisor))
+        } ?: leftExpression
     }
 
     private fun qFactor(factor: PsiQuantityFactor): QuantityExpression {

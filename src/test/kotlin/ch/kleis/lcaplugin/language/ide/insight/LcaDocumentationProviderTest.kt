@@ -8,7 +8,10 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.jetbrains.rd.util.first
 import junit.framework.TestCase
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
+@RunWith(JUnit4::class)
 class LcaDocumentationProviderTest : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
         return ""
@@ -157,7 +160,8 @@ class LcaDocumentationProviderTest : BasePlatformTestCase() {
         val ref = file.getProcesses().first()
             .getParameters().first().value
             .getTerm()
-            .getFactor()
+            .getLeft()
+            .getLeft()
             .getPrimitive()
             .getRef() as LcaQuantityRef
         val sut = LcaDocumentationProvider()
@@ -209,7 +213,8 @@ class LcaDocumentationProviderTest : BasePlatformTestCase() {
         val ref = file.getProcesses().first()
             .getParameters().first().value
             .getTerm()
-            .getFactor()
+            .getLeft()
+            .getLeft()
             .getPrimitive()
             .getRef() as LcaQuantityRef
         val sut = LcaDocumentationProvider()
@@ -260,7 +265,8 @@ class LcaDocumentationProviderTest : BasePlatformTestCase() {
         val ref = file.getProcesses().first()
             .getParameters().first().value
             .getTerm()
-            .getFactor()
+            .getLeft()
+            .getLeft()
             .getPrimitive()
             .getRef() as LcaQuantityRef
         val sut = LcaDocumentationProvider()
@@ -311,7 +317,8 @@ class LcaDocumentationProviderTest : BasePlatformTestCase() {
         val ref = file.getProcesses().first()
             .getParameters().first().value
             .getTerm()
-            .getFactor()
+            .getLeft()
+            .getLeft()
             .getPrimitive()
             .getRef() as LcaQuantityRef
         val sut = LcaDocumentationProvider()
@@ -362,7 +369,8 @@ class LcaDocumentationProviderTest : BasePlatformTestCase() {
         val ref = file.getProcesses().first()
             .getParameters()["yield"]!!
             .getTerm()
-            .getFactor()
+            .getLeft()
+            .getLeft()
             .getPrimitive()
             .getRef() as LcaQuantityRef
         val sut = LcaDocumentationProvider()

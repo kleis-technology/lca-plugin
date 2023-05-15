@@ -5,8 +5,8 @@ import ch.kleis.lcaplugin.psi.LcaTypes
 import com.intellij.psi.PsiElement
 
 interface PsiQuantity : PsiElement {
-    fun getTerm(): PsiQuantityTerm {
-        return node.findChildByType(LcaTypes.QUANTITY_TERM)?.psi as PsiQuantityTerm
+    fun getTerm(): PsiQuantityMulTerm {
+        return node.findChildByType(LcaTypes.QUANTITY_MUL_TERM)?.psi as PsiQuantityMulTerm
     }
 
     fun getOperationType(): AdditiveOperationType? {

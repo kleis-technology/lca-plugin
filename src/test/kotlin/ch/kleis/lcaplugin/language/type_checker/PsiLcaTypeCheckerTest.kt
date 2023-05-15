@@ -12,6 +12,7 @@ import ch.kleis.lcaplugin.language.psi.stub.unit.UnitKeyIndex
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
 import org.junit.Test
+import kotlin.test.assertFailsWith
 
 class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
@@ -41,14 +42,12 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
         val checker = PsiLcaTypeChecker()
 
         // when/then
-        try {
+        assertFailsWith(
+            PsiTypeCheckException::class,
+            """circular dependencies: "1 bar ...", "1 bar ...", "1 bar ...", "1 foo ...", "1 foo ...", "1 foo ...", "b""",
+        )
+        {
             checker.check(target)
-            fail("should have thrown")
-        } catch (e: PsiTypeCheckException) {
-            TestCase.assertEquals(
-                """circular dependencies: "1 bar ...", "1 bar ...", "1 bar ...", "1 foo ...", "1 foo ...", "1 foo ...", "b""",
-                e.message
-            )
         }
     }
 

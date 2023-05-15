@@ -6,7 +6,10 @@ import ch.kleis.lcaplugin.language.psi.stub.unit.UnitKeyIndex
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
+@RunWith(JUnit4::class)
 class QuantityReferenceTest : BasePlatformTestCase() {
 
     override fun getTestDataPath(): String {
@@ -27,7 +30,8 @@ class QuantityReferenceTest : BasePlatformTestCase() {
         val ref = process.getProducts().first()
             .getQuantity()
             .getTerm()
-            .getFactor()
+            .getLeft()
+            .getLeft()
             .getPrimitive()
             .getRef()
 
@@ -49,7 +53,8 @@ class QuantityReferenceTest : BasePlatformTestCase() {
         val ref = process.getProducts().first()
             .getQuantity()
             .getTerm()
-            .getFactor()
+            .getLeft()
+            .getLeft()
             .getPrimitive()
             .getRef()
 

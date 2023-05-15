@@ -297,14 +297,19 @@ impactExchange ::= quantity indicatorRef {
     Quantity
  */
 
-quantity ::= quantityTerm ((PLUS | MINUS) quantity)? {
+quantity ::= quantityMulTerm ((PLUS | MINUS) quantity)? {
     implements=["ch.kleis.lcaplugin.language.psi.type.quantity.PsiQuantity"]
     mixin="ch.kleis.lcaplugin.language.psi.mixin.quantity.PsiQuantityMixin"
 }
 
-quantityTerm ::= quantityFactor ((STAR | SLASH) quantityTerm)? {
-    implements=["ch.kleis.lcaplugin.language.psi.type.quantity.PsiQuantityTerm"]
-    mixin="ch.kleis.lcaplugin.language.psi.mixin.quantity.PsiQuantityTermMixin"
+quantityMulTerm ::= quantityDivideTerm (STAR quantityMulTerm)? {
+    implements=["ch.kleis.lcaplugin.language.psi.type.quantity.PsiQuantityMulTerm"]
+    mixin="ch.kleis.lcaplugin.language.psi.mixin.quantity.PsiQuantityMulTermMixin"
+}
+
+quantityDivideTerm ::= quantityFactor (SLASH quantityDivideTerm)? {
+    implements=["ch.kleis.lcaplugin.language.psi.type.quantity.PsiQuantityDivideTerm"]
+    mixin="ch.kleis.lcaplugin.language.psi.mixin.quantity.PsiQuantityDivideTermMixin"
 }
 
 quantityFactor ::= quantityFactorScale? quantityPrimitive (HAT quantityFactorExponent)? {

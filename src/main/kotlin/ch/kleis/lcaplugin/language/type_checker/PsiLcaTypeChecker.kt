@@ -7,7 +7,6 @@ import ch.kleis.lcaplugin.language.psi.type.PsiAssignment
 import ch.kleis.lcaplugin.language.psi.type.PsiGlobalAssignment
 import ch.kleis.lcaplugin.language.psi.type.PsiProcess
 import ch.kleis.lcaplugin.language.psi.type.enums.AdditiveOperationType
-import ch.kleis.lcaplugin.language.psi.type.enums.MultiplicativeOperationType
 import ch.kleis.lcaplugin.language.psi.type.exchange.PsiTechnoInputExchange
 import ch.kleis.lcaplugin.language.psi.type.exchange.PsiTechnoProductExchange
 import ch.kleis.lcaplugin.language.psi.type.quantity.*
@@ -120,7 +119,7 @@ class PsiLcaTypeChecker {
 
     private fun checkQuantity(element: PsiQuantity): TQuantity {
         return rec.guard { el: PsiQuantity ->
-            val tyLeft = checkQuantityTerm(el.getTerm())
+            val tyLeft = checkQuantityMulTerm(el.getTerm())
             when (el.getOperationType()) {
                 AdditiveOperationType.ADD, AdditiveOperationType.SUB -> {
                     val tyRight = checkQuantity(el.getNext()!!)
@@ -135,23 +134,23 @@ class PsiLcaTypeChecker {
         }(element)
     }
 
-    private fun checkQuantityTerm(element: PsiQuantityTerm): TQuantity {
-        return rec.guard { el: PsiQuantityTerm ->
-            val tyLeft = checkQuantityFactor(el.getFactor())
-            when (el.getOperationType()) {
-                MultiplicativeOperationType.MUL -> {
-                    val tyRight = checkQuantityTerm(el.getNext()!!)
-                    TQuantity(tyLeft.dimension.multiply(tyRight.dimension))
+    private fun checkQuantityMulTerm(element: PsiQuantityMulTerm): TQuantity {
+        return rec.guard { el: PsiQuantityMulTerm ->
+            val tyLeft = checkQuantityDivideTerm(el.getLeft())
+            element.getRight()?.let { multiplier ->
+                val tyRight = checkQuantityMulTerm(multiplier)
+                TQuantity(tyLeft.dimension.multiply(tyRight.dimension))
+            } ?: tyLeft
+        }(element)
+    }
 
-                }
-
-                MultiplicativeOperationType.DIV -> {
-                    val tyRight = checkQuantityTerm(el.getNext()!!)
-                    TQuantity(tyLeft.dimension.divide(tyRight.dimension))
-                }
-
-                null -> tyLeft
-            }
+    private fun checkQuantityDivideTerm(element: PsiQuantityDivideTerm): TQuantity {
+        return rec.guard { el: PsiQuantityDivideTerm ->
+            val tyLeft = checkQuantityFactor(el.getLeft())
+            element.getRight()?.let { divisor ->
+                val tyRight = checkQuantityDivideTerm(divisor)
+                TQuantity(tyLeft.dimension.divide(tyRight.dimension))
+            } ?: tyLeft
         }(element)
     }
 
