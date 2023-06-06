@@ -12,6 +12,9 @@ fun sanitizeString(s: String): String {
     val spaces = """\s+""".toRegex()
     val nonAlphaNumeric = """[^a-zA-Z0-9]+""".toRegex()
     return r.replace(spaces, "_")
+        .replace(">", "_gt_")
+        .replace("<", "_lt_")
+        .replace("/", "_sl_")
         .replace(nonAlphaNumeric, "_")
         .trimEnd('_')
 }
