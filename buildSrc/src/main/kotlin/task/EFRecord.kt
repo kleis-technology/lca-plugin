@@ -27,12 +27,12 @@ sealed class EFRecord(val record: CSVRecord) {
     }
 
     fun substanceId(): String {
-        return sanitizeString(this.substanceDisplayName()).lowercase()
+        return sanitizeString(this.substanceDisplayName()+ "_" + this.type()).lowercase()
     }
 
     fun dimension(): String = record["FLOW_property"].trim().lowercase()
     fun lcaFileName(): String = record["FLOW_name"]
-        .replace("/", "|").replace("\\", "|")
+        .replace("/", "|").replace("\\", "|") + "_" + this.type()
 
     fun substanceDisplayName(): String = record["FLOW_name"].replace("\"", "\\\"")
     fun substanceName(): String = sanitizeString(record["FLOW_name"].replace("\"", "\\\""))

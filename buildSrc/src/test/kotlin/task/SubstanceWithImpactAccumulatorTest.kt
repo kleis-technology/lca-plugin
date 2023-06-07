@@ -26,11 +26,11 @@ class SubstanceWithImpactAccumulatorTest {
         val actual = sut.createSubstancesAsString("31") { i -> EF31Record(i) }
 
         // then
-        val key = "_3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene"
+        val key = "_3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene_Emission"
         val expected = """
                 package ef31
 
-                substance _3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene {
+                substance _3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene_emission {
 
                     name = "((3-(sec-butyl)-4-(decyloxy)phenyl)methanetriyl)tribenzene"
                     type = Emission
@@ -70,11 +70,11 @@ class SubstanceWithImpactAccumulatorTest {
         val actual = sut.createSubstancesAsString("30") { i -> EF30Record(i) }
 
         // then
-        val key = "_3ar_5as_9as_9br_3a_6_6_9a_tetramethyldodecahydronaphtho_2_1_b_furan"
+        val key = "_3ar_5as_9as_9br_3a_6_6_9a_tetramethyldodecahydronaphtho_2_1_b_furan_Emission"
         val expected = """
                 package ef30
 
-                substance _3ar_5as_9as_9br_3a_6_6_9a_tetramethyldodecahydronaphtho_2_1_b_furan {
+                substance _3ar_5as_9as_9br_3a_6_6_9a_tetramethyldodecahydronaphtho_2_1_b_furan_emission {
 
                     name = "(-)-(3ar,5as,9as,9br)-3a,6,6,9a-tetramethyldodecahydronaphtho[2,1-b]furan"
                     type = Emission
