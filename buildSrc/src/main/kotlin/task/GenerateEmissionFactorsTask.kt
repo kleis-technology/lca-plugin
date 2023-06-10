@@ -31,7 +31,7 @@ class GenerateEmissionFactorsTask<T : EFRecord>(val inputDir: DirectoryProperty,
     fun createSubstancesAsString(shortVersion: String, constructor: (r: CSVRecord) -> T): Map<String, String> {
         val substances = loadAllRecords(shortVersion)
             .map { constructor(it) }
-            .groupingBy { it.substanceId() }
+            .groupingBy { it.fullyQualifiedDisplayName() }
             .fold({ _: String, _: T -> SubstanceWithImpactAccumulator() },
                 { _: String, accumulator: SubstanceWithImpactAccumulator, element: T -> accumulator.addElement(element) })
         val dict = listOf("Name;Type;Compartment;SubCompartment").plus(

@@ -26,8 +26,12 @@ sealed class EFRecord(val record: CSVRecord) {
         }
     }
 
-    fun substanceId(): String {
+    fun sanitizedSubstanceName(): String {
         return sanitizeString(this.substanceDisplayName()).lowercase()
+    }
+
+    fun fullyQualifiedDisplayName(): String {
+        return "${substanceDisplayName()}(compartment=${compartment()}, sub_compartment=${subCompartment()}"
     }
 
     fun dimension(): String = record["FLOW_property"].trim().lowercase()
