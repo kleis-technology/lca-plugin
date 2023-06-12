@@ -11,7 +11,7 @@ import java.io.File
 import java.io.InputStream
 import java.util.concurrent.Callable
 
-class SubstanceWithImpactAccumulatorTest {
+class GenerateEmissionFactorsTaskTest {
 
     @Test
     fun substance31() {
@@ -41,6 +41,26 @@ class SubstanceWithImpactAccumulatorTest {
                     impacts {
                         2.0522E-08 u Human_toxicity_non_cancer
                         2.0522E-08 u Human_toxicity_non_cancer_organics
+                    }
+
+                    meta {
+                        "generator" = "kleis-lca-generator"
+                        "casNumber" = "1404190-37-9"
+                        "ecNumber"  = "801-941-7"
+                    }
+
+                }
+
+                substance _3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene {
+
+                    name = "((3-(sec-butyl)-4-(decyloxy)phenyl)methanetriyl)tribenzene"
+                    type = Emission
+                    compartment = "air"
+                    sub_compartment = "indoor"
+                    reference_unit = kg
+
+                    impacts {
+                        4.02E-08 u Human_toxicity_non_cancer_organics
                     }
 
                     meta {
@@ -117,6 +137,7 @@ class SubstanceWithImpactAccumulatorTest {
         val expected = """
                 Name;Type;Compartment;SubCompartment
                 _3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene;Emission;soil;non-agricultural
+                _3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene;Emission;air;indoor
                 """.trimIndent()
         Assertions.assertEquals(expected, actual[key])
     }
