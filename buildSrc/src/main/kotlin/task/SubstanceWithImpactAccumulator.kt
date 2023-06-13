@@ -32,7 +32,7 @@ class SubstanceWithImpactAccumulator {
 
     private val substanceContent: String
         get() = """
-            |substance ${substanceRecord?.substanceId()} {
+            |substance ${substanceRecord?.sanitizedSubstanceName()} {
             |
             |$substanceBody
             |
@@ -45,7 +45,7 @@ class SubstanceWithImpactAccumulator {
             |    name = "${substanceRecord?.substanceDisplayName()}"
             |    type = $substanceType
             |    compartment = "$substanceCompartment"
-            |${getSubCompartiment()}
+            |${getSubCompartment()}
             |    reference_unit = ${substanceRecord?.unit()}
             |
             |$impactsSubsection
@@ -83,7 +83,7 @@ class SubstanceWithImpactAccumulator {
         """.trimMargin()
         } else ""
 
-    private fun getSubCompartiment(): String {
+    private fun getSubCompartment(): String {
         val sub = substanceSubCompartment
         @Suppress("SameParameterValue")
         return if (sub.isNullOrBlank()) {
