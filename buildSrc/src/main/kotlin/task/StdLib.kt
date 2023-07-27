@@ -26,7 +26,7 @@ fun generateZipEntry(outputStream: ZipOutputStream, currentFileName: String, zip
         val folderParam = ZipParameters()
         folderParam.fileNameInZip = currentFileName.substring(0, index)
         outputStream.putNextEntry(folderParam)
-        parameters.fileNameInZip = "$currentFileName"
+        parameters.fileNameInZip = currentFileName
     } else {
         parameters.fileNameInZip = "$currentFileName.lca"
     }

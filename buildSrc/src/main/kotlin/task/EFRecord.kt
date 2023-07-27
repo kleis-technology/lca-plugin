@@ -8,7 +8,7 @@ sealed class EFRecord(val record: CSVRecord) {
             "Emissions" -> "Emission"
             "Resources" -> "Resource"
             "Land use" -> "Land_use"
-            else -> throw IllegalStateException("${this} is not proper type")
+            else -> throw IllegalStateException("$this is not proper type")
         }
     }
 
@@ -16,8 +16,7 @@ sealed class EFRecord(val record: CSVRecord) {
 
     abstract fun characterizationFactor(): String
     fun unit(): String {
-        val raw = if (this.isSubstance()) sanitizeString(record["FLOW_propertyUnit"].trim()) else "u"
-        return when (raw) {
+        return when (val raw = if (this.isSubstance()) sanitizeString(record["FLOW_propertyUnit"].trim()) else "u") {
             "Item(s)" -> "piece"
             "kg_a" -> "kga"
             "m2_a" -> "m2a"
