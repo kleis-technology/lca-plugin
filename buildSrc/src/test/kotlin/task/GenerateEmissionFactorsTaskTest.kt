@@ -8,7 +8,6 @@ import org.gradle.api.internal.provider.DefaultProvider
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.io.File
-import java.io.InputStream
 import java.util.concurrent.Callable
 
 class GenerateEmissionFactorsTaskTest {
@@ -34,8 +33,8 @@ class GenerateEmissionFactorsTaskTest {
 
                     name = "((3-(sec-butyl)-4-(decyloxy)phenyl)methanetriyl)tribenzene"
                     type = Emission
-                    compartment = "soil"
-                    sub_compartment = "non-agricultural"
+                    compartment = "Emissions to soil"
+                    sub_compartment = "Emissions to non-agricultural soil"
                     reference_unit = kg
 
                     impacts {
@@ -55,8 +54,8 @@ class GenerateEmissionFactorsTaskTest {
 
                     name = "((3-(sec-butyl)-4-(decyloxy)phenyl)methanetriyl)tribenzene"
                     type = Emission
-                    compartment = "air"
-                    sub_compartment = "indoor"
+                    compartment = "Emissions to air"
+                    sub_compartment = "Emissions to air, indoor"
                     reference_unit = kg
 
                     impacts {
@@ -98,8 +97,8 @@ class GenerateEmissionFactorsTaskTest {
 
                     name = "(-)-(3ar,5as,9as,9br)-3a,6,6,9a-tetramethyldodecahydronaphtho[2,1-b]furan"
                     type = Emission
-                    compartment = "water"
-
+                    compartment = "Emissions to water"
+                    sub_compartment = "Emissions to water, unspecified"
                     reference_unit = kg
 
                     impacts {
@@ -136,8 +135,8 @@ class GenerateEmissionFactorsTaskTest {
         val key = "META-INF/dictionary.csv"
         val expected = """
                 Name;Type;Compartment;SubCompartment
-                _3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene;Emission;soil;non-agricultural
-                _3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene;Emission;air;indoor
+                _3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene;Emission;Emissions to soil;Emissions to non-agricultural soil
+                _3_sec_butyl_4_decyloxy_phenyl_methanetriyl_tribenzene;Emission;Emissions to air;Emissions to air, indoor
                 """.trimIndent()
         Assertions.assertEquals(expected, actual[key])
     }
@@ -147,13 +146,9 @@ class GenerateEmissionFactorsTaskTest {
         val flowFile = File("src/test/resources/$fileName")
         val regularFile = mockk<RegularFile>()
         every { regularFile.asFile } returns flowFile
-        val lambda: Callable<RegularFile> = Callable { -> regularFile }
+        val lambda: Callable<RegularFile> = Callable { regularFile }
         val provider = DefaultProvider(lambda)
         every { inputDir.file(fileName) } returns provider
-    }
-
-    private fun inputStreamOf(filename: String): InputStream? {
-        return object {}.javaClass.getResourceAsStream(filename)
     }
 
 }

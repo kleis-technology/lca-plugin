@@ -33,7 +33,6 @@ sealed class EFRecord(val record: CSVRecord) {
         return "${substanceDisplayName()}(compartment=${compartment()}, sub_compartment=${subCompartment()}"
     }
 
-    fun dimension(): String = record["FLOW_property"].trim().lowercase()
     fun lcaFileName(): String = record["FLOW_name"]
         .replace("/", "|").replace("\\", "|")
 
@@ -50,56 +49,12 @@ sealed class EFRecord(val record: CSVRecord) {
     fun methodLocation(): String = record["LCIAMethod_location"].trim()
 
     fun compartment(): String {
-        return when (record["FLOW_class1"]) {
-            "Emissions to soil" -> "soil"
-            "Emissions to water", "Resources from water" -> "water"
-            "Emissions to air", "Resources from air" -> "air"
-            "Resources from ground" -> "ground"
-            "Emissions to industrial soil" -> "industrial soil"
-            "Resources from biosphere" -> "biosphere"
-            "Land occupation" -> "land occupation"
-            "Land transformation" -> "land transformation"
-            else -> throw IllegalStateException("$this is not proper compartment")
-        }
+        return record["FLOW_class1"]
     }
 
+    // FIXME - is this correct ?
     fun subCompartment(): String =
-        when (record["FLOW_class2"]) {
-            "Emissions to non-agricultural soil" -> "non-agricultural"
-            "Emissions to water, unspecified (long-term)" -> "long-term"
-
-            "Emissions to agricultural soil" -> "agricultural"
-            "Emissions to non-urban air or from high stacks",
-            "Emissions to non-urban air high stack" -> "non-urban high stack"
-
-            "Emissions to non-urban air low stack" -> "non-urban low stack"
-            "Emissions to non-urban air very high stack" -> "non-urban very high stack"
-            "Emissions to non-urban air close to ground" -> "non-urban close ground"
-
-            "Emissions to urban air high stack" -> "urban high stack"
-            "Emissions to urban air very high stack" -> "urban very high stack"
-            "Emissions to urban air low stack" -> "urban low stack"
-            "Emissions to urban air close to ground" -> "urban air close to ground"
-            "Emissions to air, indoor" -> "indoor"
-            "Emissions to air, unspecified (long-term)" -> "long-term"
-            "Emissions to soil, unspecified", "Emissions to water, unspecified", "Emissions to air, unspecified", "" -> ""
-            "Emissions to sea water" -> "sea water"
-            "Emissions to fresh water" -> "fresh water"
-            "Emissions to lower stratosphere and upper troposphere" -> "lower stratosphere and upper troposphere"
-            "Non-renewable energy resources from ground", "Non-renewable element resources from ground",
-            "Non-renewable material resources from ground", "Non-renewable element resources from water",
-            "Non-renewable material resources from water" -> "non-renewable"
-
-            "Renewable material resources from air", "Renewable element resources from air",
-            "Renewable energy resources from biosphere", "Renewable energy resources from ground",
-            "Renewable energy resources from air", "Renewable energy resources from water",
-            "Renewable material resources from water", "Renewable material resources from biosphere",
-            "Renewable material resources from ground" -> "renewable"
-
-            "Other emissions to industrial soil" -> "other"
-
-            else -> throw IllegalStateException("$this is not proper sub-compartment")
-        }
+        record["FLOW_class2"]
 }
 
 class EF31Record(record: CSVRecord) : EFRecord(record) {
