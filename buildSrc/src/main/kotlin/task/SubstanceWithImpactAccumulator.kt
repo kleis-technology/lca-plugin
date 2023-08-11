@@ -64,7 +64,7 @@ class SubstanceWithImpactAccumulator {
     @Suppress("SameParameterValue")
     private fun impactsContent(pad: Int = 4): String = factorRecords
         .filter { it.methodLocation().isBlank() }
-        .map {
+        .joinToString("\n") {
             "|".plus(
                 padStart(
                     "${it.characterizationFactor()} ${it.unit()} ${it.methodName()}",
@@ -72,7 +72,6 @@ class SubstanceWithImpactAccumulator {
                 )
             )
         }
-        .joinToString("\n")
 
     private val impactsSubsection: String
         get() = if (factorRecords.size > 0) {
@@ -86,7 +85,7 @@ class SubstanceWithImpactAccumulator {
     private fun getSubCompartment(): String {
         val sub = substanceSubCompartment
         @Suppress("SameParameterValue")
-        return if (sub.isNullOrBlank()) {
+        return if (sub.isBlank()) {
             ""
         } else {
             "    sub_compartment = \"$sub\""
