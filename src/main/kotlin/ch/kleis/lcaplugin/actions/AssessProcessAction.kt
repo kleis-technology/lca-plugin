@@ -12,6 +12,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.LangDataKeys
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -41,10 +42,12 @@ class AssessProcessAction(
             private var data: Pair<Inventory, Comparator<MatrixColumnIndex>>? = null
 
             override fun run(indicator: ProgressIndicator) {
-                val trace = traceSystemWithIndicator(indicator, file, processName, matchLabels)
-                val order = trace.getObservableOrder()
-                val inventory = Assessment(trace.getSystemValue(), trace.getEntryPoint()).inventory()
-                this.data = Pair(inventory, order)
+                runReadAction {
+                    val trace = traceSystemWithIndicator(indicator, file, processName, matchLabels)
+                    val order = trace.getObservableOrder()
+                    val inventory = Assessment(trace.getSystemValue(), trace.getEntryPoint()).inventory()
+                    this.data = Pair(inventory, order)
+                }
             }
 
             override fun onSuccess() {

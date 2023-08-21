@@ -13,6 +13,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.LangDataKeys
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -47,9 +48,14 @@ class SankeyGraphAction(
             private var graph: Graph? = null
 
             override fun run(progress: ProgressIndicator) {
-                val trace = traceSystemWithIndicator(progress, file, processName, matchLabels)
-                val assessment = Assessment(trace.getSystemValue(), trace.getEntryPoint())
-                val inventory = assessment.inventory()
+                val (trace, assessment, inventory) =
+                    runReadAction {
+                        val rTrace = traceSystemWithIndicator(progress, file, processName, matchLabels)
+                        val rAssessment = Assessment(rTrace.getSystemValue(), rTrace.getEntryPoint())
+                        val rInventory = rAssessment.inventory()
+                        val result = Triple(rTrace, rAssessment, rInventory)
+                        result
+                    }
                 val allocatedSystem = assessment.allocatedSystem
                 indicatorList = inventory.getControllablePorts().getElements()
 
