@@ -18,7 +18,7 @@ import com.intellij.psi.tree.IStubFileElementType
 import com.intellij.psi.tree.TokenSet
 
 class LcaParserDefinition : ParserDefinition {
-    companion object {
+    object Util {
         val FILE = IStubFileElementType<PsiFileStubImpl<LcaFile>>(LcaLanguage.INSTANCE.id, LcaLanguage.INSTANCE)
     }
 
@@ -31,7 +31,7 @@ class LcaParserDefinition : ParserDefinition {
     }
 
     override fun getFileNodeType(): IFileElementType {
-        return FILE
+        return Util.FILE
     }
 
     override fun getCommentTokens(): TokenSet {
