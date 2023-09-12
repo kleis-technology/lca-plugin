@@ -17,10 +17,10 @@ class LcaTechnoInputExchangeAnnotator : Annotator {
         if (element !is LcaTechnoInputExchange) {
             return
         }
-        val target = element.inputProductSpec.reference.resolve()
+        val target = element.inputProductSpec.reference?.resolve()
 
         if (target == null
-                || target !is LcaOutputProductSpec
+            || target !is LcaOutputProductSpec
         ) {
             val message = errorMessage(element.inputProductSpec)
             annotateWarnWithMessage(element.inputProductSpec, holder, message)
@@ -37,12 +37,12 @@ class LcaTechnoInputExchangeAnnotator : Annotator {
         val product = inputProductSpec.name
         val process = inputProductSpec.getProcessTemplateSpec()?.name
         val labels = inputProductSpec.getProcessTemplateSpec()
-                ?.getMatchLabels()
-                ?.let { LcaMatchLabelsEvaluator().evalOrNull(it) }
+            ?.getMatchLabels()
+            ?.let { LcaMatchLabelsEvaluator().evalOrNull(it) }
         val parts = listOfNotNull(
-                product,
-                process?.let { "from $it" },
-                labels?.let { "match $it" },
+            product,
+            process?.let { "from $it" },
+            labels?.let { "match $it" },
         ).joinToString(" ")
         return "cannot resolve $parts"
     }

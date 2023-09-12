@@ -11,7 +11,7 @@ import com.intellij.psi.stubs.*
 
 class UnitElementType(debugName: String) : ILightStubElementType<
         UnitStub,
-    LcaUnitDefinition
+        LcaUnitDefinition
         >(
     debugName,
     LcaLanguage.INSTANCE
@@ -31,7 +31,7 @@ class UnitElementType(debugName: String) : ILightStubElementType<
 
     @Suppress("UNCHECKED_CAST")
     override fun createStub(psi: LcaUnitDefinition, parentStub: StubElement<out PsiElement>?): UnitStub {
-        val fqn = psi.getUnitRef().getFullyQualifiedName()
+        val fqn = psi.getDataRef().getFullyQualifiedName()
         return UnitStubImpl(parentStub as StubElement<LcaUnitDefinition>, fqn)
     }
 

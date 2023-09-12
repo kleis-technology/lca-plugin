@@ -9,10 +9,7 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiNameIdentifierOwner
 
 interface PsiUrnOwner : PsiNameIdentifierOwner {
-    fun getUrn(): PsiUrn {
-        return node.findChildByType(LcaTypes.URN)?.psi as PsiUrn?
-            ?: throw IllegalStateException()
-    }
+    fun getUrn(): PsiUrn
 
     override fun getNameIdentifier(): PsiElement? {
         return getUrn()

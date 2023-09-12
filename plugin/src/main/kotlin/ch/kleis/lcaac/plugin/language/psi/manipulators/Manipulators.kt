@@ -9,6 +9,7 @@ import ch.kleis.lcaac.plugin.language.psi.type.spec.PsiOutputProductSpec
 import ch.kleis.lcaac.plugin.language.psi.type.spec.PsiProcessTemplateSpec
 import ch.kleis.lcaac.plugin.language.psi.type.spec.PsiSubstanceSpec
 import ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUIDOwner
+import ch.kleis.lcaac.plugin.psi.*
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.AbstractElementManipulator
 import com.intellij.psi.PsiElement
@@ -36,20 +37,20 @@ sealed class PsiDelegateManipulator<E : PsiElement>(
     }
 }
 
-class PsiSubstanceSpecManipulator : PsiDelegateManipulator<PsiSubstanceSpec>(
-    { it.getSubstanceRef() }
+class PsiSubstanceSpecManipulator : PsiDelegateManipulator<LcaSubstanceSpec>(
+    { it.substanceRef }
 )
 
-class PsiInputProductSpecManipulator : PsiDelegateManipulator<PsiInputProductSpec>(
+class PsiInputProductSpecManipulator : PsiDelegateManipulator<LcaInputProductSpec>(
     { it.getProductRef() }
 )
 
-class PsiOutputProductSpecManipulator : PsiDelegateManipulator<PsiOutputProductSpec>(
-    { it.getProductRef() }
+class PsiOutputProductSpecManipulator : PsiDelegateManipulator<LcaOutputProductSpec>(
+    { it.productRef }
 )
 
-class PsiProcessTemplateSpecManipulator : PsiDelegateManipulator<PsiProcessTemplateSpec>(
-    { it.getProcessRef() }
+class PsiProcessTemplateSpecManipulator : PsiDelegateManipulator<LcaProcessTemplateSpec>(
+    { it.processRef }
 )
 
 class PsiLabelAssignmentManipulator : PsiDelegateManipulator<PsiLabelAssignment>(

@@ -133,10 +133,10 @@ object LcaDocumentGenerator {
         sb.append(DocumentationMarkup.SECTIONS_START).append("\n")
         addKeyValueSection("Symbol", element.getSymbolField().getValue(), sb)
         if (element.getType() == UnitDefinitionType.LITERAL) {
-            addKeyValueSection("Dimension", element.getDimensionField().getValue(), sb)
+            addKeyValueSection("Dimension", element.dimField!!.getValue(), sb)
         }
         if (element.getType() == UnitDefinitionType.ALIAS) {
-            addKeyValueSection("Alias for", element.getAliasForField().dataExpression.text, sb)
+            addKeyValueSection("Alias for", element.getAliasForField()!!.dataExpression.text, sb)
         }
         sb.append(DocumentationMarkup.SECTIONS_END).append("\n")
         sb.append(DocumentationMarkup.CONTENT_END).append("\n")
@@ -165,7 +165,7 @@ object LcaDocumentGenerator {
         addKeyValueSection("Name", element.getNameField().getValue(), sb)
         addKeyValueSection("Type", element.getTypeField().getValue(), sb)
         addKeyValueSection("Compartment", element.getCompartmentField().getValue(), sb)
-        addKeyValueSection("Sub-Compartment", element.getSubcompartmentField()?.getValue(), sb)
+        addKeyValueSection("Sub-Compartment", element.getSubCompartmentField()?.getValue(), sb)
         addKeyValueSection("Reference Unit", element.getReferenceUnitField().dataExpression.text, sb)
         sb.append(DocumentationMarkup.SECTIONS_END).append("\n")
         sb.append(DocumentationMarkup.CONTENT_END).append("\n")

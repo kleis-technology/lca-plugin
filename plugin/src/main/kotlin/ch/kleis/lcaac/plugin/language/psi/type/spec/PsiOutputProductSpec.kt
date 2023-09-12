@@ -5,31 +5,14 @@ import ch.kleis.lcaac.plugin.psi.LcaProductRef
 import ch.kleis.lcaac.plugin.psi.LcaTechnoProductExchange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
-import com.intellij.psi.util.PsiTreeUtil
 
 interface PsiOutputProductSpec : PsiNameIdentifierOwner {
-    fun getContainingProcess(): LcaProcess {
-        return PsiTreeUtil.getParentOfType(this, LcaProcess::class.java) as LcaProcess
-    }
 
-    fun getContainingTechnoExchange(): LcaTechnoProductExchange {
-        return PsiTreeUtil.getParentOfType(this, LcaTechnoProductExchange::class.java) as LcaTechnoProductExchange
-    }
+    // XXX: Discuss with PBL on how to avoid using this method: any navigation "up" calls getNode() and forces a build
+    // of the AST, which is *very* CPU and memory costly wrt down psi navigation.
+    fun getContainingProcess(): LcaProcess
 
-    fun getProductRef(): LcaProductRef {
-        return PsiTreeUtil.getChildOfType(this, LcaProductRef::class.java) as LcaProductRef
-    }
+    fun getContainingTechnoExchange(): LcaTechnoProductExchange
 
-    override fun getName(): String {
-        return getProductRef().name
-    }
-
-    override fun setName(name: String): PsiElement {
-        getProductRef().name = name
-        return this
-    }
-
-    override fun getNameIdentifier(): PsiElement? {
-        return getProductRef().nameIdentifier
-    }
+    override fun getName(): String
 }

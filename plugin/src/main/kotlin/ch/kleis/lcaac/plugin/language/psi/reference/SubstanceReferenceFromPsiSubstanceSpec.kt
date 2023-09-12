@@ -4,14 +4,14 @@ import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.language.psi.stub.LcaStubIndexKeys
 import ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.type.PsiSubstance
-import ch.kleis.lcaac.plugin.language.psi.type.spec.PsiSubstanceSpec
+import ch.kleis.lcaac.plugin.psi.LcaSubstanceSpec
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.psi.*
 import com.intellij.psi.stubs.StubIndex
 
 class SubstanceReferenceFromPsiSubstanceSpec(
-    element: PsiSubstanceSpec
-) : PsiReferenceBase<PsiSubstanceSpec>(element), PsiPolyVariantReference {
+    element: LcaSubstanceSpec
+) : PsiReferenceBase<LcaSubstanceSpec>(element), PsiPolyVariantReference {
     private val project = element.project
     private val file = element.containingFile as LcaFile
     private val pkgName = file.getPackageName()
@@ -34,7 +34,7 @@ class SubstanceReferenceFromPsiSubstanceSpec(
         val subCompartment = element.getSubCompartmentField()?.getValue()
 
         fun findSubstances(subCompartment: String?): (String) -> Collection<PsiSubstance> = { fqn: String ->
-            SubstanceKeyIndex.findSubstances(
+            SubstanceKeyIndex.Util.findSubstances(
                 project,
                 fqn, type, compartment, subCompartment,
             )

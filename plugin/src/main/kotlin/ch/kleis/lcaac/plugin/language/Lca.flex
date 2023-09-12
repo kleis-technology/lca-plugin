@@ -59,9 +59,7 @@ CommentContent = .*
                                          return LcaTypes.COMMENT_CONTENT;
                                      }
 
-<COMMENT_BLOCK> {CommentContent}     {
-                                         return LcaTypes.COMMENT_CONTENT;
-                                     }
+<COMMENT_BLOCK> {CommentContent}     { return LcaTypes.COMMENT_CONTENT; }
 
 <YYINITIAL> "package"                { return LcaTypes.PACKAGE_KEYWORD; }
 <YYINITIAL> "import"                { return LcaTypes.IMPORT_KEYWORD; }

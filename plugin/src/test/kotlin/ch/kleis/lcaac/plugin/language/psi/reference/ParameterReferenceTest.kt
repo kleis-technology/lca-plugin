@@ -107,7 +107,7 @@ class ParameterReferenceTest : BasePlatformTestCase() {
 
         // then
         val expected = ProcessStubKeyIndex.findProcesses(project, "$pkgName.water_prod").first()
-            .getLcaParams().first()
+            .getParamsList().first()
             .assignmentList.first()
         TestCase.assertEquals(expected, actual)
     }

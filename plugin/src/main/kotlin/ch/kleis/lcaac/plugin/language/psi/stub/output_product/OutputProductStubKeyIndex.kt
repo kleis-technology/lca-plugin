@@ -18,7 +18,7 @@ class OutputProductStubKeyIndex : StringStubIndexExtension<LcaOutputProductSpec>
         return stubIndexVersion
     }
 
-    companion object {
+    object Util {
         fun findOutputProducts(
             project: Project,
             fqn: String,
@@ -32,4 +32,5 @@ class OutputProductStubKeyIndex : StringStubIndexExtension<LcaOutputProductSpec>
                 LcaOutputProductSpec::class.java,
             )
     }
+
 }

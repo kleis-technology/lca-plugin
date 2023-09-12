@@ -10,7 +10,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.stubs.*
 
 class SubstanceStubElementType(debugName: String) : ILightStubElementType<SubstanceStub,
-    LcaSubstance>(debugName, LcaLanguage.INSTANCE) {
+        LcaSubstance>(debugName, LcaLanguage.INSTANCE) {
     override fun getExternalId(): String = "lca.${super.toString()}"
 
     @Suppress("UNCHECKED_CAST")
@@ -28,7 +28,7 @@ class SubstanceStubElementType(debugName: String) : ILightStubElementType<Substa
         val fqn = psi.getSubstanceRef().getFullyQualifiedName()
         val type = psi.getTypeField().getValue()
         val compartment = psi.getCompartmentField().getValue()
-        val subCompartment = psi.getSubcompartmentField()?.getValue()
+        val subCompartment = psi.getSubCompartmentField()?.getValue()
         val key = SubstanceKey(fqn, type, compartment, subCompartment)
         return SubstanceStubImpl(parentStub as StubElement<LcaSubstance>, key)
     }

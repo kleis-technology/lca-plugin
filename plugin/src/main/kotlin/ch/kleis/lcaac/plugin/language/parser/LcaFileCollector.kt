@@ -2,9 +2,9 @@ package ch.kleis.lcaac.plugin.language.parser
 
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataRef
-import ch.kleis.lcaac.plugin.language.psi.type.spec.PsiInputProductSpec
 import ch.kleis.lcaac.plugin.language.psi.type.spec.PsiProcessTemplateSpec
 import ch.kleis.lcaac.plugin.language.psi.type.spec.PsiSubstanceSpec
+import ch.kleis.lcaac.plugin.psi.LcaInputProductSpec
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiNamedElement
@@ -12,7 +12,7 @@ import com.intellij.psi.util.PsiTreeUtil
 
 class LcaFileCollector(
     private val project: Project,
-    private val refFileResolver: RefFileResolver = DefaultRefFileResolver(project)
+    private val refFileResolver: RefFileResolver = AccumulatingRefFileResolver(project)
 ) {
     companion object {
         private val LOG = Logger.getInstance(LcaFileCollector::class.java)
@@ -63,7 +63,7 @@ class LcaFileCollector(
             file,
             PsiSubstanceSpec::class.java,
             PsiDataRef::class.java,
-            PsiInputProductSpec::class.java,
+            LcaInputProductSpec::class.java,
             PsiProcessTemplateSpec::class.java,
         ).asSequence()
     }

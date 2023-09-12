@@ -5,8 +5,8 @@ import ch.kleis.lcaac.plugin.actions.ContributionAnalysisWithDataAction
 import ch.kleis.lcaac.plugin.actions.SensitivityAnalysisAction
 import ch.kleis.lcaac.plugin.actions.sankey.SankeyGraphAction
 import ch.kleis.lcaac.plugin.language.psi.isProcess
-import ch.kleis.lcaac.plugin.language.psi.type.PsiProcess
 import com.intellij.execution.lineMarker.RunLineMarkerContributor
+import ch.kleis.lcaac.plugin.psi.LcaProcess
 import com.intellij.icons.AllIcons
 import com.intellij.psi.PsiElement
 
@@ -17,7 +17,7 @@ import com.intellij.psi.PsiElement
 class AssessProcessMarkerContributor : RunLineMarkerContributor() {
     override fun getInfo(element: PsiElement): Info? {
         if (isProcess(element)) {
-            val process = element.parent as PsiProcess
+            val process = element.parent as LcaProcess
             val target = process.getProcessRef().getUID().name
             val labels = process.getLabels()
             val assessProcessAction = AssessProcessAction(target, labels)

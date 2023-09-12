@@ -3,7 +3,6 @@ package ch.kleis.lcaac.plugin.actions.sankey
 import ch.kleis.lcaac.plugin.MyBundle
 import ch.kleis.lcaac.plugin.actions.traceSystemWithIndicator
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
-import ch.kleis.lcaac.plugin.actions.sankey.Graph
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaac.core.math.basic.BasicNumber
@@ -32,7 +31,7 @@ class SankeyGraphAction(
     private val processName: String,
     private val matchLabels: Map<String, String>,
 ) : AnAction(
-    "Visualize flows",
+    "Visualize Flows",
     "Visualize flows",
     AllIcons.Actions.Execute,
 ) {

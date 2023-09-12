@@ -23,7 +23,7 @@ class SubstanceKeyIndex : AbstractStubIndex<SubstanceKey, LcaSubstance>() {
         return SubstanceKeyDescriptor.INSTANCE
     }
 
-    companion object {
+    object Util {
         fun findSubstances(
             project: Project,
             fqn: String,
@@ -31,7 +31,7 @@ class SubstanceKeyIndex : AbstractStubIndex<SubstanceKey, LcaSubstance>() {
             compartment: String,
             subCompartment: String? = null,
             scope: GlobalSearchScope = GlobalSearchScope.allScope(project)
-        ): Collection<PsiSubstance> =
+        ): Collection<LcaSubstance> =
             StubIndex.getElements(
                 LcaStubIndexKeys.SUBSTANCES,
                 SubstanceKey(fqn, type, compartment, subCompartment),
@@ -40,4 +40,5 @@ class SubstanceKeyIndex : AbstractStubIndex<SubstanceKey, LcaSubstance>() {
                 LcaSubstance::class.java,
             )
     }
+
 }

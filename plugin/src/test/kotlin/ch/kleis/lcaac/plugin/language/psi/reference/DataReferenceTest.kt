@@ -80,7 +80,7 @@ class DataReferenceTest : BasePlatformTestCase() {
 
         // then
         val expected = ProcessStubKeyIndex.findProcesses(project, "$pkgName.called").first()
-            .getLcaParams().first()
+            .getParamsList().first()
             .assignmentList.first()
         TestCase.assertEquals(expected, actual)
     }
@@ -89,7 +89,7 @@ class DataReferenceTest : BasePlatformTestCase() {
     fun test_resolve_whenInSubstanceReferenceUnitField() {
         // given
         val pkgName = "language.psi.reference.units.test_resolve"
-        val ref = SubstanceKeyIndex.findSubstances(
+        val ref = SubstanceKeyIndex.Util.findSubstances(
             project,
             "$pkgName.s",
             "Resource",
@@ -110,7 +110,7 @@ class DataReferenceTest : BasePlatformTestCase() {
     fun test_getVariants_whenInSubstanceReferenceField() {
         // given
         val pkgName = "language.psi.reference.units.test_resolve"
-        val ref = SubstanceKeyIndex.findSubstances(
+        val ref = SubstanceKeyIndex.Util.findSubstances(
             project,
             "$pkgName.s",
             "Resource",

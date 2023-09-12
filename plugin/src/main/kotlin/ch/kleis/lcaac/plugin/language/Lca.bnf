@@ -45,27 +45,27 @@
       IDENTIFIER = 'identifier'
       MATCH_KEYWORD = 'match'
       NUMBER = 'number'
-      LSQBRACE = 'left-sqbrace'
-      RSQBRACE = 'right-sqbrace'
-      LPAREN = 'left-paren'
-      RPAREN = 'right-paren'
-      LBRACE = 'left-bracket'
-      RBRACE = 'right-bracket'
-      COMMA = 'comma'
+      LSQBRACE = ']'
+      RSQBRACE = '['
+      LPAREN = '('
+      RPAREN = ')'
+      LBRACE = '{'
+      RBRACE = '}'
+      COMMA = ','
       STRING_LITERAL = 'string-literal'
       SPACE = "regexp:\s+"
       COMMENT_BLOCK_START = 'comment-block-start'
       COMMENT_BLOCK_END = 'comment-block-end'
       COMMENT_CONTENT = 'comment-content'
       COMMENT_LINE = 'comment-line'
-      PLUS = "plus"
-      MINUS = "MINUS"
-      DOT = "dot"
-      STAR = "star"
-      SLASH = "slash"
-      HAT = "hat"
-      EQUAL = "equal"
-      DOUBLE_QUOTE = "double-quote"
+      PLUS = "+"
+      MINUS = "-"
+      DOT = "."
+      STAR = "*"
+      SLASH = "/"
+      HAT = "^"
+      EQUAL = "="
+      DOUBLE_QUOTE = '"'
   ]
 }
 
@@ -79,12 +79,12 @@ lcaFile ::= package? import* (process | unitDefinition | substance | globalVaria
     Package
  */
 
-package ::= PACKAGE_KEYWORD urn {
+package ::= "package" urn {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUrnOwner"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.trait.PsiUrnOwnerMixin"
 }
 
-import ::= IMPORT_KEYWORD urn {
+import ::= "import" urn {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUrnOwner"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.trait.PsiUrnOwnerMixin"
 }
@@ -93,8 +93,8 @@ import ::= IMPORT_KEYWORD urn {
     Global variables
  */
 
-globalVariables ::= VARIABLES_KEYWORD LBRACE globalAssignment* RBRACE
-globalAssignment ::= dataRef EQUAL dataExpression {
+globalVariables ::= "variables" '{' globalAssignment* '}'
+globalAssignment ::= dataRef '=' dataExpression {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiGlobalAssignment"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiGlobalAssignmentMixin"
     elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssignmentStubElementType"
@@ -105,21 +105,21 @@ globalAssignment ::= dataRef EQUAL dataExpression {
     Substance
  */
 
-substance ::= SUBSTANCE_KEYWORD substanceRef LBRACE
+substance ::= "substance" substanceRef "{"
     nameField
     typeField
     compartmentField
     subCompartmentField?
     referenceUnitField
     ( block_impacts | block_meta )*
-    RBRACE {
+    "}" {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiSubstance"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiSubstanceMixin"
     elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceStubElementType"
     stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceStub"
 }
 
-typeField ::= TYPE_KEYWORD EQUAL (TYPE_EMISSION_KEYWORD|TYPE_RESOURCE_KEYWORD|TYPE_LAND_USE_KEYWORD) {
+typeField ::= "type" '=' ("Emission"|"Resource"|"Land_use") {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.field.PsiSubstanceTypeField"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.field.PsiSubstanceTypeFieldMixin"
 }
@@ -136,7 +136,7 @@ subCompartmentField ::= SUB_COMPARTMENT_KEYWORD EQUAL STRING_LITERAL {
 
 block_meta ::= META_KEYWORD LBRACE meta_assignment* RBRACE
 
-meta_assignment ::= STRING_LITERAL EQUAL STRING_LITERAL {
+meta_assignment ::= STRING_LITERAL '=' STRING_LITERAL {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiMetaAssignment"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiMetaAssignmentMixin"
 }
@@ -286,7 +286,7 @@ dataRef ::= uid {
 }
 
 productRef ::= uid {
-    implements=["ch.kleis.lcaac.plugin.language.psi.type.ref.PsiProductRef"]
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUIDOwner"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiProductRefMixin"
 }
 
@@ -296,7 +296,7 @@ processRef ::= uid {
 }
 
 substanceRef ::= uid {
-    implements=["ch.kleis.lcaac.plugin.language.psi.type.ref.PsiSubstanceRef"]
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUIDOwner"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiSubstanceRefMixin"
 }
 
