@@ -108,15 +108,15 @@ tasks {
     }
 
     generateParser {
-        source.set("src/main/kotlin/ch/kleis/lcaplugin/language/Lca.bnf")
+        source.set("src/main/kotlin/ch/kleis/lcaac/plugin/language/Lca.bnf")
         targetRoot.set("src/main/gen")
-        pathToParser.set("ch/kleis/lcaplugin/language/parser/LcaParser.java")
-        pathToPsiRoot.set("ch/kleis/lcaplugin/psi")
+        pathToParser.set("ch/kleis/lcaac/plugin/language/parser/LcaParser.java")
+        pathToPsiRoot.set("ch/kleis/lcaac/plugin/psi")
     }
 
     generateLexer {
-        source.set("src/main/kotlin/ch/kleis/lcaplugin/language/Lca.flex")
-        targetDir.set("src/main/gen/ch/kleis/lcaplugin/language")
+        source.set("src/main/kotlin/ch/kleis/lcaac/plugin/language/Lca.flex")
+        targetDir.set("src/main/gen/ch/kleis/lcaac/plugin/language")
         targetClass.set("parser.LcaLexer")
     }
 
