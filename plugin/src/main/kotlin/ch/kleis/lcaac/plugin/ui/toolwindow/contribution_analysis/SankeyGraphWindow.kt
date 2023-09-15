@@ -1,7 +1,7 @@
 package ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis
 
 import ch.kleis.lcaac.plugin.actions.sankey.SankeyGraphBuilder
-import ch.kleis.lcaac.core.graph.Graph
+import ch.kleis.lcaac.plugin.actions.sankey.Graph
 import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.plugin.ui.toolwindow.LcaToolWindowContent

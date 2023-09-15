@@ -1,4 +1,4 @@
-package ch.kleis.lcaac.core.graph
+package ch.kleis.lcaac.plugin.actions.sankey
 
 import kotlinx.serialization.Serializable
 

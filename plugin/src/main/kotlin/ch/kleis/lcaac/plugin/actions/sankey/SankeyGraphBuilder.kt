@@ -1,9 +1,6 @@
 package ch.kleis.lcaac.plugin.actions.sankey
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysis
-import ch.kleis.lcaac.core.graph.Graph
-import ch.kleis.lcaac.core.graph.GraphLink
-import ch.kleis.lcaac.core.graph.GraphNode
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaac.core.lang.value.ProductValue
