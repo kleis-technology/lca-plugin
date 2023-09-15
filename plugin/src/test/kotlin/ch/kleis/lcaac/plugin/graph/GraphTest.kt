@@ -1,8 +1,8 @@
 package ch.kleis.lcaac.plugin.graph
 
-import ch.kleis.lcaac.plugin.core.graph.Graph
-import ch.kleis.lcaac.plugin.core.graph.GraphLink
-import ch.kleis.lcaac.plugin.core.graph.GraphNode
+import ch.kleis.lcaac.core.graph.Graph
+import ch.kleis.lcaac.core.graph.GraphLink
+import ch.kleis.lcaac.core.graph.GraphNode
 import org.hamcrest.CoreMatchers.hasItem
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat

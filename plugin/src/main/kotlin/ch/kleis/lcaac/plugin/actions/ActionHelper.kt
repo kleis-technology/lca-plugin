@@ -1,9 +1,9 @@
 package ch.kleis.lcaac.plugin.actions
 
-import ch.kleis.lcaac.plugin.core.lang.evaluator.EvaluationTrace
-import ch.kleis.lcaac.plugin.core.lang.evaluator.Evaluator
-import ch.kleis.lcaac.plugin.core.lang.expression.EProcessTemplateApplication
-import ch.kleis.lcaac.plugin.core.math.QuantityOperations
+import ch.kleis.lcaac.core.lang.evaluator.EvaluationTrace
+import ch.kleis.lcaac.core.lang.evaluator.Evaluator
+import ch.kleis.lcaac.core.lang.expression.EProcessTemplateApplication
+import ch.kleis.lcaac.core.math.QuantityOperations
 import ch.kleis.lcaac.plugin.language.parser.LcaFileCollector
 import ch.kleis.lcaac.plugin.language.parser.LcaLangAbstractParser
 import ch.kleis.lcaac.plugin.language.psi.LcaFile

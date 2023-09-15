@@ -1,11 +1,11 @@
 package ch.kleis.lcaac.plugin.actions
 
-import ch.kleis.lcaac.plugin.core.assessment.ContributionAnalysis
-import ch.kleis.lcaac.plugin.core.assessment.ContributionAnalysisProgram
-import ch.kleis.lcaac.plugin.core.lang.value.MatrixColumnIndex
-import ch.kleis.lcaac.plugin.core.math.basic.BasicMatrix
-import ch.kleis.lcaac.plugin.core.math.basic.BasicNumber
-import ch.kleis.lcaac.plugin.core.math.basic.BasicOperations
+import ch.kleis.lcaac.core.assessment.ContributionAnalysis
+import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
+import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
+import ch.kleis.lcaac.core.math.basic.BasicMatrix
+import ch.kleis.lcaac.core.math.basic.BasicNumber
+import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.ContributionAnalysisHugeWindow
 import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.ContributionAnalysisWindow

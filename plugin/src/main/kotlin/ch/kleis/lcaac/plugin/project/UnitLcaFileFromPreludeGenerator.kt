@@ -1,8 +1,8 @@
 package ch.kleis.lcaac.plugin.project
 
-import ch.kleis.lcaac.plugin.core.lang.dimension.Dimension
-import ch.kleis.lcaac.plugin.core.lang.expression.EUnitLiteral
-import ch.kleis.lcaac.plugin.core.prelude.Prelude
+import ch.kleis.lcaac.core.lang.dimension.Dimension
+import ch.kleis.lcaac.core.lang.expression.EUnitLiteral
+import ch.kleis.lcaac.core.prelude.Prelude
 import java.io.BufferedInputStream
 import java.io.FileInputStream
 import java.io.FileOutputStream

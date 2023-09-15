@@ -1,12 +1,12 @@
 package ch.kleis.lcaac.plugin.actions.csv
 
-import ch.kleis.lcaac.plugin.core.assessment.ContributionAnalysisProgram
-import ch.kleis.lcaac.plugin.core.lang.SymbolTable
-import ch.kleis.lcaac.plugin.core.lang.evaluator.Evaluator
-import ch.kleis.lcaac.plugin.core.lang.evaluator.EvaluatorException
-import ch.kleis.lcaac.plugin.core.lang.expression.*
-import ch.kleis.lcaac.plugin.core.math.basic.BasicNumber
-import ch.kleis.lcaac.plugin.core.math.basic.BasicOperations
+import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
+import ch.kleis.lcaac.core.lang.SymbolTable
+import ch.kleis.lcaac.core.lang.evaluator.Evaluator
+import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
+import ch.kleis.lcaac.core.lang.expression.*
+import ch.kleis.lcaac.core.math.basic.BasicNumber
+import ch.kleis.lcaac.core.math.basic.BasicOperations
 import java.lang.Double.parseDouble
 
 class CsvProcessor(

@@ -1,13 +1,13 @@
 package ch.kleis.lcaac.plugin.language.parser
 
-import ch.kleis.lcaac.plugin.core.lang.Register
-import ch.kleis.lcaac.plugin.core.lang.RegisterException
-import ch.kleis.lcaac.plugin.core.lang.SymbolTable
-import ch.kleis.lcaac.plugin.core.lang.dimension.Dimension
-import ch.kleis.lcaac.plugin.core.lang.dimension.UnitSymbol
-import ch.kleis.lcaac.plugin.core.lang.evaluator.EvaluatorException
-import ch.kleis.lcaac.plugin.core.lang.expression.*
-import ch.kleis.lcaac.plugin.core.math.QuantityOperations
+import ch.kleis.lcaac.core.lang.Register
+import ch.kleis.lcaac.core.lang.RegisterException
+import ch.kleis.lcaac.core.lang.SymbolTable
+import ch.kleis.lcaac.core.lang.dimension.Dimension
+import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
+import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
+import ch.kleis.lcaac.core.lang.expression.*
+import ch.kleis.lcaac.core.math.QuantityOperations
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.language.psi.type.PsiProcess
 import ch.kleis.lcaac.plugin.language.psi.type.PsiSubstance

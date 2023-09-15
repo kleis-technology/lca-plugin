@@ -1,7 +1,7 @@
 package ch.kleis.lcaac.plugin.language.type_checker
 
-import ch.kleis.lcaac.plugin.core.lang.dimension.Dimension
-import ch.kleis.lcaac.plugin.core.lang.type.*
+import ch.kleis.lcaac.core.lang.dimension.Dimension
+import ch.kleis.lcaac.core.lang.type.*
 import ch.kleis.lcaac.plugin.language.psi.type.PsiAssignment
 import ch.kleis.lcaac.plugin.language.psi.type.PsiGlobalAssignment
 import ch.kleis.lcaac.plugin.language.psi.type.PsiProcess

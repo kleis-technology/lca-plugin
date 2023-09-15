@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.imports.simapro.substance
 
-import ch.kleis.lcaac.plugin.core.lang.expression.SubstanceType
+import ch.kleis.lcaac.core.lang.expression.SubstanceType
 import ch.kleis.lcaac.plugin.imports.util.MissingLibraryFileException
 import com.intellij.openapi.diagnostic.Logger
 import org.apache.commons.csv.CSVFormat

@@ -1,18 +1,14 @@
 package ch.kleis.lcaac.plugin.ui.toolwindow
 
-import ch.kleis.lcaac.plugin.core.assessment.ContributionAnalysis
-import ch.kleis.lcaac.plugin.core.lang.evaluator.ToValue
-import ch.kleis.lcaac.plugin.core.lang.fixture.ProductFixture
-import ch.kleis.lcaac.plugin.core.lang.fixture.QuantityValueFixture
-import ch.kleis.lcaac.plugin.core.lang.fixture.SubstanceFixture
-import ch.kleis.lcaac.plugin.core.lang.fixture.UnitFixture
-import ch.kleis.lcaac.plugin.core.lang.value.*
-import ch.kleis.lcaac.plugin.core.math.basic.BasicNumber
-import ch.kleis.lcaac.plugin.core.math.basic.BasicOperations
-import ch.kleis.lcaac.plugin.core.math.basic.MatrixFixture
-import ch.kleis.lcaac.plugin.core.matrix.ImpactFactorMatrix
-import ch.kleis.lcaac.plugin.core.matrix.IndexedCollection
-import ch.kleis.lcaac.plugin.core.matrix.IntensityMatrix
+import ch.kleis.lcaac.core.assessment.ContributionAnalysis
+import ch.kleis.lcaac.core.lang.evaluator.ToValue
+import ch.kleis.lcaac.core.lang.value.*
+import ch.kleis.lcaac.core.math.basic.BasicNumber
+import ch.kleis.lcaac.core.math.basic.BasicOperations
+import ch.kleis.lcaac.core.matrix.ImpactFactorMatrix
+import ch.kleis.lcaac.core.matrix.IndexedCollection
+import ch.kleis.lcaac.core.matrix.IntensityMatrix
+import ch.kleis.lcaac.plugin.fixture.*
 import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.ContributionAnalysisWindow
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBViewport

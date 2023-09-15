@@ -1,10 +1,10 @@
 package ch.kleis.lcaac.plugin.imports.shared.serializer
 
-import ch.kleis.lcaac.plugin.core.lang.dimension.Dimension
-import ch.kleis.lcaac.plugin.core.lang.dimension.UnitSymbol
-import ch.kleis.lcaac.plugin.core.lang.value.UnitValue
-import ch.kleis.lcaac.plugin.core.math.basic.BasicNumber
-import ch.kleis.lcaac.plugin.core.prelude.Prelude
+import ch.kleis.lcaac.core.lang.dimension.Dimension
+import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
+import ch.kleis.lcaac.core.lang.value.UnitValue
+import ch.kleis.lcaac.core.math.basic.BasicNumber
+import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
 import ch.kleis.lcaac.plugin.imports.simapro.sanitizeSymbol

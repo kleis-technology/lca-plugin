@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.language.parser
 
-import ch.kleis.lcaac.plugin.core.lang.fixture.UnitFixture
+import ch.kleis.lcaac.plugin.fixture.UnitFixture
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.openapi.ui.naturalSorted
 import com.intellij.psi.PsiManager

@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.imports.simapro.substance
 
-import ch.kleis.lcaac.plugin.core.lang.expression.SubstanceType
+import ch.kleis.lcaac.core.lang.expression.SubstanceType
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

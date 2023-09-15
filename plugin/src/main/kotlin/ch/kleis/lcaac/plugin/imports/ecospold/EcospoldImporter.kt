@@ -1,9 +1,9 @@
 package ch.kleis.lcaac.plugin.imports.ecospold
 
-import ch.kleis.lcaac.plugin.core.lang.evaluator.ToValue
-import ch.kleis.lcaac.plugin.core.math.basic.BasicNumber
-import ch.kleis.lcaac.plugin.core.math.basic.BasicOperations
-import ch.kleis.lcaac.plugin.core.prelude.Prelude
+import ch.kleis.lcaac.core.lang.evaluator.ToValue
+import ch.kleis.lcaac.core.math.basic.BasicNumber
+import ch.kleis.lcaac.core.math.basic.BasicOperations
+import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.EcospoldImportSettings
 import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.LCIASettings
 import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.UPRAndLCISettings

@@ -1,8 +1,8 @@
 package ch.kleis.lcaac.plugin.ui.toolwindow.sensitivity_analysis
 
-import ch.kleis.lcaac.plugin.core.assessment.SensitivityAnalysis
-import ch.kleis.lcaac.plugin.core.lang.value.MatrixColumnIndex
-import ch.kleis.lcaac.plugin.core.math.dual.DualNumber
+import ch.kleis.lcaac.core.assessment.SensitivityAnalysis
+import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
+import ch.kleis.lcaac.core.math.dual.DualNumber
 import ch.kleis.lcaac.plugin.ui.toolwindow.FloatingPointRepresentation
 import javax.swing.event.TableModelListener
 import javax.swing.table.TableModel

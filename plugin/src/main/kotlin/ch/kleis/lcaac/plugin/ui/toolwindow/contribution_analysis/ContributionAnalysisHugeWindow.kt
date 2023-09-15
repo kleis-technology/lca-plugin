@@ -1,10 +1,10 @@
 package ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis
 
 import ch.kleis.lcaac.plugin.MyBundle
-import ch.kleis.lcaac.plugin.core.assessment.ContributionAnalysis
-import ch.kleis.lcaac.plugin.core.lang.value.MatrixColumnIndex
-import ch.kleis.lcaac.plugin.core.math.basic.BasicMatrix
-import ch.kleis.lcaac.plugin.core.math.basic.BasicNumber
+import ch.kleis.lcaac.core.assessment.ContributionAnalysis
+import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
+import ch.kleis.lcaac.core.math.basic.BasicMatrix
+import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.plugin.ide.component.ComponentFactory
 import ch.kleis.lcaac.plugin.ide.component.ComponentFactory.Companion.createLocationComponent
 import ch.kleis.lcaac.plugin.ui.toolwindow.LcaToolWindowContent

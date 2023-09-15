@@ -1,9 +1,9 @@
 package ch.kleis.lcaac.plugin.language.type_checker
 
-import ch.kleis.lcaac.plugin.core.lang.dimension.Dimension
-import ch.kleis.lcaac.plugin.core.lang.fixture.DimensionFixture
-import ch.kleis.lcaac.plugin.core.lang.type.*
-import ch.kleis.lcaac.plugin.core.prelude.Prelude
+import ch.kleis.lcaac.core.lang.dimension.Dimension
+import ch.kleis.lcaac.core.lang.type.*
+import ch.kleis.lcaac.core.prelude.Prelude
+import ch.kleis.lcaac.plugin.fixture.DimensionFixture
 import ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssigmentStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex

@@ -1,14 +1,14 @@
 package ch.kleis.lcaac.plugin.actions.csv
 
-import ch.kleis.lcaac.plugin.core.lang.evaluator.ToValue
-import ch.kleis.lcaac.plugin.core.lang.fixture.UnitFixture
-import ch.kleis.lcaac.plugin.core.lang.value.FromProcessRefValue
-import ch.kleis.lcaac.plugin.core.lang.value.IndicatorValue
-import ch.kleis.lcaac.plugin.core.lang.value.ProductValue
-import ch.kleis.lcaac.plugin.core.lang.value.QuantityValue
-import ch.kleis.lcaac.plugin.core.math.basic.BasicNumber
-import ch.kleis.lcaac.plugin.core.math.basic.BasicOperations
-import ch.kleis.lcaac.plugin.core.prelude.Prelude
+import ch.kleis.lcaac.core.lang.evaluator.ToValue
+import ch.kleis.lcaac.core.lang.value.FromProcessRefValue
+import ch.kleis.lcaac.core.lang.value.IndicatorValue
+import ch.kleis.lcaac.core.lang.value.ProductValue
+import ch.kleis.lcaac.core.lang.value.QuantityValue
+import ch.kleis.lcaac.core.math.basic.BasicNumber
+import ch.kleis.lcaac.core.math.basic.BasicOperations
+import ch.kleis.lcaac.core.prelude.Prelude
+import ch.kleis.lcaac.plugin.fixture.UnitFixture
 import ch.kleis.lcaac.plugin.language.parser.LcaLangAbstractParser
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.psi.PsiManager

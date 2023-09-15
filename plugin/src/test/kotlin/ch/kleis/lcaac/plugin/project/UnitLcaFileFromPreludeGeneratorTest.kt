@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.project
 
-import ch.kleis.lcaac.plugin.core.math.basic.BasicNumber
+import ch.kleis.lcaac.core.math.basic.BasicNumber
 import org.junit.Test
 import java.util.zip.ZipInputStream
 import kotlin.io.path.Path

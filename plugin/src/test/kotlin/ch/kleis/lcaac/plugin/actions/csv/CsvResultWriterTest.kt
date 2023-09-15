@@ -1,9 +1,9 @@
 package ch.kleis.lcaac.plugin.actions.csv
 
-import ch.kleis.lcaac.plugin.core.lang.fixture.QuantityValueFixture
-import ch.kleis.lcaac.plugin.core.lang.fixture.UnitValueFixture
-import ch.kleis.lcaac.plugin.core.lang.value.ProductValue
-import ch.kleis.lcaac.plugin.core.math.basic.BasicNumber
+import ch.kleis.lcaac.core.lang.value.ProductValue
+import ch.kleis.lcaac.core.math.basic.BasicNumber
+import ch.kleis.lcaac.plugin.fixture.QuantityValueFixture
+import ch.kleis.lcaac.plugin.fixture.UnitValueFixture
 import io.mockk.mockk
 import org.apache.commons.io.output.AppendableWriter
 import org.junit.Test

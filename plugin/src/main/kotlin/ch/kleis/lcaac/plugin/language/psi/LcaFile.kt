@@ -2,7 +2,7 @@ package ch.kleis.lcaac.plugin.language.psi
 
 import ch.kleis.lcaac.plugin.LcaFileType
 import ch.kleis.lcaac.plugin.LcaLanguage
-import ch.kleis.lcaac.plugin.core.prelude.Prelude
+import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.psi.*
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.openapi.fileTypes.FileType

@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.language.psi.reference
 
-import ch.kleis.lcaac.plugin.core.lang.expression.SubstanceType
+import ch.kleis.lcaac.core.lang.expression.SubstanceType
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceKeyIndex
 import com.intellij.testFramework.fixtures.BasePlatformTestCase

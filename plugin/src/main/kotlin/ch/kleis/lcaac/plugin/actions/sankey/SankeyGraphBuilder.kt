@@ -1,17 +1,17 @@
 package ch.kleis.lcaac.plugin.actions.sankey
 
-import ch.kleis.lcaac.plugin.core.assessment.ContributionAnalysis
-import ch.kleis.lcaac.plugin.core.graph.Graph
-import ch.kleis.lcaac.plugin.core.graph.GraphLink
-import ch.kleis.lcaac.plugin.core.graph.GraphNode
-import ch.kleis.lcaac.plugin.core.lang.evaluator.EvaluatorException
-import ch.kleis.lcaac.plugin.core.lang.value.MatrixColumnIndex
-import ch.kleis.lcaac.plugin.core.lang.value.ProductValue
-import ch.kleis.lcaac.plugin.core.lang.value.QuantityValueOperations
-import ch.kleis.lcaac.plugin.core.lang.value.SubstanceValue
-import ch.kleis.lcaac.plugin.core.math.basic.BasicMatrix
-import ch.kleis.lcaac.plugin.core.math.basic.BasicNumber
-import ch.kleis.lcaac.plugin.core.math.basic.BasicOperations
+import ch.kleis.lcaac.core.assessment.ContributionAnalysis
+import ch.kleis.lcaac.core.graph.Graph
+import ch.kleis.lcaac.core.graph.GraphLink
+import ch.kleis.lcaac.core.graph.GraphNode
+import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
+import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
+import ch.kleis.lcaac.core.lang.value.ProductValue
+import ch.kleis.lcaac.core.lang.value.QuantityValueOperations
+import ch.kleis.lcaac.core.lang.value.SubstanceValue
+import ch.kleis.lcaac.core.math.basic.BasicMatrix
+import ch.kleis.lcaac.core.math.basic.BasicNumber
+import ch.kleis.lcaac.core.math.basic.BasicOperations
 
 class SankeyGraphBuilder(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,

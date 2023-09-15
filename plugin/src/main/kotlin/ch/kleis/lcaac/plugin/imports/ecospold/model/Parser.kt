@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.imports.ecospold.model
 
-import ch.kleis.lcaac.plugin.core.lang.expression.SubstanceType
+import ch.kleis.lcaac.core.lang.expression.SubstanceType
 import org.jdom2.Element
 import org.jdom2.JDOMFactory
 import org.jdom2.input.SAXBuilder

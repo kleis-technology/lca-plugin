@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.imports.ecospold
 
-import ch.kleis.lcaac.plugin.core.lang.expression.SubstanceType
+import ch.kleis.lcaac.core.lang.expression.SubstanceType
 import ch.kleis.lcaac.plugin.imports.ecospold.model.*
 
 object EcoSpold2Fixture {

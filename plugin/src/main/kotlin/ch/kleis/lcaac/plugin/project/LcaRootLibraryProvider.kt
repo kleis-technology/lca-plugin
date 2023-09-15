@@ -1,7 +1,7 @@
 package ch.kleis.lcaac.plugin.project
 
-import ch.kleis.lcaac.plugin.core.math.basic.BasicNumber
-import ch.kleis.lcaac.plugin.core.prelude.Prelude
+import ch.kleis.lcaac.core.math.basic.BasicNumber
+import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.project.libraries.LcaLibrary
 import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.ide.plugins.PluginManagerCore
