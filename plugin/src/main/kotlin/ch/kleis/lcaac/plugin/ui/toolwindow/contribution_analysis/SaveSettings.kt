@@ -7,8 +7,6 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.util.xmlb.XmlSerializerUtil
 
-enum class SubstanceImportMode { SIMAPRO, EF30, EF31, NOTHING }
-
 @State(name = "SaveSettings", storages = [Storage("lcaSave.xml")], reportStatistic = false)
 class SaveSettings : PersistentStateComponent<SaveSettings.State> {
     companion object {
