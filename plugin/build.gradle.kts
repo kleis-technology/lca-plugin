@@ -43,6 +43,9 @@ sourceSets {
 }
 
 dependencies {
+    implementation(project(":core"))
+    testImplementation(project(":core"))
+
     implementation(files(layout.buildDirectory.dir("stdlib/ef3.1")) {
         builtBy("generateEmissionFactors31")
     })
