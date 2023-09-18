@@ -20,8 +20,6 @@ plugins {
     id("org.jetbrains.qodana") version "0.1.13"
     // Gradle Grammar kit Plugin
     id("org.jetbrains.grammarkit") version "2021.2.2"
-    // Arrow optics auto-generation Plugin
-    id("com.google.devtools.ksp") version "1.8.20-1.0.11"
     // JSON serialization tools for graph visualization
     kotlin("plugin.serialization") version "1.8.10"
 }
@@ -186,8 +184,4 @@ tasks {
     clean {
         delete("${rootDir}/src/main/gen")
     }
-}
-
-afterEvaluate {
-    tasks.findByName("kspKotlin")?.mustRunAfter(tasks.generateLexer, tasks.generateParser)
 }
