@@ -1,6 +1,6 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
-    <id>ch.kleis.lcaac.plugin.main</id>
+    <id>ch.kleis.lcaac.plugin</id>
     <name>Life Cycle Analysis as Code</name>
     <!--    <name>ch.kleis.lcaac.plugin</name>-->
     <vendor url="https://kleis.ch" email="contact@kleis.ch">Kleis</vendor>
@@ -96,7 +96,8 @@
                 implementation="ch.kleis.lcaac.plugin.language.psi.stub.output_product.OutputProductStubKeyIndex"/>
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex"/>
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex"/>
-        <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssigmentStubKeyIndex"/>
+        <stubIndex
+                implementation="ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssigmentStubKeyIndex"/>
         <stubElementTypeHolder class="ch.kleis.lcaac.plugin.psi.LcaTypes" externalIdPrefix="lca."/>
 
         <fileBasedIndex implementation="ch.kleis.lcaac.plugin.language.psi.index.LcaProcessFileIndexExtension"/>
@@ -114,7 +115,8 @@
         <notificationGroup id="LcaAsCode"
                            displayType="BALLOON"
                            bundle="messages.MyBundle"/>
-        <applicationService serviceImplementation="ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.SaveSettings"/>
+        <applicationService
+                serviceImplementation="ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.SaveSettings"/>
         <applicationService serviceImplementation="ch.kleis.lcaac.plugin.ide.imports.simapro.SimaproImportSettings"/>
         <applicationService
                 serviceImplementation="ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.LCIASettings"/>
@@ -144,7 +146,8 @@
                 text="EcoSpold LCIA Library">
             <add-to-group group-id="ImportLibrary"/>
         </action>
-        <action id="ImportEcospoldLCI" class="ch.kleis.lcaac.plugin.ide.imports.ecospold.lci.EcospoldLCIImportMenuAction"
+        <action id="ImportEcospoldLCI"
+                class="ch.kleis.lcaac.plugin.ide.imports.ecospold.lci.EcospoldLCIImportMenuAction"
                 text="EcoSpold UPR / LCI Library">
             <add-to-group group-id="ImportLibrary"/>
         </action>
