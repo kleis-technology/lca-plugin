@@ -124,17 +124,17 @@ typeField ::= "type" '=' ("Emission"|"Resource"|"Land_use") {
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.field.PsiSubstanceTypeFieldMixin"
 }
 
-compartmentField ::= COMPARTMENT_KEYWORD EQUAL STRING_LITERAL {
+compartmentField ::= "compartment" "=" STRING_LITERAL {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.field.PsiStringLiteralField"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.field.PsiStringLiteralFieldMixin"
 }
 
-subCompartmentField ::= SUB_COMPARTMENT_KEYWORD EQUAL STRING_LITERAL {
+subCompartmentField ::= "sub_compartment" "=" STRING_LITERAL {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.field.PsiStringLiteralField"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.field.PsiStringLiteralFieldMixin"
 }
 
-block_meta ::= META_KEYWORD LBRACE meta_assignment* RBRACE
+block_meta ::= "meta" "{" meta_assignment* "}"
 
 meta_assignment ::= STRING_LITERAL '=' STRING_LITERAL {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiMetaAssignment"]
@@ -145,32 +145,32 @@ meta_assignment ::= STRING_LITERAL '=' STRING_LITERAL {
     Fields
  */
 
-nameField ::= NAME_KEYWORD EQUAL STRING_LITERAL {
+nameField ::= "name" "=" STRING_LITERAL {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.field.PsiStringLiteralField"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.field.PsiStringLiteralFieldMixin"
 }
 
-dimField ::= DIMENSION_KEYWORD EQUAL STRING_LITERAL {
+dimField ::= "dimension" "=" STRING_LITERAL {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.field.PsiStringLiteralField"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.field.PsiStringLiteralFieldMixin"
 }
 
-referenceUnitField ::= REFERENCE_UNIT_KEYWORD EQUAL dataExpression
+referenceUnitField ::= "reference_unit" "=" dataExpression
 
-symbolField ::= SYMBOL_KEYWORD EQUAL STRING_LITERAL {
+symbolField ::= "symbol" "=" STRING_LITERAL {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.field.PsiStringLiteralField"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.field.PsiStringLiteralFieldMixin"
 }
 
-aliasForField ::= ALIAS_FOR_KEYWORD EQUAL dataExpression
+aliasForField ::= "alias_for" "=" dataExpression
 
 
 /*
     Process
  */
 
-process ::= PROCESS_KEYWORD processRef
-LBRACE (
+process ::= "process" processRef
+"{" (
     params
     | labels
     | variables
@@ -181,24 +181,24 @@ LBRACE (
     | block_resources
     | block_meta
     | block_impacts
-    )* RBRACE {
+    )* "}" {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiProcess"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiProcessMixin"
     elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubElementType"
     stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStub"
 }
 
-labels ::= LABELS_KEYWORD LBRACE labelAssignment* RBRACE
-labelAssignment ::= labelRef EQUAL STRING_LITERAL {
+labels ::= "labels" "{" labelAssignment* "}"
+labelAssignment ::= labelRef "=" STRING_LITERAL {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiLabelAssignment"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiLabelAssignmentMixin"
 }
 
-params ::= PARAMETERS_KEYWORD LBRACE assignment* RBRACE
+params ::= "params" "{" assignment* "}"
 
-variables ::= VARIABLES_KEYWORD LBRACE assignment* RBRACE
+variables ::= "variables" "{" assignment* "}"
 
-assignment ::= dataRef EQUAL dataExpression {
+assignment ::= dataRef "=" dataExpression {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiAssignment"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiAssignmentMixin"
 }
@@ -207,17 +207,17 @@ assignment ::= dataRef EQUAL dataExpression {
     Blocks
  */
 
-block_products ::= PRODUCTS_KEYWORD LBRACE technoProductExchange* RBRACE
+block_products ::= "products" "{" technoProductExchange* "}"
 
-block_inputs ::= INPUTS_KEYWORD LBRACE technoInputExchange* RBRACE
+block_inputs ::= "inputs" "{" technoInputExchange* "}"
 
-block_emissions ::= EMISSIONS_KEYWORD LBRACE bioExchange* RBRACE
+block_emissions ::= "emissions" "{" bioExchange* "}"
 
-block_land_use ::= LAND_USE_KEYWORD LBRACE bioExchange* RBRACE
+block_land_use ::= "land_use" "{" bioExchange* "}"
 
-block_resources ::= RESOURCES_KEYWORD LBRACE bioExchange* RBRACE
+block_resources ::= "resources" "{" bioExchange* "}"
 
-block_impacts ::= IMPACTS_KEYWORD LBRACE impactExchange* RBRACE
+block_impacts ::= "impacts" "{" impactExchange* "}"
 
 /*
     Exchanges
@@ -250,12 +250,12 @@ fake binaryOperatorExpression ::= dataExpression dataExpression {
     ]
 }
 
-addQuantityExpression ::= dataExpression PLUS dataExpression { extends=binaryOperatorExpression }
-subQuantityExpression ::= dataExpression MINUS dataExpression { extends=binaryOperatorExpression }
-mulQuantityExpression ::= dataExpression STAR dataExpression { extends=binaryOperatorExpression }
-divQuantityExpression ::= dataExpression SLASH dataExpression { extends=binaryOperatorExpression }
-exponentialQuantityExpression ::= dataExpression HAT NUMBER { extends=dataExpression methods=[exponent="NUMBER"] }
-parenQuantityExpression ::= LPAREN dataExpression RPAREN { extends=dataExpression }
+addQuantityExpression ::= dataExpression "+" dataExpression { extends=binaryOperatorExpression }
+subQuantityExpression ::= dataExpression "-" dataExpression { extends=binaryOperatorExpression }
+mulQuantityExpression ::= dataExpression "*" dataExpression { extends=binaryOperatorExpression }
+divQuantityExpression ::= dataExpression "/" dataExpression { extends=binaryOperatorExpression }
+exponentialQuantityExpression ::= dataExpression "^" NUMBER { extends=dataExpression methods=[exponent="NUMBER"] }
+parenQuantityExpression ::= "(" dataExpression ")" { extends=dataExpression }
 scaleQuantityExpression ::= NUMBER dataExpression { extends=dataExpression methods=[scale="NUMBER"]}
 stringExpression ::= STRING_LITERAL { extends=dataExpression }
 
@@ -263,7 +263,7 @@ stringExpression ::= STRING_LITERAL { extends=dataExpression }
 /*
     Unit
  */
-unitDefinition ::= UNIT_KEYWORD dataRef LBRACE symbolField ( dimField | aliasForField) RBRACE {
+unitDefinition ::= "unit" dataRef "{" symbolField ( dimField | aliasForField) "}" {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.unit.PsiUnitDefinition"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.unit.PsiUnitDefinitionMixin"
     elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitElementType"
@@ -320,26 +320,26 @@ outputProductSpec ::= productRef allocateField? {
     elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.output_product.OutputProductElementType"
     stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.output_product.OutputProductStub"
 }
-allocateField ::= ALLOCATE_KEYWORD dataExpression
+allocateField ::= "allocate" dataExpression
 
 inputProductSpec ::= productRef processTemplateSpec? {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.spec.PsiInputProductSpec"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.spec.PsiInputProductSpecMixin"
 }
 
-processTemplateSpec ::= FROM_KEYWORD processRef (LPAREN comma_sep_arguments? RPAREN)? matchLabels? {
+processTemplateSpec ::= "from" processRef ("(" comma_sep_arguments? ")")? matchLabels? {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.spec.PsiProcessTemplateSpec"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.spec.PsiProcessTemplateSpecMixin"
 }
-matchLabels ::= MATCH_KEYWORD LPAREN comma_sep_label_selectors? RPAREN
+matchLabels ::= "match" "(" comma_sep_label_selectors? ")"
 
-private comma_sep_label_selectors ::= labelSelector (COMMA labelSelector)* COMMA?
-labelSelector ::= labelRef EQUAL dataExpression
+private comma_sep_label_selectors ::= labelSelector ("," labelSelector)* ","?
+labelSelector ::= labelRef "=" dataExpression
 
-private comma_sep_arguments ::= argument (COMMA argument)* COMMA?
-argument ::= parameterRef EQUAL dataExpression
+private comma_sep_arguments ::= argument ("," argument)* ","?
+argument ::= parameterRef "=" dataExpression
 
-substanceSpec ::= substanceRef (LPAREN compartmentField (COMMA subCompartmentField )? RPAREN)? {
+substanceSpec ::= substanceRef ("(" compartmentField ("," subCompartmentField )? ")")? {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.spec.PsiSubstanceSpec"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.spec.PsiSubstanceSpecMixin"
 }
@@ -348,7 +348,7 @@ substanceSpec ::= substanceRef (LPAREN compartmentField (COMMA subCompartmentFie
     Identifier
  */
 
-urn ::= uid DOT urn | uid {
+urn ::= uid "." urn | uid {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiUrn"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiUrnMixin"
 }
