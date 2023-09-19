@@ -1,10 +1,10 @@
 package ch.kleis.lcaac.plugin.actions
 
+import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
+import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.plugin.actions.csv.CsvProcessor
 import ch.kleis.lcaac.plugin.actions.csv.CsvRequestReader
 import ch.kleis.lcaac.plugin.actions.csv.CsvResultWriter
-import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
-import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.plugin.language.parser.LcaFileCollector
 import ch.kleis.lcaac.plugin.language.parser.LcaLangAbstractParser
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
@@ -27,12 +27,14 @@ class ContributionAnalysisWithDataAction(
     private val processName: String,
     private val matchLabels: Map<String, String>,
 ) : AnAction(
-    "Assess with ${processName}.csv",
-    "Assess with ${processName}.csv",
     AllIcons.Actions.Execute,
 ) {
     companion object {
         private val LOG = Logger.getInstance(ContributionAnalysisWithDataAction::class.java)
+    }
+
+    init {
+        this.templatePresentation.setText("Assess with ${processName}.csv", false)
     }
 
     override fun actionPerformed(e: AnActionEvent) {
