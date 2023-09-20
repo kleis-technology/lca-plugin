@@ -12,7 +12,7 @@ class SensitivityAnalysisAction(
     private val processName: String,
     private val matchLabels: Map<String, String>,
 ) : AnAction(
-    "Analyze sensitivity",
+    "Analyze Sensitivity",
     "Analyze sensitivity",
     AllIcons.Actions.Execute,
 ) {
