@@ -40,7 +40,7 @@ class SaveSettings : PersistentStateComponent<SaveSettings.State> {
     @Suppress("PropertyName")
     class State {
         @JvmField
-        var SAVE_FOLDER: String = "${ProjectManager.getInstance().openProjects[0].basePath ?: ""}/out"
+        var SAVE_FOLDER: String = "${ProjectManager.getInstance().openProjects.firstOrNull()?.basePath ?: ""}/out"
 
         @JvmField
         var FILE_NAME: String = "computation_result.csv"

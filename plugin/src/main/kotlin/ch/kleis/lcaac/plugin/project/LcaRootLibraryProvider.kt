@@ -34,7 +34,7 @@ class LcaRootLibraryProvider : AdditionalLibraryRootsProvider() {
     private val additionalJars: Collection<LcaLibrary>
 
     init {
-        val pluginId = PluginId.getId("ch.kleis.lcaac.plugin.main")
+        val pluginId = PluginId.getId("ch.kleis.lcaac.plugin")
         val plugin = PluginManagerCore.getPlugins().firstOrNull { it.pluginId == pluginId }
         additionalJars =
             listOfNotNull(
