@@ -1,10 +1,10 @@
 package ch.kleis.lcaac.plugin.language.parser
 
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
-import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataRef
-import ch.kleis.lcaac.plugin.language.psi.type.spec.PsiProcessTemplateSpec
-import ch.kleis.lcaac.plugin.language.psi.type.spec.PsiSubstanceSpec
+import ch.kleis.lcaac.plugin.psi.LcaDataRef
 import ch.kleis.lcaac.plugin.psi.LcaInputProductSpec
+import ch.kleis.lcaac.plugin.psi.LcaProcessTemplateSpec
+import ch.kleis.lcaac.plugin.psi.LcaSubstanceSpec
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiNamedElement
@@ -61,10 +61,10 @@ class LcaFileCollector(
     private fun allReferences(file: LcaFile): Sequence<PsiNamedElement> {
         return PsiTreeUtil.findChildrenOfAnyType(
             file,
-            PsiSubstanceSpec::class.java,
-            PsiDataRef::class.java,
+            LcaSubstanceSpec::class.java,
+            LcaDataRef::class.java,
             LcaInputProductSpec::class.java,
-            PsiProcessTemplateSpec::class.java,
+            LcaProcessTemplateSpec::class.java,
         ).asSequence()
     }
 }
