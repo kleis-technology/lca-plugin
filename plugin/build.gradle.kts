@@ -24,8 +24,10 @@ plugins {
     kotlin("plugin.serialization") version "1.8.10"
 }
 
-group = properties("pluginGroup")
-version = properties("pluginVersion")
+group = properties("lcaacGroup")
+version = properties("lcaacVersion")
+val pluginVersion = properties("lcaacVersion")
+val javaVersion = properties("javaVersion")
 
 // Configure project's dependencies
 repositories {
@@ -77,7 +79,7 @@ intellij {
 
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
 changelog {
-    version.set(properties("pluginVersion"))
+    version.set(pluginVersion)
     groups.set(emptyList())
 }
 
@@ -91,7 +93,7 @@ qodana {
 
 tasks {
     // Set the JVM compatibility versions
-    properties("javaVersion").let {
+    javaVersion.let {
         withType<JavaCompile> {
             sourceCompatibility = it
             targetCompatibility = it
@@ -127,7 +129,7 @@ tasks {
     }
 
     patchPluginXml {
-        version.set(properties("pluginVersion"))
+        version.set(pluginVersion)
         sinceBuild.set(properties("pluginSinceBuild"))
         untilBuild.set(properties("pluginUntilBuild"))
 
@@ -147,7 +149,7 @@ tasks {
         // Get the latest available change notes from the changelog file
         changeNotes.set(provider {
             changelog.renderItem(changelog.run {
-                getOrNull(properties("pluginVersion")) ?: getLatest()
+                getOrNull(pluginVersion) ?: getLatest()
             }, Changelog.OutputType.HTML)
         })
     }
@@ -178,7 +180,7 @@ tasks {
         // pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels, like 2.1.7-alpha.3
         // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
         // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
-        channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "default" }.split('.').first()))
+        channels.set(listOf(pluginVersion.split('-').getOrElse(1) { "default" }.split('.').first()))
     }
 
     clean {
