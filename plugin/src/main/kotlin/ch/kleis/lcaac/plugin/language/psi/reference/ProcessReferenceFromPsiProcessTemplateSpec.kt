@@ -3,15 +3,15 @@ package ch.kleis.lcaac.plugin.language.psi.reference
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.language.psi.stub.LcaStubIndexKeys
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
-import ch.kleis.lcaac.plugin.language.psi.type.spec.PsiProcessTemplateSpec
 import ch.kleis.lcaac.plugin.language.type_checker.LcaMatchLabelsEvaluator
+import ch.kleis.lcaac.plugin.psi.LcaProcessTemplateSpec
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.psi.*
 import com.intellij.psi.stubs.StubIndex
 
 class ProcessReferenceFromPsiProcessTemplateSpec(
-    element: PsiProcessTemplateSpec
-) : PsiReferenceBase<PsiProcessTemplateSpec>(element), PsiPolyVariantReference {
+    element: LcaProcessTemplateSpec
+) : PsiReferenceBase<LcaProcessTemplateSpec>(element), PsiPolyVariantReference {
     private val project = element.project
     private val file = element.containingFile as LcaFile
     private val pkgName = file.getPackageName()

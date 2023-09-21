@@ -30,7 +30,7 @@ class DataRefExactNameMatcherScopeProcessorTest : ParsingTestCase("", "lca", Lca
             """.trimIndent()
         ) as LcaFile
         val process = file.getProcesses().first()
-        val assignment = process.getLcaLabels().first().labelAssignmentList.first()
+        val assignment = process.getLabelsList().first().labelAssignmentList.first()
         val dataRef = process.getInputs().first()
             .inputProductSpec
             .getProcessTemplateSpec()!!
@@ -64,7 +64,7 @@ class DataRefExactNameMatcherScopeProcessorTest : ParsingTestCase("", "lca", Lca
             """.trimIndent()
         ) as LcaFile
         val process = file.getProcesses().first()
-        val assignment = process.getLcaParams().first().assignmentList.first()
+        val assignment = process.getParamsList().first().assignmentList.first()
         val dataRef = process.getProducts().first()
             .dataExpression as LcaDataRef
 
@@ -94,7 +94,7 @@ class DataRefExactNameMatcherScopeProcessorTest : ParsingTestCase("", "lca", Lca
             """.trimIndent()
         ) as LcaFile
         val process = file.getProcesses().first()
-        val assignment = process.getLcaVariables().first().assignmentList.first()
+        val assignment = process.getVariablesList().first().assignmentList.first()
         val dataRef = process.getProducts().first()
             .dataExpression as LcaDataRef
 

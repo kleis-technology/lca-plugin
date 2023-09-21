@@ -2,7 +2,7 @@ package ch.kleis.lcaac.plugin.language.parser
 
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.language.psi.index.LcaProcessFileIndex
-import ch.kleis.lcaac.plugin.language.psi.type.spec.PsiProcessTemplateSpec
+import ch.kleis.lcaac.plugin.psi.LcaProcessTemplateSpec
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 
@@ -18,7 +18,7 @@ class DefaultRefFileResolver(
         val packageCandidates = lcaFile.getImportNames()
             .plus(lcaFile.getPackageName())
         return when (element) {
-            is PsiProcessTemplateSpec -> {
+            is LcaProcessTemplateSpec -> {
                 LcaProcessFileIndex.findFiles(
                     project,
                     element.getProcessRef().name,
@@ -27,5 +27,16 @@ class DefaultRefFileResolver(
 
             else -> element.reference?.resolve()?.containingFile?.let { listOf(it as LcaFile) } ?: emptyList()
         }.filter { packageCandidates.contains(it.getPackageName()) }
+    }
+}
+
+class AccumulatingRefFileResolver(
+    project: Project
+) : RefFileResolver {
+    private val elementMap: HashMap<PsiElement, List<LcaFile>> = HashMap()
+    private val defaultResolver = DefaultRefFileResolver(project)
+
+    override fun resolve(element: PsiElement): List<LcaFile> {
+        return elementMap[element] ?: defaultResolver.resolve(element).also { elementMap[element] = it }
     }
 }

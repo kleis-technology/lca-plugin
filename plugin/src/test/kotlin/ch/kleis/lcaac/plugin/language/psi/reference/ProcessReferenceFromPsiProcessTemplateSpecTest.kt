@@ -63,7 +63,7 @@ class ProcessReferenceFromPsiProcessTemplateSpecTest : BasePlatformTestCase() {
             .getProcessTemplateSpec()!!
 
         // when
-        val actual = ref.reference.resolve()
+        val actual = ref.reference?.resolve()
 
         // then
         val expected = ProcessStubKeyIndex
@@ -142,9 +142,9 @@ class ProcessReferenceFromPsiProcessTemplateSpecTest : BasePlatformTestCase() {
         // when
         val actual =
             ref.reference
-                .variants
-                .map { (it as LookupElementBuilder).lookupString }
-                .sorted()
+                ?.variants
+                ?.map { (it as LookupElementBuilder).lookupString }
+                ?.sorted() ?: emptyList()
 
 
         // then

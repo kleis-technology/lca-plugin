@@ -115,7 +115,7 @@ class LcaDataAnnotatorTest : BasePlatformTestCase() {
             }
         """.trimIndent()
         )
-        val element = SubstanceKeyIndex.findSubstances(
+        val element = SubstanceKeyIndex.Util.findSubstances(
             project,
             "$pkgName.s", "Resource", "c"
         ).first()
@@ -149,7 +149,7 @@ class LcaDataAnnotatorTest : BasePlatformTestCase() {
             }
         """.trimIndent()
         )
-        val element = SubstanceKeyIndex.findSubstances(
+        val element = SubstanceKeyIndex.Util.findSubstances(
             project,
             "$pkgName.s", "Resource", "c"
         ).first()
@@ -186,7 +186,7 @@ class LcaDataAnnotatorTest : BasePlatformTestCase() {
             }
         """.trimIndent()
         )
-        val element = SubstanceKeyIndex.findSubstances(
+        val element = SubstanceKeyIndex.Util.findSubstances(
             project,
             "$pkgName.s", "Resource", "c",
         ).first()

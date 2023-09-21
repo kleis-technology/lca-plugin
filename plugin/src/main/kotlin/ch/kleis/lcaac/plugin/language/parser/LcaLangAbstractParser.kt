@@ -31,7 +31,10 @@ class LcaLangAbstractParser<Q>(
                 .plus(
                     unitDefinitions
                         .filter { it.getType() == UnitDefinitionType.LITERAL }
-                        .map { it.getDimensionField().getValue() to Dimension.of(it.getDimensionField().getValue()) }
+                        .map {
+                            val value = it.dimField!!.getValue()
+                            value to Dimension.of(value)
+                        }
                         .asIterable()
                 )
         } catch (e: RegisterException) {
@@ -54,13 +57,13 @@ class LcaLangAbstractParser<Q>(
                 .plus(
                     unitDefinitions
                         .filter { it.getType() == UnitDefinitionType.LITERAL }
-                        .map { it.getUnitRef().getUID().name to (unitLiteral(it)) }
+                        .map { it.getDataRef().getUID().name to (unitLiteral(it)) }
                         .asIterable()
                 )
                 .plus(
                     unitDefinitions
                         .filter { it.getType() == UnitDefinitionType.ALIAS }
-                        .map { it.getUnitRef().getUID().name to (unitAlias(it)) }
+                        .map { it.getDataRef().getUID().name to (unitAlias(it)) }
                         .asIterable()
                 )
                 .plus(
@@ -92,23 +95,23 @@ class LcaLangAbstractParser<Q>(
         )
     }
 
-    private fun unitLiteral(psiUnitDefinition: PsiUnitDefinition): DataExpression<Q> {
+    private fun unitLiteral(lcaUnitDefinition: LcaUnitDefinition): DataExpression<Q> {
         return EUnitLiteral(
-            UnitSymbol.of(psiUnitDefinition.getSymbolField().getValue()),
+            UnitSymbol.of(lcaUnitDefinition.symbolField.getValue()),
             1.0,
-            Dimension.of(psiUnitDefinition.getDimensionField().getValue())
+            Dimension.of(lcaUnitDefinition.dimField!!.getValue())
         )
     }
 
-    private fun unitAlias(psiUnitAlias: PsiUnitDefinition): DataExpression<Q> {
+    private fun unitAlias(lcaUnitDefinition: LcaUnitDefinition): DataExpression<Q> {
         return EUnitAlias(
-            psiUnitAlias.getSymbolField().getValue(),
-            parseDataExpression(psiUnitAlias.getAliasForField().dataExpression)
+            lcaUnitDefinition.symbolField.getValue(),
+            parseDataExpression(lcaUnitDefinition.aliasForField!!.dataExpression)
         )
     }
 
     private fun process(
-        psiProcess: PsiProcess,
+        psiProcess: LcaProcess,
         globals: Register<DataExpression<Q>>,
     ): EProcessTemplate<Q> {
         val name = psiProcess.name
@@ -151,11 +154,11 @@ class LcaLangAbstractParser<Q>(
         return psiProcess.getProducts().map { technoProductExchange(it, symbolTable) }
     }
 
-    private fun substanceCharacterization(psiSubstance: PsiSubstance): ESubstanceCharacterization<Q> {
-        val substanceSpec = substanceSpec(psiSubstance)
-        val quantity = parseDataExpression(psiSubstance.getReferenceUnitField().dataExpression)
+    private fun substanceCharacterization(lcaSubstance: LcaSubstance): ESubstanceCharacterization<Q> {
+        val substanceSpec = substanceSpec(lcaSubstance)
+        val quantity = parseDataExpression(lcaSubstance.getReferenceUnitField().dataExpression)
         val referenceExchange = EBioExchange(quantity, substanceSpec)
-        val impacts = psiSubstance.getImpactExchanges().map { impact(it) }
+        val impacts = lcaSubstance.getImpactExchanges().map { impact(it) }
 
         return ESubstanceCharacterization(
             referenceExchange,
@@ -163,19 +166,19 @@ class LcaLangAbstractParser<Q>(
         )
     }
 
-    private fun substanceSpec(psiSubstance: PsiSubstance): ESubstanceSpec<Q> {
+    private fun substanceSpec(psiSubstance: LcaSubstance): ESubstanceSpec<Q> {
         return ESubstanceSpec(
             name = psiSubstance.getSubstanceRef().name,
             displayName = psiSubstance.getNameField().getValue(),
             type = SubstanceType.of(psiSubstance.getTypeField().getValue()),
             compartment = psiSubstance.getCompartmentField().getValue(),
-            subCompartment = psiSubstance.getSubcompartmentField()?.getValue(),
+            subCompartment = psiSubstance.getSubCompartmentField()?.getValue(),
             referenceUnit = EUnitOf(parseDataExpression(psiSubstance.getReferenceUnitField().dataExpression)),
         )
     }
 
     private fun substanceSpec(
-        substanceSpec: PsiSubstanceSpec,
+        substanceSpec: LcaSubstanceSpec,
         quantity: DataExpression<Q>,
         symbolTable: SymbolTable<Q>
     ): ESubstanceSpec<Q> =

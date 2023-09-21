@@ -17,10 +17,10 @@ class PsiLcaTypeChecker {
 
     fun check(element: PsiElement): Type {
         return when (element) {
-            is PsiUnitDefinition -> checkUnit(element)
+            is LcaUnitDefinition -> checkUnit(element)
             is LcaDataExpression -> checkDataExpression(element)
-            is PsiGlobalAssignment -> checkDataExpression(element.getValue())
-            is PsiAssignment -> checkDataExpression(element.getValue())
+            is LcaGlobalAssignment -> checkDataExpression(element.getValue())
+            is LcaAssignment -> checkDataExpression(element.getValue())
             is LcaLabelAssignment -> TString
             is LcaTechnoInputExchange -> checkTechnoInputExchange(element)
             is LcaTechnoProductExchange -> checkTechnoProductExchange(element)
@@ -35,8 +35,8 @@ class PsiLcaTypeChecker {
             val name = el.substanceSpec.name
             val comp = el.substanceSpec.getCompartmentField()?.getValue() ?: ""
             val subComp = el.substanceSpec.getSubCompartmentField()?.getValue()
-            el.substanceSpec.reference.resolve()?.let {
-                if (it is PsiSubstance) {
+            el.substanceSpec.reference?.resolve()?.let {
+                if (it is LcaSubstance) {
                     val tyRefQuantity =
                         checkDataExpression(it.getReferenceUnitField().dataExpression, TQuantity::class.java)
                     if (tyRefQuantity.dimension != tyQuantity.dimension) {
@@ -62,7 +62,7 @@ class PsiLcaTypeChecker {
         return rec.guard { el: LcaTechnoInputExchange ->
             val tyQuantity = checkDataExpression(el.dataExpression, TQuantity::class.java)
             val productName = el.inputProductSpec.name
-            el.inputProductSpec.reference.resolve()?.let {
+            el.inputProductSpec.reference?.resolve()?.let {
                 val outputProductSpec = it as LcaOutputProductSpec
                 val tyOutputExchange = check(outputProductSpec.getContainingTechnoExchange())
                 if (tyOutputExchange !is TTechnoExchange) {
@@ -109,22 +109,22 @@ class PsiLcaTypeChecker {
         }(element)
     }
 
-    private fun checkUnit(element: PsiUnitDefinition): TUnit {
+    private fun checkUnit(element: LcaUnitDefinition): TUnit {
         return when (element.getType()) {
             UnitDefinitionType.LITERAL -> checkUnitLiteral(element)
             UnitDefinitionType.ALIAS -> checkUnitAlias(element)
         }
     }
 
-    private fun checkUnitAlias(element: PsiUnitDefinition): TUnit {
-        return rec.guard { el: PsiUnitDefinition ->
-            val tyQuantity = checkDataExpression(el.getAliasForField().dataExpression, TQuantity::class.java)
+    private fun checkUnitAlias(element: LcaUnitDefinition): TUnit {
+        return rec.guard { el: LcaUnitDefinition ->
+            val tyQuantity = checkDataExpression(el.aliasForField!!.dataExpression, TQuantity::class.java)
             TUnit(tyQuantity.dimension)
         }(element)
     }
 
-    private fun checkUnitLiteral(psiUnitDefinition: PsiUnitDefinition): TUnit {
-        return TUnit(Dimension.of(psiUnitDefinition.getDimensionField().getValue()))
+    private fun checkUnitLiteral(psiUnitDefinition: LcaUnitDefinition): TUnit {
+        return TUnit(Dimension.of(psiUnitDefinition.dimField!!.getValue()))
     }
 
     private fun <T> checkDataExpression(element: LcaDataExpression, cls: Class<T>): T {

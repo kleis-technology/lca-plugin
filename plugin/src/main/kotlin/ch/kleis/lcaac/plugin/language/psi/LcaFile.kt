@@ -13,6 +13,7 @@ import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.psi.util.PsiTreeUtil
 
 class LcaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LcaLanguage.INSTANCE) {
+
     override fun getFileType(): FileType {
         return LcaFileType.INSTANCE
     }
@@ -22,24 +23,28 @@ class LcaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LcaLan
     }
 
     fun getPackageName(): String {
-        return PsiTreeUtil.findChildOfType(this, LcaPackage::class.java)?.name
+        return PsiTreeUtil.getChildOfType(this, LcaPackage::class.java)?.name
             ?: "default"
     }
 
+    private fun getImports(): Collection<LcaImport> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaImport::class.java)
+    }
+
     fun getImportNames(): Collection<String> {
-        return listOf(Prelude.pkgName) + PsiTreeUtil.findChildrenOfType(this, LcaImport::class.java).map { it.name }
+        return listOf(Prelude.pkgName) + getImports().map { it.name }
     }
 
     fun getProcesses(): Collection<LcaProcess> {
-        return PsiTreeUtil.findChildrenOfType(this, LcaProcess::class.java)
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaProcess::class.java)
     }
 
     fun getSubstances(): Collection<LcaSubstance> {
-        return PsiTreeUtil.findChildrenOfType(this, LcaSubstance::class.java)
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaSubstance::class.java)
     }
 
     fun getGlobalAssignments(): Collection<Pair<String, LcaDataExpression>> {
-        return PsiTreeUtil.findChildrenOfType(this, LcaGlobalVariables::class.java)
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaGlobalVariables::class.java)
             .flatMap {
                 it.globalAssignmentList
                     .map { a -> a.getDataRef().name to a.getValue() }
@@ -47,11 +52,11 @@ class LcaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LcaLan
     }
 
     fun getUnitDefinitions(): Collection<LcaUnitDefinition> {
-        return PsiTreeUtil.findChildrenOfType(this, LcaUnitDefinition::class.java)
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaUnitDefinition::class.java)
     }
 
     fun getBlocksOfGlobalVariables(): Collection<LcaGlobalVariables> {
-        return PsiTreeUtil.findChildrenOfType(this, LcaGlobalVariables::class.java)
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaGlobalVariables::class.java)
     }
 
     override fun processDeclarations(

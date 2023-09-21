@@ -27,7 +27,7 @@ class SubstanceReferenceFromPsiSubstanceRefTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val substance = SubstanceKeyIndex.findSubstances(
+        val substance = SubstanceKeyIndex.Util.findSubstances(
             project,
             "$pkgName.s",
             SubstanceType.EMISSION.value,
@@ -36,7 +36,7 @@ class SubstanceReferenceFromPsiSubstanceRefTest : BasePlatformTestCase() {
         val ref = substance.getSubstanceRef()
 
         // when
-        val actual = ref.reference.resolve()
+        val actual = ref.reference?.resolve()
 
         // then
         assertEquals(substance, actual)
@@ -70,10 +70,10 @@ class SubstanceReferenceFromPsiSubstanceRefTest : BasePlatformTestCase() {
             .getSubstanceRef()
 
         // when
-        val actual = ref.reference.resolve()
+        val actual = ref.reference?.resolve()
 
         // then
-        val expected = SubstanceKeyIndex.findSubstances(
+        val expected = SubstanceKeyIndex.Util.findSubstances(
             project,
             "$pkgName.s",
             SubstanceType.EMISSION.value,

@@ -6,7 +6,10 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
+@RunWith(JUnit4::class)
 class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
 
     override fun getTestDataPath(): String {
@@ -59,10 +62,10 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
             .getSubstanceSpec()
 
         // when
-        val actual = substanceSpec.reference.resolve()
+        val actual = substanceSpec.reference?.resolve()
 
         // then
-        val expected = SubstanceKeyIndex.findSubstances(
+        val expected = SubstanceKeyIndex.Util.findSubstances(
             project,
             "$pkgName.co2_air.co2",
             "Emission",
@@ -116,7 +119,7 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
             .getSubstanceSpec()
 
         // when
-        val actual = substanceSpec.reference.resolve()
+        val actual = substanceSpec.reference?.resolve()
 
         // then
         assertNull(actual)
@@ -167,10 +170,10 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
             .getSubstanceSpec()
 
         // when
-        val actual = substanceSpec.reference.resolve()
+        val actual = substanceSpec.reference?.resolve()
 
         // then
-        val expected = SubstanceKeyIndex.findSubstances(
+        val expected = SubstanceKeyIndex.Util.findSubstances(
             project,
             "$pkgName.co2_air.co2",
             "Emission",
@@ -225,8 +228,8 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
 
         // when
         val actual = spec.reference
-            .variants.map { (it as LookupElementBuilder).lookupString }
-            .sorted()
+            ?.variants?.map { (it as LookupElementBuilder).lookupString }
+            ?.sorted() ?: emptyList()
 
         // then
         val expected = listOf(

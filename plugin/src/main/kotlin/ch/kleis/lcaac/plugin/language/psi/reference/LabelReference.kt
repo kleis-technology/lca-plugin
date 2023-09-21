@@ -15,7 +15,7 @@ class LabelReference(
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         return when {
-            isInsideMatchLabels(element) -> resolveProcess()?.getLcaLabels()
+            isInsideMatchLabels(element) -> resolveProcess()?.getLabelsList()
                 ?.flatMap { it.labelAssignmentList }
                 ?.filter { it.name == element.name }
                 ?.map { PsiElementResolveResult(it) }

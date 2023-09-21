@@ -14,7 +14,7 @@ class OutputProductReferenceFromPsiProductRef(
         return getEnclosingInputProductSpec(element)?.reference?.resolve()
             ?: getEnclosingOutputProductSpec(element)
     }
-    
+
     private fun getEnclosingInputProductSpec(element: PsiProductRef): LcaInputProductSpec? {
         return PsiTreeUtil.getParentOfType(element, LcaInputProductSpec::class.java)
     }
