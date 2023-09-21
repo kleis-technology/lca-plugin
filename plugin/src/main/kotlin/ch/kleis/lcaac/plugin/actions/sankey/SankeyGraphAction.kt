@@ -1,12 +1,12 @@
 package ch.kleis.lcaac.plugin.actions.sankey
 
-import ch.kleis.lcaac.plugin.MyBundle
-import ch.kleis.lcaac.plugin.actions.traceSystemWithIndicator
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
+import ch.kleis.lcaac.plugin.MyBundle
+import ch.kleis.lcaac.plugin.actions.ActionHelper.traceSystemWithIndicator
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.SankeyGraphWindow
 import com.intellij.icons.AllIcons

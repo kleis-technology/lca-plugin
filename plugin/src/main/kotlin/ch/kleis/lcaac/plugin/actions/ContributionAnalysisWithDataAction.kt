@@ -64,7 +64,7 @@ class ContributionAnalysisWithDataAction(
                     val results = requests.flatMap { request ->
                         ProgressManager.checkCanceled()
                         indicator.text = "Processing using ${request.arguments()}"
-                        indicator.fraction = indicator.fraction + 1.0 / requests.size
+                        indicator.fraction += 1.0 / requests.size
                         csvProcessor.process(request)
                     }
 
