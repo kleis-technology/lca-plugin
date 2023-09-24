@@ -47,7 +47,7 @@ class EcospoldImportSettingsPanel(
     // LCIA specific field
     private val methodNameField: JComponent?
 
-    // LCI specific field
+    // UPR specific field
     private val mappingFileField: JComponent?
 
     init {
@@ -267,7 +267,7 @@ class EcospoldImportSettingsPanel(
 
         return LabeledComponent.create(
             myComboBox,
-            MyBundle.message("lca.dialog.import.ecospold.upr.builtinLibrary.label"),
+            MyBundle.message("lca.dialog.import.ecospold.upr.selectMethod"),
             BorderLayout.WEST,
         )
     }
