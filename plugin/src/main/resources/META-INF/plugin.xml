@@ -121,7 +121,7 @@
         <applicationService
                 serviceImplementation="ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.LCIASettings"/>
         <applicationService
-                serviceImplementation="ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.UPRAndLCISettings"/>
+                serviceImplementation="ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.UPRSettings"/>
 
         <defaultLiveTemplates file="/liveTemplates/lca.xml"/>
         <liveTemplateContext implementation="ch.kleis.lcaac.plugin.ide.template.LcaRootContext" contextId="LCARoot"/>
@@ -137,18 +137,18 @@
             <add-to-group group-id="FileMenu" anchor="first"/>
         </group>
 
-        <action id="ImportSimapro" class="ch.kleis.lcaac.plugin.ide.imports.simapro.SimaproImportMenuAction"
-                text="Simapro Library">
-            <add-to-group group-id="ImportLibrary"/>
-        </action>
         <action id="ImportEcospoldLCIA"
                 class="ch.kleis.lcaac.plugin.ide.imports.ecospold.lcia.EcospoldLCIAImportMenuAction"
                 text="EcoSpold LCIA Library">
             <add-to-group group-id="ImportLibrary"/>
         </action>
-        <action id="ImportEcospoldLCI"
-                class="ch.kleis.lcaac.plugin.ide.imports.ecospold.lci.EcospoldLCIImportMenuAction"
-                text="EcoSpold UPR / LCI Library">
+        <action id="ImportEcospoldUPR"
+                class="ch.kleis.lcaac.plugin.ide.imports.ecospold.upr.EcospoldUPRImportMenuAction"
+                text="EcoSpold UPR Library">
+            <add-to-group group-id="ImportLibrary"/>
+        </action>
+        <action id="ImportSimapro" class="ch.kleis.lcaac.plugin.ide.imports.simapro.SimaproImportMenuAction"
+                text="Simapro Library">
             <add-to-group group-id="ImportLibrary"/>
         </action>
     </actions>

@@ -6,7 +6,7 @@ import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.EcospoldImportSettings
 import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.LCIASettings
-import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.UPRAndLCISettings
+import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.UPRSettings
 import ch.kleis.lcaac.plugin.imports.Imported
 import ch.kleis.lcaac.plugin.imports.Importer
 import ch.kleis.lcaac.plugin.imports.ModelWriter
@@ -68,7 +68,7 @@ class EcospoldImporter(
     private var currentValue = 0
     private val processRenderer = EcospoldProcessRenderer()
     private val methodName: String = when (settings) {
-        is UPRAndLCISettings -> "Ecospold LCI library file."
+        is UPRSettings -> "Ecospold LCI library file."
         is LCIASettings -> settings.methodName
     }
     private val mapper = ToValue(BasicOperations)
@@ -79,7 +79,7 @@ class EcospoldImporter(
 
     override fun importAll(controller: AsyncTaskController, watcher: AsynchronousWatcher) {
         val methodMapping =
-            if (settings is UPRAndLCISettings && settings.mappingFile.isNotEmpty()) {
+            if (settings is UPRSettings && settings.mappingFile.isNotEmpty()) {
                 buildMapping(watcher, settings)
             } else {
                 null
@@ -95,7 +95,7 @@ class EcospoldImporter(
         }
     }
 
-    private fun buildMapping(watcher: AsynchronousWatcher, settings: UPRAndLCISettings): Map<String, MappingExchange> {
+    private fun buildMapping(watcher: AsynchronousWatcher, settings: UPRSettings): Map<String, MappingExchange> {
         watcher.notifyCurrentWork("Building requested method map")
         FileInputStream(settings.mappingFile).use {
             val bomIS = BOMInputStream(it)
@@ -106,7 +106,7 @@ class EcospoldImporter(
     }
 
     private fun builtinLibraryImports(settings: EcospoldImportSettings): List<String> =
-        if (settings is UPRAndLCISettings && settings.importBuiltinLibrary != null) {
+        if (settings is UPRSettings && settings.importBuiltinLibrary != null) {
             listOf(settings.importBuiltinLibrary.toString())
         } else listOf()
 
