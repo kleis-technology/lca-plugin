@@ -59,6 +59,17 @@ class SensitivityAnalysisTask(
                 .size
         }
         val ops = DualOperations(nbQuantitativeParams)
+        if (nbQuantitativeParams == 0) {
+            NotificationGroupManager.getInstance()
+                .getNotificationGroup("LcaAsCode")
+                .createNotification(
+                    "No quantitative parameters found.",
+                    "Sensitivity analysis requires at least one quantitative parameter.",
+                    NotificationType.WARNING,
+                )
+                .notify(project)
+            return
+        }
 
         // read
         indicator.text = "Loading symbol table"
