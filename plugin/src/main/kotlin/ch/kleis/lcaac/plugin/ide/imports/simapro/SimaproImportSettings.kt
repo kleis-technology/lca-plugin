@@ -38,9 +38,9 @@ class SimaproImportSettings : PersistentStateComponent<SimaproImportSettings.Sta
         }
 
     var importUnits: Boolean
-        get() = state.IMPORT_UNITS
+        get() = true
         set(value) {
-            state.IMPORT_UNITS = value
+            // do nothing
         }
 
     var importProcesses: Boolean
