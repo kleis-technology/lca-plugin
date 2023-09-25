@@ -28,10 +28,7 @@ class EcospoldProcessRenderer {
         process.comments.add(processComment)
         val strProcess = ProcessSerializer.serialize(process)
 
-        w.write(
-            "processes${File.separatorChar}$subFolder${process.uid}",
-            strProcess, index = false, closeAfterWrite = true
-        )
+        w.writeFile( "processes${File.separatorChar}$subFolder${process.uid}", strProcess )
     }
 
     private fun category(data: ActivityDataset): String? {

@@ -88,11 +88,10 @@ class EcospoldImporter(
 
         val path = Path.of(settings.libraryFile)
         val pkg = settings.rootPackage.ifBlank { "default" }
+        val writer = ModelWriter(pkg, settings.rootFolder, builtinLibraryImports(settings), watcher)
 
         SevenZFile(path.toFile()).use { f ->
-            ModelWriter(pkg, settings.rootFolder, builtinLibraryImports(settings), watcher).use { w ->
-                importEntries(f, methodMapping, w, controller, watcher)
-            }
+            importEntries(f, methodMapping, writer, controller, watcher)
         }
     }
 

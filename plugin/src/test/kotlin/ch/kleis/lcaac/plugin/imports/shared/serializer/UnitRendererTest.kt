@@ -23,11 +23,10 @@ class UnitRendererTest {
     private val writer = mockk<ModelWriter>()
     private val pathSlot = slot<String>()
     private val bodySlot = slot<String>()
-    private val indexSlot = slot<Boolean>()
 
     @Before
     fun before() {
-        every { writer.write(capture(pathSlot), capture(bodySlot), capture(indexSlot)) } returns Unit
+        every { writer.writeAppendFile(capture(pathSlot), capture(bodySlot)) } returns Unit
         mockkObject(StringUtils)
         every { StringUtils.sanitize("k+g") } returns "k_g"
         every { StringUtils.sanitize("kg") } returns "kg"
@@ -51,7 +50,7 @@ class UnitRendererTest {
         // When
         sut.render(data, writer)
         // Then
-        verify(exactly = 0) { writer.write(any(), any(), any()) }
+        verify(exactly = 0) { writer.writeAppendFile(any(), any()) }
     }
 
     @Test
@@ -74,7 +73,6 @@ class UnitRendererTest {
         // Better way to view large diff than using mockk.verify
         Assert.assertEquals("unit", pathSlot.captured)
         Assert.assertEquals(expected, bodySlot.captured)
-        Assert.assertEquals(false, indexSlot.captured)
     }
 
     @Test
@@ -111,7 +109,6 @@ class UnitRendererTest {
         // Better way to view large diff than using mockk.verify
         Assert.assertEquals("unit", pathSlot.captured)
         Assert.assertEquals(expected, bodySlot.captured)
-        Assert.assertEquals(false, indexSlot.captured)
     }
 
     @Test
@@ -148,7 +145,6 @@ class UnitRendererTest {
         // Better way to view large diff than using mockk.verify
         Assert.assertEquals("unit", pathSlot.captured)
         Assert.assertEquals(expected, bodySlot.captured)
-        Assert.assertEquals(false, indexSlot.captured)
     }
 
     @Test
@@ -171,7 +167,6 @@ class UnitRendererTest {
         // Better way to view large diff than using mockk.verify
         Assert.assertEquals("unit", pathSlot.captured)
         Assert.assertEquals(expected, bodySlot.captured)
-        Assert.assertEquals(false, indexSlot.captured)
     }
 
     @Test
@@ -179,14 +174,13 @@ class UnitRendererTest {
         // Given
         val sut = UnitRenderer.of(emptyMap())
         val data = ImportedUnit("Time", "s€c", 2.0, "s")
-        sut.render(data, writer)
 
         // When
         sut.render(data, writer)
 
         // Then
         verify(atMost = 1) {
-            writer.write("unit", any(), false)
+            writer.writeAppendFile("unit", any())
         }
     }
 

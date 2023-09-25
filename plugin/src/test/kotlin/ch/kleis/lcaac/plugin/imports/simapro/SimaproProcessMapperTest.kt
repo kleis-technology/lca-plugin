@@ -2,8 +2,9 @@ package ch.kleis.lcaac.plugin.imports.simapro
 
 import ch.kleis.lcaac.plugin.ide.imports.simapro.SubstanceImportMode
 import ch.kleis.lcaac.plugin.imports.ModelWriter
-import ch.kleis.lcaac.plugin.imports.util.StringUtils
-import io.mockk.*
+import io.mockk.justRun
+import io.mockk.mockk
+import io.mockk.unmockkAll
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -22,29 +23,12 @@ import kotlin.test.assertEquals
 class SimaproProcessMapperTest {
     private val writer = mockk<ModelWriter>()
 
-    private val pathSlot = slot<String>()
-    private val bodySlot = slot<String>()
-    private val indexSlot = slot<Boolean>()
-    private val closeSlot = slot<Boolean>()
-
     private val process = initProcess()
     private val sut = SimaproProcessMapper.of(SubstanceImportMode.SIMAPRO)
 
     @Before
     fun before() {
-        every {
-            writer.write(
-                capture(pathSlot),
-                capture(bodySlot),
-                capture(indexSlot),
-                capture(closeSlot)
-            )
-        } returns Unit
-        mockkObject(StringUtils)
-        every { StringUtils.sanitize("kg") } returns "kg"
-        every { StringUtils.sanitize("MJ") } returns "MJ"
-        every { StringUtils.sanitize("m2a") } returns "m2a"
-        every { StringUtils.sanitize("m3") } returns "m3"
+        justRun { writer.writeFile(any(), any()) }
     }
 
     @After
@@ -55,8 +39,6 @@ class SimaproProcessMapperTest {
 
     @Test
     fun map_ShouldMapAllMetas_ForClassicalProcess() {
-        // Given
-
         // When
         val actual = sut.map(process)
 

@@ -1,8 +1,10 @@
 package ch.kleis.lcaac.plugin.imports.simapro
 
 import ch.kleis.lcaac.plugin.imports.ModelWriter
-import ch.kleis.lcaac.plugin.imports.util.StringUtils
-import io.mockk.*
+import io.mockk.justRun
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.unmockkAll
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -16,18 +18,15 @@ class InputParameterRendererTest {
 
     private val pathSlot = slot<String>()
     private val bodySlot = slot<String>()
-    private val indexSlot = slot<Boolean>()
     private val sut = InputParameterRenderer()
 
 
     @Before
     fun before() {
-        every { writer.write(relativePath = capture(pathSlot),
+        justRun { writer.writeAppendFile(
+            relativePath = capture(pathSlot),
             block = capture(bodySlot),
-            index = capture(indexSlot)
-        )} returns Unit
-        mockkObject(StringUtils)
-        every { StringUtils.sanitize("kg") } returns "kg"
+        )}
     }
 
     @After
@@ -74,6 +73,5 @@ class InputParameterRendererTest {
         // Better way to view large diff than using mockk.verify
         assertEquals("main", pathSlot.captured)
         assertEquals(expected, bodySlot.captured)
-        assertEquals(false, indexSlot.captured)
     }
 }

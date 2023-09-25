@@ -31,7 +31,7 @@ class SimaproProcessRendererTest {
     @Test
     fun render_shouldRender() {
         // Given
-        every { writer.write(capture(pathSlot), capture(bodySlot), index = true, closeAfterWrite = true) } returns Unit
+        justRun { writer.writeFile(capture(pathSlot), capture(bodySlot)) }
         val processBlock = mockk<ProcessBlock>()
         every { processBlock.category() } returns ProcessCategory.ENERGY
         mockkObject(SimaproProcessMapper)

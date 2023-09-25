@@ -54,7 +54,7 @@ class UnitRenderer(private val knownUnits: MutableMap<String, UnitValue<BasicNum
             isNewDimensionReference(dimension, unit.scaleFactor) -> {
                 addUnit(UnitValue(UnitSymbol.of(symbol), 1.0, dimension))
                 val block = generateUnitBlockWithNewDimension(symbol, unit.name, dimensionName, unit.comment)
-                writer.write("unit", block, false)
+                writer.writeAppendFile("unit", block)
             }
 
             else -> {
@@ -66,7 +66,7 @@ class UnitRenderer(private val knownUnits: MutableMap<String, UnitValue<BasicNum
                 } else {
                     val block =
                         generateUnitAliasBlock(symbol, unit.name, "${unit.scaleFactor} $refUnitSymbol", unit.comment)
-                    writer.write("unit", block, false)
+                    writer.writeAppendFile("unit", block)
                 }
             }
         }

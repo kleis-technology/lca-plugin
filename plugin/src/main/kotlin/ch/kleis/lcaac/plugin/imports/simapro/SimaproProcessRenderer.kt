@@ -17,10 +17,7 @@ class ProcessRenderer(mode: SubstanceImportMode) {
         val process = mapper.map(processBlock)
         val str = ProcessSerializer.serialize(process)
 
-        writer.write(
-            "processes${File.separatorChar}$subFolder${process.uid}.lca",
-            str, index = true, closeAfterWrite = true
-        )
+        writer.writeFile("processes${File.separatorChar}$subFolder${process.uid}.lca", str)
         nbProcesses++
     }
 

@@ -11,15 +11,14 @@ class InputParameterRenderer {
     fun render(block: InputParameterBlock, writer: ModelWriter) {
         if (block.parameters().size > 0) {
             val vars = block.parameters().joinToString("\n") { render(it) }
-            writer.write(
+            writer.writeAppendFile(
                 "main", """
                     |
                     |variables {
                     |${vars.prependIndent()}
                     |}
                     |
-                    """.trimMargin(), false
-            )
+                    """.trimMargin())
             nbParameters += block.parameters().size
         }
     }
