@@ -9,6 +9,7 @@ import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
 import ch.kleis.lcaac.plugin.imports.simapro.sanitizeSymbol
 import ch.kleis.lcaac.plugin.imports.util.ImportException
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 
 class UnitRenderer(private val knownUnits: MutableMap<String, UnitValue<BasicNumber>>) {
     data class AliasFor(val alias: Dimension, val aliasFor: Dimension) {
@@ -40,7 +41,7 @@ class UnitRenderer(private val knownUnits: MutableMap<String, UnitValue<BasicNum
     fun render(unit: ImportedUnit, writer: ModelWriter) {
         val dimensionName = unit.dimension.lowercase()
         val dimension = Dimension.of(dimensionName)
-        val symbol = sanitizeSymbol(ModelWriter.sanitizeAndCompact(unit.name, false))
+        val symbol = sanitizeSymbol(sanitize(unit.name, false))
         val existingUnit = getUnit(unit.name)
 
         when {
@@ -48,7 +49,7 @@ class UnitRenderer(private val knownUnits: MutableMap<String, UnitValue<BasicNum
             }
 
             existingUnit != null && !areCompatible(existingUnit.dimension, dimension) ->
-                throw ImportException("A Unit ${ModelWriter.sanitizeAndCompact(unit.name)} for ${unit.name} already exists with another dimension, $dimension is not compatible with ${existingUnit.dimension}.")
+                throw ImportException("A Unit ${sanitize(unit.name)} for ${unit.name} already exists with another dimension, $dimension is not compatible with ${existingUnit.dimension}.")
 
             isNewDimensionReference(dimension, unit.scaleFactor) -> {
                 addUnit(UnitValue(UnitSymbol.of(symbol), 1.0, dimension))
@@ -99,7 +100,7 @@ class UnitRenderer(private val knownUnits: MutableMap<String, UnitValue<BasicNum
     }
 
     private fun getUnit(symbolName: String): UnitValue<BasicNumber>? {
-        val symbol = ModelWriter.sanitizeAndCompact(symbolName, false)
+        val symbol = sanitize(symbolName, false)
         return knownUnits[symbol]
     }
 

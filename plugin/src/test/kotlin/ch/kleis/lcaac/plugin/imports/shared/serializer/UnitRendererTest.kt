@@ -7,6 +7,7 @@ import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
 import ch.kleis.lcaac.plugin.imports.util.ImportException
+import ch.kleis.lcaac.plugin.imports.util.StringUtils
 import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import org.hamcrest.CoreMatchers.containsString
@@ -27,13 +28,13 @@ class UnitRendererTest {
     @Before
     fun before() {
         every { writer.write(capture(pathSlot), capture(bodySlot), capture(indexSlot)) } returns Unit
-        mockkObject(ModelWriter.Companion)
-        every { ModelWriter.sanitizeAndCompact("k+g") } returns "k_g"
-        every { ModelWriter.sanitizeAndCompact("kg") } returns "kg"
-        every { ModelWriter.sanitizeAndCompact("s") } returns "s"
-        every { ModelWriter.sanitizeAndCompact("s€c") } returns "s_c"
-        every { ModelWriter.sanitizeAndCompact("me2") } returns "me2"
-        every { ModelWriter.sanitizeAndCompact("m2") } returns "m2"
+        mockkObject(StringUtils)
+        every { StringUtils.sanitize("k+g") } returns "k_g"
+        every { StringUtils.sanitize("kg") } returns "kg"
+        every { StringUtils.sanitize("s") } returns "s"
+        every { StringUtils.sanitize("s€c") } returns "s_c"
+        every { StringUtils.sanitize("me2") } returns "me2"
+        every { StringUtils.sanitize("m2") } returns "m2"
     }
 
     @After

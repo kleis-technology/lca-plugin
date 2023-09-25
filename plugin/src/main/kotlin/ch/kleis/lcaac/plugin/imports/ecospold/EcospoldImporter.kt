@@ -18,6 +18,7 @@ import ch.kleis.lcaac.plugin.imports.shared.serializer.UnitRenderer
 import ch.kleis.lcaac.plugin.imports.util.AsyncTaskController
 import ch.kleis.lcaac.plugin.imports.util.AsynchronousWatcher
 import ch.kleis.lcaac.plugin.imports.util.ImportInterruptedException
+import ch.kleis.lcaac.plugin.imports.util.StringUtils
 import com.intellij.openapi.diagnostic.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -249,7 +250,7 @@ class EcospoldImporter(
             Duration: $durAsStr
         """.trimIndent()
 
-        writer.write("main", ModelWriter.pad(ModelWriter.asComment(block), 0), false)
+        writer.writeFile("main", StringUtils.asComment(block))
     }
 
     data class ProcessDictRecord(

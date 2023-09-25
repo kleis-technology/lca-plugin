@@ -2,6 +2,7 @@ package ch.kleis.lcaac.plugin.imports.simapro.substance
 
 import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.shared.serializer.SubstanceSerializer
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 import org.openlca.simapro.csv.enums.ElementaryFlowType
 import org.openlca.simapro.csv.refdata.ElementaryFlowBlock
 import org.openlca.simapro.csv.refdata.ElementaryFlowRow
@@ -13,7 +14,7 @@ class SimaproSubstanceRenderer {
 
     fun render(block: ElementaryFlowBlock, writer: ModelWriter) {
         val compartimentRaw = block.type().compartment().lowercase()
-        val compartiment = ModelWriter.sanitizeAndCompact(compartimentRaw)
+        val compartiment = sanitize(compartimentRaw)
         val type = block.type()
         block.flows().forEach { render(it, type, compartiment, writer) }
     }
@@ -24,7 +25,7 @@ class SimaproSubstanceRenderer {
         compartment: String,
         writer: ModelWriter
     ) {
-        val uid = ModelWriter.sanitizeAndCompact(element.name())
+        val uid = sanitize(element.name())
         val substance = SimaproSubstanceMapper.map(element, type, compartment)
         val str = SubstanceSerializer.serialize(substance)
         writer.write(

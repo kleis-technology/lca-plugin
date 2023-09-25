@@ -2,6 +2,7 @@ package ch.kleis.lcaac.plugin.imports.simapro
 
 import ch.kleis.lcaac.plugin.ide.imports.simapro.SubstanceImportMode
 import ch.kleis.lcaac.plugin.imports.ModelWriter
+import ch.kleis.lcaac.plugin.imports.util.StringUtils
 import io.mockk.*
 import org.junit.After
 import org.junit.Assert
@@ -39,11 +40,11 @@ class SimaproProcessMapperTest {
                 capture(closeSlot)
             )
         } returns Unit
-        mockkObject(ModelWriter)
-        every { ModelWriter.sanitizeAndCompact("kg") } returns "kg"
-        every { ModelWriter.sanitizeAndCompact("MJ") } returns "MJ"
-        every { ModelWriter.sanitizeAndCompact("m2a") } returns "m2a"
-        every { ModelWriter.sanitizeAndCompact("m3") } returns "m3"
+        mockkObject(StringUtils)
+        every { StringUtils.sanitize("kg") } returns "kg"
+        every { StringUtils.sanitize("MJ") } returns "MJ"
+        every { StringUtils.sanitize("m2a") } returns "m2a"
+        every { StringUtils.sanitize("m3") } returns "m3"
     }
 
     @After

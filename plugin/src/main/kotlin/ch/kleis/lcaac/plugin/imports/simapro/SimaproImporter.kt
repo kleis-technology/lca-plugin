@@ -15,6 +15,7 @@ import ch.kleis.lcaac.plugin.imports.simapro.substance.SimaproSubstanceRenderer
 import ch.kleis.lcaac.plugin.imports.util.AsyncTaskController
 import ch.kleis.lcaac.plugin.imports.util.AsynchronousWatcher
 import ch.kleis.lcaac.plugin.imports.util.ImportInterruptedException
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.asComment
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.io.CountingInputStream
 import org.openlca.simapro.csv.CsvBlock
@@ -150,8 +151,8 @@ class SimaproImporter(
 
     private fun renderMain(block: SystemDescriptionBlock?, writer: ModelWriter) {
         block?.let {
-            writer.write("main", ModelWriter.pad(ModelWriter.asComment(block.name()), 0), false)
-            writer.write("main", ModelWriter.pad(ModelWriter.asComment(block.description()), 0), false)
+            writer.write("main", asComment(block.name()), false)
+            writer.write("main", asComment(block.description()), false)
         }
     }
 

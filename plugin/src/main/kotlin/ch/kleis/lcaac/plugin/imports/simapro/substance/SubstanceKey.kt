@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.imports.simapro.substance
 
-import ch.kleis.lcaac.plugin.imports.ModelWriter
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 import org.apache.commons.csv.CSVRecord
 
 data class SubstanceKey(
@@ -12,7 +12,7 @@ data class SubstanceKey(
 ) {
 
     init {
-        name = ModelWriter.sanitizeAndCompact(name)
+        name = sanitize(name)
         compartment = compartment.lowercase()
         subCompartment = subCompartment?.ifBlank { null }
     }
@@ -38,7 +38,7 @@ data class SubstanceKey(
     }
 
     fun uid(): String {
-        return ModelWriter.sanitizeAndCompact(name)
+        return sanitize(name)
     }
 
     /* Need custom implementation to ignore hasChanged field */

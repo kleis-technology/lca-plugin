@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.imports.model
 
-import ch.kleis.lcaac.plugin.imports.ModelWriter
+import ch.kleis.lcaac.plugin.imports.util.StringUtils
 
 class ImportedSubstance(
         val name: String,
@@ -15,10 +15,10 @@ class ImportedSubstance(
     val uid: String
 
     init {
-        uid = pUid?.let { ModelWriter.sanitizeAndCompact(it) } ?: ModelWriter.sanitizeAndCompact(name)
+        uid = pUid?.let { StringUtils.sanitize(it) } ?: StringUtils.sanitize(name)
     }
 
-    fun referenceUnitSymbol() = ModelWriter.sanitizeAndCompact(referenceUnit, false)
+    fun referenceUnitSymbol() = StringUtils.sanitize(referenceUnit, false)
 }
 
 data class ImportedImpact(
@@ -29,10 +29,10 @@ data class ImportedImpact(
         val comment: String?
 ) {
     constructor(value: Double, unitName: String, name: String, comment: String? = null) : this(
-            ModelWriter.sanitizeAndCompact(name),
+            StringUtils.sanitize(name),
             name,
             value,
-            ModelWriter.sanitizeAndCompact(unitName, toLowerCase = false),
+            StringUtils.sanitize(unitName, toLowerCase = false),
             comment
     )
 }

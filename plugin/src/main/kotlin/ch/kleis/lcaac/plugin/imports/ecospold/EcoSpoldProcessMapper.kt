@@ -1,15 +1,16 @@
 package ch.kleis.lcaac.plugin.imports.ecospold
 
 import ch.kleis.lcaac.core.lang.expression.SubstanceType
-import ch.kleis.lcaac.plugin.imports.ModelWriter.Companion.asComment
-import ch.kleis.lcaac.plugin.imports.ModelWriter.Companion.compactAndPad
-import ch.kleis.lcaac.plugin.imports.ModelWriter.Companion.compactText
-import ch.kleis.lcaac.plugin.imports.ModelWriter.Companion.sanitizeAndCompact
 import ch.kleis.lcaac.plugin.imports.ecospold.EcospoldImporter.Companion.unitToStr
 import ch.kleis.lcaac.plugin.imports.ecospold.model.*
 import ch.kleis.lcaac.plugin.imports.model.*
 import ch.kleis.lcaac.plugin.imports.simapro.sanitizeSymbol
 import ch.kleis.lcaac.plugin.imports.util.ImportException
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.asComment
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.compact
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.compactList
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.merge
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 
 object EcoSpoldProcessMapper {
     fun map(
@@ -46,16 +47,10 @@ object EcoSpoldProcessMapper {
         return ImportedProcess(
             uid = uid(process),
             meta = mapMetas(process.description),
-            productBlocks = listOfNonEmptyExchangeBlock(
-                mappedIntermediateExchanges[ImportedProductExchange]
-                    ?.asSequence()
-                    ?.map { it as ImportedProductExchange }
-            ),
-            inputBlocks = listOfNonEmptyExchangeBlock(
-                mappedIntermediateExchanges[ImportedInputExchange]
-                    ?.asSequence()
-                    ?.map { it as ImportedInputExchange }
-            ),
+            productBlocks = listOfNonEmptyExchangeBlock(mappedIntermediateExchanges[ImportedProductExchange]?.asSequence()
+                ?.map { it as ImportedProductExchange }),
+            inputBlocks = listOfNonEmptyExchangeBlock(mappedIntermediateExchanges[ImportedInputExchange]?.asSequence()
+                ?.map { it as ImportedInputExchange }),
             emissionBlocks = listOfNonEmptyExchangeBlock(
                 elementaryExchangeGrouping[SubstanceType.EMISSION]?.asSequence()
             ),
@@ -76,41 +71,39 @@ object EcoSpoldProcessMapper {
     }
 
     private fun mapMetas(description: ActivityDescription): Map<String, String?> =
-        mapOf("id" to description.activity.id?.let { compactText(it) },
-            "name" to description.activity.name.let { compactText(it) },
+        mapOf("id" to description.activity.id?.let { compact(it) },
+            "name" to description.activity.name.let { compact(it) },
             "type" to description.activity.type,
-            "description" to description.activity.generalComment?.let { compactAndPad(toStr(it), 12) },
+            "description" to description.activity.generalComment?.let { merge(compactList(it)) },
             "energyValues" to description.activity.energyValues,
-            "includedActivitiesStart" to description.activity.includedActivitiesStart?.let { compactText(it) },
-            "includedActivitiesEnd" to description.activity.includedActivitiesEnd?.let { compactText(it) },
-            "geography-shortname" to description.geography?.shortName?.let { compactText(it) },
-            "geography-comment" to description.geography?.comment?.let { compactText(toStr(it)) }) + description.classifications.associate {
-            it.system to compactText(
-                it.value
-            )
+            "includedActivitiesStart" to description.activity.includedActivitiesStart?.let { compact(it) },
+            "includedActivitiesEnd" to description.activity.includedActivitiesEnd?.let { compact(it) },
+            "geography-shortname" to description.geography?.shortName?.let { compact(it) },
+            "geography-comment" to description.geography?.comment?.let { merge(compactList(it)) }
+        ) + description.classifications.associate {
+            it.system to compact(it.value)
         }
 
     private fun mapImpacts(
         methodName: String,
         impactIndicatorList: Sequence<ImpactIndicator>,
     ): Pair<String, Sequence<ImportedImpactExchange>> =
-        Pair("Impacts for method $methodName",
-            impactIndicatorList.filter { it.methodName == methodName }.map {
-                ImportedImpactExchange(
-                    it.amount.toString(),
-                    sanitizeSymbol(sanitizeAndCompact(it.unitName, toLowerCase = false)),
-                    sanitizeAndCompact(it.name),
-                    listOf(it.categoryName),
-                )
-            })
+        Pair("Impacts for method $methodName", impactIndicatorList.filter { it.methodName == methodName }.map {
+            ImportedImpactExchange(
+                it.amount.toString(),
+                sanitizeSymbol(sanitize(it.unitName, toLowerCase = false)),
+                sanitize(it.name),
+                listOf(it.categoryName),
+            )
+        })
 
     private fun intermediateExchangeToImportedTechnosphereExchange(
         e: IntermediateExchange,
         processDict: Map<String, EcospoldImporter.ProcessDictRecord>,
     ): ImportedTechnosphereExchange {
-        val uid = sanitizeAndCompact(e.name)
+        val uid = sanitize(e.name)
         val amount = e.amount.toString()
-        val unit = sanitizeSymbol(sanitizeAndCompact(unitToStr(e.unit), false))
+        val unit = sanitizeSymbol(sanitize(unitToStr(e.unit), false))
         val comments = buildIntermediateExchangeComments(e)
 
         when {
@@ -129,7 +122,7 @@ object EcoSpoldProcessMapper {
                             processDict[e.activityLinkId]
                         }
                         val fromProcessName = fromProcess?.let {
-                            sanitizeAndCompact("${it.processName}_${it.geo}")
+                            sanitize("${it.processName}_${it.geo}")
                         }
                         return ImportedInputExchange(
                             uid = uid,
@@ -165,7 +158,7 @@ object EcoSpoldProcessMapper {
             comments = elementaryExchange.comment?.let { listOf(it) } ?: listOf(),
             qty = elementaryExchange.amount.toString(),
             unit = unitToStr(elementaryExchange.unit),
-            uid = sanitizeAndCompact(elementaryExchange.name),
+            uid = sanitize(elementaryExchange.name),
             compartment = elementaryExchange.compartment,
             subCompartment = elementaryExchange.subCompartment,
             printAsComment = elementaryExchange.printAsComment,
@@ -179,15 +172,12 @@ object EcoSpoldProcessMapper {
         exchanges?.firstOrNull()?.let {
             listOf(
                 ExchangeBlock(
-                    comment = comment,
-                    exchanges = exchanges
+                    comment = comment, exchanges = exchanges
                 )
             )
         } ?: listOf()
 
-    private fun datasetUid(activityName: String, geo: String): String = sanitizeAndCompact(activityName + "_" + geo)
-
-    private fun toStr(txt: List<String>): CharSequence = txt.joinToString("\n")
+    private fun datasetUid(activityName: String, geo: String): String = sanitize(activityName + "_" + geo)
 
     private fun uncertaintyToStr(comments: ArrayList<String>, it: Uncertainty) {
         it.logNormal?.let { comments.add("// uncertainty: logNormal mean=${it.meanValue}, variance=${it.variance}, mu=${it.mu}") }
@@ -196,6 +186,6 @@ object EcoSpoldProcessMapper {
         it.uniform?.let { comments.add("// uncertainty: uniform minValue=${it.minValue}, maxValue=${it.maxValue}") }
         it.triangular?.let { comments.add("// uncertainty: triangular minValue=${it.minValue}, maxValue=${it.maxValue}, mostLikelyValue=${it.mostLikelyValue}, ") }
         it.comment?.let { comments.add("// uncertainty: comment") }
-        it.comment?.let { comments.addAll(asComment(it)) }
+        it.comment?.let { comments.add(asComment(it)) }
     }
 }

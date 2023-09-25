@@ -4,6 +4,7 @@ import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.ecospold.EcospoldImporter.ProcessDictRecord
 import ch.kleis.lcaac.plugin.imports.ecospold.model.ActivityDataset
 import ch.kleis.lcaac.plugin.imports.shared.serializer.ProcessSerializer
+import ch.kleis.lcaac.plugin.imports.util.StringUtils
 import java.io.File
 
 class EcospoldProcessRenderer {
@@ -37,7 +38,7 @@ class EcospoldProcessRenderer {
         val desc = data.description.classifications
             .firstOrNull { it.system == "EcoSpold01Categories" }
             ?.value
-        return desc?.let { ModelWriter.sanitizeAndCompact(it) }
+        return desc?.let { StringUtils.sanitize(it) }
     }
 
 
