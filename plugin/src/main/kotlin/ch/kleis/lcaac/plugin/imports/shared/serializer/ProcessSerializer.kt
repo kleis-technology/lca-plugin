@@ -3,6 +3,7 @@ package ch.kleis.lcaac.plugin.imports.shared.serializer
 import ch.kleis.lcaac.plugin.imports.model.*
 import ch.kleis.lcaac.plugin.imports.util.StringUtils
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.asCommentList
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.formatLabelValues
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.merge
 
 object ProcessSerializer {
@@ -12,17 +13,17 @@ object ProcessSerializer {
             .filter { it.isNotBlank() })
         val printCommented = if (e.printAsComment) "// " else ""
         val txt = when (e) {
-            is ImportedProductExchange -> "${printCommented}${e.qty} ${e.unit} ${e.uid} allocate ${e.allocation} percent"
-            is ImportedImpactExchange -> "${printCommented}${e.qty} ${e.unit} ${e.uid}"
+            is ImportedProductExchange -> "${printCommented}${e.qty} ${e.unit} ${e.name} allocate ${e.allocation} percent"
+            is ImportedImpactExchange -> "${printCommented}${e.qty} ${e.unit} ${e.name}"
 
             is ImportedInputExchange -> {
                 val fromProcess = e.fromProcess?.let { " from $it" } ?: ""
-                "${printCommented}${e.qty} ${e.unit} ${e.uid}${fromProcess}"
+                "${printCommented}${e.qty} ${e.unit} ${e.name}${fromProcess}"
             }
 
             is ImportedBioExchange -> {
                 val sub = e.subCompartment?.let { ", sub_compartment = \"$it\"" } ?: ""
-                """${printCommented}${e.qty} ${e.unit} ${e.uid}(compartment = "${e.compartment}"$sub)"""
+                """${printCommented}${e.qty} ${e.unit} ${e.name}(compartment = "${e.compartment}"$sub)"""
             }
         }
         return comments + txt
@@ -38,21 +39,31 @@ object ProcessSerializer {
         val builder = StringBuilder()
 
         // Header
-        builder.append("process ${p.uid} {")
-        builder.appendLine().appendLine()
+        builder.appendLine("process ${p.uid} {")
+        builder.appendLine()
 
         // Meta
-        val metaValues = StringUtils.blockKeyValue(p.meta).toString().prependIndent()
-        val metaBlock = "meta {\n$metaValues\n}".prependIndent()
-        builder.append(metaBlock)
-        builder.appendLine().appendLine()
+        if (p.meta.isNotEmpty()) {
+            val metaValues = StringUtils.formatMetaValues(p.meta).toString().prependIndent()
+            val metaBlock = "meta {\n$metaValues\n}".prependIndent()
+            builder.appendLine(metaBlock)
+            builder.appendLine()
+        }
+
+        // Labels
+        if (p.labels.isNotEmpty()) {
+            val labelValues = formatLabelValues(p.labels).toString().prependIndent()
+            val labelBlock = "labels {\n$labelValues\n}".prependIndent()
+            builder.appendLine(labelBlock)
+            builder.appendLine()
+        }
 
         // Params
         if (p.params.isNotEmpty()) {
             val paramsValues = merge(p.params.map { "${it.symbol} = ${it.value}" }).prependIndent()
             val paramsBlock = "params {\n$paramsValues\n}".prependIndent()
-            builder.append(paramsBlock)
-            builder.appendLine().appendLine()
+            builder.appendLine(paramsBlock)
+            builder.appendLine()
         }
 
         val blocks = listOf(
@@ -71,12 +82,12 @@ object ProcessSerializer {
                     val doc = if (block.comment?.isNotBlank() == true) " // ${block.comment}" else ""
                     val exchanges = serialize(block.exchanges).toString().prependIndent()
                     val exchangeBlock = "$keyword {$doc\n$exchanges\n}".prependIndent()
-                    builder.append(exchangeBlock)
-                    builder.appendLine().appendLine()
+                    builder.appendLine(exchangeBlock)
+                    builder.appendLine()
                 }
             }
 
-        builder.append("}")
+        builder.appendLine("}")
         return builder
     }
 }

@@ -4,7 +4,7 @@ import ch.kleis.lcaac.plugin.imports.model.ImportedImpact
 import ch.kleis.lcaac.plugin.imports.model.ImportedSubstance
 import ch.kleis.lcaac.plugin.imports.simapro.sanitizeSymbol
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.asComment
-import ch.kleis.lcaac.plugin.imports.util.StringUtils.blockKeyValue
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.formatMetaValues
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 
 class SubstanceSerializer {
@@ -36,7 +36,7 @@ class SubstanceSerializer {
             builder.appendLine().appendLine()
 
             // Meta
-            val metaValues = blockKeyValue(s.meta).toString().prependIndent()
+            val metaValues = formatMetaValues(s.meta).toString().prependIndent()
             val metaBlock = "meta {\n$metaValues\n}".prependIndent()
 
             builder.append(metaBlock)

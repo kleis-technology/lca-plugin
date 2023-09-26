@@ -10,6 +10,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.exists
+import kotlin.math.abs
 
 
 class ModelWriter(
@@ -43,15 +44,29 @@ class ModelWriter(
         }
     }
 
-    fun writeAppendFile(relativePath: String, block: String) {
+    fun writeAppendFile(relativePath: String, block: CharSequence) {
         LOG.debug("write-appending to file $relativePath")
         if (block.isNotBlank()) {
             val path = buildPathOfRelativePath(relativePath)
             if (path.exists()) {
                 watcher.notifyCurrentWork(relativePath)
                 utf8FileAppendWriter(path.toFile()).use {
-                    it.write(block)
+                    it.write(block.toString())
                 }
+            } else {
+                writeFile(relativePath, block)
+            }
+        }
+    }
+
+    fun writeRotateFile(relativePath: String, block: CharSequence) {
+        LOG.debug("write-rotating to file $relativePath")
+        if (block.isNotBlank()) {
+            val path = buildPathOfRelativePath(relativePath)
+            if (path.exists()) {
+                val hash = abs(block.hashCode())
+                val newRelativePath = "${relativePath}_$hash"
+                writeFile(newRelativePath, block)
             } else {
                 writeFile(relativePath, block)
             }

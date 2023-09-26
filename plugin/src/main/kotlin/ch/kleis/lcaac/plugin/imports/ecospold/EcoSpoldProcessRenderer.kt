@@ -7,7 +7,7 @@ import ch.kleis.lcaac.plugin.imports.shared.serializer.ProcessSerializer
 import ch.kleis.lcaac.plugin.imports.util.StringUtils
 import java.io.File
 
-class EcospoldProcessRenderer {
+class EcoSpoldProcessRenderer {
 
     var nbProcesses: Int = 0
         private set
@@ -22,13 +22,12 @@ class EcospoldProcessRenderer {
         nbProcesses++
 
         val category = category(data)
-
         val subFolder = if (category == null) "" else "${category}${File.separatorChar}"
         val process = EcoSpoldProcessMapper.map(data, processDict, methodName)
         process.comments.add(processComment)
         val strProcess = ProcessSerializer.serialize(process)
 
-        w.writeFile( "processes${File.separatorChar}$subFolder${process.uid}", strProcess )
+        w.writeRotateFile("processes${File.separatorChar}$subFolder${process.uid}", strProcess)
     }
 
     private fun category(data: ActivityDataset): String? {

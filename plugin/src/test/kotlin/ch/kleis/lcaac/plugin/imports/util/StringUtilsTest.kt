@@ -1,7 +1,7 @@
 package ch.kleis.lcaac.plugin.imports.util
 
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.asComment
-import ch.kleis.lcaac.plugin.imports.util.StringUtils.blockKeyValue
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.formatMetaValues
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.compact
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.compactList
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
@@ -103,7 +103,7 @@ class StringUtilsTest {
         val given = mapOf("key" to "value")
         val expected = "\"key\" = \"value\""
 
-        assertEquals(expected, blockKeyValue(given).toString())
+        assertEquals(expected, formatMetaValues(given).toString())
     }
 
     @Test
@@ -113,7 +113,7 @@ class StringUtilsTest {
                                 |"other key" = "other value"
                                 |"last key" = "last value"
                                 """.trimMargin()
-        assertEquals(expected, blockKeyValue(given).toString())
+        assertEquals(expected, formatMetaValues(given).toString())
     }
 
     @Test
@@ -125,6 +125,6 @@ class StringUtilsTest {
                                 |        you and me"
                                 |"last key" = "last value"
                               """.trimMargin()
-       assertEquals(expected, blockKeyValue(given).toString())
+       assertEquals(expected, formatMetaValues(given).toString())
     }
 }

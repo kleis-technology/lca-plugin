@@ -90,7 +90,7 @@ class SimaproProcessMapperTest {
         )
         assertEquals("7500", pi.qty)
         assertEquals("kg", pi.unit)
-        assertEquals("acai_berry_at_farm_wfldb_3_7_sl_br_u", pi.uid)
+        assertEquals("acai_berry_at_farm_wfldb_3_7_sl_br_u", pi.name)
 
         assertEquals("Avoided Products", actual.productBlocks[1].comment)
         assertEquals(0, actual.productBlocks[1].exchanges.count())
@@ -162,7 +162,7 @@ class SimaproProcessMapperTest {
             assertEquals(comments, resultExchange.comments)
             assertEquals(qty, resultExchange.qty)
             assertEquals(unit, resultExchange.unit)
-            assertEquals(uid, resultExchange.uid)
+            assertEquals(uid, resultExchange.name)
             assertEquals(comp, resultExchange.compartment)
             assertEquals(sub, resultExchange.subCompartment)
         }
@@ -195,7 +195,7 @@ class SimaproProcessMapperTest {
         assertEquals(listOf("(2,1,1,1,1,na)"), lu.comments)
         assertEquals("10000.0", lu.qty)
         assertEquals("m2a", lu.unit)
-        assertEquals("occupation_permanent_crop_irrigated", lu.uid)
+        assertEquals("occupation_permanent_crop_irrigated", lu.name)
         assertEquals("raw", lu.compartment)
         assertEquals("land", lu.subCompartment)
     }

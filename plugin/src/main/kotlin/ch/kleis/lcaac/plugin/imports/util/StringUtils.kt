@@ -46,7 +46,7 @@ object StringUtils {
 
     fun trimTrailingNonPrinting(s: CharSequence): CharSequence = s.trimEnd('\n').trimEnd()
 
-    fun blockKeyValue(metas: Map<String, String?>): CharSequence {
+    fun formatMetaValues(metas: Map<String, String?>): CharSequence {
         val builder = StringBuilder()
         metas.mapNotNull { (k, v) ->
             v?.lines()?.map(::compact)?.let { lines ->
@@ -57,6 +57,14 @@ object StringUtils {
                 "\"$k\" = \"${merge(metaHead + metaTail)}\""
             }
         }.joinTo(builder, "\n")
+        return builder
+    }
+
+    fun formatLabelValues(labels: Map<String, String?>): CharSequence {
+        val builder = StringBuilder()
+        labels.mapNotNull { (k, v) -> v?.let {
+            "$k = \"$v\""
+        }}.joinTo(builder, "\n")
         return builder
     }
 

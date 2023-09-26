@@ -45,8 +45,10 @@ object EcoSpoldProcessMapper {
         } ?: (null to emptySequence())
 
         return ImportedProcess(
-            uid = uid(process),
+            uid = buildName(process),
             meta = mapMetas(process.description),
+            // used for EcoInvent 3.9.1 coproduct import
+            labels = mapLabels(mappedIntermediateExchanges[ImportedProductExchange]),
             productBlocks = listOfNonEmptyExchangeBlock(mappedIntermediateExchanges[ImportedProductExchange]?.asSequence()
                 ?.map { it as ImportedProductExchange }),
             inputBlocks = listOfNonEmptyExchangeBlock(mappedIntermediateExchanges[ImportedInputExchange]?.asSequence()
@@ -66,9 +68,17 @@ object EcoSpoldProcessMapper {
         )
     }
 
-    fun uid(data: ActivityDataset): String {
-        return datasetUid(data.description.activity.name, data.description.geography?.shortName ?: "")
+    // sanitize will remove the trailing underscore
+    fun buildName(data: ActivityDataset): String {
+        return sanitize(data.description.activity.name + "_" + (data.description.geography?.shortName ?: ""))
     }
+
+    private fun mapLabels(productExchanges: Iterable<ImportedTechnosphereExchange>?): Map<String, String?> =
+        productExchanges?.firstNotNullOfOrNull {
+            (it as? ImportedProductExchange)?.id
+        }?.let {
+            mapOf("productID" to it)
+        } ?: emptyMap()
 
     private fun mapMetas(description: ActivityDescription): Map<String, String?> =
         mapOf("id" to description.activity.id?.let { compact(it) },
@@ -101,7 +111,7 @@ object EcoSpoldProcessMapper {
         e: IntermediateExchange,
         processDict: Map<String, EcospoldImporter.ProcessDictRecord>,
     ): ImportedTechnosphereExchange {
-        val uid = sanitize(e.name)
+        val name = sanitize(e.name)
         val amount = e.amount.toString()
         val unit = sanitizeSymbol(sanitize(unitToStr(e.unit), false))
         val comments = buildIntermediateExchangeComments(e)
@@ -112,7 +122,13 @@ object EcoSpoldProcessMapper {
                     throw ImportException("Invalid outputGroup for product, expected 0, found ${e.outputGroup}")
                 }
 
-                return ImportedProductExchange(amount, unit, uid, 100.0, comments)
+                return ImportedProductExchange(
+                    id = e.id,
+                    name = name,
+                    qty = amount,
+                    unit = unit,
+                    comments = comments
+                )
             }
 
             e.inputGroup != null -> {
@@ -124,11 +140,13 @@ object EcoSpoldProcessMapper {
                         val fromProcessName = fromProcess?.let {
                             sanitize("${it.processName}_${it.geo}")
                         }
+                        val fromProcessLabels = e.id?.let { " match (productID = \"${e.id}\")" } ?: ""
                         return ImportedInputExchange(
-                            uid = uid,
+                            id = e.id,
+                            name = name,
                             qty = amount,
                             unit = unit,
-                            fromProcess = fromProcessName,
+                            fromProcess = "$fromProcessName$fromProcessLabels",
                             comments = comments,
                         )
                     }
@@ -158,7 +176,7 @@ object EcoSpoldProcessMapper {
             comments = elementaryExchange.comment?.let { listOf(it) } ?: listOf(),
             qty = elementaryExchange.amount.toString(),
             unit = unitToStr(elementaryExchange.unit),
-            uid = sanitize(elementaryExchange.name),
+            name = sanitize(elementaryExchange.name),
             compartment = elementaryExchange.compartment,
             subCompartment = elementaryExchange.subCompartment,
             printAsComment = elementaryExchange.printAsComment,
@@ -176,8 +194,6 @@ object EcoSpoldProcessMapper {
                 )
             )
         } ?: listOf()
-
-    private fun datasetUid(activityName: String, geo: String): String = sanitize(activityName + "_" + geo)
 
     private fun uncertaintyToStr(comments: ArrayList<String>, it: Uncertainty) {
         it.logNormal?.let { comments.add("// uncertainty: logNormal mean=${it.meanValue}, variance=${it.variance}, mu=${it.mu}") }

@@ -173,7 +173,13 @@ class SimaproProcessMapper(mode: SubstanceImportMode) {
         val unit = sanitizeSymbol(product.unit())
         val allocation = product.allocation().value()
         val amount = FormulaConverter.compute(product.amount().toString(), comments)
-        return ImportedProductExchange(amount, unit, product.uid(), allocation, comments)
+        return ImportedProductExchange(
+            name = product.uid(),
+            qty = amount,
+            unit = unit,
+            allocation = allocation,
+            comments = comments,
+        )
     }
 
     private fun renderWasteTreatment(exchange: WasteTreatmentRow): ImportedProductExchange {
@@ -192,9 +198,14 @@ class SimaproProcessMapper(mode: SubstanceImportMode) {
     ): ImportedProductExchange {
         val comments = createComments(exchange.comment(), additionalComments)
         val unit = sanitizeSymbol(exchange.unit())
-        val uid = sanitize(exchange.name()) + suffix
+        val name = sanitize(exchange.name()) + suffix
         val amount = FormulaConverter.compute(exchange.amount().toString(), comments)
-        return ImportedProductExchange(amount, unit, uid, comments = comments)
+        return ImportedProductExchange(
+            name = name,
+            qty = amount,
+            unit = unit,
+            comments = comments
+        )
     }
 
     private fun createComments(text: String, existingComments: List<String> = listOf()): MutableList<String> {

@@ -67,7 +67,7 @@ class EcospoldImporter(
 
     private var totalValue = 1
     private var currentValue = 0
-    private val processRenderer = EcospoldProcessRenderer()
+    private val processRenderer = EcoSpoldProcessRenderer()
     private val methodName: String = when (settings) {
         is UPRSettings -> "Ecospold LCI library file."
         is LCIASettings -> settings.methodName
@@ -294,10 +294,10 @@ class EcospoldImporter(
     private fun writeImportedDataset(
         dataSet: ActivityDataset,
         processDict: Map<String, ProcessDictRecord>,
-        w: ModelWriter,
+        writer: ModelWriter,
         path: String
     ) {
         LOG.info("Read dataset from $path")
-        processRenderer.render(dataSet, w, processDict, "from $path", methodName)
+        processRenderer.render(dataSet, writer, processDict, "from $path", methodName)
     }
 }

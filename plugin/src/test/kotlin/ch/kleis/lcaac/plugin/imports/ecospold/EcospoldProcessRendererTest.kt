@@ -47,7 +47,7 @@ class EcospoldProcessRendererTest {
         every { EcoSpoldSubstanceMapper.map(activity, "EF v3.1") } returns importedSubstance
         mockkObject(SubstanceSerializer)
         every { SubstanceSerializer.serialize(importedSubstance) } returns "serialized substance"
-        val sut = EcospoldProcessRenderer()
+        val sut = EcoSpoldProcessRenderer()
 
         // When
         sut.render(activity, writer, emptyMap(), "a comment", "EF v3.1")

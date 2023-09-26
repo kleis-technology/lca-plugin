@@ -117,8 +117,9 @@ object Parser {
             .asSequence()
             .map {
                 IntermediateExchange(
-                    amount = it.getAttributeValue("amount").toDouble(),
+                    id = it.getAttributeValue("intermediateExchangeId"),
                     name = it.getChildText("name"),
+                    amount = it.getAttributeValue("amount").toDouble(),
                     unit = it.getChildText("unitName"),
                     synonyms = it.getChildren("synonym").map { n -> n.value },
                     uncertainty = readUncertainty(it.getChild("uncertainty")),

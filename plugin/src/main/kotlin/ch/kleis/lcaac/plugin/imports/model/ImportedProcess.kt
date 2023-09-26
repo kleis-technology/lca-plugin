@@ -1,8 +1,9 @@
 package ch.kleis.lcaac.plugin.imports.model
 
-class ImportedProcess(
+data class ImportedProcess(
     val uid: String,
     val meta: Map<String, String?> = emptyMap(),
+    val labels: Map<String, String?> = emptyMap(),
     val productBlocks: List<ExchangeBlock<ImportedProductExchange>> = emptyList(),
     val inputBlocks: List<ExchangeBlock<ImportedInputExchange>> = emptyList(),
     val emissionBlocks: List<ExchangeBlock<ImportedBioExchange>> = emptyList(),

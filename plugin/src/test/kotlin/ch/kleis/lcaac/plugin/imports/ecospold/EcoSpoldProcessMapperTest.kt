@@ -44,7 +44,7 @@ class EcoSpoldProcessMapperTest {
         assertEquals(1, result.emissionBlocks[0].exchanges.count())
         val e = result.emissionBlocks[0].exchanges.first()
         assertEquals("1.8326477008541038E-8", e.qty)
-        assertEquals("_1_2_dichlorobenzene", e.uid)
+        assertEquals("_1_2_dichlorobenzene", e.name)
         assertEquals("kg", e.unit)
         assertEquals("air", e.compartment)
         assertEquals("urban air close to ground", e.subCompartment)
@@ -62,7 +62,7 @@ class EcoSpoldProcessMapperTest {
         assertEquals(1, result.landUseBlocks[0].exchanges.count())
         val lu = result.landUseBlocks[0].exchanges.first()
         assertEquals("0.04997982922431679", lu.qty)
-        assertEquals("occupation_annual_crop_irrigated", lu.uid)
+        assertEquals("occupation_annual_crop_irrigated", lu.name)
         assertEquals("m2*year", lu.unit)
         assertEquals("natural resource", lu.compartment)
         assertEquals("land", lu.subCompartment)
@@ -80,7 +80,7 @@ class EcoSpoldProcessMapperTest {
         assertEquals(1, result.resourceBlocks[0].exchanges.count())
         val res = result.resourceBlocks[0].exchanges.first()
         assertEquals("0.004413253823373581", res.qty)
-        assertEquals("nitrogen", res.uid)
+        assertEquals("nitrogen", res.name)
         assertEquals("kg", res.unit)
         assertEquals("natural resource", res.compartment)
         assertEquals("land", res.subCompartment)
@@ -98,7 +98,7 @@ class EcoSpoldProcessMapperTest {
         assertEquals(1, result.productBlocks.size)
         assertEquals(1, result.productBlocks[0].exchanges.count())
         val p = result.productBlocks[0].exchanges.first()
-        assertEquals("pname", p.uid)
+        assertEquals("pname", p.name)
         assertEquals("1.0", p.qty)
         assertEquals("km", p.unit)
         assertEquals(100.0, p.allocation)
@@ -124,17 +124,17 @@ class EcoSpoldProcessMapperTest {
         assertEquals(2, result.inputBlocks[0].exchanges.count())
 
         val i1 = result.inputBlocks[0].exchanges.first()
-        assertEquals("iname", i1.uid)
+        assertEquals("iname", i1.name)
         assertEquals("3.0", i1.qty)
         assertEquals("kg", i1.unit)
-        assertEquals("iname_producing_process_glo", i1.fromProcess)
+        assertEquals("iname_producing_process_glo match (productID = \"iNameID\")", i1.fromProcess)
         assertEquals(listOf("iName"), i1.comments)
 
         val i2 = result.inputBlocks[0].exchanges.elementAt(1)
-        assertEquals("iname2", i2.uid)
+        assertEquals("iname2", i2.name)
         assertEquals("25.0", i2.qty)
         assertEquals("m3", i2.unit)
-        assertEquals("iname2_producing_process_ch", i2.fromProcess)
+        assertEquals("iname2_producing_process_ch match (productID = \"iName2ID\")", i2.fromProcess)
         assertEquals(listOf("iName2"), i2.comments)
     }
 
@@ -180,7 +180,7 @@ class EcoSpoldProcessMapperTest {
             ImportedImpactExchange(
                 qty = "0.1188",
                 unit = "m3_world_eq_deprived",
-                uid = "deprivation",
+                name = "deprivation",
                 comments = listOf("water use"),
             ),
             result.impactBlocks[0].exchanges.first()
@@ -191,7 +191,7 @@ class EcoSpoldProcessMapperTest {
             ImportedImpactExchange(
                 qty = "0.0013",
                 unit = "mol_H_p_Eq",
-                uid = "accumulated_exceedance_ae",
+                name = "accumulated_exceedance_ae",
                 comments = listOf("acidification"),
             ),
             result.impactBlocks[0].exchanges.first()
