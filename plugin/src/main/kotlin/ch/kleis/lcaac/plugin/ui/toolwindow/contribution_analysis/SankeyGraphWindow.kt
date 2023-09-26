@@ -77,6 +77,9 @@ class SankeyGraphWindow(
                <div id="error-container"></div>
                <div id="container"></div>
              </body>
+             <script>
+             ${this.javaClass.classLoader.getResource("ch/kleis/lcaac/plugin/md5.min.js")?.readText()}
+            </script>
              <script type="module">
              const data = $graphData;
                      
