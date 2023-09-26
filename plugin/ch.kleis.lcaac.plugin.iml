@@ -59,6 +59,7 @@
     <orderEntry type="library" name="kotlinx-serialization-core" level="project" />
     <orderEntry type="library" name="io.arrow.kt.optics" level="project" />
     <orderEntry type="library" name="jdom.jdom2" level="project" />
+    <orderEntry type="library" name="ejml.simple" level="project" />
     <orderEntry type="library" name="kotlinx-collections-immutable" level="project" />
     <orderEntry type="library" name="commons-compress" level="project" />
     <orderEntry type="module" module-name="intellij.platform.codeStyle.impl" />
