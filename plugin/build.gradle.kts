@@ -21,7 +21,7 @@ plugins {
     // Gradle Grammar kit Plugin
     id("org.jetbrains.grammarkit") version "2021.2.2"
     // JSON serialization tools for graph visualization
-    kotlin("plugin.serialization") version "1.8.10"
+    kotlin("plugin.serialization") version "1.8.20"
 }
 
 group = properties("lcaacGroup")
