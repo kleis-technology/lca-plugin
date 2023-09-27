@@ -127,14 +127,14 @@ class EcoSpoldProcessMapperTest {
         assertEquals("iname", i1.name)
         assertEquals("3.0", i1.qty)
         assertEquals("kg", i1.unit)
-        assertEquals("iname_producing_process_glo match (productID = \"iNameID\")", i1.fromProcess)
+        assertEquals("iname_producing_process_glo match (productName = \"iname\")", i1.fromProcess)
         assertEquals(listOf("iName"), i1.comments)
 
         val i2 = result.inputBlocks[0].exchanges.elementAt(1)
         assertEquals("iname2", i2.name)
         assertEquals("25.0", i2.qty)
         assertEquals("m3", i2.unit)
-        assertEquals("iname2_producing_process_ch match (productID = \"iName2ID\")", i2.fromProcess)
+        assertEquals("iname2_producing_process_ch match (productName = \"iname2\")", i2.fromProcess)
         assertEquals(listOf("iName2"), i2.comments)
     }
 

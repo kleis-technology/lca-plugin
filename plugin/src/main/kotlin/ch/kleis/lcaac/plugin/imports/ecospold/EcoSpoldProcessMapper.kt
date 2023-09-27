@@ -75,9 +75,9 @@ object EcoSpoldProcessMapper {
 
     private fun mapLabels(productExchanges: Iterable<ImportedTechnosphereExchange>?): Map<String, String?> =
         productExchanges?.firstNotNullOfOrNull {
-            (it as? ImportedProductExchange)?.id
+            (it as? ImportedProductExchange)?.name
         }?.let {
-            mapOf("productID" to it)
+            mapOf("productName" to sanitize(it))
         } ?: emptyMap()
 
     private fun mapMetas(description: ActivityDescription): Map<String, String?> =
@@ -140,7 +140,7 @@ object EcoSpoldProcessMapper {
                         val fromProcessName = fromProcess?.let {
                             sanitize("${it.processName}_${it.geo}")
                         }
-                        val fromProcessLabels = e.id?.let { " match (productID = \"${e.id}\")" } ?: ""
+                        val fromProcessLabels = e.id?.let { " match (productName = \"${sanitize(e.name)}\")" } ?: ""
                         return ImportedInputExchange(
                             id = e.id,
                             name = name,
