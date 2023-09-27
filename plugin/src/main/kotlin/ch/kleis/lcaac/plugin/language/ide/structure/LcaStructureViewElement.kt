@@ -31,13 +31,13 @@ class LcaStructureViewElement(
         return when (element) {
             is LcaFile -> {
                 val processes: Collection<NavigatablePsiElement> =
-                    element.getProcesses().filterIsInstance<LcaProcessImpl>()
+                    element.getProcesses().map { it as LcaProcessImpl }
                 val substances: Collection<NavigatablePsiElement> =
-                    element.getSubstances().filterIsInstance<LcaSubstanceImpl>()
+                    element.getSubstances().map { it as LcaSubstanceImpl }
                 val units: Collection<NavigatablePsiElement> =
-                    element.getUnitDefinitions().filterIsInstance<LcaUnitDefinitionImpl>()
+                    element.getUnitDefinitions().map { it as LcaUnitDefinitionImpl }
                 val variables: Collection<NavigatablePsiElement> =
-                    element.getBlocksOfGlobalVariables().filterIsInstance<LcaGlobalVariablesImpl>()
+                    element.getBlocksOfGlobalVariables().map { it as LcaGlobalVariablesImpl }
                 val all = processes
                     .plus(substances)
                     .plus(units)
