@@ -13,11 +13,11 @@ import com.intellij.util.xmlb.XmlSerializerUtil
     storages = [Storage("EcospoldImportLCISettings.xml")],
     reportStatistic = false
 )
-class UPRAndLCISettings : EcospoldImportSettings, PersistentStateComponent<UPRAndLCISettings.State> {
+class UPRSettings : EcospoldImportSettings, PersistentStateComponent<UPRSettings.State> {
     companion object {
         @JvmStatic
-        val instance: UPRAndLCISettings
-            get() = ApplicationManager.getApplication().getService(UPRAndLCISettings::class.java)
+        val instance: UPRSettings
+            get() = ApplicationManager.getApplication().getService(UPRSettings::class.java)
 
         enum class BuiltinLibrary {
             EF30 {

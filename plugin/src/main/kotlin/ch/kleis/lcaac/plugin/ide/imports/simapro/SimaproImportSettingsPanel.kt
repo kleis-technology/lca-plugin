@@ -48,19 +48,6 @@ class SimaproImportSettingsPanel(private val settings: SimaproImportSettings) : 
         builder.addComponent(
             CheckBoxWithDescription(
                 JBCheckBox(
-                    BundleBase.replaceMnemonicAmpersand(MyBundle.message("lca.dialog.import.units.label")),
-                    settings.importUnits
-                ).apply {
-                    addItemListener { e ->
-                        settings.importUnits = e.stateChange == ItemEvent.SELECTED
-                    }
-                },
-                MyBundle.message("lca.dialog.import.units.desc")
-            )
-        )
-        builder.addComponent(
-            CheckBoxWithDescription(
-                JBCheckBox(
                     BundleBase.replaceMnemonicAmpersand(MyBundle.message("lca.dialog.import.processes.label")),
                     settings.importProcesses
                 ).apply {
