@@ -118,7 +118,6 @@ class EcospoldImporter(
         return listOf(
             Imported(unitRenderer.nbUnit, "units"),
             Imported(processRenderer.nbProcesses, "processes"),
-            Imported(processRenderer.nbProcesses, "substances"),
         )
     }
 
@@ -245,7 +244,6 @@ class EcospoldImporter(
             Import Summary:
                 * $nbUnits units
                 * $nbProcess processes
-                * $nbProcess substances
             Duration: $durAsStr
         """.trimIndent()
 

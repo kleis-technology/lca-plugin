@@ -49,10 +49,16 @@ object EcoSpoldProcessMapper {
             meta = mapMetas(process.description),
             // used for EcoInvent 3.9.1 coproduct import
             labels = mapLabels(mappedIntermediateExchanges[ImportedProductExchange]),
-            productBlocks = listOfNonEmptyExchangeBlock(mappedIntermediateExchanges[ImportedProductExchange]?.asSequence()
-                ?.map { it as ImportedProductExchange }),
-            inputBlocks = listOfNonEmptyExchangeBlock(mappedIntermediateExchanges[ImportedInputExchange]?.asSequence()
-                ?.map { it as ImportedInputExchange }),
+            productBlocks = listOfNonEmptyExchangeBlock(
+                mappedIntermediateExchanges[ImportedProductExchange]
+                    ?.asSequence()
+                    ?.map { it as ImportedProductExchange }
+            ),
+            inputBlocks = listOfNonEmptyExchangeBlock(
+                mappedIntermediateExchanges[ImportedInputExchange]
+                    ?.asSequence()
+                    ?.map { it as ImportedInputExchange }
+            ),
             emissionBlocks = listOfNonEmptyExchangeBlock(
                 elementaryExchangeGrouping[SubstanceType.EMISSION]?.asSequence()
             ),
