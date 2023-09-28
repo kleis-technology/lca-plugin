@@ -44,6 +44,13 @@
       IMPORT_KEYWORD = 'import'
       IDENTIFIER = 'identifier'
       MATCH_KEYWORD = 'match'
+
+      TEST_KEYWORD = 'test'
+      GIVEN_KEYWORD = 'given'
+      ASSERT_KEYWORD = 'assert'
+      BETWEEN_KEYWORD = 'between'
+      AND_KEYWORD = 'and'
+
       NUMBER = 'number'
       LSQBRACE = ']'
       RSQBRACE = '['
@@ -73,7 +80,7 @@
     LCA File
  */
 
-lcaFile ::= package? import* (process | unitDefinition | substance | globalVariables )*
+lcaFile ::= package? import* (process | test | unitDefinition | substance | globalVariables )*
 
 /*
     Package
@@ -100,6 +107,17 @@ globalAssignment ::= dataRef '=' dataExpression {
     elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssignmentStubElementType"
     stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssignmentStub"
 }
+
+/*
+    Test
+ */
+
+test ::= 'test' uid '{'
+    (given | assert | variables)*
+'}'
+given ::= 'given' '{' technoInputExchange *'}'
+assert ::= 'assert' '{' rangeAssertion* '}'
+rangeAssertion ::= uid 'between'  dataExpression 'and' dataExpression
 
 /*
     Substance

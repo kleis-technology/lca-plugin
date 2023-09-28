@@ -92,6 +92,13 @@ CommentContent = .*
 <YYINITIAL> "labels"             { return LcaTypes.LABELS_KEYWORD; }
 <YYINITIAL> "match"             { return LcaTypes.MATCH_KEYWORD; }
 
+<YYINITIAL> "test"                { return LcaTypes.TEST_KEYWORD; }
+<YYINITIAL> "given"                { return LcaTypes.GIVEN_KEYWORD; }
+<YYINITIAL> "assert"                { return LcaTypes.ASSERT_KEYWORD; }
+<YYINITIAL> "between"                { return LcaTypes.BETWEEN_KEYWORD; }
+<YYINITIAL> "and"                { return LcaTypes.AND_KEYWORD; }
+
+
 
 <YYINITIAL> [-]?{Number_Int} ("." {Number_Int}? )? {Number_Exp}? { return LcaTypes.NUMBER; }
 <YYINITIAL> {Identifier}             { return LcaTypes.IDENTIFIER; }
