@@ -10,6 +10,7 @@ data class Property(
 )
 
 data class IntermediateExchange(
+    val id: String? = null,
     val name: String,
     val amount: Double,
     val unit: String,

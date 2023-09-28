@@ -1,103 +1,116 @@
 package ch.kleis.lcaac.plugin.imports.shared.serializer
 
-import ch.kleis.lcaac.plugin.TestUtils
-import ch.kleis.lcaac.plugin.imports.FileWriterWithSize
 import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.util.AsynchronousWatcher
-import com.intellij.openapi.vfs.LocalFileSystem
-import io.mockk.*
-import junit.framework.TestCase
+import io.mockk.justRun
+import io.mockk.mockk
+import io.mockk.unmockkAll
+import io.mockk.verify
 import org.junit.After
+import org.junit.Before
 import org.junit.Test
-import java.io.File
+import java.io.FileReader
+import java.nio.file.Files
+import java.nio.file.Paths
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ModelWriterTest {
+    private val tmpDir = System.getProperty("java.io.tmpdir")
+
+    @Before
+    fun before() {
+        Files.deleteIfExists(Paths.get(tmpDir, "relative_file.lca"))
+        Files.deleteIfExists(Paths.get(tmpDir, "relative_file_1103262748.lca"))
+    }
 
     @After
     fun after() {
         unmockkAll()
+        Files.deleteIfExists(Paths.get(tmpDir, "relative_file.lca"))
+        Files.deleteIfExists(Paths.get(tmpDir, "relative_file_1103262748.lca"))
     }
 
     @Test
-    fun write() {
+    fun writeFile() {
+        // Given
+        val watcher = mockk<AsynchronousWatcher>()
+        justRun { watcher.notifyCurrentWork("relative_file") }
+        val sut = ModelWriter("test", tmpDir, listOf("custom.import"), watcher)
+        val expected = """package test
+            |
+            |import custom.import
+            |Content
+        """.trimMargin()
+
+
+        // When
+        sut.writeFile("relative_file", "Content")
+
+        // Then
+        verify { watcher.notifyCurrentWork("relative_file") }
+        assertTrue(Paths.get(tmpDir, "relative_file.lca").toFile().exists())
+
+        val fileReader = FileReader(Paths.get(tmpDir, "relative_file.lca").toFile())
+        assertEquals(expected, fileReader.readText())
+    }
+
+    @Test
+    fun writeAppendFile() {
         // Given
         val watcher = mockk<AsynchronousWatcher>()
         justRun { watcher.notifyCurrentWork("relative_file") }
         val sut = ModelWriter("test", System.getProperty("java.io.tmpdir"), listOf("custom.import"), watcher)
-
+        val expected = """package test
+            |
+            |import custom.import
+            |Content
+            |Another content
+        """.trimMargin()
 
         // When
-        sut.write("relative_file", "Content", false)
+        sut.writeAppendFile("relative_file", "Content\n")
+        sut.writeAppendFile("relative_file", "Another content")
 
         // Then
-        verify { watcher.notifyCurrentWork("relative_file") }
-        assertTrue(File(System.getProperty("java.io.tmpdir") + File.separator + "relative_file.lca").exists())
+        verify(exactly = 2) { watcher.notifyCurrentWork("relative_file") }
+
+        val file = Paths.get(tmpDir, "relative_file.lca").toFile()
+        assertTrue(file.exists())
+        assertEquals(expected, file.readText())
+
     }
 
     @Test
-    fun close_ShouldCloseSubResources() {
-        // Given
+    fun writeRotateFile() {
+        // given
         val watcher = mockk<AsynchronousWatcher>()
+        justRun { watcher.notifyCurrentWork(any()) }
         val sut = ModelWriter("test", System.getProperty("java.io.tmpdir"), listOf("custom.import"), watcher)
-        val existingWriter = mockk<FileWriterWithSize>()
-        justRun { existingWriter.close() }
-        val opened = mutableMapOf("relative_file.lca" to existingWriter)
-        TestUtils.setField(sut, "openedFiles", opened)
-        mockkStatic(LocalFileSystem::class)
-        val fileSys = mockk<LocalFileSystem>()
-        every { LocalFileSystem.getInstance() } returns fileSys
-        every { fileSys.findFileByPath(any()) } returns null
 
-        // When
-        sut.close()
+        val expected1 = """package test
+            |
+            |import custom.import
+            |Content
+            |""".trimMargin()
+        val expected2 = """package test
+            |
+            |import custom.import
+            |Another Content
+            """.trimMargin()
 
-        // Then
-        verify { existingWriter.close() }
+        // when
+        sut.writeRotateFile("relative_file", "Content\n")
+        sut.writeRotateFile("relative_file", "Another Content")
+
+        // then
+        val file1 = Paths.get(tmpDir, "relative_file.lca").toFile()
+        assertTrue(file1.exists())
+        assertEquals(expected1, file1.readText())
+
+        val file2 = Paths.get(tmpDir, "relative_file_1103262748.lca").toFile()
+        assertTrue(file2.exists())
+        assertEquals(expected2, file2.readText())
+
     }
-
-    private data class Input(val raw: String, val expected: String)
-
-    private data class Result(val result: String, val expected: String)
-
-    @Test
-    fun test_sanitize() {
-        // Given
-        val data = arrayOf(
-            Input("01", "_01"),
-            Input("ab", "ab"),
-            Input("a_+__b", "a__p___b"),
-            Input("a_*__b", "a__m___b"),
-            Input("m*2a", "m_m_2a"),
-            Input("a&b", "a_a_b"),
-            Input("  a&b++", "a_a_b_p__p")
-        )
-
-        // When
-        val result = data.map { p -> Result(ModelWriter.sanitize(p.raw), p.expected) }
-
-        // Then
-        result.forEach { r -> TestCase.assertEquals(r.expected, r.result) }
-    }
-
-    @Test
-    fun test_sanitizeAndCompact() {
-        // Given
-        val data = arrayOf(
-            Input("01", "_01"),
-            Input("ab", "ab"),
-            Input("a_+__b", "a_p_b"),
-            Input("a_*__b", "a_m_b"),
-            Input("m*2a", "m_m_2a"),
-            Input("a&b", "a_a_b"),
-            Input("  a&b++", "a_a_b_p_p")
-        )
-
-        // When
-        val result = data.map { p -> Result(ModelWriter.sanitizeAndCompact(p.raw), p.expected) }
-
-        // Then
-        result.forEach { r -> TestCase.assertEquals(r.expected, r.result) }
-    }
-
 }

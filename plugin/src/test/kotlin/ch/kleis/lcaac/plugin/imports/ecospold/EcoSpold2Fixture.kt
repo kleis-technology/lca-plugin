@@ -39,6 +39,7 @@ object EcoSpold2Fixture {
             classifications = listOf(c),
         )
         val prod = IntermediateExchange(
+            id = "prodId",
             name = "pName",
             outputGroup = outputGroup,
             classifications = listOf(Classification("PSystem", "PValue")),
@@ -48,15 +49,17 @@ object EcoSpold2Fixture {
             synonyms = listOf("p1"),
         )
         val i1 = IntermediateExchange(
-            amount = 3.0,
+            id = "iNameID",
             name = "iName",
+            amount = 3.0,
             unit = "kg",
             inputGroup = inputGroup,
             activityLinkId = "iNameProcessID",
         )
         val i2 = IntermediateExchange(
-            amount = 25.0,
+            id = "iName2ID",
             name = "iName2",
+            amount = 25.0,
             unit = "m3",
             inputGroup = inputGroup,
             activityLinkId = "iName2ProcessID"

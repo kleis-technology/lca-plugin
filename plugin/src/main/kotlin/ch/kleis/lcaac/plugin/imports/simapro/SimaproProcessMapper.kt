@@ -1,12 +1,14 @@
 package ch.kleis.lcaac.plugin.imports.simapro
 
 import ch.kleis.lcaac.plugin.ide.imports.simapro.SubstanceImportMode
-import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.model.*
 import ch.kleis.lcaac.plugin.imports.shared.serializer.FormulaConverter
 import ch.kleis.lcaac.plugin.imports.simapro.substance.Dictionary
 import ch.kleis.lcaac.plugin.imports.simapro.substance.Ef3xDictionary
 import ch.kleis.lcaac.plugin.imports.simapro.substance.SimaproDictionary
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.BASE_PAD
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.compact
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 import org.openlca.simapro.csv.process.*
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -18,7 +20,7 @@ fun ProcessBlock.uid(): String {
     } else {
         this.products()[0].uid()
     }
-    val mainProductName = ModelWriter.sanitizeAndCompact(mainProductNameRaw)
+    val mainProductName = sanitize(mainProductNameRaw)
     val identifierRaw = if (this.identifier().isNullOrEmpty()) {
         "unknown"
     } else {
@@ -33,11 +35,11 @@ fun ProcessBlock.uid(): String {
         // * same process name and diff product name with same identifier : 2 coproducts
         this.name() + "_" + (mainProductNameRaw.hashCode() % 10000) + "_" + (identifierRaw.hashCode() % 10000)
     }
-    return ModelWriter.sanitizeAndCompact(uidRaw)
+    return sanitize(uidRaw)
 }
 
 fun ProductOutputRow.uid(): String {
-    return ModelWriter.sanitizeAndCompact(this.name())
+    return sanitize(this.name())
 }
 
 
@@ -155,10 +157,10 @@ class SimaproProcessMapper(mode: SubstanceImportMode) {
         )
 
     private fun renderLiterature(s: LiteratureRow): String {
-        val sep = " ".repeat(ModelWriter.BASE_PAD)
+        val sep = " ".repeat(BASE_PAD)
         return s.name()
-            ?.split("\n")
-            ?.joinToString("\n$sep$sep", "$sep* ") { ModelWriter.compactText(it) }
+            ?.lines()
+            ?.joinToString("\n$sep$sep", "$sep* ") { compact(it) }
             ?: ""
     }
 
@@ -171,7 +173,13 @@ class SimaproProcessMapper(mode: SubstanceImportMode) {
         val unit = sanitizeSymbol(product.unit())
         val allocation = product.allocation().value()
         val amount = FormulaConverter.compute(product.amount().toString(), comments)
-        return ImportedProductExchange(amount, unit, product.uid(), allocation, comments)
+        return ImportedProductExchange(
+            name = product.uid(),
+            qty = amount,
+            unit = unit,
+            allocation = allocation,
+            comments = comments,
+        )
     }
 
     private fun renderWasteTreatment(exchange: WasteTreatmentRow): ImportedProductExchange {
@@ -190,9 +198,14 @@ class SimaproProcessMapper(mode: SubstanceImportMode) {
     ): ImportedProductExchange {
         val comments = createComments(exchange.comment(), additionalComments)
         val unit = sanitizeSymbol(exchange.unit())
-        val uid = ModelWriter.sanitizeAndCompact(exchange.name()) + suffix
+        val name = sanitize(exchange.name()) + suffix
         val amount = FormulaConverter.compute(exchange.amount().toString(), comments)
-        return ImportedProductExchange(amount, unit, uid, comments = comments)
+        return ImportedProductExchange(
+            name = name,
+            qty = amount,
+            unit = unit,
+            comments = comments
+        )
     }
 
     private fun createComments(text: String, existingComments: List<String> = listOf()): MutableList<String> {

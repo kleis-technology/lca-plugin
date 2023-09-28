@@ -14,7 +14,7 @@ class EcoSpoldSubstanceMapper {
                 "methodName" to methodName,
                 "geography" to (process.description.geography?.shortName ?: "")
             )
-            val pUid = EcoSpoldProcessMapper.uid(process)
+            val pUid = EcoSpoldProcessMapper.buildName(process)
             val impacts = process.flowData.impactIndicators
                 .filter { it.methodName == methodName }
                 .map {

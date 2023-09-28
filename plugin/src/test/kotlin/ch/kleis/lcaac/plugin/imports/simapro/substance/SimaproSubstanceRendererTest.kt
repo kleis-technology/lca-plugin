@@ -22,7 +22,7 @@ class SimaproSubstanceRendererTest {
 
     @Before
     fun before() {
-        every { writer.write(capture(pathSlot), capture(bodySlot)) } returns Unit
+        every { writer.writeFile(capture(pathSlot), capture(bodySlot)) } returns Unit
     }
 
     @After

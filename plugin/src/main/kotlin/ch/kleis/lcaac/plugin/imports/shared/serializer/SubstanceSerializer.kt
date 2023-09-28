@@ -1,8 +1,11 @@
 package ch.kleis.lcaac.plugin.imports.shared.serializer
 
-import ch.kleis.lcaac.plugin.imports.ModelWriter
+import ch.kleis.lcaac.plugin.imports.model.ImportedImpact
 import ch.kleis.lcaac.plugin.imports.model.ImportedSubstance
 import ch.kleis.lcaac.plugin.imports.simapro.sanitizeSymbol
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.asComment
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.formatMetaValues
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 
 class SubstanceSerializer {
 
@@ -12,53 +15,54 @@ class SubstanceSerializer {
 
             val builder = StringBuilder()
 
+            // Header
+            builder.append("substance ${s.uid} {")
+            builder.appendLine().appendLine()
+
+            // Body
             builder.append(
-                """
+            """name = "${s.name}"
+              |type = ${s.type}
+              |compartment = "${s.compartment}"
+            """.trimMargin().prependIndent())
+            builder.appendLine()
 
-substance ${s.uid} {
-
-    name = "${s.name}"
-    type = ${s.type}
-    compartment = "${s.compartment}""""
-            )
             if (!s.subCompartment.isNullOrBlank()) {
-                builder.append(
-                    """
-    sub_compartment = "${s.subCompartment}""""
-                )
+                builder.append("""sub_compartment = "${s.subCompartment}"""".prependIndent())
+                builder.appendLine()
             }
-            builder.append(
-                """
-    reference_unit = ${s.referenceUnitSymbol()}
 
-    meta {
-"""
-            )
-            builder.append(ModelWriter.blockKeyValue(s.meta.entries, 8))
-            builder.append(
-                """
-    }
+            builder.append("reference_unit = ${s.referenceUnitSymbol()}".prependIndent())
+            builder.appendLine().appendLine()
 
-    impacts {"""
-            )
-            s.impacts.forEach {
-                if (it.comment != null) {
-                    builder.append(
-                        """
-        // ${it.comment}"""
-                    )
-                }
-                val name = sanitizeSymbol(ModelWriter.sanitizeAndCompact(it.name))
-                builder.append(
-                    """
-        ${it.value} ${it.unitSymbol} $name"""
-                )
+            // Meta
+            val metaValues = formatMetaValues(s.meta).toString().prependIndent()
+            val metaBlock = "meta {\n$metaValues\n}".prependIndent()
+
+            builder.append(metaBlock)
+            builder.appendLine().appendLine()
+
+            // Impacts
+            if (s.impacts.isNotEmpty()) {
+                val impactValues = s.impacts.joinToString("\n") {
+                    serializeImportedImpact(it)
+                }.prependIndent()
+                val impactBlock = "impacts {\n$impactValues\n}".prependIndent()
+                builder.append(impactBlock)
+                builder.appendLine()
             }
-            builder.append(
-                """
-    }
-}"""
-            )
+
+            builder.append("}")
+            return builder
+        }
+
+        private fun serializeImportedImpact(ii: ImportedImpact, builder: StringBuilder = StringBuilder()): CharSequence {
+            val name = sanitizeSymbol(sanitize(ii.name))
+            ii.comment?.apply {
+                builder.append(asComment(ii.comment))
+                builder.appendLine()
+            }
+            builder.append("${ii.value} ${ii.unitSymbol} $name")
             return builder
         }
     }

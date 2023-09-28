@@ -25,10 +25,10 @@ class EcospoldProcessRendererTest {
         unmockkAll()
     }
 
-    // FIXME @Test
+    // FIXME
     fun render_shouldRender() {
         // Given
-        every { writer.write(any(), any(), index = false, closeAfterWrite = any()) } returns Unit
+        justRun { writer.writeFile( any(), any()) }
         val activity = mockk<ActivityDataset>()
         every { activity.description.activity.name } returns "pName"
         every { activity.description.geography?.shortName } returns "ch"
@@ -47,15 +47,15 @@ class EcospoldProcessRendererTest {
         every { EcoSpoldSubstanceMapper.map(activity, "EF v3.1") } returns importedSubstance
         mockkObject(SubstanceSerializer)
         every { SubstanceSerializer.serialize(importedSubstance) } returns "serialized substance"
-        val sut = EcospoldProcessRenderer()
+        val sut = EcoSpoldProcessRenderer()
 
         // When
         sut.render(activity, writer, emptyMap(), "a comment", "EF v3.1")
 
         // Then, Better way to view large diff than using mockk.verify
         verifyOrder {
-            writer.write("processes/cat/uid.lca", "serialized process", index = false, closeAfterWrite = false)
-            writer.write("processes/cat/uid.lca", "serialized substance", index = false, closeAfterWrite = true)
+            writer.writeFile("processes/cat/uid.lca", "serialized process")
+            writer.writeFile("substances/cat/uid.lca", "serialized substance")
         }
         assertEquals(mutableListOf("a comment"), comments)
     }

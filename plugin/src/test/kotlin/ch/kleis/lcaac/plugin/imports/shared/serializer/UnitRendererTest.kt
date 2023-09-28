@@ -7,6 +7,7 @@ import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
 import ch.kleis.lcaac.plugin.imports.util.ImportException
+import ch.kleis.lcaac.plugin.imports.util.StringUtils
 import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import org.hamcrest.CoreMatchers.containsString
@@ -22,18 +23,17 @@ class UnitRendererTest {
     private val writer = mockk<ModelWriter>()
     private val pathSlot = slot<String>()
     private val bodySlot = slot<String>()
-    private val indexSlot = slot<Boolean>()
 
     @Before
     fun before() {
-        every { writer.write(capture(pathSlot), capture(bodySlot), capture(indexSlot)) } returns Unit
-        mockkObject(ModelWriter.Companion)
-        every { ModelWriter.sanitizeAndCompact("k+g") } returns "k_g"
-        every { ModelWriter.sanitizeAndCompact("kg") } returns "kg"
-        every { ModelWriter.sanitizeAndCompact("s") } returns "s"
-        every { ModelWriter.sanitizeAndCompact("s€c") } returns "s_c"
-        every { ModelWriter.sanitizeAndCompact("me2") } returns "me2"
-        every { ModelWriter.sanitizeAndCompact("m2") } returns "m2"
+        every { writer.writeAppendFile(capture(pathSlot), capture(bodySlot)) } returns Unit
+        mockkObject(StringUtils)
+        every { StringUtils.sanitize("k+g") } returns "k_g"
+        every { StringUtils.sanitize("kg") } returns "kg"
+        every { StringUtils.sanitize("s") } returns "s"
+        every { StringUtils.sanitize("s€c") } returns "s_c"
+        every { StringUtils.sanitize("me2") } returns "me2"
+        every { StringUtils.sanitize("m2") } returns "m2"
     }
 
     @After
@@ -50,7 +50,7 @@ class UnitRendererTest {
         // When
         sut.render(data, writer)
         // Then
-        verify(exactly = 0) { writer.write(any(), any(), any()) }
+        verify(exactly = 0) { writer.writeAppendFile(any(), any()) }
     }
 
     @Test
@@ -73,7 +73,6 @@ class UnitRendererTest {
         // Better way to view large diff than using mockk.verify
         Assert.assertEquals("unit", pathSlot.captured)
         Assert.assertEquals(expected, bodySlot.captured)
-        Assert.assertEquals(false, indexSlot.captured)
     }
 
     @Test
@@ -110,7 +109,6 @@ class UnitRendererTest {
         // Better way to view large diff than using mockk.verify
         Assert.assertEquals("unit", pathSlot.captured)
         Assert.assertEquals(expected, bodySlot.captured)
-        Assert.assertEquals(false, indexSlot.captured)
     }
 
     @Test
@@ -147,7 +145,6 @@ class UnitRendererTest {
         // Better way to view large diff than using mockk.verify
         Assert.assertEquals("unit", pathSlot.captured)
         Assert.assertEquals(expected, bodySlot.captured)
-        Assert.assertEquals(false, indexSlot.captured)
     }
 
     @Test
@@ -170,7 +167,6 @@ class UnitRendererTest {
         // Better way to view large diff than using mockk.verify
         Assert.assertEquals("unit", pathSlot.captured)
         Assert.assertEquals(expected, bodySlot.captured)
-        Assert.assertEquals(false, indexSlot.captured)
     }
 
     @Test
@@ -178,14 +174,13 @@ class UnitRendererTest {
         // Given
         val sut = UnitRenderer.of(emptyMap())
         val data = ImportedUnit("Time", "s€c", 2.0, "s")
-        sut.render(data, writer)
 
         // When
         sut.render(data, writer)
 
         // Then
         verify(atMost = 1) {
-            writer.write("unit", any(), false)
+            writer.writeAppendFile("unit", any())
         }
     }
 

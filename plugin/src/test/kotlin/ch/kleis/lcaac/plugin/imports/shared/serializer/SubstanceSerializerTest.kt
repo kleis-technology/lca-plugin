@@ -8,7 +8,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class SubstanceSerializerTest {
-    @Suppress("JoinDeclarationAndAssignment")
     private val sub: ImportedSubstance
 
     init {
@@ -25,30 +24,27 @@ class SubstanceSerializerTest {
         val result = SubstanceSerializer.serialize(sub)
 
         // Then
-        val expected = """
-
-substance aluminium_ch {
-
-    name = "Aluminium"
-    type = Resource
-    compartment = "raw"
-    reference_unit = CO2_Eq
-
-    meta {
-        "description" = "Formula: Al
-            Al"
-    }
-
-    impacts {
-        1000.0 P_Eq alu_tox
-    }
-}"""
+        val expected = """substance aluminium_ch {
+                                |
+                                |    name = "Aluminium"
+                                |    type = Resource
+                                |    compartment = "raw"
+                                |    reference_unit = CO2_Eq
+                                |
+                                |    meta {
+                                |        "description" = "Formula: Al
+                                |            Al"
+                                |    }
+                                |
+                                |    impacts {
+                                |        1000.0 P_Eq alu_tox
+                                |    }
+                                |}""".trimMargin()
         assertEquals(expected, result.toString())
-
     }
 
     @Test
-    fun testRender_WithSubcompartment() {
+    fun testRender_WithSubCompartment() {
         // Given
         sub.subCompartment = "sub"
 
@@ -56,31 +52,29 @@ substance aluminium_ch {
         val result = SubstanceSerializer.serialize(sub)
 
         // Then
-        val expected = """
-
-substance aluminium_ch {
-
-    name = "Aluminium"
-    type = Resource
-    compartment = "raw"
-    sub_compartment = "sub"
-    reference_unit = CO2_Eq
-
-    meta {
-        "description" = "Formula: Al
-            Al"
-    }
-
-    impacts {
-        1000.0 P_Eq alu_tox
-    }
-}"""
+        val expected = """substance aluminium_ch {
+                                |
+                                |    name = "Aluminium"
+                                |    type = Resource
+                                |    compartment = "raw"
+                                |    sub_compartment = "sub"
+                                |    reference_unit = CO2_Eq
+                                |
+                                |    meta {
+                                |        "description" = "Formula: Al
+                                |            Al"
+                                |    }
+                                |
+                                |    impacts {
+                                |        1000.0 P_Eq alu_tox
+                                |    }
+                                |}""".trimMargin()
         assertEquals(expected, result.toString())
 
     }
 
     @Test
-    fun testRender_WithoutComment() {
+    fun render_should_render_impacts() {
         // Given
         sub.impacts.clear()
         sub.impacts.add(ImportedImpact(1000.0, "P-Eq", "alu_tox", "Comment"))
@@ -89,12 +83,11 @@ substance aluminium_ch {
         val result = SubstanceSerializer.serialize(sub)
 
         // Then
-        val expected = """
-    impacts {
-        // Comment
-        1000.0 P_Eq alu_tox
-    }
-}"""
+        val expected = """    impacts {
+                                |        // Comment
+                                |        1000.0 P_Eq alu_tox
+                                |    }
+                              """.trimMargin()
         assertThat(result.toString(), containsString(expected))
 
     }

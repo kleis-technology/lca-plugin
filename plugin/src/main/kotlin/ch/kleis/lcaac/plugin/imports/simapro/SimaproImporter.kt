@@ -15,6 +15,7 @@ import ch.kleis.lcaac.plugin.imports.simapro.substance.SimaproSubstanceRenderer
 import ch.kleis.lcaac.plugin.imports.util.AsyncTaskController
 import ch.kleis.lcaac.plugin.imports.util.AsynchronousWatcher
 import ch.kleis.lcaac.plugin.imports.util.ImportInterruptedException
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.asComment
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.io.CountingInputStream
 import org.openlca.simapro.csv.CsvBlock
@@ -57,10 +58,9 @@ class SimaproImporter(
             SubstanceImportMode.EF31 -> listOf("ef31")
             SubstanceImportMode.SIMAPRO, SubstanceImportMode.NOTHING -> listOf()
         }
-        ModelWriter(pkg, settings.rootFolder, fileHeaderImports, watcher)
-            .use { w ->
-                importFile(path, w, controller, watcher)
-            }
+        val writer = ModelWriter(pkg, settings.rootFolder, fileHeaderImports, watcher)
+
+        importFile(path, writer, controller, watcher)
     }
 
     override fun getImportRoot(): Path {
@@ -150,8 +150,8 @@ class SimaproImporter(
 
     private fun renderMain(block: SystemDescriptionBlock?, writer: ModelWriter) {
         block?.let {
-            writer.write("main", ModelWriter.pad(ModelWriter.asComment(block.name()), 0), false)
-            writer.write("main", ModelWriter.pad(ModelWriter.asComment(block.description()), 0), false)
+            writer.writeAppendFile("main", asComment(block.name()))
+            writer.writeAppendFile("main", asComment(block.description()))
         }
     }
 

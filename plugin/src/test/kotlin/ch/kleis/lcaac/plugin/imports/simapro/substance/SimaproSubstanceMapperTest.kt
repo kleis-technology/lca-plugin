@@ -1,9 +1,9 @@
 package ch.kleis.lcaac.plugin.imports.simapro.substance
 
 import ch.kleis.lcaac.core.lang.expression.SubstanceType
-import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.model.ImportedImpact
 import ch.kleis.lcaac.plugin.imports.simapro.substance.SimaproSubstanceMapper.Companion.resolveSimaproType
+import ch.kleis.lcaac.plugin.imports.util.StringUtils
 import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
@@ -25,8 +25,8 @@ class SimaproSubstanceMapperTest {
 
     @Before
     fun before() {
-        mockkObject(ModelWriter)
-        every { ModelWriter.sanitizeAndCompact("kg") } returns "kg"
+        mockkObject(StringUtils)
+        every { StringUtils.sanitize("kg") } returns "kg"
     }
 
     @After

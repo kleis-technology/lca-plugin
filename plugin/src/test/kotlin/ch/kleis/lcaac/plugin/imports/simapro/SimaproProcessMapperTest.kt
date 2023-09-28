@@ -2,7 +2,9 @@ package ch.kleis.lcaac.plugin.imports.simapro
 
 import ch.kleis.lcaac.plugin.ide.imports.simapro.SubstanceImportMode
 import ch.kleis.lcaac.plugin.imports.ModelWriter
-import io.mockk.*
+import io.mockk.justRun
+import io.mockk.mockk
+import io.mockk.unmockkAll
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -21,29 +23,12 @@ import kotlin.test.assertEquals
 class SimaproProcessMapperTest {
     private val writer = mockk<ModelWriter>()
 
-    private val pathSlot = slot<String>()
-    private val bodySlot = slot<String>()
-    private val indexSlot = slot<Boolean>()
-    private val closeSlot = slot<Boolean>()
-
     private val process = initProcess()
     private val sut = SimaproProcessMapper.of(SubstanceImportMode.SIMAPRO)
 
     @Before
     fun before() {
-        every {
-            writer.write(
-                capture(pathSlot),
-                capture(bodySlot),
-                capture(indexSlot),
-                capture(closeSlot)
-            )
-        } returns Unit
-        mockkObject(ModelWriter)
-        every { ModelWriter.sanitizeAndCompact("kg") } returns "kg"
-        every { ModelWriter.sanitizeAndCompact("MJ") } returns "MJ"
-        every { ModelWriter.sanitizeAndCompact("m2a") } returns "m2a"
-        every { ModelWriter.sanitizeAndCompact("m3") } returns "m3"
+        justRun { writer.writeFile(any(), any()) }
     }
 
     @After
@@ -54,8 +39,6 @@ class SimaproProcessMapperTest {
 
     @Test
     fun map_ShouldMapAllMetas_ForClassicalProcess() {
-        // Given
-
         // When
         val actual = sut.map(process)
 
@@ -107,7 +90,7 @@ class SimaproProcessMapperTest {
         )
         assertEquals("7500", pi.qty)
         assertEquals("kg", pi.unit)
-        assertEquals("acai_berry_at_farm_wfldb_3_7_sl_br_u", pi.uid)
+        assertEquals("acai_berry_at_farm_wfldb_3_7_sl_br_u", pi.name)
 
         assertEquals("Avoided Products", actual.productBlocks[1].comment)
         assertEquals(0, actual.productBlocks[1].exchanges.count())
@@ -179,7 +162,7 @@ class SimaproProcessMapperTest {
             assertEquals(comments, resultExchange.comments)
             assertEquals(qty, resultExchange.qty)
             assertEquals(unit, resultExchange.unit)
-            assertEquals(uid, resultExchange.uid)
+            assertEquals(uid, resultExchange.name)
             assertEquals(comp, resultExchange.compartment)
             assertEquals(sub, resultExchange.subCompartment)
         }
@@ -212,7 +195,7 @@ class SimaproProcessMapperTest {
         assertEquals(listOf("(2,1,1,1,1,na)"), lu.comments)
         assertEquals("10000.0", lu.qty)
         assertEquals("m2a", lu.unit)
-        assertEquals("occupation_permanent_crop_irrigated", lu.uid)
+        assertEquals("occupation_permanent_crop_irrigated", lu.name)
         assertEquals("raw", lu.compartment)
         assertEquals("land", lu.subCompartment)
     }

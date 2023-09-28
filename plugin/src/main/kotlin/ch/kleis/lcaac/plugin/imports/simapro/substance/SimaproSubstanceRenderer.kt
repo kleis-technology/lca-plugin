@@ -2,20 +2,21 @@ package ch.kleis.lcaac.plugin.imports.simapro.substance
 
 import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.shared.serializer.SubstanceSerializer
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 import org.openlca.simapro.csv.enums.ElementaryFlowType
 import org.openlca.simapro.csv.refdata.ElementaryFlowBlock
 import org.openlca.simapro.csv.refdata.ElementaryFlowRow
-import java.io.File
+import java.nio.file.Paths
 
 
 class SimaproSubstanceRenderer {
     var nbSubstances = 0
 
     fun render(block: ElementaryFlowBlock, writer: ModelWriter) {
-        val compartimentRaw = block.type().compartment().lowercase()
-        val compartiment = ModelWriter.sanitizeAndCompact(compartimentRaw)
+        val compartmentRaw = block.type().compartment().lowercase()
+        val compartment = sanitize(compartmentRaw)
         val type = block.type()
-        block.flows().forEach { render(it, type, compartiment, writer) }
+        block.flows().forEach { render(it, type, compartment, writer) }
     }
 
     private fun render(
@@ -24,15 +25,10 @@ class SimaproSubstanceRenderer {
         compartment: String,
         writer: ModelWriter
     ) {
-        val uid = ModelWriter.sanitizeAndCompact(element.name())
+        val uid = sanitize(element.name())
         val substance = SimaproSubstanceMapper.map(element, type, compartment)
         val str = SubstanceSerializer.serialize(substance)
-        writer.write(
-            "substances${File.separatorChar}$compartment${File.separatorChar}${uid}.lca",
-            str
-        )
+        writer.writeFile(Paths.get("substances", compartment, "$uid.lca").toString(), str)
         nbSubstances++
     }
-
-
 }

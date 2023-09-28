@@ -18,6 +18,7 @@ import ch.kleis.lcaac.plugin.imports.shared.serializer.UnitRenderer
 import ch.kleis.lcaac.plugin.imports.util.AsyncTaskController
 import ch.kleis.lcaac.plugin.imports.util.AsynchronousWatcher
 import ch.kleis.lcaac.plugin.imports.util.ImportInterruptedException
+import ch.kleis.lcaac.plugin.imports.util.StringUtils
 import com.intellij.openapi.diagnostic.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -66,7 +67,7 @@ class EcospoldImporter(
 
     private var totalValue = 1
     private var currentValue = 0
-    private val processRenderer = EcospoldProcessRenderer()
+    private val processRenderer = EcoSpoldProcessRenderer()
     private val methodName: String = when (settings) {
         is UPRSettings -> "Ecospold LCI library file."
         is LCIASettings -> settings.methodName
@@ -87,11 +88,10 @@ class EcospoldImporter(
 
         val path = Path.of(settings.libraryFile)
         val pkg = settings.rootPackage.ifBlank { "default" }
+        val writer = ModelWriter(pkg, settings.rootFolder, builtinLibraryImports(settings), watcher)
 
         SevenZFile(path.toFile()).use { f ->
-            ModelWriter(pkg, settings.rootFolder, builtinLibraryImports(settings), watcher).use { w ->
-                importEntries(f, methodMapping, w, controller, watcher)
-            }
+            importEntries(f, methodMapping, writer, controller, watcher)
         }
     }
 
@@ -118,7 +118,6 @@ class EcospoldImporter(
         return listOf(
             Imported(unitRenderer.nbUnit, "units"),
             Imported(processRenderer.nbProcesses, "processes"),
-            Imported(processRenderer.nbProcesses, "substances"),
         )
     }
 
@@ -245,11 +244,10 @@ class EcospoldImporter(
             Import Summary:
                 * $nbUnits units
                 * $nbProcess processes
-                * $nbProcess substances
             Duration: $durAsStr
         """.trimIndent()
 
-        writer.write("main", ModelWriter.pad(ModelWriter.asComment(block), 0), false)
+        writer.writeFile("main", StringUtils.asComment(block))
     }
 
     data class ProcessDictRecord(
@@ -294,10 +292,10 @@ class EcospoldImporter(
     private fun writeImportedDataset(
         dataSet: ActivityDataset,
         processDict: Map<String, ProcessDictRecord>,
-        w: ModelWriter,
+        writer: ModelWriter,
         path: String
     ) {
         LOG.info("Read dataset from $path")
-        processRenderer.render(dataSet, w, processDict, "from $path", methodName)
+        processRenderer.render(dataSet, writer, processDict, "from $path", methodName)
     }
 }
