@@ -1,7 +1,5 @@
 package ch.kleis.lcaac.plugin.e2e
 
-import ch.kleis.lcaac.plugin.actions.csv.CsvProcessor
-import ch.kleis.lcaac.plugin.actions.csv.CsvRequest
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.dimension.Dimension
@@ -14,10 +12,15 @@ import ch.kleis.lcaac.core.lang.expression.EProcessTemplate
 import ch.kleis.lcaac.core.lang.expression.EProcessTemplateApplication
 import ch.kleis.lcaac.core.lang.expression.EQuantityScale
 import ch.kleis.lcaac.core.lang.expression.EUnitLiteral
-import ch.kleis.lcaac.core.lang.value.*
+import ch.kleis.lcaac.core.lang.value.FromProcessRefValue
+import ch.kleis.lcaac.core.lang.value.ProductValue
+import ch.kleis.lcaac.core.lang.value.QuantityValue
+import ch.kleis.lcaac.core.lang.value.UnitValue
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.core.prelude.Prelude
+import ch.kleis.lcaac.plugin.actions.csv.CsvProcessor
+import ch.kleis.lcaac.plugin.actions.csv.CsvRequest
 import ch.kleis.lcaac.plugin.fixture.UnitFixture
 import ch.kleis.lcaac.plugin.language.parser.LcaLangAbstractParser
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
