@@ -111,6 +111,9 @@
         <runLineMarkerContributor
                 language="LCA"
                 implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.AssessProcessMarkerContributor"/>
+        <runLineMarkerContributor
+                language="LCA"
+                implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.TestMarkerContributor"/>
 
         <notificationGroup id="LcaAsCode"
                            displayType="BALLOON"
