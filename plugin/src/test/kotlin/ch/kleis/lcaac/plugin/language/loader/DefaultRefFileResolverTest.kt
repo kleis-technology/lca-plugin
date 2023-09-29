@@ -1,5 +1,6 @@
-package ch.kleis.lcaac.plugin.language.parser
+package ch.kleis.lcaac.plugin.language.loader
 
+import ch.kleis.lcaac.plugin.language.loader.DefaultRefFileResolver
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
 import com.intellij.openapi.ui.naturalSorted
 import com.intellij.testFramework.fixtures.BasePlatformTestCase

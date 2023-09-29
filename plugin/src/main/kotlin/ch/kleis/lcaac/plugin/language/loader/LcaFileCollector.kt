@@ -1,4 +1,4 @@
-package ch.kleis.lcaac.plugin.language.parser
+package ch.kleis.lcaac.plugin.language.loader
 
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.psi.LcaDataRef

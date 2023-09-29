@@ -9,7 +9,7 @@ import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.fixture.UnitFixture
-import ch.kleis.lcaac.plugin.language.parser.LcaLangAbstractParser
+import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -47,7 +47,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
-        val parser = LcaLangAbstractParser(sequenceOf(file, UnitFixture.getInternalUnitFile(myFixture)), ops)
+        val parser = LcaLoader(sequenceOf(file, UnitFixture.getInternalUnitFile(myFixture)), ops)
         val symbolTable = parser.load()
         val processor = CsvProcessor(symbolTable)
         val cc = IndicatorValue(
@@ -113,7 +113,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
         )
         val kg = umap["kg"]!!
         val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
-        val parser = LcaLangAbstractParser(sequenceOf(file, UnitFixture.getInternalUnitFile(myFixture)), ops)
+        val parser = LcaLoader(sequenceOf(file, UnitFixture.getInternalUnitFile(myFixture)), ops)
         val symbolTable = parser.load()
         val csvProcessor = CsvProcessor(symbolTable)
         val request = CsvRequest(

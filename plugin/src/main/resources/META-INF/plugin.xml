@@ -20,7 +20,7 @@
                 extensions="lca"/>
         <lang.parserDefinition
                 language="LCA"
-                implementationClass="ch.kleis.lcaac.plugin.language.parser.LcaParserDefinition"/>
+                implementationClass="ch.kleis.lcaac.plugin.language.loader.LcaParserDefinition"/>
 
         <lang.commenter
                 language="LCA"

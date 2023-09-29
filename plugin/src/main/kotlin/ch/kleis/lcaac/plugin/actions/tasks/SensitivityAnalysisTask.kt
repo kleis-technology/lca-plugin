@@ -16,8 +16,8 @@ import ch.kleis.lcaac.core.math.dual.DualNumber
 import ch.kleis.lcaac.core.math.dual.DualOperations
 import ch.kleis.lcaac.core.matrix.IndexedCollection
 import ch.kleis.lcaac.core.matrix.ParameterVector
-import ch.kleis.lcaac.plugin.language.parser.LcaFileCollector
-import ch.kleis.lcaac.plugin.language.parser.LcaLangAbstractParser
+import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
+import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
 import ch.kleis.lcaac.plugin.psi.LcaStringExpression
@@ -75,7 +75,7 @@ class SensitivityAnalysisTask(
         indicator.text = "Loading symbol table"
         val symbolTable = runReadAction {
             val collector = LcaFileCollector(file.project)
-            val parser = LcaLangAbstractParser(collector.collect(file), ops)
+            val parser = LcaLoader(collector.collect(file), ops)
             parser.load()
         }
 

@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.language.ide.syntax
 
-import ch.kleis.lcaac.plugin.language.parser.LcaLexerAdapter
+import ch.kleis.lcaac.plugin.language.loader.LcaLexerAdapter
 import ch.kleis.lcaac.plugin.psi.LcaTypes.*
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors

@@ -1,6 +1,7 @@
-package ch.kleis.lcaac.plugin.language.parser
+package ch.kleis.lcaac.plugin.language.loader
 
 import ch.kleis.lcaac.plugin.LcaLanguage
+import ch.kleis.lcaac.plugin.language.parser.LcaParser
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.psi.LcaTypes
 import ch.kleis.lcaac.plugin.psi.LcaTypes.STRING_LITERAL
@@ -27,7 +28,7 @@ class LcaParserDefinition : ParserDefinition {
     }
 
     override fun createParser(project: Project?): PsiParser {
-        return ch.kleis.lcaac.plugin.language.parser.LcaParser()
+        return LcaParser()
     }
 
     override fun getFileNodeType(): IFileElementType {
