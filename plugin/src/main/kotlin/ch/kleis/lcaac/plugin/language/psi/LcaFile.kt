@@ -35,6 +35,10 @@ class LcaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LcaLan
         return listOf(Prelude.pkgName) + getImports().map { it.name }
     }
 
+    fun getTests(): Collection<LcaTest> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaTest::class.java)
+    }
+
     fun getProcesses(): Collection<LcaProcess> {
         return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaProcess::class.java)
     }
