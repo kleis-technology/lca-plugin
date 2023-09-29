@@ -3,11 +3,11 @@ package ch.kleis.lcaac.plugin.ide.imports.ecospold
 import ch.kleis.lcaac.plugin.MyBundle
 import ch.kleis.lcaac.plugin.ide.imports.ImportHandler
 import ch.kleis.lcaac.plugin.ide.imports.LcaImportDialog
-import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.EcospoldImportSettings
+import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.EcoSpoldImportSettings
 import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.LCIASettings
 import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.UPRSettings
 import ch.kleis.lcaac.plugin.imports.Importer
-import ch.kleis.lcaac.plugin.imports.ecospold.EcospoldImporter
+import ch.kleis.lcaac.plugin.imports.ecospold.EcoSpoldImporter
 import com.intellij.BundleBase
 import com.intellij.icons.AllIcons
 import com.intellij.ide.IdeBundle
@@ -17,7 +17,6 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.ui.*
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.JBColor
-import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.ExtendableTextField
@@ -25,7 +24,6 @@ import com.intellij.util.ui.FormBuilder
 import java.awt.BorderLayout
 import java.awt.event.FocusAdapter
 import java.awt.event.FocusEvent
-import java.awt.event.ItemEvent
 import java.nio.file.Path
 import javax.swing.DefaultComboBoxModel
 import javax.swing.JComponent
@@ -36,7 +34,7 @@ import kotlin.io.path.isRegularFile
 
 
 class EcospoldImportSettingsPanel(
-    private val settings: EcospoldImportSettings,
+    private val settings: EcoSpoldImportSettings,
 ) : JPanel(VerticalFlowLayout()), ImportHandler {
 
     private val libField: JComponent
@@ -109,7 +107,7 @@ class EcospoldImportSettingsPanel(
     private fun updateMethodModelFromLib() {
         val file = Path.of(settings.libraryFile)
         if (file.exists() && file.isRegularFile()) {
-            val names = EcospoldImporter.getMethodNames(file.toString())
+            val names = EcoSpoldImporter.getMethodNames(file.toString())
             methodNameModel.removeAllElements()
             methodNameModel.addAll(names)
             methodNameModel.selectedItem = ""
@@ -260,7 +258,7 @@ class EcospoldImportSettingsPanel(
     }
 
     override fun importer(): Importer {
-        return EcospoldImporter(settings)
+        return EcoSpoldImporter(settings)
     }
 
     override fun doValidate(): ValidationInfo? {

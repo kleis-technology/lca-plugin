@@ -12,7 +12,7 @@ import kotlin.test.assertNotEquals
 class EcoSpoldProcessMapperTest {
 
     private val sub: ActivityDataset = EcoSpold2Fixture.buildData()
-    private val processDict: Map<String, EcospoldImporter.ProcessDictRecord> = EcoSpold2Fixture.buildProcessDict()
+    private val processDict: Map<String, EcoSpoldImporter.ProcessDictRecord> = EcoSpold2Fixture.buildProcessDict()
 
     @Test
     fun map_ShouldMapMeta() {

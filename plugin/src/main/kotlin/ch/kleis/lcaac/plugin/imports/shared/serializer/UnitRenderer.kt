@@ -32,8 +32,7 @@ class UnitRenderer(private val knownUnits: MutableMap<String, UnitValue<BasicNum
 
     companion object {
         fun of(existingUnits: Map<String, UnitValue<BasicNumber>>): UnitRenderer {
-            val newMap = existingUnits.entries.map { (k, v) -> k to v }.associate { it }
-            return UnitRenderer(newMap.toMutableMap())
+            return UnitRenderer(existingUnits.toMutableMap())
         }
     }
 

@@ -9,7 +9,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 
 
 @State(name = "EcospoldImportLCIASettings", storages = [Storage("EcospoldImportLCIASettings.xml")], reportStatistic = false)
-class LCIASettings : EcospoldImportSettings, PersistentStateComponent<LCIASettings.State> {
+class LCIASettings : EcoSpoldImportSettings, PersistentStateComponent<LCIASettings.State> {
     companion object {
         @JvmStatic
         val instance: LCIASettings
@@ -36,12 +36,6 @@ class LCIASettings : EcospoldImportSettings, PersistentStateComponent<LCIASettin
             state.ROOT_FOLDER = value
         }
 
-    override var importUnits: Boolean
-        get() = state.IMPORT_UNITS
-        set(value) {
-            state.IMPORT_UNITS = value
-        }
-
     var methodName: String
         get() = state.METHOD_NAME
         set(value) {
@@ -64,9 +58,6 @@ class LCIASettings : EcospoldImportSettings, PersistentStateComponent<LCIASettin
 
         @JvmField
         var ROOT_FOLDER: String = ProjectManager.getInstance().openProjects.firstOrNull()?.basePath ?: ""
-
-        @JvmField
-        var IMPORT_UNITS: Boolean = true
 
         @JvmField
         var METHOD_NAME: String = ""

@@ -4,7 +4,7 @@ import ch.kleis.lcaac.core.lang.evaluator.ToValue
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.core.prelude.Prelude
-import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.EcospoldImportSettings
+import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.EcoSpoldImportSettings
 import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.LCIASettings
 import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.UPRSettings
 import ch.kleis.lcaac.plugin.imports.Imported
@@ -39,12 +39,12 @@ import java.time.Instant
 import java.time.ZonedDateTime
 import kotlin.math.roundToInt
 
-class EcospoldImporter(
-    private val settings: EcospoldImportSettings,
+class EcoSpoldImporter(
+    private val settings: EcoSpoldImportSettings,
 ) : Importer() {
 
     companion object {
-        private val LOG = Logger.getInstance(EcospoldImporter::class.java)
+        private val LOG = Logger.getInstance(EcoSpoldImporter::class.java)
 
         fun unitToStr(u: String): String {
             return if (u != "metric ton*km") u else "ton*km"
@@ -69,7 +69,7 @@ class EcospoldImporter(
     private var currentValue = 0
     private val processRenderer = EcoSpoldProcessRenderer()
     private val methodName: String = when (settings) {
-        is UPRSettings -> "Ecospold LCI library file."
+        is UPRSettings -> "EcoSpold LCI library file."
         is LCIASettings -> settings.methodName
     }
     private val mapper = ToValue(BasicOperations)
@@ -105,7 +105,7 @@ class EcospoldImporter(
         }
     }
 
-    private fun builtinLibraryImports(settings: EcospoldImportSettings): List<String> =
+    private fun builtinLibraryImports(settings: EcoSpoldImportSettings): List<String> =
         if (settings is UPRSettings && settings.importBuiltinLibrary != null) {
             listOf(settings.importBuiltinLibrary.toString())
         } else listOf()
@@ -133,9 +133,7 @@ class EcospoldImporter(
 
         val processDict = readProcessDict(f, f.entries)
 
-        if (settings.importUnits) {
-            importUnits(f.entries, f, writer)
-        }
+        importUnits(f.entries, f, writer)
 
         val methodMappingFunction = methodMapping?.let { buildMethodMappingFunction(it) } ?: { it }
         val parsedEntries = f.entries.asFlow()

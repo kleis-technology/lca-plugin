@@ -1,7 +1,7 @@
 package ch.kleis.lcaac.plugin.imports.ecospold
 
 import ch.kleis.lcaac.plugin.imports.ModelWriter
-import ch.kleis.lcaac.plugin.imports.ecospold.EcospoldImporter.ProcessDictRecord
+import ch.kleis.lcaac.plugin.imports.ecospold.EcoSpoldImporter.ProcessDictRecord
 import ch.kleis.lcaac.plugin.imports.ecospold.model.ActivityDataset
 import ch.kleis.lcaac.plugin.imports.shared.serializer.ProcessSerializer
 import ch.kleis.lcaac.plugin.imports.util.StringUtils

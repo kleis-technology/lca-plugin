@@ -1,7 +1,7 @@
 package ch.kleis.lcaac.plugin.imports.ecospold
 
 import ch.kleis.lcaac.core.lang.expression.SubstanceType
-import ch.kleis.lcaac.plugin.imports.ecospold.EcospoldImporter.Companion.unitToStr
+import ch.kleis.lcaac.plugin.imports.ecospold.EcoSpoldImporter.Companion.unitToStr
 import ch.kleis.lcaac.plugin.imports.ecospold.model.*
 import ch.kleis.lcaac.plugin.imports.model.*
 import ch.kleis.lcaac.plugin.imports.simapro.sanitizeSymbol
@@ -15,7 +15,7 @@ import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 object EcoSpoldProcessMapper {
     fun map(
         process: ActivityDataset,
-        processDict: Map<String, EcospoldImporter.ProcessDictRecord>,
+        processDict: Map<String, EcoSpoldImporter.ProcessDictRecord>,
         methodName: String? = null
     ): ImportedProcess {
         val elementaryExchangeGrouping = process.flowData.elementaryExchanges.groupingBy {
@@ -115,7 +115,7 @@ object EcoSpoldProcessMapper {
 
     private fun intermediateExchangeToImportedTechnosphereExchange(
         e: IntermediateExchange,
-        processDict: Map<String, EcospoldImporter.ProcessDictRecord>,
+        processDict: Map<String, EcoSpoldImporter.ProcessDictRecord>,
     ): ImportedTechnosphereExchange {
         val name = sanitize(e.name)
         val amount = e.amount.toString()

@@ -4,15 +4,15 @@ import ch.kleis.lcaac.core.lang.expression.SubstanceType
 import ch.kleis.lcaac.plugin.imports.ecospold.model.*
 
 object EcoSpold2Fixture {
-    fun buildProcessDict(): Map<String, EcospoldImporter.ProcessDictRecord> = mapOf(
-        "iNameProcessID" to EcospoldImporter.ProcessDictRecord(
+    fun buildProcessDict(): Map<String, EcoSpoldImporter.ProcessDictRecord> = mapOf(
+        "iNameProcessID" to EcoSpoldImporter.ProcessDictRecord(
             processId = "iNameProcessID",
             fileName = "foo",
             processName = "iName Producing Process",
             geo = "GLO",
             productName = "iName",
         ),
-        "iName2ProcessID" to EcospoldImporter.ProcessDictRecord(
+        "iName2ProcessID" to EcoSpoldImporter.ProcessDictRecord(
             processId = "iName2ProcessID",
             fileName = "bar",
             processName = "iName2 Producing Process",
