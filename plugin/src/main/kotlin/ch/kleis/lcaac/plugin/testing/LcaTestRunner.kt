@@ -22,15 +22,15 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 
 class LcaTestRunner(
-    project: Project,
+    private val project: Project,
 ) {
-    private val collector = LcaFileCollector(project)
     private val mapper = LcaMapper(BasicOperations)
 
     fun run(test: LcaTest): LcaTestResult {
         try {
             val symbolTable = runReadAction {
                 val file = test.containingFile as LcaFile
+                val collector = LcaFileCollector(project)
                 val parser = LcaLoader(collector.collect(file), BasicOperations)
                 parser.load()
             }

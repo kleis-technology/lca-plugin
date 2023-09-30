@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.plugin.actions
 
+import ch.kleis.lcaac.plugin.actions.tasks.RunAllTestsTask
 import ch.kleis.lcaac.plugin.language.psi.stub.test.TestStubKeyIndex
 import ch.kleis.lcaac.plugin.testing.LcaTestResult
 import ch.kleis.lcaac.plugin.testing.LcaTestRunner
@@ -26,33 +27,7 @@ class RunAllTestsAction : AnAction(
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Run All Tests") {
-            private var results: ArrayList<LcaTestResult> = arrayListOf()
-            override fun run(indicator: ProgressIndicator) {
-                indicator.isIndeterminate = true
-                indicator.text = "Collecting tests ..."
-                val tests = runReadAction {  TestStubKeyIndex.findAllTests(project) }
-                tests.forEachIndexed { index, test ->
-                    indicator.fraction = index.toDouble() / tests.size
-                    indicator.text = "Running tests [$index/${tests.size}]"
-                    val runner = LcaTestRunner(project)
-                    val result = runner.run(test)
-                    results.add(result)
-                }
-            }
-
-            override fun onSuccess() {
-                val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("LCA Output") ?: return
-                val testResultsContent = TestResultsWindow(results).getContent()
-                val content = ContentFactory.getInstance().createContent(
-                    testResultsContent,
-                    "All Tests",
-                    false,
-                )
-                toolWindow.contentManager.addContent(content)
-                toolWindow.contentManager.setSelectedContent(content)
-                toolWindow.show()
-            }
-        })
+        val task = RunAllTestsTask(project)
+        ProgressManager.getInstance().run(task)
     }
 }
