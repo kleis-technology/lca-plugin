@@ -32,13 +32,14 @@ class RunAllTestsTask(
     }
 
     override fun onSuccess() {
-        val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("LCA Output") ?: return
+        val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("LCA Tests") ?: return
         val testResultsContent = TestResultsWindow(results).getContent()
         val content = ContentFactory.getInstance().createContent(
             testResultsContent,
             "All Tests",
             false,
         )
+        toolWindow.contentManager.removeAllContents(true)
         toolWindow.contentManager.addContent(content)
         toolWindow.contentManager.setSelectedContent(content)
         toolWindow.show()
