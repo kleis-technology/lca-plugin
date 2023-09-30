@@ -4,6 +4,7 @@ import ch.kleis.lcaac.core.lang.value.QuantityValue
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 
 data class LcaTestResult(
+    val name: String,
     val results: List<AssertionResult>
 )
 

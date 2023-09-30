@@ -50,7 +50,8 @@ class LcaTestRunner(
             assertion.test(impact)
         }
         return LcaTestResult(
-            results
+            test.uid.name,
+            results,
         )
     }
 

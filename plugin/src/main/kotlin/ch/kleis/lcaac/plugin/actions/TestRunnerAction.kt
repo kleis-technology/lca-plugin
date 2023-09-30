@@ -4,6 +4,7 @@ import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.testing.AssertionResult
 import ch.kleis.lcaac.plugin.testing.LcaTestResult
 import ch.kleis.lcaac.plugin.testing.LcaTestRunner
+import ch.kleis.lcaac.plugin.ui.toolwindow.test_results.TestResultsWindow
 import com.intellij.icons.AllIcons
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
@@ -52,13 +53,14 @@ class TestRunnerAction(
                     .getNotificationGroup("LcaAsCode")
                     .createNotification(title, e.message ?: "unknown error", NotificationType.ERROR)
                     .notify(project)
-                TestRunnerAction.LOG.warn("Unable to process computation", e)
+                LOG.warn("Unable to process computation", e)
             }
 
             private fun displayTestResult(it: LcaTestResult) {
                 val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("LCA Output") ?: return
+                val testResultsContent = TestResultsWindow(listOf(it)).getContent()
                 val content = ContentFactory.getInstance().createContent(
-                    JBLabel(it.toString()),
+                    testResultsContent,
                     "Test $testName",
                     false,
                 )
