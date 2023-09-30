@@ -7,9 +7,7 @@ import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.evaluator.ToValue
 import ch.kleis.lcaac.core.lang.evaluator.reducer.DataExpressionReducer
 import ch.kleis.lcaac.core.lang.expression.*
-import ch.kleis.lcaac.core.lang.value.DataValue
-import ch.kleis.lcaac.core.lang.value.QuantityValue
-import ch.kleis.lcaac.core.lang.value.QuantityValueOperations
+import ch.kleis.lcaac.core.lang.value.*
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
@@ -40,11 +38,16 @@ class LcaTestRunner(
         val program = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint())
         val analysis = program.run()
         val assertions = assertions(symbolTable, test)
-        val port = trace.getEntryPoint().products.first().port()
-        val results = assertions.map {
-            val indicator = analysis.getControllablePorts().get(it.ref)
-            val impact = analysis.getPortContribution(port, indicator)
-            it.test(impact)
+        val target = trace.getEntryPoint().products.first().port()
+        val results = assertions.map { assertion ->
+            val ports = analysis.findAllPortsByShortName(assertion.ref)
+            val impact = with(QuantityValueOperations(BasicOperations)) {
+                ports.map {
+                    if (analysis.isControllable(it)) analysis.getPortContribution(target, it)
+                    else analysis.supplyOf(it)
+                }.reduce { acc, quantityValue -> acc + quantityValue }
+            }
+            assertion.test(impact)
         }
         return results.firstOrNull { it == LcaTestFailure }
             ?: LcaTestSuccess
