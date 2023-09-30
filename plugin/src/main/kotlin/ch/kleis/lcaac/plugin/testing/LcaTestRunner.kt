@@ -4,6 +4,7 @@ import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
 import ch.kleis.lcaac.core.lang.Register
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
+import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.evaluator.ToValue
 import ch.kleis.lcaac.core.lang.evaluator.reducer.DataExpressionReducer
 import ch.kleis.lcaac.core.lang.expression.*
@@ -27,32 +28,41 @@ class LcaTestRunner(
     private val mapper = LcaMapper(BasicOperations)
 
     fun run(test: LcaTest): LcaTestResult {
-        val symbolTable = runReadAction {
-            val file = test.containingFile as LcaFile
-            val parser = LcaLoader(collector.collect(file), BasicOperations)
-            parser.load()
-        }
-        val evaluator = Evaluator(symbolTable, BasicOperations)
-        val testCase = testCase(test)
-        val trace = evaluator.trace(testCase)
-        val program = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint())
-        val analysis = program.run()
-        val assertions = assertions(symbolTable, test)
-        val target = trace.getEntryPoint().products.first().port()
-        val results = assertions.map { assertion ->
-            val ports = analysis.findAllPortsByShortName(assertion.ref)
-            val impact = with(QuantityValueOperations(BasicOperations)) {
-                ports.map {
-                    if (analysis.isControllable(it)) analysis.getPortContribution(target, it)
-                    else analysis.supplyOf(it)
-                }.reduce { acc, quantityValue -> acc + quantityValue }
+        try {
+            val symbolTable = runReadAction {
+                val file = test.containingFile as LcaFile
+                val parser = LcaLoader(collector.collect(file), BasicOperations)
+                parser.load()
             }
-            assertion.test(impact)
+            val evaluator = Evaluator(symbolTable, BasicOperations)
+            val testCase = runReadAction { testCase(test) }
+            val trace = evaluator.trace(testCase)
+            val program = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint())
+            val analysis = program.run()
+            val assertions = assertions(symbolTable, test)
+            val target = trace.getEntryPoint().products.first().port()
+            val results = assertions.map { assertion ->
+                val ports = analysis.findAllPortsByShortName(assertion.ref)
+                val impact = with(QuantityValueOperations(BasicOperations)) {
+                    ports.map {
+                        if (analysis.isControllable(it)) analysis.getPortContribution(target, it)
+                        else analysis.supplyOf(it)
+                    }.reduce { acc, quantityValue -> acc + quantityValue }
+                }
+                assertion.test(impact)
+            }
+            return LcaTestResult(
+                test.testRef.name,
+                results,
+            )
+        } catch (e : EvaluatorException) {
+            return LcaTestResult(
+                test.testRef.name,
+                listOf(
+                    GenericFailure(e.message ?: "unknown error")
+                )
+            )
         }
-        return LcaTestResult(
-            test.testRef.name,
-            results,
-        )
     }
 
     private fun assertions(symbolTable: SymbolTable<BasicNumber>, test: LcaTest): List<RangeAssertion> {
