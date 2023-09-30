@@ -4,8 +4,8 @@ import ch.kleis.lcaac.plugin.testing.*
 
 sealed interface TestResultTreeEntry
 
-private val greenTick = "\u2705"
-private val redCross = "\u274C"
+private const val greenTick = "\u2705"
+private const val redCross = "\u274C"
 
 data class RootEntry(
     val children: MutableList<TestResultEntry>,
@@ -19,8 +19,8 @@ data class TestResultEntry(
     val result: LcaTestResult,
     val children: MutableList<AssertionResultEntry>,
 ) : TestResultTreeEntry {
-    val isSuccess: Boolean = children.all { it.isSuccess }
-    val tick = if (isSuccess) greenTick else redCross
+    private val isSuccess: Boolean = children.all { it.isSuccess }
+    private val tick = if (isSuccess) greenTick else redCross
 
     override fun toString(): String {
         return "$tick ${result.name}"
@@ -32,7 +32,7 @@ data class AssertionResultEntry(
     val result: AssertionResult,
 ) : TestResultTreeEntry {
     val isSuccess: Boolean = result is RangeAssertionSuccess
-    val tick = if (isSuccess) greenTick else redCross
+    private val tick = if (isSuccess) greenTick else redCross
 
     override fun toString(): String {
         val message = when (result) {
@@ -42,5 +42,4 @@ data class AssertionResultEntry(
         }
         return "$tick [$id] $message"
     }
-
 }
