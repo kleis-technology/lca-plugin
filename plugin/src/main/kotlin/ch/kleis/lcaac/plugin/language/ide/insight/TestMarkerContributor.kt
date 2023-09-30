@@ -11,7 +11,7 @@ class TestMarkerContributor : RunLineMarkerContributor() {
     override fun getInfo(element: PsiElement): Info? {
         if (isTest(element)) {
             val test = element.parent as LcaTest
-            val target = test.uid.name
+            val target = test.testRef.name
             val action = TestRunnerAction(target)
             return Info(
                 AllIcons.Actions.Execute,

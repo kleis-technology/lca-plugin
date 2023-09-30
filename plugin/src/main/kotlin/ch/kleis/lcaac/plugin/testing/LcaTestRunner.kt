@@ -50,7 +50,7 @@ class LcaTestRunner(
             assertion.test(impact)
         }
         return LcaTestResult(
-            test.uid.name,
+            test.testRef.name,
             results,
         )
     }
@@ -84,13 +84,13 @@ class LcaTestRunner(
 
     private fun testCase(test: LcaTest): EProcessTemplateApplication<BasicNumber> {
         with(mapper) {
-            val name = test.uid.name
+            val name = test.testRef.name
             return EProcessTemplateApplication(
                 template = EProcessTemplate(
                     params = emptyMap(),
                     locals = emptyMap(),
                     body = EProcess(
-                        name = test.uid.name,
+                        name = test.testRef.name,
                         products = listOf(
                             ETechnoExchange(
                                 EQuantityScale(BasicNumber(1.0), EDataRef("u")),

@@ -40,7 +40,7 @@ class LcaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LcaLan
     }
 
     fun findTest(name: String): LcaTest? {
-        return getTests().firstOrNull { it.uid.name == name }
+        return getTests().firstOrNull { it.testRef.name == name }
     }
 
     fun getProcesses(): Collection<LcaProcess> {

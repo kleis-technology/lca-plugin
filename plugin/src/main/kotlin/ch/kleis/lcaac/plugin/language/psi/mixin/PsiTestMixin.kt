@@ -9,7 +9,7 @@ import com.intellij.psi.scope.PsiScopeProcessor
 
 abstract class PsiTestMixin(node: ASTNode): ASTWrapperPsiElement(node), LcaTest {
     override fun getName(): String {
-        return uid.name
+        return testRef.name
     }
 
     override fun processDeclarations(

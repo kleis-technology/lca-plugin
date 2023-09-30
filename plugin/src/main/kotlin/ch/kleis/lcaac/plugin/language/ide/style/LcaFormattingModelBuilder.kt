@@ -71,7 +71,7 @@ class LcaFormattingModelBuilder : FormattingModelBuilder {
                 .beforeInside(BLOCK_IMPACTS, PROCESS)
                 .spacing(0, 0, 0, true, 1)
                 // Test
-                .aroundInside(UID, TEST)
+                .aroundInside(TEST_REF, TEST)
                 .spaces(1)
                 .aroundInside(BETWEEN_KEYWORD, RANGE_ASSERTION)
                 .spacing(1, 1, 0, true, 1)

@@ -112,7 +112,7 @@ globalAssignment ::= dataRef '=' dataExpression {
     Test
  */
 
-test ::= 'test' uid '{'
+test ::= 'test' testRef '{'
     (given | assert | variables)*
 '}' {
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiTestMixin"
@@ -330,6 +330,10 @@ parameterRef ::= uid {
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiParameterRefMixin"
 }
 
+testRef ::= uid {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUIDOwner"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiTestRefMixin"
+}
 /*
    Spec
  */
