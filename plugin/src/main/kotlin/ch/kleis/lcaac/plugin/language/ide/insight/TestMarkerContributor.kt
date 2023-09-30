@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.language.ide.insight
 
-import ch.kleis.lcaac.plugin.actions.TestRunnerAction
+import ch.kleis.lcaac.plugin.actions.RunTestAction
 import ch.kleis.lcaac.plugin.language.psi.isTest
 import ch.kleis.lcaac.plugin.psi.LcaTest
 import com.intellij.execution.lineMarker.RunLineMarkerContributor
@@ -12,7 +12,7 @@ class TestMarkerContributor : RunLineMarkerContributor() {
         if (isTest(element)) {
             val test = element.parent as LcaTest
             val target = test.testRef.name
-            val action = TestRunnerAction(target)
+            val action = RunTestAction(target)
             return Info(
                 AllIcons.Actions.Execute,
                 {

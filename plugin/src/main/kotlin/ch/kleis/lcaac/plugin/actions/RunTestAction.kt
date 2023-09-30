@@ -17,7 +17,7 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.ContentFactory
 
-class TestRunnerAction(
+class RunTestAction(
     private val testName: String,
 ) : AnAction(
     "Run",
@@ -25,7 +25,7 @@ class TestRunnerAction(
     AllIcons.Actions.Execute,
 ) {
     companion object {
-        private val LOG = Logger.getInstance(TestRunnerAction::class.java)
+        private val LOG = Logger.getInstance(RunTestAction::class.java)
     }
 
     override fun actionPerformed(e: AnActionEvent) {

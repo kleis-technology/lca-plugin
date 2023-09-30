@@ -144,6 +144,12 @@
         <group id="ImportLibrary" text="Import" popup="true">
             <add-to-group group-id="FileMenu" anchor="first"/>
         </group>
+        <action id="RunAllTest"
+                class="ch.kleis.lcaac.plugin.actions.RunAllTestsAction"
+                text="Run All Tests">
+            <add-to-group group-id="ProjectViewPopupMenu"/>
+        </action>
+
 
         <action id="ImportEcospoldLCIA"
                 class="ch.kleis.lcaac.plugin.ide.imports.ecospold.lcia.EcospoldLCIAImportMenuAction"
