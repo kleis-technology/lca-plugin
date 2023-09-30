@@ -1,7 +1,6 @@
 package ch.kleis.lcaac.plugin.actions
 
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
-import ch.kleis.lcaac.plugin.testing.AssertionResult
 import ch.kleis.lcaac.plugin.testing.LcaTestResult
 import ch.kleis.lcaac.plugin.testing.LcaTestRunner
 import ch.kleis.lcaac.plugin.ui.toolwindow.test_results.TestResultsWindow
@@ -16,7 +15,6 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.ui.components.JBLabel
 import com.intellij.ui.content.ContentFactory
 
 class TestRunnerAction(

@@ -10,15 +10,11 @@ data class LcaTestResult(
 
 sealed interface AssertionResult
 
-object Success : AssertionResult {
-    override fun toString(): String = "success"
-}
+data class RangeAssertionSuccess(
+    val assertion: RangeAssertion,
+    val actual: QuantityValue<BasicNumber>,
+) : AssertionResult
 
-data class GenericFailure(val message: String): AssertionResult {
-    override fun toString(): String = message
-}
+data class GenericFailure(val message: String): AssertionResult
 
-data class RangeAssertionFailure(val assertion: RangeAssertion, val actual: QuantityValue<BasicNumber>) : AssertionResult {
-    override fun toString(): String =
-        "${assertion.ref} = $actual is not in between ${assertion.lo} and ${assertion.hi}"
-}
+data class RangeAssertionFailure(val assertion: RangeAssertion, val actual: QuantityValue<BasicNumber>) : AssertionResult

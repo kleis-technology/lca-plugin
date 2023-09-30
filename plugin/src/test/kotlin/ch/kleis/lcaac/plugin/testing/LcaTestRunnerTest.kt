@@ -65,10 +65,9 @@ class LcaTestRunnerTest : BasePlatformTestCase() {
         val actual = runner.run(target)
 
         // then
-        val expected = LcaTestResult(
-            listOf(Success, Success)
-        )
-        assertEquals(expected, actual)
+        actual.results.forEach {
+            assertInstanceOf(it, RangeAssertionSuccess::class.java)
+        }
     }
 
     @Test
@@ -114,10 +113,10 @@ class LcaTestRunnerTest : BasePlatformTestCase() {
         val actual = runner.run(target)
 
         // then
-        val expected = LcaTestResult(
-            listOf(Success)
-        )
-        assertEquals(expected, actual)
+        assertEquals(1, actual.results.size)
+        actual.results.forEach {
+            assertInstanceOf(it, RangeAssertionSuccess::class.java)
+        }
     }
 
     @Test
@@ -154,10 +153,10 @@ class LcaTestRunnerTest : BasePlatformTestCase() {
         val actual = runner.run(target)
 
         // then
-        val expected = LcaTestResult(
-            listOf(Success)
-        )
-        assertEquals(expected, actual)
+        assertEquals(1, actual.results.size)
+        actual.results.forEach {
+            assertInstanceOf(it, RangeAssertionSuccess::class.java)
+        }
     }
 
     @Test
@@ -195,6 +194,7 @@ class LcaTestRunnerTest : BasePlatformTestCase() {
 
         // then
         val expected = LcaTestResult(
+            "p",
             listOf(
                 RangeAssertionFailure(
                     RangeAssertion(

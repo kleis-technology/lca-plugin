@@ -16,7 +16,7 @@ data class RangeAssertion(
             val actual = quantity.toDouble()
             return when {
                 lo is QuantityValue<BasicNumber> && hi is QuantityValue<BasicNumber> ->
-                    if (lo.toDouble() <= actual && actual <= hi.toDouble()) Success
+                    if (lo.toDouble() <= actual && actual <= hi.toDouble()) RangeAssertionSuccess(this@RangeAssertion, quantity)
                     else RangeAssertionFailure(this@RangeAssertion, quantity)
 
                 else -> GenericFailure("invalid range: $lo and $hi")
