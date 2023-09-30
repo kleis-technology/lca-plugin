@@ -11,7 +11,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value=":buildPlugin" />
+          <option value=":plugin:buildPlugin" />
         </list>
       </option>
       <option name="vmOptions" value="" />
@@ -31,6 +31,7 @@
       </extension>
     </EXTENSION>
     <DebugAllEnabled>false</DebugAllEnabled>
+    <RunAsTest>false</RunAsTest>
     <method v="2" />
   </configuration>
 </component>
