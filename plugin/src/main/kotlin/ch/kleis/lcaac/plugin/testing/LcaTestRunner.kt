@@ -7,7 +7,7 @@ import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.evaluator.ToValue
 import ch.kleis.lcaac.core.lang.evaluator.reducer.DataExpressionReducer
 import ch.kleis.lcaac.core.lang.expression.*
-import ch.kleis.lcaac.core.lang.value.*
+import ch.kleis.lcaac.core.lang.value.QuantityValueOperations
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
@@ -49,8 +49,9 @@ class LcaTestRunner(
             }
             assertion.test(impact)
         }
-        return results.firstOrNull { it == LcaTestFailure }
-            ?: LcaTestSuccess
+        return LcaTestResult(
+            results
+        )
     }
 
     private fun assertions(symbolTable: SymbolTable<BasicNumber>, test: LcaTest): List<RangeAssertion> {

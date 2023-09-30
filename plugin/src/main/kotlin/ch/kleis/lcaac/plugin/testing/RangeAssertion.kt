@@ -11,15 +11,15 @@ data class RangeAssertion(
     val lo: DataValue<BasicNumber>,
     val hi: DataValue<BasicNumber>,
 ) {
-    fun test(quantity: QuantityValue<BasicNumber>): LcaTestResult {
+    fun test(quantity: QuantityValue<BasicNumber>): AssertionResult {
         with(QuantityValueOperations(BasicOperations)) {
             val actual = quantity.toDouble()
             return when {
                 lo is QuantityValue<BasicNumber> && hi is QuantityValue<BasicNumber> ->
-                    if (lo.toDouble() <= actual && actual <= hi.toDouble()) LcaTestSuccess
-                    else LcaTestFailure
+                    if (lo.toDouble() <= actual && actual <= hi.toDouble()) Success
+                    else RangeAssertionFailure(this@RangeAssertion, quantity)
 
-                else -> LcaTestFailure
+                else -> GenericFailure("invalid range: $lo and $hi")
             }
         }
     }

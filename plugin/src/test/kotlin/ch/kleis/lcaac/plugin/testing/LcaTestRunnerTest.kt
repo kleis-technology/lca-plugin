@@ -1,9 +1,11 @@
 package ch.kleis.lcaac.plugin.testing
 
+import ch.kleis.lcaac.core.lang.value.QuantityValue
+import ch.kleis.lcaac.core.math.basic.BasicNumber
+import ch.kleis.lcaac.plugin.fixture.UnitValueFixture
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import junit.framework.TestCase
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -19,7 +21,8 @@ class LcaTestRunnerTest : BasePlatformTestCase() {
     fun test_run_whenMultipleOccurrencesOfSameIntermediateProduct_shouldSum() {
         // given
         val pkgName = {}.javaClass.enclosingMethod.name
-        val vf = myFixture.createFile("$pkgName.lca",
+        val vf = myFixture.createFile(
+            "$pkgName.lca",
             """
                 process p {
                     products {
@@ -52,23 +55,28 @@ class LcaTestRunnerTest : BasePlatformTestCase() {
                         GWP between 6 kg and 6.1 kg
                     }
                 }
-            """.trimIndent())
+            """.trimIndent()
+        )
         val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
         val target = file.getTests().first()
         val runner = LcaTestRunner(project)
 
         // when
-        val result = runner.run(target)
+        val actual = runner.run(target)
 
         // then
-        assertEquals(LcaTestSuccess, result)
+        val expected = LcaTestResult(
+            listOf(Success, Success)
+        )
+        assertEquals(expected, actual)
     }
 
     @Test
     fun test_run_whenIntermediateProduct() {
         // given
         val pkgName = {}.javaClass.enclosingMethod.name
-        val vf = myFixture.createFile("$pkgName.lca",
+        val vf = myFixture.createFile(
+            "$pkgName.lca",
             """
                 process p {
                     products {
@@ -96,23 +104,28 @@ class LcaTestRunnerTest : BasePlatformTestCase() {
                         intermediate between 500 g and 2 kg
                     }
                 }
-            """.trimIndent())
+            """.trimIndent()
+        )
         val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
         val target = file.getTests().first()
         val runner = LcaTestRunner(project)
 
         // when
-        val result = runner.run(target)
+        val actual = runner.run(target)
 
         // then
-        assertEquals(LcaTestSuccess, result)
+        val expected = LcaTestResult(
+            listOf(Success)
+        )
+        assertEquals(expected, actual)
     }
 
     @Test
     fun test_run_whenSuccess() {
         // given
         val pkgName = {}.javaClass.enclosingMethod.name
-        val vf = myFixture.createFile("$pkgName.lca",
+        val vf = myFixture.createFile(
+            "$pkgName.lca",
             """
                 process p {
                     products {
@@ -131,23 +144,28 @@ class LcaTestRunnerTest : BasePlatformTestCase() {
                         GWP between 500 g and 2 kg
                     }
                 }
-            """.trimIndent())
+            """.trimIndent()
+        )
         val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
         val target = file.getTests().first()
         val runner = LcaTestRunner(project)
 
         // when
-        val result = runner.run(target)
+        val actual = runner.run(target)
 
         // then
-        assertEquals(LcaTestSuccess, result)
+        val expected = LcaTestResult(
+            listOf(Success)
+        )
+        assertEquals(expected, actual)
     }
 
     @Test
     fun test_run_whenFailure() {
         // given
         val pkgName = {}.javaClass.enclosingMethod.name
-        val vf = myFixture.createFile("$pkgName.lca",
+        val vf = myFixture.createFile(
+            "$pkgName.lca",
             """
                 process p {
                     products {
@@ -166,15 +184,28 @@ class LcaTestRunnerTest : BasePlatformTestCase() {
                         GWP between 500 kg and 2000 kg
                     }
                 }
-            """.trimIndent())
+            """.trimIndent()
+        )
         val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
         val target = file.getTests().first()
         val runner = LcaTestRunner(project)
 
         // when
-        val result = runner.run(target)
+        val actual = runner.run(target)
 
         // then
-        assertEquals(LcaTestFailure, result)
+        val expected = LcaTestResult(
+            listOf(
+                RangeAssertionFailure(
+                    RangeAssertion(
+                        "GWP",
+                        QuantityValue(BasicNumber(500.0), UnitValueFixture.kg()),
+                        QuantityValue(BasicNumber(2000.0), UnitValueFixture.kg()),
+                    ),
+                    QuantityValue(BasicNumber(2.0), UnitValueFixture.kg())
+                ),
+            )
+        )
+        assertEquals(expected, actual)
     }
 }

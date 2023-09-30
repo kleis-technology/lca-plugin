@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.actions
 
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
+import ch.kleis.lcaac.plugin.testing.AssertionResult
 import ch.kleis.lcaac.plugin.testing.LcaTestResult
 import ch.kleis.lcaac.plugin.testing.LcaTestRunner
 import com.intellij.icons.AllIcons
