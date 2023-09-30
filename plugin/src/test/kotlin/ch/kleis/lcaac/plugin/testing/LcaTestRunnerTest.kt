@@ -18,6 +18,88 @@ class LcaTestRunnerTest : BasePlatformTestCase() {
     }
 
     @Test
+    fun test_run_whenIncompatibleDimensions_forBounds() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        val vf = myFixture.createFile(
+            "$pkgName.lca",
+            """
+                process p {
+                    products {
+                        1 kg out
+                    }
+                    impacts {
+                        1 kg GWP
+                    }
+                }
+                
+                test p {
+                    given {
+                        1 kg out from p
+                    }
+                    assert {
+                        GWP between 1 hour and 2 kg
+                    }
+                }
+            """.trimIndent()
+        )
+        val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
+        val target = file.getTests().first()
+        val runner = LcaTestRunner(project)
+
+        // when
+        val actual = runner.run(target)
+
+        // then
+        assertEquals(1, actual.results.size)
+        actual.results.forEach {
+            val expected = GenericFailure("incompatible dimensions: GWP (mass) between 1.0 hour (time) and 2.0 kg (mass)")
+            assertEquals(expected, it)
+        }
+    }
+
+    @Test
+    fun test_run_whenIncompatibleDimensions_forIndicator() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        val vf = myFixture.createFile(
+            "$pkgName.lca",
+            """
+                process p {
+                    products {
+                        1 kg out
+                    }
+                    impacts {
+                        1 kWh heat
+                    }
+                }
+                
+                test p {
+                    given {
+                        1 kg out from p
+                    }
+                    assert {
+                        heat between 1 kg and 2 kg
+                    }
+                }
+            """.trimIndent()
+        )
+        val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
+        val target = file.getTests().first()
+        val runner = LcaTestRunner(project)
+
+        // when
+        val actual = runner.run(target)
+
+        // then
+        assertEquals(1, actual.results.size)
+        actual.results.forEach {
+            val expected = GenericFailure("incompatible dimensions: heat (energy) between 1.0 kg (mass) and 2.0 kg (mass)")
+            assertEquals(expected, it)
+        }
+    }
+
+    @Test
     fun test_run_whenMultipleOccurrencesOfSameIntermediateProduct_shouldSum() {
         // given
         val pkgName = {}.javaClass.enclosingMethod.name
@@ -204,7 +286,8 @@ class LcaTestRunnerTest : BasePlatformTestCase() {
                     ),
                     QuantityValue(BasicNumber(2.0), UnitValueFixture.kg())
                 ),
-            )
+            ),
+            target,
         )
         assertEquals(expected, actual)
     }
