@@ -105,22 +105,4 @@ class LcaTestRunner(
         }
     }
 
-    data class RangeAssertion(
-        val ref: String,
-        val lo: DataValue<BasicNumber>,
-        val hi: DataValue<BasicNumber>,
-    ) {
-        fun test(quantity: QuantityValue<BasicNumber>): LcaTestResult {
-            with(QuantityValueOperations(BasicOperations)) {
-                val actual = quantity.toDouble()
-                return when {
-                    lo is QuantityValue<BasicNumber> && hi is QuantityValue<BasicNumber> ->
-                        if (lo.toDouble() <= actual && actual <= hi.toDouble()) LcaTestSuccess
-                        else LcaTestFailure
-
-                    else -> LcaTestFailure
-                }
-            }
-        }
-    }
 }
