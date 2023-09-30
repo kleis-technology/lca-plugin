@@ -54,13 +54,15 @@ class LcaTestRunner(
             return LcaTestResult(
                 test.testRef.name,
                 results,
+                test,
             )
         } catch (e : EvaluatorException) {
             return LcaTestResult(
                 test.testRef.name,
                 listOf(
                     GenericFailure(e.message ?: "unknown error")
-                )
+                ),
+                test,
             )
         }
     }

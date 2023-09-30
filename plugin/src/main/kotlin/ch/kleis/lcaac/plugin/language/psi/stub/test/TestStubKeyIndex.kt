@@ -19,13 +19,20 @@ class TestStubKeyIndex : StringStubIndexExtension<LcaTest>() {
     }
 
     companion object {
+        fun findTest(
+            project: Project,
+            fqn: String,
+            scope: GlobalSearchScope = GlobalSearchScope.allScope(project)
+        ): Collection<LcaTest> {
+            return StubIndex.getElements(LcaStubIndexKeys.TESTS, fqn, project, scope, LcaTest::class.java)
+        }
+
         fun findAllTests(
             project: Project,
         ): Collection<LcaTest> {
             return StubIndex.getInstance().getAllKeys(LcaStubIndexKeys.TESTS, project)
                 .flatMap {
-                    val scope = GlobalSearchScope.allScope(project)
-                    StubIndex.getElements(LcaStubIndexKeys.TESTS, it, project, scope, LcaTest::class.java)
+                    findTest(project, it)
                 }
         }
     }
