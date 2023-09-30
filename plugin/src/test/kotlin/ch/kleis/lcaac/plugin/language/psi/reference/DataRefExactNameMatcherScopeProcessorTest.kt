@@ -12,6 +12,39 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4::class)
 class DataRefExactNameMatcherScopeProcessorTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     @Test
+    fun test_inTest_localVariable_thenCorrect() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        val file = parseFile(
+            "resolver", """
+                package $pkgName
+                
+                test t {
+                    variables {
+                        x = 1 kg
+                    }
+                    assert {
+                        GWP between x and 2 kg
+                    }
+                }
+            """.trimIndent()
+        ) as LcaFile
+        val dataRef = file.getTests().first()
+            .assertList.first()
+            .rangeAssertionList.first()
+            .dataExpressionList[0] as LcaDataRef
+
+        // when
+        val actual = dataRef.reference.resolve()
+
+        // then
+        val expected = file.getTests().first()
+            .variablesList.first()
+            .assignmentList.first()
+        TestCase.assertEquals(expected, actual)
+    }
+
+    @Test
     fun test_whenLabel_thenCorrect() {
         // given
         val pkgName = {}.javaClass.enclosingMethod.name

@@ -114,7 +114,9 @@ globalAssignment ::= dataRef '=' dataExpression {
 
 test ::= 'test' uid '{'
     (given | assert | variables)*
-'}'
+'}' {
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiTestMixin"
+}
 given ::= 'given' '{' technoInputExchange *'}'
 assert ::= 'assert' '{' rangeAssertion* '}'
 rangeAssertion ::= uid 'between'  dataExpression 'and' dataExpression
