@@ -92,12 +92,11 @@
                 implementation="ch.kleis.lcaac.plugin.project.LcaRootLibraryProvider"/>
 
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceKeyIndex"/>
-        <stubIndex
-                implementation="ch.kleis.lcaac.plugin.language.psi.stub.output_product.OutputProductStubKeyIndex"/>
+        <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.output_product.OutputProductStubKeyIndex"/>
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex"/>
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex"/>
-        <stubIndex
-                implementation="ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssigmentStubKeyIndex"/>
+        <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssigmentStubKeyIndex"/>
+        <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.test.TestStubKeyIndex"/>
         <stubElementTypeHolder class="ch.kleis.lcaac.plugin.psi.LcaTypes" externalIdPrefix="lca."/>
 
         <fileBasedIndex implementation="ch.kleis.lcaac.plugin.language.psi.index.LcaProcessFileIndexExtension"/>

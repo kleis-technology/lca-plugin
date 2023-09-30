@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.plugin.actions
 
+import ch.kleis.lcaac.plugin.language.psi.stub.test.TestStubKeyIndex
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -15,5 +16,7 @@ class RunAllTestsAction : AnAction(
     }
 
     override fun actionPerformed(e: AnActionEvent) {
+        val project = e.project ?: return
+        val tests = TestStubKeyIndex.findAllTests(project)
     }
 }

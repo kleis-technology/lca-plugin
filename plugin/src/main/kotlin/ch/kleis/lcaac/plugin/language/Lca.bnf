@@ -116,6 +116,8 @@ test ::= 'test' testRef '{'
     (given | assert | variables)*
 '}' {
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiTestMixin"
+    elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.test.TestElementType"
+    stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.test.TestStub"
 }
 given ::= 'given' '{' technoInputExchange *'}'
 assert ::= 'assert' '{' rangeAssertion* '}'
