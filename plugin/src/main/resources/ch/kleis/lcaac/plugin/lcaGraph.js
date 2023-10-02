@@ -61,7 +61,6 @@ try {
     const color = d3.scaleOrdinal(d3.schemePaired);
 
 // Creates the rects that represent the nodes.
-    var mouse_per_class = "qdghsdbahsdgb"
     var rect =  svg
         .append("g")
         .attr("stroke", "#000")
@@ -74,7 +73,6 @@ try {
         .attr("height", (d) => d.y1 - d.y0)
         .attr("width", (d) => d.x1 - d.x0)
         .attr("fill", (d) => color(d.name))
-        .attr("class", mouse_per_class)
         .attr("id", (d)=> md5(d.key) )
         .on('mouseover', function (e, d) { // on mouse out hide line, circles and text
             const text = d3.select(".c" + e.currentTarget.id);
