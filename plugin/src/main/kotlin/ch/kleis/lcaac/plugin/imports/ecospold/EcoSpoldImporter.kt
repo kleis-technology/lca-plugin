@@ -15,10 +15,12 @@ import ch.kleis.lcaac.plugin.imports.ecospold.model.ActivityDataset
 import ch.kleis.lcaac.plugin.imports.ecospold.model.Parser
 import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
 import ch.kleis.lcaac.plugin.imports.shared.serializer.UnitRenderer
+import ch.kleis.lcaac.plugin.imports.simapro.sanitizeSymbol
 import ch.kleis.lcaac.plugin.imports.util.AsyncTaskController
 import ch.kleis.lcaac.plugin.imports.util.AsynchronousWatcher
 import ch.kleis.lcaac.plugin.imports.util.ImportInterruptedException
 import ch.kleis.lcaac.plugin.imports.util.StringUtils
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 import com.intellij.openapi.diagnostic.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -45,10 +47,6 @@ class EcoSpoldImporter(
 
     companion object {
         private val LOG = Logger.getInstance(EcoSpoldImporter::class.java)
-
-        fun unitToStr(u: String): String {
-            return if (u != "metric ton*km") u else "ton*km"
-        }
 
         fun getMethodNames(libFile: String): List<String> {
             val path = Path.of(libFile)
@@ -133,6 +131,7 @@ class EcoSpoldImporter(
 
         val processDict = readProcessDict(f, f.entries)
 
+        // must happen before activity parsing because of #348.
         importUnits(f.entries, f, writer)
 
         val methodMappingFunction = methodMapping?.let { buildMethodMappingFunction(it) } ?: { it }
@@ -140,7 +139,7 @@ class EcoSpoldImporter(
             .filter { it.hasStream() }
             .filter { it.name.endsWith(".spold") }
             .map {
-                (it.name to importEntry(f.getInputStream(it), controller, watcher))
+                (it.name to parseEntry(f.getInputStream(it), controller, watcher))
             }.map {
                 methodMappingFunction(it)
             }.buffer()
@@ -148,7 +147,7 @@ class EcoSpoldImporter(
 
         runBlocking {
             parsedEntries.collect { it: Pair<String, ActivityDataset> ->
-                writeImportedDataset(it.second, processDict, writer, it.first)
+                writeImportedDataset(it.second, processDict, unitRenderer.knownUnits.keys, writer, it.first)
             }
         }
 
@@ -202,7 +201,7 @@ class EcoSpoldImporter(
                 .map { u ->
                     ImportedUnit(
                         u.dimension, u.fromUnit, u.factor,
-                        unitToStr(u.toUnit)
+                        sanitize(sanitizeSymbol(u.toUnit), toLowerCase = false)
                     )
                 }
                 .filter { u -> u.name != "foot-candle" }
@@ -215,7 +214,7 @@ class EcoSpoldImporter(
                 .map { u ->
                     ImportedUnit(
                         u.dimension, u.fromUnit, u.factor,
-                        unitToStr(u.toUnit)
+                        sanitize(sanitizeSymbol(u.toUnit), toLowerCase = false)
                     )
                 }
                 .filter { u -> u.name != "foot-candle" }
@@ -274,7 +273,7 @@ class EcoSpoldImporter(
         }.associateBy { it.processId }
     }
 
-    private fun importEntry(
+    private fun parseEntry(
         input: InputStream,
         controller: AsyncTaskController,
         watcher: AsynchronousWatcher
@@ -288,12 +287,20 @@ class EcoSpoldImporter(
     }
 
     private fun writeImportedDataset(
-        dataSet: ActivityDataset,
+        dataset: ActivityDataset,
         processDict: Map<String, ProcessDictRecord>,
+        knownUnits: Set<String>,
         writer: ModelWriter,
         path: String
     ) {
         LOG.info("Read dataset from $path")
-        processRenderer.render(dataSet, writer, processDict, "from $path", methodName)
+        processRenderer.render(
+            data = dataset,
+            processDict = processDict,
+            knownUnits = knownUnits,
+            writer = writer,
+            processComment = "from $path",
+            methodName = methodName
+        )
     }
 }

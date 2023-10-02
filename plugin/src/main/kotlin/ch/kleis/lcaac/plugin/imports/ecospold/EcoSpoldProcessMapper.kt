@@ -1,7 +1,6 @@
 package ch.kleis.lcaac.plugin.imports.ecospold
 
 import ch.kleis.lcaac.core.lang.expression.SubstanceType
-import ch.kleis.lcaac.plugin.imports.ecospold.EcoSpoldImporter.Companion.unitToStr
 import ch.kleis.lcaac.plugin.imports.ecospold.model.*
 import ch.kleis.lcaac.plugin.imports.model.*
 import ch.kleis.lcaac.plugin.imports.simapro.sanitizeSymbol
@@ -16,12 +15,13 @@ object EcoSpoldProcessMapper {
     fun map(
         process: ActivityDataset,
         processDict: Map<String, EcoSpoldImporter.ProcessDictRecord>,
-        methodName: String? = null
+        knownUnits: Set<String>,
+        methodName: String? = null,
     ): ImportedProcess {
         val elementaryExchangeGrouping = process.flowData.elementaryExchanges.groupingBy {
             it.substanceType
         }.aggregate { _, accumulator: MutableList<ImportedBioExchange>?, element: ElementaryExchange, _ ->
-            val mappedExchange = elementaryExchangeToImportedBioExchange(element)
+            val mappedExchange = elementaryExchangeToImportedBioExchange(element, knownUnits)
             accumulator?.let {
                 accumulator.add(mappedExchange)
                 accumulator
@@ -32,6 +32,7 @@ object EcoSpoldProcessMapper {
             intermediateExchangeToImportedTechnosphereExchange(
                 intermediateExchange,
                 processDict,
+                knownUnits,
             )
         }.groupBy {
             when (it) {
@@ -41,7 +42,7 @@ object EcoSpoldProcessMapper {
         }
 
         val (mappedImpactsComment, mappedImpactsExchanges) = methodName?.let {
-            mapImpacts(methodName, process.flowData.impactIndicators)
+            mapImpacts(methodName, process.flowData.impactIndicators, knownUnits)
         } ?: (null to emptySequence())
 
         return ImportedProcess(
@@ -103,11 +104,12 @@ object EcoSpoldProcessMapper {
     private fun mapImpacts(
         methodName: String,
         impactIndicatorList: Sequence<ImpactIndicator>,
+        knownUnits: Set<String>,
     ): Pair<String, Sequence<ImportedImpactExchange>> =
         Pair("Impacts for method $methodName", impactIndicatorList.filter { it.methodName == methodName }.map {
             ImportedImpactExchange(
                 it.amount.toString(),
-                sanitizeSymbol(sanitize(it.unitName, toLowerCase = false)),
+                unitToStr(it.unitName, knownUnits),
                 sanitize(it.name),
                 listOf(it.categoryName),
             )
@@ -116,10 +118,11 @@ object EcoSpoldProcessMapper {
     private fun intermediateExchangeToImportedTechnosphereExchange(
         e: IntermediateExchange,
         processDict: Map<String, EcoSpoldImporter.ProcessDictRecord>,
+        knownUnits: Set<String>,
     ): ImportedTechnosphereExchange {
         val name = sanitize(e.name)
         val amount = e.amount.toString()
-        val unit = sanitizeSymbol(sanitize(unitToStr(e.unit), false))
+        val unit = unitToStr(e.unit, knownUnits)
         val comments = buildIntermediateExchangeComments(e)
 
         when {
@@ -177,11 +180,11 @@ object EcoSpoldProcessMapper {
         return initComments
     }
 
-    private fun elementaryExchangeToImportedBioExchange(elementaryExchange: ElementaryExchange): ImportedBioExchange =
+    private fun elementaryExchangeToImportedBioExchange(elementaryExchange: ElementaryExchange, knownUnits: Set<String>): ImportedBioExchange =
         ImportedBioExchange(
             comments = elementaryExchange.comment?.let { listOf(it) } ?: listOf(),
             qty = elementaryExchange.amount.toString(),
-            unit = unitToStr(elementaryExchange.unit),
+            unit = unitToStr(elementaryExchange.unit, knownUnits),
             name = sanitize(elementaryExchange.name),
             compartment = elementaryExchange.compartment,
             subCompartment = elementaryExchange.subCompartment,
@@ -200,6 +203,15 @@ object EcoSpoldProcessMapper {
                 )
             )
         } ?: listOf()
+
+    // See issue #348. If re-written version of composite unit is in knownUnits, then use rewritten version; else do not
+    // rewrite composition operations (star, etc.) and count on Prelude and arithmetic to build it.
+    fun unitToStr(unit: String, knownUnits: Set<String>): String =
+        if (knownUnits.contains(unit)) {
+            sanitize(sanitizeSymbol(unit), toLowerCase = false)
+        } else {
+            sanitizeSymbol(unit)
+        }
 
     private fun uncertaintyToStr(comments: ArrayList<String>, it: Uncertainty) {
         it.logNormal?.let { comments.add("// uncertainty: logNormal mean=${it.meanValue}, variance=${it.variance}, mu=${it.mu}") }

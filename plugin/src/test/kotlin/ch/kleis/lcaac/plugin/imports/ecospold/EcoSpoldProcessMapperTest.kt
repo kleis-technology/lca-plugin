@@ -2,7 +2,9 @@ package ch.kleis.lcaac.plugin.imports.ecospold
 
 import ch.kleis.lcaac.plugin.imports.ecospold.model.ActivityDataset
 import ch.kleis.lcaac.plugin.imports.model.ImportedImpactExchange
+import ch.kleis.lcaac.plugin.imports.simapro.sanitizeSymbol
 import ch.kleis.lcaac.plugin.imports.util.ImportException
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 import com.intellij.testFramework.UsefulTestCase.assertThrows
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -19,7 +21,7 @@ class EcoSpoldProcessMapperTest {
         // Given
 
         // When
-        val result = EcoSpoldProcessMapper.map(sub, processDict)
+        val result = EcoSpoldProcessMapper.map(process = sub, processDict = processDict, knownUnits = emptySet())
 
         // Then
         assertEquals("aname_ch", result.uid)
@@ -37,7 +39,7 @@ class EcoSpoldProcessMapperTest {
     fun map_shouldMapEmissions() {
         // given
         // when
-        val result = EcoSpoldProcessMapper.map(sub, processDict)
+        val result = EcoSpoldProcessMapper.map(process = sub, processDict = processDict, knownUnits = emptySet())
 
         // then
         assertEquals(1, result.emissionBlocks.size)
@@ -55,7 +57,7 @@ class EcoSpoldProcessMapperTest {
     fun map_shouldMapLandUse() {
         // given
         // when
-        val result = EcoSpoldProcessMapper.map(sub, processDict)
+        val result = EcoSpoldProcessMapper.map(process = sub, processDict = processDict, knownUnits = emptySet())
 
         // then
         assertEquals(1, result.landUseBlocks.size)
@@ -73,7 +75,7 @@ class EcoSpoldProcessMapperTest {
     fun map_shouldMapResource() {
         // given
         // when
-        val result = EcoSpoldProcessMapper.map(sub, processDict)
+        val result = EcoSpoldProcessMapper.map(process = sub, processDict = processDict, knownUnits = emptySet())
 
         // then
         assertEquals(1, result.resourceBlocks.size)
@@ -92,7 +94,7 @@ class EcoSpoldProcessMapperTest {
         // Given
 
         // When
-        val result = EcoSpoldProcessMapper.map(sub, processDict)
+        val result = EcoSpoldProcessMapper.map(process = sub, processDict = processDict, knownUnits = emptySet())
 
         // Then
         assertEquals(1, result.productBlocks.size)
@@ -117,7 +119,7 @@ class EcoSpoldProcessMapperTest {
     fun map_ShouldMapInputs() {
         // given
         // when
-        val result = EcoSpoldProcessMapper.map(sub, processDict)
+        val result = EcoSpoldProcessMapper.map(process = sub, processDict = processDict, knownUnits = emptySet())
 
         // then
         assertEquals(1, result.inputBlocks.size)
@@ -146,7 +148,13 @@ class EcoSpoldProcessMapperTest {
         // When
         val e = assertFailsWith(
             ImportException::class,
-        ) { EcoSpoldProcessMapper.map(falseSub, processDict).productBlocks[0].exchanges.count() }
+        ) {
+            EcoSpoldProcessMapper.map(
+                process = falseSub,
+                processDict = processDict,
+                knownUnits = emptySet()
+            ).productBlocks[0].exchanges.count()
+        }
         assertEquals("Invalid inputGroup for intermediateExchange, expected in {1, 2, 3, 5}, found 4", e.message)
     }
 
@@ -160,7 +168,13 @@ class EcoSpoldProcessMapperTest {
         assertThrows(
             ImportException::class.java,
             "Invalid outputGroup for product, expected 0, found 1"
-        ) { EcoSpoldProcessMapper.map(falseSub, processDict).productBlocks[0].exchanges.count() }
+        ) {
+            EcoSpoldProcessMapper.map(
+                process = falseSub,
+                processDict = processDict,
+                knownUnits = emptySet()
+            ).productBlocks[0].exchanges.count()
+        }
     }
 
     @Test
@@ -169,7 +183,12 @@ class EcoSpoldProcessMapperTest {
         val methodName = "EF v3.1"
 
         // When
-        val result = EcoSpoldProcessMapper.map(sub, processDict, methodName)
+        val result = EcoSpoldProcessMapper.map(
+            process = sub,
+            processDict = processDict,
+            knownUnits = setOf("mol H+-Eq"),
+            methodName = methodName,
+        )
 
         // Then
         assertEquals(1, result.impactBlocks.size)
@@ -197,4 +216,30 @@ class EcoSpoldProcessMapperTest {
             result.impactBlocks[0].exchanges.first()
         )
     }
+
+    @Test
+    fun test_unitToStr_should_rewrite_imported_unit() {
+        // given
+        val unitName = "mol H+-Eq"
+        val sanitizedUnitName = sanitize(sanitizeSymbol(unitName), toLowerCase = false)
+
+        // when
+        val result = EcoSpoldProcessMapper.unitToStr(unitName, setOf(unitName))
+
+        // then
+        assertEquals(sanitizedUnitName, result)
+    }
+
+    @Test
+    fun test_unitToStr_should_not_rewrite_unknown_unit() {
+        // given
+        val unitName = "mol H+-Eq"
+
+        // when
+        val result = EcoSpoldProcessMapper.unitToStr(unitName, emptySet())
+
+        // then
+        assertEquals(unitName, result)
+    }
+
 }
