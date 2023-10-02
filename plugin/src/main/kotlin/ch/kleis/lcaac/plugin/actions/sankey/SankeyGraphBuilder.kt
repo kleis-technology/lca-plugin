@@ -9,6 +9,7 @@ import ch.kleis.lcaac.core.lang.value.SubstanceValue
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
+import ch.kleis.lcaac.plugin.ui.toolwindow.FloatingPointRepresentation
 
 class SankeyGraphBuilder(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
@@ -35,6 +36,7 @@ class SankeyGraphBuilder(
                             port,
                             indicator,
                             contribution,
+                            indicator.referenceUnit().toString()
                         )
                 }
 
@@ -64,6 +66,7 @@ class SankeyGraphBuilder(
                             port,
                             exchange.port(),
                             contribution,
+                            indicator.referenceUnit().toString()
                         )
                     }
                 }
@@ -80,6 +83,7 @@ class SankeyGraphBuilder(
         source: MatrixColumnIndex<BasicNumber>,
         target: MatrixColumnIndex<BasicNumber>,
         value: Double,
+        unit: String
     ): Graph {
         // The observable wrt which we are computing is not in the matrix: it will raise a not found exception.
         // It is always the target, and always "deeper" in the graph than everything else.
@@ -92,7 +96,8 @@ class SankeyGraphBuilder(
         return if (source == target || 0 < compareResult) {
             this
         } else {
-            this.addLink(GraphLink(source.getUID(), target.getUID(), value))
+            val name = FloatingPointRepresentation.of(value)
+            this.addLink(GraphLink(source.getUID(), target.getUID(), value, """$name $unit"""))
         }
     }
 }

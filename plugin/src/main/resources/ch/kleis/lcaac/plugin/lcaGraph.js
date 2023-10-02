@@ -2,11 +2,11 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 import * as d3Sankey from "https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/+esm";
 
 
-function makeBG(elem) {
+function makeBG(elem, className) {
   var bounds = elem.getBBox()
   var bg = document.createElementNS("http://www.w3.org/2000/svg", "rect")
   const padding = 5
-  bg.setAttribute("id", "background-display")
+  bg.setAttribute("class", className)
   bg.setAttribute("x", bounds.x - padding)
   bg.setAttribute("y", bounds.y - padding)
   bg.setAttribute("width", bounds.width + 2 * padding)
@@ -75,18 +75,20 @@ try {
         .attr("fill", (d) => color(d.name))
         .attr("id", (d)=> md5(d.key) )
         .on('mouseover', function (e, d) { // on mouse out hide line, circles and text
+            e.target.setAttribute("opacity", 0.7)
             const text = d3.select(".c" + e.currentTarget.id);
             text.text(d.key);
             // Change ZIndex
             const textNode = text.node()
             textNode.remove();
             svg.node().appendChild(textNode);
-            const bg = makeBG(textNode);
+            const bg = makeBG(textNode, "node-background");
             textNode.parentNode.insertBefore(bg, textNode)
         })
         .on('mouseout', function (e, d) { // on mouse out hide line, circles and text
+            e.target.setAttribute("opacity", 1);
             d3.select(".c" + e.currentTarget.id).text(d.name);
-            d3.selectAll("#background-display")
+            d3.selectAll(".node-background")
                 .each(function(d, i) {
                 this.remove();
                 });
@@ -107,9 +109,30 @@ try {
         .append("path")
         .attr("d", d3Sankey.sankeyLinkHorizontal())
         .attr("stroke", (d) => d3.interpolate(color(d.source.name), "grey")(0.85))
-        .attr("stroke-width", (d) => Math.max(1, d.width));
+        .attr("stroke-width", (d) => Math.max(1, d.width))
+        .attr("id", (d)=> md5(d.source.key + d.target.key))
+        .on('mouseover', function (e, d) { // on mouse out hide line, circles and text
+            e.target.setAttribute("opacity", 0.7);
 
-// Adds labels on the nodes.
+            const txt = svg.append("text")
+               .text(d.name)
+               .attr("x", (d.source.x1 + d.target.x0) / 2)
+               .attr("y", (d.y1 + d.y0) / 2)
+               .attr("class", "t" + e.currentTarget.id)
+               .attr("text-anchor", "middle");
+            const txtNode = txt.node();
+            const bg = makeBG(txtNode, "t" + e.currentTarget.id);
+            txtNode.parentNode.insertBefore(bg, txtNode);
+        })
+        .on('mouseout', function (e, d) { // on mouse out hide line, circles and text
+            e.target.setAttribute("opacity", 1);
+            d3.selectAll(".t" + e.currentTarget.id)
+                .each(function(d, i) {
+                    this.remove();
+                });
+        });
+
+    // Adds labels on the nodes.
     svg
         .append("g")
         .selectAll()

@@ -42,8 +42,8 @@ class GraphTest {
     @Test
     fun addLink_ShouldAppendLink() {
         // Given
-        val l1 = GraphLink("beer", "drinking", 1.0)
-        val l2 = GraphLink("whisky", "drinking", 3.0)
+        val l1 = GraphLink("beer", "drinking", 1.0, "1 u")
+        val l2 = GraphLink("whisky", "drinking", 3.0, "3 u")
         val g = Graph(setOf(), setOf(l1))
 
         // When
@@ -58,7 +58,7 @@ class GraphTest {
     fun addLink_ShouldNotViolateGraphImmutability() {
         // Given
         val sut = Graph.empty()
-        val l = GraphLink("beer", "drinking", 1.0)
+        val l = GraphLink("beer", "drinking", 1.0, "1 l")
 
         // When
         sut.addLink(l)
@@ -72,11 +72,11 @@ class GraphTest {
         // Given
         val beer = GraphNode("beer", "beer")
         val drinkingB = GraphNode("drinking", "drinking")
-        val beerDrinking = GraphLink("beer", "drinking", 1.0)
+        val beerDrinking = GraphLink("beer", "drinking", 1.0, "1 l")
 
         val gin = GraphNode("gin", "gin")
         val drinkingG = GraphNode("drinking", "drinking")
-        val ginDrinking = GraphLink("gin", "drinking", 1.0)
+        val ginDrinking = GraphLink("gin", "drinking", 1.0, "1 l")
 
         val sut = Graph(setOf(gin, drinkingG), setOf(ginDrinking))
         val beerGraph = Graph(setOf(beer, drinkingB), setOf(beerDrinking))
@@ -96,17 +96,17 @@ class GraphTest {
         // Given
         val beer = GraphNode("beer", "beer")
         val drinkingB = GraphNode("drinking", "drinking")
-        val beerDrinking = GraphLink("beer", "drinking", 1.0)
+        val beerDrinking = GraphLink("beer", "drinking", 1.0, "1 l")
         val graphBeer = Graph(setOf(beer, drinkingB), setOf(beerDrinking))
 
         val gin = GraphNode("gin", "gin")
         val drinkingG = GraphNode("drinking", "drinking")
-        val ginDrinking = GraphLink("gin", "drinking", 1.0)
+        val ginDrinking = GraphLink("gin", "drinking", 1.0, "1 l")
         val graphGin = Graph(setOf(gin, drinkingG), setOf(ginDrinking))
 
         val aspirin = GraphNode("aspirin", "aspirin")
         val eating = GraphNode("eating", "eating")
-        val eatingAspirin = GraphLink("aspirin", "eating", 100.0)
+        val eatingAspirin = GraphLink("aspirin", "eating", 100.0, "100 g")
         val graphAspirin = Graph(setOf(aspirin, eating), setOf(eatingAspirin))
 
         // When
@@ -141,8 +141,8 @@ class GraphTest {
     @Test
     fun graphLink_ShouldBeInjective() {
         // Given
-        val l1 = GraphLink("foo", "bar", 1.0)
-        val l2 = GraphLink("baz", "floob", 2.0)
+        val l1 = GraphLink("foo", "bar", 1.0, "1 u")
+        val l2 = GraphLink("baz", "floob", 2.0, "2 u")
 
         // Then
         assertNotEquals(l1, l2)
