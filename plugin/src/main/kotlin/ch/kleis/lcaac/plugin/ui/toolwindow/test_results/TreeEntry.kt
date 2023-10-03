@@ -10,8 +10,11 @@ private const val redCross = "\u274C"
 data class RootEntry(
     val children: MutableList<TestResultEntry>,
 ) : TestResultTreeEntry {
+    private val nbSuccesses = children.count { it.isSuccess }
+    private val nbFailures = children.size - nbSuccesses
+
     override fun toString(): String {
-        return "Test results"
+        return "Test results. $nbSuccesses passed / $nbFailures failed."
     }
 }
 
@@ -19,7 +22,7 @@ data class TestResultEntry(
     val result: LcaTestResult,
     val children: MutableList<AssertionResultEntry>,
 ) : TestResultTreeEntry {
-    private val isSuccess: Boolean = children.all { it.isSuccess }
+    val isSuccess: Boolean = children.all { it.isSuccess }
     private val tick = if (isSuccess) greenTick else redCross
 
     override fun toString(): String {
