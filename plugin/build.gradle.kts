@@ -11,24 +11,13 @@ val pluginVersion = properties("lcaacVersion")
 val javaVersion = properties("javaVersion")
 
 plugins {
-    // Java + kotlin support
     id("java")
+    id("org.jetbrains.changelog")
+    id("org.jetbrains.grammarkit")
+    id("org.jetbrains.intellij")
     id("org.jetbrains.kotlin.jvm")
-
-    // Gradle IntelliJ Plugin
-    id("org.jetbrains.intellij") version "1.14.2"
-
-    // Gradle Changelog Plugin
-    id("org.jetbrains.changelog") version "2.0.0"
-
-    // Gradle Qodana Plugin
-    id("org.jetbrains.qodana") version "0.1.13"
-
-    // Gradle Grammar kit Plugin
-    id("org.jetbrains.grammarkit") version "2021.2.2"
-
-    // JSON serialization tools for graph visualization
-    kotlin("plugin.serialization") version "1.9.0"
+    id("org.jetbrains.qodana")
+    kotlin("plugin.serialization")
 }
 
 kotlin {
