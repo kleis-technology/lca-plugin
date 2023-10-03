@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.language.psi.factory
 
-import ch.kleis.lcaac.plugin.language.parser.LcaParserDefinition
+import ch.kleis.lcaac.plugin.language.loader.LcaParserDefinition
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.testFramework.ParsingTestCase
 import org.junit.Test

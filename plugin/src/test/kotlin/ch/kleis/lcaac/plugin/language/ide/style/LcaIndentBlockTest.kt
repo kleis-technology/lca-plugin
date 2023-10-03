@@ -8,10 +8,42 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4::class)
 class LcaIndentBlockTest : FormatterTestCase() {
     @Test
+    fun test_formattingTest() {
+        doTextTest(
+            """
+            test          hello   {
+        variables {
+         x    =   1 kg
+         }
+     given          {
+       1  kg a      from p
+                                }
+                                assert   {
+            GWP between    20  gCO2e    and      30               kgCO2e
+  }
+    }
+            """.trimIndent(),
+            """
+            test hello {
+                variables {
+                    x = 1 kg
+                }
+                given {
+                    1 kg a from p
+                }
+                assert {
+                    GWP between 20 gCO2e and 30 kgCO2e
+                }
+            }
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun test_formattingLabels() {
         doTextTest(
             """
-            package test_formatting_labels
+           package test_formatting_labels
             
      process p {
 labels     {

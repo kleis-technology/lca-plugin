@@ -20,7 +20,7 @@
                 extensions="lca"/>
         <lang.parserDefinition
                 language="LCA"
-                implementationClass="ch.kleis.lcaac.plugin.language.parser.LcaParserDefinition"/>
+                implementationClass="ch.kleis.lcaac.plugin.language.loader.LcaParserDefinition"/>
 
         <lang.commenter
                 language="LCA"
@@ -92,12 +92,11 @@
                 implementation="ch.kleis.lcaac.plugin.project.LcaRootLibraryProvider"/>
 
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceKeyIndex"/>
-        <stubIndex
-                implementation="ch.kleis.lcaac.plugin.language.psi.stub.output_product.OutputProductStubKeyIndex"/>
+        <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.output_product.OutputProductStubKeyIndex"/>
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex"/>
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex"/>
-        <stubIndex
-                implementation="ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssigmentStubKeyIndex"/>
+        <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssigmentStubKeyIndex"/>
+        <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.test.TestStubKeyIndex"/>
         <stubElementTypeHolder class="ch.kleis.lcaac.plugin.psi.LcaTypes" externalIdPrefix="lca."/>
 
         <fileBasedIndex implementation="ch.kleis.lcaac.plugin.language.psi.index.LcaProcessFileIndexExtension"/>
@@ -107,10 +106,18 @@
                     anchor="bottom"
                     factoryClass="ch.kleis.lcaac.plugin.ui.toolwindow.LcaOutputToolWindowFactory"
                     canCloseContents="true"/>
+        <toolWindow id="LCA Tests"
+                    icon="AllIcons.General.Modified"
+                    anchor="bottom"
+                    factoryClass="ch.kleis.lcaac.plugin.ui.toolwindow.LcaTestsToolWindowFactory"
+                    canCloseContents="true"/>
 
         <runLineMarkerContributor
                 language="LCA"
                 implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.AssessProcessMarkerContributor"/>
+        <runLineMarkerContributor
+                language="LCA"
+                implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.TestMarkerContributor"/>
 
         <notificationGroup id="LcaAsCode"
                            displayType="BALLOON"
@@ -141,6 +148,12 @@
         <group id="ImportLibrary" text="Import" popup="true">
             <add-to-group group-id="FileMenu" anchor="first"/>
         </group>
+        <action id="RunAllTest"
+                class="ch.kleis.lcaac.plugin.actions.RunAllTestsAction"
+                text="Run All Tests">
+            <add-to-group group-id="ProjectViewPopupMenu"/>
+        </action>
+
 
         <action id="ImportEcospoldLCIA"
                 class="ch.kleis.lcaac.plugin.ide.imports.ecospold.lcia.EcospoldLCIAImportMenuAction"

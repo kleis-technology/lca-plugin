@@ -18,6 +18,9 @@ object LcaStubIndexKeys {
     val UNITS: StubIndexKey<String, LcaUnitDefinition> =
         StubIndexKey.createIndexKey("lca.units")
 
+    val TESTS: StubIndexKey<String, LcaTest> =
+        StubIndexKey.createIndexKey("lca.tests")
+
     val GLOBAL_ASSIGNMENTS: StubIndexKey<String, LcaGlobalAssignment> =
         StubIndexKey.createIndexKey("lca.globalAssignments")
 }

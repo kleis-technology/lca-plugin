@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.language.ide.syntax
 
-import ch.kleis.lcaac.plugin.language.parser.LcaLexerAdapter
+import ch.kleis.lcaac.plugin.language.loader.LcaLexerAdapter
 import ch.kleis.lcaac.plugin.psi.LcaTypes.*
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
@@ -44,7 +44,8 @@ class LcaSyntaxHighlighter : SyntaxHighlighterBase() {
             UNIT_KEYWORD, IMPORT_KEYWORD,
             VARIABLES_KEYWORD, LAND_USE_KEYWORD,
             PRODUCTS_KEYWORD, INPUTS_KEYWORD,
-            EMISSIONS_KEYWORD, RESOURCES_KEYWORD -> KEYWORD_KEYS
+            EMISSIONS_KEYWORD, RESOURCES_KEYWORD,
+            TEST_KEYWORD, GIVEN_KEYWORD, ASSERT_KEYWORD, BETWEEN_KEYWORD, AND_KEYWORD -> KEYWORD_KEYS
 
             IDENTIFIER -> IDENTIFIER_KEYS
 

@@ -22,7 +22,7 @@ import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.actions.csv.CsvProcessor
 import ch.kleis.lcaac.plugin.actions.csv.CsvRequest
 import ch.kleis.lcaac.plugin.fixture.UnitFixture
-import ch.kleis.lcaac.plugin.language.parser.LcaLangAbstractParser
+import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
@@ -959,7 +959,7 @@ class E2ETest : BasePlatformTestCase() {
 
     private fun createFilesAndSymbols(vf: VirtualFile): SymbolTable<BasicNumber> {
         val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
-        val parser = LcaLangAbstractParser(sequenceOf(UnitFixture.getInternalUnitFile(myFixture), file), ops)
+        val parser = LcaLoader(sequenceOf(UnitFixture.getInternalUnitFile(myFixture), file), ops)
         return parser.load()
     }
 }

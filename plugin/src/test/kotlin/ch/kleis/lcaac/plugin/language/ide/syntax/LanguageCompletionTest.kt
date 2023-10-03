@@ -19,7 +19,16 @@ class LanguageCompletionTest : LcaCompletionTestCase() {
 
         // Then
         assertNotNull(lookupElementStrings)
-        assertSameElements(lookupElementStrings!!, "import", "package", "process", "substance", "unit", "variables")
+        assertSameElements(
+            lookupElementStrings!!,
+            "import",
+            "package",
+            "process",
+            "substance",
+            "unit",
+            "variables",
+            "test"
+        )
     }
 
     @Test
@@ -318,4 +327,81 @@ process p3 {
     }
 
 
+    @Test
+    fun lookup_whenInTest() {
+        // Given
+        val filename = "${{}.javaClass.enclosingMethod.name}.lca"
+        fixture.configureByText(
+            filename, """
+test t3 {
+
+       <caret>
+    
+}
+"""
+        )
+        fixture.complete(CompletionType.BASIC)
+
+        // When
+        val lookupElementStrings = fixture.lookupElementStrings
+
+        // Then
+        assertNotNull(lookupElementStrings)
+        assertSameElements(
+            lookupElementStrings!!,
+            "given", "variables", "assert"
+        )
+    }
+
+    @Test
+    fun lookup_whenInRangeAssertion() {
+        // Given
+        val filename = "${{}.javaClass.enclosingMethod.name}.lca"
+        fixture.configureByText(
+            filename, """
+test t4 {
+    assert {
+       GWP <caret>
+    }
+}
+"""
+        )
+        fixture.complete(CompletionType.BASIC)
+
+        // When
+        val lookupElementStrings = fixture.lookupElementStrings
+
+        // Then
+        assertNotNull(lookupElementStrings)
+        assertSameElements(
+            lookupElementStrings!!,
+            "between"
+        )
+    }
+
+    @Test
+    fun lookup_whenInRangeAssertion_forAnd() {
+        // Given
+        val filename = "${{}.javaClass.enclosingMethod.name}.lca"
+        fixture.configureByText(
+            filename, """
+test t4 {
+    assert {
+       GWP between 20 kg <caret>
+    }
+}
+"""
+        )
+        fixture.complete(CompletionType.BASIC)
+
+        // When
+        val lookupElementStrings = fixture.lookupElementStrings
+
+        // Then
+        assertNotNull(lookupElementStrings)
+        assertSameElements(
+            lookupElementStrings!!,
+            "and"
+        )
+    }
 }

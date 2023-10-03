@@ -4,8 +4,8 @@ import ch.kleis.lcaac.core.lang.evaluator.EvaluationTrace
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.expression.EProcessTemplateApplication
 import ch.kleis.lcaac.core.math.QuantityOperations
-import ch.kleis.lcaac.plugin.language.parser.LcaFileCollector
-import ch.kleis.lcaac.plugin.language.parser.LcaLangAbstractParser
+import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
+import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressIndicator
@@ -23,7 +23,7 @@ fun <Q> traceSystemWithIndicator(
     indicator.text = "Loading symbol table"
     val symbolTable = runReadAction {
         val collector = LcaFileCollector(file.project)
-        val parser = LcaLangAbstractParser(collector.collect(file), ops)
+        val parser = LcaLoader(collector.collect(file), ops)
         parser.load()
     }
 

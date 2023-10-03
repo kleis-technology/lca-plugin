@@ -9,7 +9,7 @@ import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.plugin.fixture.UnitFixture
-import ch.kleis.lcaac.plugin.language.parser.LcaLangAbstractParser
+import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.openapi.ui.naturalSorted
 import com.intellij.openapi.vfs.VirtualFile
@@ -38,7 +38,7 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
         vf: VirtualFile
     ): SankeyRequiredInformation {
         val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
-        val parser = LcaLangAbstractParser(sequenceOf(UnitFixture.getInternalUnitFile(myFixture), file), ops)
+        val parser = LcaLoader(sequenceOf(UnitFixture.getInternalUnitFile(myFixture), file), ops)
         val symbolTable = parser.load()
         val entryPoint = EProcessTemplateApplication(template = symbolTable.getTemplate(process)!!)
         val trace = Evaluator(symbolTable, ops).trace(entryPoint)

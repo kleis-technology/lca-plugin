@@ -5,8 +5,8 @@ import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.plugin.actions.csv.CsvProcessor
 import ch.kleis.lcaac.plugin.actions.csv.CsvRequestReader
 import ch.kleis.lcaac.plugin.actions.csv.CsvResultWriter
-import ch.kleis.lcaac.plugin.language.parser.LcaFileCollector
-import ch.kleis.lcaac.plugin.language.parser.LcaLangAbstractParser
+import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
+import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.icons.AllIcons
 import com.intellij.notification.NotificationGroupManager
@@ -57,7 +57,7 @@ class ContributionAnalysisWithDataAction(
                     // process
                     val symbolTable = runReadAction {
                         val collector = LcaFileCollector(file.project)
-                        val parser = LcaLangAbstractParser(collector.collect(file), BasicOperations)
+                        val parser = LcaLoader(collector.collect(file), BasicOperations)
                         parser.load()
                     }
                     val csvProcessor = CsvProcessor(symbolTable)

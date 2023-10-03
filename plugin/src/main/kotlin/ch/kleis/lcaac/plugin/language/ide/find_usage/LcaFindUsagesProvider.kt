@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.language.ide.find_usage
 
-import ch.kleis.lcaac.plugin.language.parser.LcaLexerAdapter
+import ch.kleis.lcaac.plugin.language.loader.LcaLexerAdapter
 import ch.kleis.lcaac.plugin.psi.*
 import ch.kleis.lcaac.plugin.psi.LcaTypes.*
 import com.intellij.lang.cacheBuilder.DefaultWordsScanner
