@@ -37,8 +37,7 @@ object Parser {
         return root.getChildren("impactMethod").asSequence()
             .filter { it.getChildText("name") == methodName }
             .flatMap { m -> m.getChildren("category") }
-            .map { c -> c.getChild("indicator") }
-            .map {
+            .map { c -> c.getChild("indicator").let {
                 UnitConversion(
                     1.0,
                     realName(it.getChildText("unitName")),
@@ -46,7 +45,7 @@ object Parser {
                     realName(it.getChildText("unitName")),
                     it.getChildText("name"),
                 )
-            }
+            }}
             .distinctBy { it.fromUnit }
             .toList()
     }

@@ -1,7 +1,7 @@
 package ch.kleis.lcaac.plugin.imports.ecospold
 
 import ch.kleis.lcaac.plugin.imports.ModelWriter
-import ch.kleis.lcaac.plugin.imports.ecospold.EcospoldImporter.ProcessDictRecord
+import ch.kleis.lcaac.plugin.imports.ecospold.EcoSpoldImporter.ProcessDictRecord
 import ch.kleis.lcaac.plugin.imports.ecospold.model.ActivityDataset
 import ch.kleis.lcaac.plugin.imports.shared.serializer.ProcessSerializer
 import ch.kleis.lcaac.plugin.imports.util.StringUtils
@@ -14,8 +14,9 @@ class EcoSpoldProcessRenderer {
 
     fun render(
         data: ActivityDataset,
-        w: ModelWriter,
         processDict: Map<String, ProcessDictRecord>,
+        knownUnits: Set<String>,
+        writer: ModelWriter,
         processComment: String,
         methodName: String
     ) {
@@ -23,11 +24,16 @@ class EcoSpoldProcessRenderer {
 
         val category = category(data)
         val subFolder = if (category == null) "" else "${category}${File.separatorChar}"
-        val process = EcoSpoldProcessMapper.map(data, processDict, methodName)
+        val process = EcoSpoldProcessMapper.map(
+            process = data,
+            processDict = processDict,
+            knownUnits = knownUnits,
+            methodName = methodName,
+            )
         process.comments.add(processComment)
         val strProcess = ProcessSerializer.serialize(process)
 
-        w.writeRotateFile("processes${File.separatorChar}$subFolder${process.uid}", strProcess)
+        writer.writeRotateFile("processes${File.separatorChar}$subFolder${process.uid}", strProcess)
     }
 
     private fun category(data: ActivityDataset): String? {
@@ -36,6 +42,4 @@ class EcoSpoldProcessRenderer {
             ?.value
         return desc?.let { StringUtils.sanitize(it) }
     }
-
-
 }

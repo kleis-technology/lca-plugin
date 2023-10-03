@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.imports
 
-import ch.kleis.lcaac.plugin.imports.ecospold.EcospoldImporter
+import ch.kleis.lcaac.plugin.imports.ecospold.EcoSpoldImporter
 import ch.kleis.lcaac.plugin.imports.util.AsyncTaskController
 import ch.kleis.lcaac.plugin.imports.util.AsynchronousWatcher
 import ch.kleis.lcaac.plugin.imports.util.ImportInterruptedException
@@ -11,7 +11,7 @@ import java.time.temporal.ChronoUnit
 
 abstract class Importer {
     companion object {
-        private val LOG = Logger.getInstance(EcospoldImporter::class.java)
+        private val LOG = Logger.getInstance(EcoSpoldImporter::class.java)
     }
 
     private val begin = Instant.now()

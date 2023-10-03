@@ -13,7 +13,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
     storages = [Storage("EcospoldImportLCISettings.xml")],
     reportStatistic = false
 )
-class UPRSettings : EcospoldImportSettings, PersistentStateComponent<UPRSettings.State> {
+class UPRSettings : EcoSpoldImportSettings, PersistentStateComponent<UPRSettings.State> {
     companion object {
         @JvmStatic
         val instance: UPRSettings
@@ -49,12 +49,6 @@ class UPRSettings : EcospoldImportSettings, PersistentStateComponent<UPRSettings
             state.ROOT_FOLDER = value
         }
 
-    override var importUnits: Boolean
-        get() = state.IMPORT_UNITS
-        set(value) {
-            state.IMPORT_UNITS = value
-        }
-
     var importBuiltinLibrary: BuiltinLibrary?
         get() = state.BUILTIN_LIBRARY
         set(value) {
@@ -86,9 +80,6 @@ class UPRSettings : EcospoldImportSettings, PersistentStateComponent<UPRSettings
 
         @JvmField
         var ROOT_FOLDER: String = ProjectManager.getInstance().openProjects.firstOrNull()?.basePath ?: ""
-
-        @JvmField
-        var IMPORT_UNITS: Boolean = true
 
         @JvmField
         var MAPPING_FILE: String = ""

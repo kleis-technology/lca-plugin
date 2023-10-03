@@ -35,7 +35,7 @@ class EcospoldProcessRendererTest {
         every { activity.description.classifications } returns listOf(Classification("EcoSpold01Categories", "cat"))
         mockkObject(EcoSpoldProcessMapper)
         val importedProcess = mockk<ImportedProcess>()
-        every { EcoSpoldProcessMapper.map(activity, emptyMap()) } returns importedProcess
+        every { EcoSpoldProcessMapper.map(activity, emptyMap(), emptySet()) } returns importedProcess
         val comments = mutableListOf<String>()
         every { importedProcess.comments } returns comments
         every { importedProcess.uid } returns "uid"
@@ -50,7 +50,14 @@ class EcospoldProcessRendererTest {
         val sut = EcoSpoldProcessRenderer()
 
         // When
-        sut.render(activity, writer, emptyMap(), "a comment", "EF v3.1")
+        sut.render(
+            data = activity,
+            processDict = emptyMap(),
+            knownUnits = emptySet(),
+            writer = writer,
+            processComment = "a comment",
+            methodName = "EF v3.1"
+        )
 
         // Then, Better way to view large diff than using mockk.verify
         verifyOrder {

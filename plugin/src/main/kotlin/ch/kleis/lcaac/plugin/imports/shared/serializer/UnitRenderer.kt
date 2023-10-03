@@ -11,7 +11,7 @@ import ch.kleis.lcaac.plugin.imports.simapro.sanitizeSymbol
 import ch.kleis.lcaac.plugin.imports.util.ImportException
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 
-class UnitRenderer(private val knownUnits: MutableMap<String, UnitValue<BasicNumber>>) {
+class UnitRenderer(val knownUnits: MutableMap<String, UnitValue<BasicNumber>>) {
     data class AliasFor(val alias: Dimension, val aliasFor: Dimension) {
         constructor(alias: String, aliasFor: Dimension) : this(Dimension.of(alias), aliasFor)
     }
@@ -32,8 +32,7 @@ class UnitRenderer(private val knownUnits: MutableMap<String, UnitValue<BasicNum
 
     companion object {
         fun of(existingUnits: Map<String, UnitValue<BasicNumber>>): UnitRenderer {
-            val newMap = existingUnits.entries.map { (k, v) -> k to v }.associate { it }
-            return UnitRenderer(newMap.toMutableMap())
+            return UnitRenderer(existingUnits.toMutableMap())
         }
     }
 
