@@ -5,7 +5,10 @@ import ch.kleis.lcaac.plugin.psi.LcaTest
 import ch.kleis.lcaac.plugin.testing.LcaTestResult
 import ch.kleis.lcaac.plugin.testing.LcaTestRunner
 import ch.kleis.lcaac.plugin.ui.toolwindow.test_results.TestResultsWindow
+import com.intellij.notification.NotificationGroupManager
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
@@ -17,6 +20,11 @@ class RunAllTestsTask(
     private val fetchTests: () -> Collection<LcaTest> = { runReadAction { TestStubKeyIndex.findAllTests(project) } },
 ) : Task.Backgroundable(project, "Run all tests") {
     private var results: ArrayList<LcaTestResult> = arrayListOf()
+
+    companion object {
+        private val LOG = Logger.getInstance(RunAllTestsTask::class.java)
+    }
+
 
     override fun run(indicator: ProgressIndicator) {
         indicator.isIndeterminate = true
@@ -44,4 +52,14 @@ class RunAllTestsTask(
         toolWindow.contentManager.setSelectedContent(content)
         toolWindow.show()
     }
+
+    override fun onThrowable(e: Throwable) {
+        val title = "Error"
+        NotificationGroupManager.getInstance()
+            .getNotificationGroup("LcaAsCode")
+            .createNotification(title, e.message ?: "unknown error", NotificationType.ERROR)
+            .notify(project)
+        LOG.warn("Unable to process computation", e)
+    }
+
 }
