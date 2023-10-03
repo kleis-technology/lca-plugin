@@ -3,11 +3,11 @@ package ch.kleis.lcaac.plugin.ui.toolwindow.test_results
 import ch.kleis.lcaac.plugin.psi.LcaRangeAssertion
 import com.intellij.pom.Navigatable
 import com.intellij.ui.treeStructure.Tree
+import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
 import javax.swing.tree.TreePath
 
-object TestResultsTreeMouseListener : MouseListener {
+object TestResultsTreeMouseListener : MouseAdapter() {
     override fun mouseClicked(e: MouseEvent?) {
         val event = e ?: return
         if (event.clickCount < 2) { return }
@@ -30,17 +30,4 @@ object TestResultsTreeMouseListener : MouseListener {
             element.navigate(true)
         }
     }
-
-    override fun mousePressed(e: MouseEvent?) {
-    }
-
-    override fun mouseReleased(e: MouseEvent?) {
-    }
-
-    override fun mouseEntered(e: MouseEvent?) {
-    }
-
-    override fun mouseExited(e: MouseEvent?) {
-    }
-
 }
