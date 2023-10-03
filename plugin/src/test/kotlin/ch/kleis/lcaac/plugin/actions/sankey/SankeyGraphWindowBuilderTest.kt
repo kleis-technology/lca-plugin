@@ -2,9 +2,6 @@ package ch.kleis.lcaac.plugin.actions.sankey
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysis
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
-import ch.kleis.lcaac.plugin.actions.sankey.Graph
-import ch.kleis.lcaac.plugin.actions.sankey.GraphLink
-import ch.kleis.lcaac.plugin.actions.sankey.GraphNode
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.expression.EProcessTemplateApplication
 import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
@@ -99,12 +96,13 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphLink(
                 "truck from transport_truck{}{weight=2.0 ton, ratio=2.0 kg.ton⁻¹, fuel=diesel}",
                 "fuel_emissions from combustion{}{}",
-                1.2
+                1.2,
+                "1.2 kg"
             ),
-            GraphLink("fuel_emissions from combustion{}{}", "co2", 1.2),
+            GraphLink("fuel_emissions from combustion{}{}", "co2", 1.2, "1.2 kg"),
         )
-        assertEquals(expected.nodes, graph.nodes)
-        assertEquals(expected.links, graph.links)
+        assertEquals(expected.nodes.naturalSorted(), graph.nodes.naturalSorted())
+        assertEquals(expected.links.naturalSorted(), graph.links.naturalSorted())
     }
 
     @Test
@@ -134,10 +132,10 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphNode("[Emission] my_substance(air)", "my_substance"),
             GraphNode("my_product from p{}{}", "my_product")
         ).addLink(
-            GraphLink("my_product from p{}{}", "[Emission] my_substance(air)", 1.0),
+            GraphLink("my_product from p{}{}", "[Emission] my_substance(air)", 1.0, "1 m3"),
         )
-        assertEquals(expected.nodes, graph.nodes)
-        assertEquals(expected.links, graph.links)
+        assertEquals(expected.nodes.naturalSorted(), graph.nodes.naturalSorted())
+        assertEquals(expected.links.naturalSorted(), graph.links.naturalSorted())
     }
 
     @Test
@@ -167,10 +165,10 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphNode("[Resource] my_substance(air)", "my_substance"),
             GraphNode("my_product from p{}{}", "my_product")
         ).addLink(
-            GraphLink("my_product from p{}{}", "[Resource] my_substance(air)", 1.0),
+            GraphLink("my_product from p{}{}", "[Resource] my_substance(air)", 1.0, "1 m3"),
         )
-        assertEquals(expected.nodes, graph.nodes)
-        assertEquals(expected.links, graph.links)
+        assertEquals(expected.nodes.naturalSorted(), graph.nodes.naturalSorted())
+        assertEquals(expected.links.naturalSorted(), graph.links.naturalSorted())
     }
 
     @Test
@@ -200,10 +198,10 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphNode("my_input", "my_input"),
             GraphNode("my_product from p{}{}", "my_product"),
         ).addLink(
-            GraphLink("my_product from p{}{}", "my_input", 1.0),
+            GraphLink("my_product from p{}{}", "my_input", 1.0, "1 kg"),
         )
-        assertEquals(expected.nodes, graph.nodes)
-        assertEquals(expected.links, graph.links)
+        assertEquals(expected.nodes.naturalSorted(), graph.nodes.naturalSorted())
+        assertEquals(expected.links.naturalSorted(), graph.links.naturalSorted())
     }
 
     @Test
@@ -242,8 +240,8 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphNode("qrod from q{}{}", "qrod"),
             GraphNode("my_emission", "my_emission"),
         ).addLink(
-            GraphLink("prod from p{}{}", "qrod from q{}{}", 5.0),
-            GraphLink("qrod from q{}{}", "my_emission", 5.0),
+            GraphLink("prod from p{}{}", "qrod from q{}{}", 5.0, "5 kg"),
+            GraphLink("qrod from q{}{}", "my_emission", 5.0, "5 kg"),
         )
         assertEquals(expected.nodes.naturalSorted(), graph.nodes.naturalSorted())
         assertEquals(expected.links.naturalSorted(), graph.links.naturalSorted())
@@ -286,11 +284,11 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphNode("my_product from p{}{}", "my_product"),
             GraphNode("[Emission] my_substance(air)", "my_substance")
         ).addLink(
-            GraphLink("my_product from p{}{}", "[Emission] my_substance(air)", 1.0),
-            GraphLink("[Emission] my_substance(air)", "climate_change", 1.0)
+            GraphLink("my_product from p{}{}", "[Emission] my_substance(air)", 1.0, "1 u"),
+            GraphLink("[Emission] my_substance(air)", "climate_change", 1.0, "1 u")
         )
-        assertEquals(expected.nodes, graph.nodes)
-        assertEquals(expected.links, graph.links)
+        assertEquals(expected.nodes.naturalSorted(), graph.nodes.naturalSorted())
+        assertEquals(expected.links.naturalSorted(), graph.links.naturalSorted())
 
     }
 
@@ -330,8 +328,8 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphNode("my_input from input{}{}", "my_input"),
             GraphNode("my_indicator", "my_indicator"),
         ).addLink(
-            GraphLink("my_product from p{}{}", "my_input from input{}{}", 0.5),
-            GraphLink("my_input from input{}{}", "my_indicator", 0.5),
+            GraphLink("my_product from p{}{}", "my_input from input{}{}", 0.5, "0.5 g"),
+            GraphLink("my_input from input{}{}", "my_indicator", 0.5, "0.5 g"),
         )
         assertEquals(expected.nodes.naturalSorted(), graph.nodes.naturalSorted())
         assertEquals(expected.links.naturalSorted(), graph.links.naturalSorted())
@@ -366,11 +364,11 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphNode("my_product from p{}{}", "my_product"),
             GraphNode("my_other_product from p{}{}", "my_other_product"),
         ).addLink(
-            GraphLink("my_product from p{}{}", "[Emission] my_substance(air)", 1.0),
-            GraphLink("my_other_product from p{}{}", "[Emission] my_substance(air)", 1.0),
+            GraphLink("my_product from p{}{}", "[Emission] my_substance(air)", 1.0, "1 m3"),
+            GraphLink("my_other_product from p{}{}", "[Emission] my_substance(air)", 1.0, "1 m3"),
         )
-        assertEquals(expected.nodes, graph.nodes)
-        assertEquals(expected.links, graph.links)
+        assertEquals(expected.nodes.naturalSorted(), graph.nodes.naturalSorted())
+        assertEquals(expected.links.naturalSorted(), graph.links.naturalSorted())
     }
 
     @Test
@@ -428,14 +426,14 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphNode("my_right_product from r{}{}", "my_right_product"),
             GraphNode("my_input from input{}{}", "my_input"),
         ).addLink(
-            GraphLink("my_product from p{}{}", "my_left_product from q{}{}", 1.0),
-            GraphLink("my_product from p{}{}", "my_right_product from r{}{}", 1.0),
-            GraphLink("my_left_product from q{}{}", "my_input from input{}{}", 1.0),
-            GraphLink("my_right_product from r{}{}", "my_input from input{}{}", 1.0),
-            GraphLink("my_input from input{}{}", "my_substance", 2.0),
+            GraphLink("my_product from p{}{}", "my_left_product from q{}{}", 1.0, "1 kg"),
+            GraphLink("my_product from p{}{}", "my_right_product from r{}{}", 1.0, "1 kg"),
+            GraphLink("my_left_product from q{}{}", "my_input from input{}{}", 1.0, "1 kg"),
+            GraphLink("my_right_product from r{}{}", "my_input from input{}{}", 1.0, "1 kg"),
+            GraphLink("my_input from input{}{}", "my_substance", 2.0, "2 kg"),
         )
-        assertEquals(expected.nodes, graph.nodes)
-        assertEquals(expected.links, graph.links)
+        assertEquals(expected.nodes.naturalSorted(), graph.nodes.naturalSorted())
+        assertEquals(expected.links.naturalSorted(), graph.links.naturalSorted())
     }
 
     @Test
@@ -491,15 +489,15 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphNode("my_other_product from p{}{}", "my_other_product"),
             GraphNode("[Emission] my_substance(air)", "my_substance")
         ).addLink(
-            GraphLink("my_product from p{}{}", "my_input from q{}{}", 1.5),
-            GraphLink("my_other_product from p{}{}", "my_input from q{}{}", 0.5),
-            GraphLink("my_input from q{}{}", "[Emission] my_substance(air)", 2.0),
-            GraphLink("my_product from p{}{}", "[Emission] my_substance(air)", 0.75),
-            GraphLink("my_other_product from p{}{}", "[Emission] my_substance(air)", 0.25),
-            GraphLink("[Emission] my_substance(air)", "climate_change", 3.0)
+            GraphLink("my_product from p{}{}", "my_input from q{}{}", 1.5, "1.5 u"),
+            GraphLink("my_other_product from p{}{}", "my_input from q{}{}", 0.5, "0.5 u"),
+            GraphLink("my_input from q{}{}", "[Emission] my_substance(air)", 2.0, "2 u"),
+            GraphLink("my_product from p{}{}", "[Emission] my_substance(air)", 0.75, "0.75 u"),
+            GraphLink("my_other_product from p{}{}", "[Emission] my_substance(air)", 0.25, "0.25 u"),
+            GraphLink("[Emission] my_substance(air)", "climate_change", 3.0, "3 u")
         )
-        assertEquals(expected.nodes, graph.nodes)
-        assertEquals(expected.links, graph.links)
+        assertEquals(expected.nodes.naturalSorted(), graph.nodes.naturalSorted())
+        assertEquals(expected.links.naturalSorted(), graph.links.naturalSorted())
     }
 
     @Test
@@ -541,11 +539,11 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphNode("B from p2{}{}", "B"),
             GraphNode("C", "C"),
         ).addLink(
-            GraphLink("A from p1{}{}", "B from p2{}{}", 4.0),
-            GraphLink("B from p2{}{}", "C", 2.0),
+            GraphLink("A from p1{}{}", "B from p2{}{}", 4.0, "4 kg"),
+            GraphLink("B from p2{}{}", "C", 2.0, "2 kg"),
         )
-        assertEquals(expected.nodes, graph.nodes)
-        assertEquals(expected.links, graph.links)
+        assertEquals(expected.nodes.naturalSorted(), graph.nodes.naturalSorted())
+        assertEquals(expected.links.naturalSorted(), graph.links.naturalSorted())
     }
 
     @Test
@@ -649,16 +647,16 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphNode("H from pH{}{}", "H"),
             GraphNode("my_emission", "my_emission")
         ).addLink(
-            GraphLink("F from pF{}{}", "H from pH{}{}", value = 1.5),
-            GraphLink("C from pC{}{}", "F from pF{}{}", value = 0.5),
-            GraphLink("A from pA{}{}", "B from pB{}{}", value = 3.0),
-            GraphLink("A from pA{}{}", "C from pC{}{}", value = 0.5),
-            GraphLink("D from pD{}{}", "F from pF{}{}", value = 1.0),
-            GraphLink("H from pH{}{}", "my_emission", value = 3.5),
-            GraphLink("B from pB{}{}", "D from pD{}{}", value = 1.0),
-            GraphLink("B from pB{}{}", "E from pE{}{}", value = 2.0),
-            GraphLink("E from pE{}{}", "G from pG{}{}", value = 4.0),
-            GraphLink("G from pG{}{}", "H from pH{}{}", value = 2.0),
+            GraphLink("F from pF{}{}", "H from pH{}{}", value = 1.5, "1.5 u"),
+            GraphLink("C from pC{}{}", "F from pF{}{}", value = 0.5, "0.5 u"),
+            GraphLink("A from pA{}{}", "B from pB{}{}", value = 3.0, "3 u"),
+            GraphLink("A from pA{}{}", "C from pC{}{}", value = 0.5, "0.5 u"),
+            GraphLink("D from pD{}{}", "F from pF{}{}", value = 1.0, "1.0 u"),
+            GraphLink("H from pH{}{}", "my_emission", value = 3.5, "3.5 u"),
+            GraphLink("B from pB{}{}", "D from pD{}{}", value = 1.0, "1 u"),
+            GraphLink("B from pB{}{}", "E from pE{}{}", value = 2.0, "2 u"),
+            GraphLink("E from pE{}{}", "G from pG{}{}", value = 4.0, "4 u"),
+            GraphLink("G from pG{}{}", "H from pH{}{}", value = 2.0, "2 u"),
         )
 
         assertEquals(expected.nodes.naturalSorted(), graph.nodes.naturalSorted())

@@ -2,6 +2,27 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 import * as d3Sankey from "https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/+esm";
 
 
+function makeBG(elem, className) {
+  var bounds = elem.getBBox()
+  var bg = document.createElementNS("http://www.w3.org/2000/svg", "rect")
+  const padding = 5
+  bg.setAttribute("class", className)
+  bg.setAttribute("x", bounds.x - padding)
+  bg.setAttribute("y", bounds.y - padding)
+  bg.setAttribute("width", bounds.width + 2 * padding)
+  bg.setAttribute("height", bounds.height + 2 * padding)
+  bg.setAttribute("fill", "white")
+  bg.setAttribute("opacity", 0.7)
+  bg.setAttribute("rx", "5px")
+  bg.setAttribute("stroke-width", 2) // Border
+  bg.setAttribute("stroke", "#333333") // Border color
+  if (elem.hasAttribute("transform")) {
+    bg.setAttribute("transform", elem.getAttribute("transform"))
+  }
+  return bg;
+}
+
+
 // Specify the dimensions of the chart.
 const width = 1500;
 const height = (width * 9) / 16;
@@ -40,7 +61,7 @@ try {
     const color = d3.scaleOrdinal(d3.schemePaired);
 
 // Creates the rects that represent the nodes.
-    svg
+    var rect =  svg
         .append("g")
         .attr("stroke", "#000")
         .selectAll()
@@ -51,7 +72,28 @@ try {
         .attr("y", (d) => d.y0)
         .attr("height", (d) => d.y1 - d.y0)
         .attr("width", (d) => d.x1 - d.x0)
-        .attr("fill", (d) => color(d.name));
+        .attr("fill", (d) => color(d.name))
+        .attr("id", (d)=> md5(d.key) )
+        .on('mouseover', function (e, d) { // on mouse out hide line, circles and text
+            e.target.setAttribute("opacity", 0.7)
+            const text = d3.select(".c" + e.currentTarget.id);
+            text.text(d.key);
+            // Change ZIndex
+            const textNode = text.node()
+            textNode.remove();
+            svg.node().appendChild(textNode);
+            const bg = makeBG(textNode, "node-background");
+            textNode.parentNode.insertBefore(bg, textNode)
+        })
+        .on('mouseout', function (e, d) { // on mouse out hide line, circles and text
+            e.target.setAttribute("opacity", 1);
+            d3.select(".c" + e.currentTarget.id).text(d.name);
+            d3.selectAll(".node-background")
+                .each(function(d, i) {
+                this.remove();
+                });
+        });
+
 
 // Creates the paths that represent the links.
     const link = svg
@@ -67,9 +109,30 @@ try {
         .append("path")
         .attr("d", d3Sankey.sankeyLinkHorizontal())
         .attr("stroke", (d) => d3.interpolate(color(d.source.name), "grey")(0.85))
-        .attr("stroke-width", (d) => Math.max(1, d.width));
+        .attr("stroke-width", (d) => Math.max(1, d.width))
+        .attr("id", (d)=> md5(d.source.key + d.target.key))
+        .on('mouseover', function (e, d) { // on mouse out hide line, circles and text
+            e.target.setAttribute("opacity", 0.7);
 
-// Adds labels on the nodes.
+            const txt = svg.append("text")
+               .text(d.name)
+               .attr("x", (d.source.x1 + d.target.x0) / 2)
+               .attr("y", (d.y1 + d.y0) / 2)
+               .attr("class", "t" + e.currentTarget.id)
+               .attr("text-anchor", "middle");
+            const txtNode = txt.node();
+            const bg = makeBG(txtNode, "t" + e.currentTarget.id);
+            txtNode.parentNode.insertBefore(bg, txtNode);
+        })
+        .on('mouseout', function (e, d) { // on mouse out hide line, circles and text
+            e.target.setAttribute("opacity", 1);
+            d3.selectAll(".t" + e.currentTarget.id)
+                .each(function(d, i) {
+                    this.remove();
+                });
+        });
+
+    // Adds labels on the nodes.
     svg
         .append("g")
         .selectAll()
@@ -80,6 +143,7 @@ try {
         .attr("y", d => (d.y1 + d.y0) / 2)
         .attr("dy", "0.35em")
         .attr("text-anchor", d => d.x0 < width / 2 ? "start" : "end")
+        .attr("class", d => "c" + md5(d.key))
         .text((d) => d.name);
 
     container.append(svg.node());

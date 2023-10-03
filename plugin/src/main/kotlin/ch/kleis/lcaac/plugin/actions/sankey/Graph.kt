@@ -9,7 +9,7 @@ data class GraphNode(
 
 @Serializable
 data class GraphLink(
-    val source: String, val target: String, val value: Double
+    val source: String, val target: String, val value: Double, val name: String
 )
 
 @Serializable
