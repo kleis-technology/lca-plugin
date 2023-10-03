@@ -1,33 +1,39 @@
+
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import task.GenerateEmissionFactorsTask30
 import task.GenerateEmissionFactorsTask31
 
 fun properties(key: String) = project.findProperty(key).toString()
 
-plugins {
-    // Java support
-    id("java")
-    // Kotlin support, oom issue with this version see https://jb.gg/intellij-platform-kotlin-oom
-    // TODO Move to next version to solve it when fix is available
-    id("org.jetbrains.kotlin.jvm") version "1.8.20"
-    // Gradle IntelliJ Plugin
-    id("org.jetbrains.intellij") version "1.14.2"
-    // Gradle Changelog Plugin
-    id("org.jetbrains.changelog") version "2.0.0"
-    // Gradle Qodana Plugin
-    id("org.jetbrains.qodana") version "0.1.13"
-    // Gradle Grammar kit Plugin
-    id("org.jetbrains.grammarkit") version "2021.2.2"
-    // JSON serialization tools for graph visualization
-    kotlin("plugin.serialization") version "1.8.20"
-}
-
-group = properties("lcaacGroup")
-version = properties("lcaacVersion")
+val group = properties("lcaacGroup")
 val pluginVersion = properties("lcaacVersion")
 val javaVersion = properties("javaVersion")
+
+plugins {
+    // Java + kotlin support
+    id("java")
+    id("org.jetbrains.kotlin.jvm")
+
+    // Gradle IntelliJ Plugin
+    id("org.jetbrains.intellij") version "1.14.2"
+
+    // Gradle Changelog Plugin
+    id("org.jetbrains.changelog") version "2.0.0"
+
+    // Gradle Qodana Plugin
+    id("org.jetbrains.qodana") version "0.1.13"
+
+    // Gradle Grammar kit Plugin
+    id("org.jetbrains.grammarkit") version "2021.2.2"
+
+    // JSON serialization tools for graph visualization
+    kotlin("plugin.serialization") version "1.9.0"
+}
+
+kotlin {
+    jvmToolchain(Integer.parseInt(javaVersion))
+}
 
 // Configure project's dependencies
 repositories {
@@ -92,17 +98,6 @@ qodana {
 }
 
 tasks {
-    // Set the JVM compatibility versions
-    javaVersion.let {
-        withType<JavaCompile> {
-            sourceCompatibility = it
-            targetCompatibility = it
-        }
-        withType<KotlinCompile> {
-            kotlinOptions.jvmTarget = it
-        }
-    }
-
     generateParser {
         source.set("src/main/kotlin/ch/kleis/lcaac/plugin/language/Lca.bnf")
         targetRoot.set("src/main/gen")
@@ -116,10 +111,8 @@ tasks {
         targetClass.set("parser.LcaLexer")
     }
 
-    task<GenerateEmissionFactorsTask31>("generateEmissionFactors31") {
-    }
-    task<GenerateEmissionFactorsTask30>("generateEmissionFactors30") {
-    }
+    task<GenerateEmissionFactorsTask31>("generateEmissionFactors31")
+    task<GenerateEmissionFactorsTask30>("generateEmissionFactors30")
 
     compileKotlin {
         dependsOn("generateLexer")
