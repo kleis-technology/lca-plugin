@@ -118,10 +118,10 @@ try {
                .text(d.name)
                .attr("x", (d.source.x1 + d.target.x0) / 2)
                .attr("y", (d.y1 + d.y0) / 2)
-               .attr("class", "t" + e.currentTarget.id)
+               .attr("class", "t" + e.currentTarget.id+ " no-tooltips")
                .attr("text-anchor", "middle");
             const txtNode = txt.node();
-            const bg = makeBG(txtNode, "t" + e.currentTarget.id);
+            const bg = makeBG(txtNode, "t" + e.currentTarget.id+ " no-tooltips");
             txtNode.parentNode.insertBefore(bg, txtNode);
         })
         .on('mouseout', function (e, d) { // on mouse out hide line, circles and text
