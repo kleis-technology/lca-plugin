@@ -2,6 +2,7 @@ package ch.kleis.lcaac.plugin.language.ide.insight
 
 import ch.kleis.lcaac.plugin.language.ide.insight.AnnotatorHelper.annotateErrWithMessage
 import ch.kleis.lcaac.plugin.language.ide.insight.AnnotatorHelper.annotateWarnWithMessage
+import ch.kleis.lcaac.plugin.language.psi.reference.OutputProductReferenceFromPsiInputProductSpec
 import ch.kleis.lcaac.plugin.language.type_checker.LcaMatchLabelsEvaluator
 import ch.kleis.lcaac.plugin.language.type_checker.PsiLcaTypeChecker
 import ch.kleis.lcaac.plugin.language.type_checker.PsiTypeCheckException
@@ -17,33 +18,41 @@ class LcaTechnoInputExchangeAnnotator : Annotator {
         if (element !is LcaTechnoInputExchange) {
             return
         }
-        val target = element.inputProductSpec.reference?.resolve()
+        val targets =
+            (element.inputProductSpec.reference as OutputProductReferenceFromPsiInputProductSpec)
+                .multiResolve(false)
+                .filter { it.element is LcaOutputProductSpec }
 
-        if (target == null
-            || target !is LcaOutputProductSpec
-        ) {
-            val message = errorMessage(element.inputProductSpec)
-            annotateWarnWithMessage(element.inputProductSpec, holder, message)
-        }
-        val checker = PsiLcaTypeChecker()
-        try {
-            checker.check(element)
-        } catch (e: PsiTypeCheckException) {
-            annotateErrWithMessage(element, holder, e.message.orEmpty())
+        when (targets.size) {
+            0 -> {
+                val specString = specToStr(element.inputProductSpec)
+                annotateWarnWithMessage(element.inputProductSpec, holder, "Could not resolve $specString")
+            }
+            1 -> {
+                val checker = PsiLcaTypeChecker()
+                try {
+                    checker.check(element)
+                } catch (e: PsiTypeCheckException) {
+                    annotateErrWithMessage(element, holder, e.message.orEmpty())
+                }
+            }
+            else -> {
+                val specString = specToStr(element.inputProductSpec)
+                annotateWarnWithMessage(element.inputProductSpec, holder, "Multiple candidates found for $specString")
+            }
         }
     }
 
-    private fun errorMessage(inputProductSpec: LcaInputProductSpec): String {
+    private fun specToStr(inputProductSpec: LcaInputProductSpec): String {
         val product = inputProductSpec.name
         val process = inputProductSpec.getProcessTemplateSpec()?.name
         val labels = inputProductSpec.getProcessTemplateSpec()
             ?.getMatchLabels()
             ?.let { LcaMatchLabelsEvaluator().evalOrNull(it) }
-        val parts = listOfNotNull(
+        return listOfNotNull(
             product,
             process?.let { "from $it" },
             labels?.let { "match $it" },
         ).joinToString(" ")
-        return "cannot resolve $parts"
     }
 }

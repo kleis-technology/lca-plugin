@@ -42,7 +42,50 @@ class LcaTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
         annotator.annotate(element, mock.holder)
 
         // then
-        verify { mock.holder.newAnnotation(HighlightSeverity.WARNING, "cannot resolve carrot") }
+        verify { mock.holder.newAnnotation(HighlightSeverity.WARNING, "Could not resolve carrot") }
+        verify { mock.builder.range(element.inputProductSpec) }
+        verify { mock.builder.highlightType(ProblemHighlightType.WARNING) }
+        verify { mock.builder.create() }
+    }
+
+    @Test
+    fun testAnnotate_whenSeveralFound_shouldAnnotate() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        myFixture.createFile(
+            "$pkgName.lca", """
+            package $pkgName
+            
+            process p {
+                inputs {
+                    1 kg carrot
+                }
+            }
+            
+            process carrot1 {
+                products {
+                    1 kg carrot
+                }
+            }
+            
+            process carrot2 {
+                products {
+                    1 kg carrot
+                }
+            }
+        """.trimIndent()
+        )
+        val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
+            .getInputs().first()
+        val mock = AnnotationHolderMock()
+        val annotator = LcaTechnoInputExchangeAnnotator()
+
+
+        // when
+        annotator.annotate(element, mock.holder)
+
+        // then
+        verify { mock.holder.newAnnotation(HighlightSeverity.WARNING, "Multiple candidates found for carrot") }
         verify { mock.builder.range(element.inputProductSpec) }
         verify { mock.builder.highlightType(ProblemHighlightType.WARNING) }
         verify { mock.builder.create() }
