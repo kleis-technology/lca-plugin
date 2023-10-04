@@ -3,6 +3,7 @@ package ch.kleis.lcaac.plugin.language.psi.reference
 import ch.kleis.lcaac.plugin.language.loader.LcaParserDefinition
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.psi.LcaDataRef
+import ch.kleis.lcaac.plugin.psi.LcaGuardedAssignment
 import com.intellij.testFramework.ParsingTestCase
 import junit.framework.TestCase
 import org.junit.Test
@@ -97,7 +98,7 @@ class DataRefExactNameMatcherScopeProcessorTest : ParsingTestCase("", "lca", Lca
             """.trimIndent()
         ) as LcaFile
         val process = file.getProcesses().first()
-        val assignment = process.getParamsList().first().assignmentList.first()
+        val assignment = process.getParamsList().first().guardedAssignmentList.map(LcaGuardedAssignment::getAssignment).first()
         val dataRef = process.getProducts().first()
             .dataExpression as LcaDataRef
 

@@ -32,7 +32,7 @@ abstract class PsiProcessMixin : StubBasedPsiElementBase<ProcessStub>, LcaProces
     override fun getParameters(): Map<String, LcaDataExpression> {
         return paramsList
             .flatMap {
-                it.assignmentList.map { a ->
+                it.guardedAssignmentList.map(LcaGuardedAssignment::getAssignment).map { a ->
                     a.getDataRef().name to a.getValue()
                 }
             }

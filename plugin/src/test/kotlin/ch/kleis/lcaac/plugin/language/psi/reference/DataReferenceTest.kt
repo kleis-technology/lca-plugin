@@ -5,6 +5,7 @@ import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex
 import ch.kleis.lcaac.plugin.psi.LcaDataRef
+import ch.kleis.lcaac.plugin.psi.LcaGuardedAssignment
 import ch.kleis.lcaac.plugin.psi.LcaScaleQuantityExpression
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -81,7 +82,7 @@ class DataReferenceTest : BasePlatformTestCase() {
         // then
         val expected = ProcessStubKeyIndex.findProcesses(project, "$pkgName.called").first()
             .getParamsList().first()
-            .assignmentList.first()
+            .guardedAssignmentList.map(LcaGuardedAssignment::getAssignment).first()
         TestCase.assertEquals(expected, actual)
     }
 

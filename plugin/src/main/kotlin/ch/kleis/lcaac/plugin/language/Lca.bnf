@@ -216,14 +216,18 @@ labelAssignment ::= labelRef "=" STRING_LITERAL {
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiLabelAssignmentMixin"
 }
 
-params ::= "params" "{" assignment* "}"
+params ::= "params" "{" guardedAssignment* "}"
 
 variables ::= "variables" "{" assignment* "}"
+
+guardedAssignment ::= assignment guard?
 
 assignment ::= dataRef "=" dataExpression {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiAssignment"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiAssignmentMixin"
 }
+
+guard ::= 'between' dataExpression 'and' dataExpression
 
 /*
     Blocks

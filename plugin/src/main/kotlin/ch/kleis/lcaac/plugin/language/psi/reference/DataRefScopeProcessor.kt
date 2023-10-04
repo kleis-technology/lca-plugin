@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.language.psi.reference
 
 import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataRef
+import ch.kleis.lcaac.plugin.psi.LcaGuardedAssignment
 import ch.kleis.lcaac.plugin.psi.LcaLabels
 import ch.kleis.lcaac.plugin.psi.LcaParams
 import ch.kleis.lcaac.plugin.psi.LcaVariables
@@ -21,7 +22,7 @@ class DataRefCollectorScopeProcessor : DataRefScopeProcessor {
         }
 
         if (element is LcaParams) {
-            results.addAll(element.assignmentList)
+            results.addAll(element.guardedAssignmentList.map(LcaGuardedAssignment::getAssignment))
         }
 
         if (element is LcaLabels) {
@@ -46,7 +47,7 @@ class DataRefExactNameMatcherScopeProcessor(
         }
 
         if (element is LcaParams) {
-            return checkDecl(element.assignmentList)
+            return checkDecl(element.guardedAssignmentList.map(LcaGuardedAssignment::getAssignment))
         }
 
         if (element is LcaLabels) {

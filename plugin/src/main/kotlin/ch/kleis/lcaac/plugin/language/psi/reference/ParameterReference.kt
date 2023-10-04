@@ -37,9 +37,9 @@ class ParameterReference(
     }
 
     private fun filterAndMap(parameters: LcaParams): List<PsiElementResolveResult> {
-        return parameters.assignmentList
+        return parameters.guardedAssignmentList
             .mapNotNull { assignment ->
-                assignment
+                assignment.assignment
                     .takeIf { it.getDataRef().name == element.name }
                     ?.let { PsiElementResolveResult(it) }
             }

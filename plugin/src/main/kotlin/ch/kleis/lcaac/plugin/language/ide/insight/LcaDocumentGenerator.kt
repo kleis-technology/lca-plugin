@@ -91,7 +91,7 @@ object LcaDocumentGenerator {
         att.fontType = Font.ITALIC
         HtmlSyntaxInfoUtil.appendStyledSpan(sb, att, "Process Parameters:", 1f)
         sb.append(DocumentationMarkup.SECTIONS_START).append("\n")
-        lcaProcess?.paramsList?.flatMap { it.assignmentList }
+        lcaProcess?.paramsList?.flatMap { it.guardedAssignmentList}?.map { it.assignment }
             ?.forEach {
                 addKeyValueSection("${it.name} = ", it.getValue().text, sb)
             }

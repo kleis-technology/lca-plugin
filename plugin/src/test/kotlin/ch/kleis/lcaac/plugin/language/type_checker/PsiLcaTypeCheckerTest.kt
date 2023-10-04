@@ -7,6 +7,7 @@ import ch.kleis.lcaac.plugin.fixture.DimensionFixture
 import ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssigmentStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex
+import ch.kleis.lcaac.plugin.psi.LcaGuardedAssignment
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
 import org.junit.Test
@@ -794,7 +795,8 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
         )
         val target = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
             .getParamsList().first()
-            .assignmentList.first()
+            .guardedAssignmentList.map(LcaGuardedAssignment::getAssignment)
+            .first()
         val checker = PsiLcaTypeChecker()
 
         // when

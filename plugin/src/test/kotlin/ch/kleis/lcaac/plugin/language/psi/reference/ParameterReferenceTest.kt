@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.language.psi.reference
 
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
+import ch.kleis.lcaac.plugin.psi.LcaGuardedAssignment
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
@@ -108,7 +109,8 @@ class ParameterReferenceTest : BasePlatformTestCase() {
         // then
         val expected = ProcessStubKeyIndex.findProcesses(project, "$pkgName.water_prod").first()
             .getParamsList().first()
-            .assignmentList.first()
+            .guardedAssignmentList.map(LcaGuardedAssignment::getAssignment)
+            .first()
         TestCase.assertEquals(expected, actual)
     }
 }
