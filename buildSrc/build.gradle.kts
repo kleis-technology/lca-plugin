@@ -1,5 +1,12 @@
+/* The build in buildSrc is not a subproject from the root project, but an entirely different *build*. This means we
+ * cannot re-use the properties found in the root properties file, and have to redefine versions here.
+ */
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.8.20"
+    id("org.jetbrains.kotlin.jvm") version "1.9.0"
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 repositories {

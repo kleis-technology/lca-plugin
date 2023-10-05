@@ -11,7 +11,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value=":plugin:buildPlugin" />
+          <option value="plugin:plugin:buildPlugin" />
         </list>
       </option>
       <option name="vmOptions" value="" />
