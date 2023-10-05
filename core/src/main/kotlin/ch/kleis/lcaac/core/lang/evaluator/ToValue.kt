@@ -144,6 +144,8 @@ class ToValue<Q>(
                     is QuantityExpression<*> -> e.toValue()
                     is StringExpression -> e.toValue()
                     is EDataRef -> throw EvaluatorException("$it is not reduced")
+                    is EGuardedExpression<*> ->
+                        throw EvaluatorException("Impossible state: $it is a guarded expression in a `from process` expression")
                 }
             },
         )

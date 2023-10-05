@@ -45,6 +45,7 @@ fun <Q> everyDataRefInDataExpression(): PEvery<DataExpression<Q>, DataExpression
                 is EUnitLiteral -> M.empty()
                 is EUnitOf -> foldMap(M, source.expression, map)
                 is EStringLiteral -> M.empty()
+                is EGuardedExpression -> TODO()
             }
         }
 
@@ -100,6 +101,7 @@ fun <Q> everyDataRefInDataExpression(): PEvery<DataExpression<Q>, DataExpression
                 )
 
                 is EStringLiteral -> source
+                is EGuardedExpression -> TODO()
             }
         }
     }

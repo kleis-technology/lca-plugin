@@ -23,6 +23,14 @@ data class EDataRef<Q>(val name: String) : DataExpression<Q>, RefExpression {
     companion object
 }
 
+@optics
+data class EGuardedExpression<Q>(
+    val expression: DataExpression<Q>,
+    val guard: Pair<DataExpression<Q>, DataExpression<Q>>
+): DataExpression<Q> {
+    companion object
+}
+
 /*
     Quantities
  */

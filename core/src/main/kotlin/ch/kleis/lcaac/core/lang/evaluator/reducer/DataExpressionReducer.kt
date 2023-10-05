@@ -29,6 +29,7 @@ class DataExpressionReducer<Q>(
                 is EUnitLiteral -> EQuantityScale(pure(1.0), expression)
                 is EUnitOf -> reduceUnitOf(expression)
                 is EStringLiteral -> expression
+                is EGuardedExpression -> TODO()
             }
         }
     }
