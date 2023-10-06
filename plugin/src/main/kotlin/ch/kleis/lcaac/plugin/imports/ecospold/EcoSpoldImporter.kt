@@ -145,9 +145,10 @@ class EcoSpoldImporter(
             }.buffer()
             .flowOn(Dispatchers.Default)
 
+        val knownUnitSymbols = unitRenderer.knownUnits.values.map { it.symbol.toString() }.toSet()
         runBlocking {
             parsedEntries.collect { it: Pair<String, ActivityDataset> ->
-                writeImportedDataset(it.second, processDict, unitRenderer.knownUnits.keys, writer, it.first)
+                writeImportedDataset(it.second, processDict, knownUnitSymbols, writer, it.first)
             }
         }
 

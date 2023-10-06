@@ -40,7 +40,7 @@ class UnitRenderer(val knownUnits: MutableMap<String, UnitValue<BasicNumber>>) {
     fun render(unit: ImportedUnit, writer: ModelWriter) {
         val dimensionName = unit.dimension.lowercase()
         val dimension = Dimension.of(dimensionName)
-        val symbol = sanitizeSymbol(sanitize(unit.name, false))
+        val sanitizedSymbol = sanitizeSymbol(sanitize(unit.name, false))
         val existingUnit = getUnit(unit.name)
 
         when {
@@ -51,20 +51,20 @@ class UnitRenderer(val knownUnits: MutableMap<String, UnitValue<BasicNumber>>) {
                 throw ImportException("A Unit ${sanitize(unit.name)} for ${unit.name} already exists with another dimension, $dimension is not compatible with ${existingUnit.dimension}.")
 
             isNewDimensionReference(dimension, unit.scaleFactor) -> {
-                addUnit(UnitValue(UnitSymbol.of(symbol), 1.0, dimension))
-                val block = generateUnitBlockWithNewDimension(symbol, unit.name, dimensionName, unit.comment)
+                addUnit(UnitValue(UnitSymbol.of(unit.name), 1.0, dimension))
+                val block = generateUnitBlockWithNewDimension(sanitizedSymbol, unit.name, dimensionName, unit.comment)
                 writer.writeAppendFile("unit", block)
             }
 
             else -> {
-                addUnit(UnitValue(UnitSymbol.of(symbol), unit.scaleFactor, dimension))
+                addUnit(UnitValue(UnitSymbol.of(unit.name), unit.scaleFactor, dimension))
                 val refUnitSymbol = unit.refUnitName
 
-                if (refUnitSymbol == symbol) {
-                    throw ImportException("Unit $symbol is referencing itself in its own declaration")
+                if (refUnitSymbol == sanitizedSymbol) {
+                    throw ImportException("Unit $sanitizedSymbol is referencing itself in its own declaration")
                 } else {
                     val block =
-                        generateUnitAliasBlock(symbol, unit.name, "${unit.scaleFactor} $refUnitSymbol", unit.comment)
+                        generateUnitAliasBlock(sanitizedSymbol, unit.name, "${unit.scaleFactor} $refUnitSymbol", unit.comment)
                     writer.writeAppendFile("unit", block)
                 }
             }
