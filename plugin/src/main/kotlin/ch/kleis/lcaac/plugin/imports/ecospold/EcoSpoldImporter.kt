@@ -165,7 +165,7 @@ class EcoSpoldImporter(
                     elementaryExchanges = activityDataset.flowData.elementaryExchanges.map { originalExchange ->
                         methodMapping[originalExchange.elementaryExchangeId]?.let { mapping ->
                             when (mapping) {
-                                is OrphanMappingExchange, is UnkownMappingExchange -> originalExchange.copy(
+                                is OrphanMappingExchange, is UnknownMappingExchange -> originalExchange.copy(
                                     comment = originalExchange.comment?.let { it + "\n" + mapping.comment }
                                         ?: mapping.comment,
                                     printAsComment = true,
