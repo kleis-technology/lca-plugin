@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.imports.ecospold
 
-import ch.kleis.lcaac.plugin.imports.ecospold.model.ActivityDataset
+import ch.kleis.lcaac.plugin.imports.ecospold.model.*
 import ch.kleis.lcaac.plugin.imports.model.ImportedImpactExchange
 import ch.kleis.lcaac.plugin.imports.simapro.sanitizeSymbol
 import ch.kleis.lcaac.plugin.imports.util.ImportException
@@ -15,6 +15,24 @@ class EcoSpoldProcessMapperTest {
 
     private val sub: ActivityDataset = EcoSpold2Fixture.buildData()
     private val processDict: Map<String, EcoSpoldImporter.ProcessDictRecord> = EcoSpold2Fixture.buildProcessDict()
+
+    @Test
+    fun map_shouldMapKnownUnits() {
+        // When
+        val importedProcess = EcoSpoldProcessMapper.map(
+            sub,
+            processDict,
+            setOf("kg CO2-Eq"),
+            methodName = "EF v3.1",
+        )
+        val actual = importedProcess.impactBlocks.toList().first()
+            .exchanges.toList()[1]
+            .unit
+
+        // Then
+        val expected = "kg_CO2_Eq"
+        assertEquals(expected, actual)
+    }
 
     @Test
     fun map_ShouldMapMeta() {
