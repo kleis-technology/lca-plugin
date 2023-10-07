@@ -7,7 +7,7 @@ import org.openlca.simapro.csv.process.ProcessBlock
 import java.io.File
 
 
-class ProcessRenderer(mode: SubstanceImportMode) {
+class SimaproProcessRenderer(mode: SubstanceImportMode) {
     private val mapper = SimaproProcessMapper.of(mode)
     var nbProcesses: Int = 0
 

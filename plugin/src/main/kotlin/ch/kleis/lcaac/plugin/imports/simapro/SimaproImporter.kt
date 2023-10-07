@@ -36,7 +36,7 @@ class SimaproImporter(
         private val LOG = Logger.getInstance(SimaproImporter::class.java)
     }
 
-    private val processRenderer = ProcessRenderer(settings.importSubstancesMode)
+    private val processRenderer = SimaproProcessRenderer(settings.importSubstancesMode)
     private val simaproSubstanceRenderer = SimaproSubstanceRenderer()
     private val inputParameterRenderer = InputParameterRenderer()
     private var counting: CountingInputStream? = null
@@ -62,7 +62,7 @@ class SimaproImporter(
 
     override fun collectResults(): List<Imported> {
         return listOf(
-            Imported(unitManager.getNumberOfAddInvocations(), "units"),
+            Imported(unitManager.numberOfAddInvocations, "units"),
             Imported(inputParameterRenderer.nbParameters, "parameters"),
             Imported(processRenderer.nbProcesses, "processes"),
             Imported(simaproSubstanceRenderer.nbSubstances, "substances")
