@@ -31,6 +31,7 @@ class EcoSpoldImporterTest : BasePlatformTestCase() {
     private var controller = mockk<AsyncTaskController>()
 
     private val outputUnitFile = "$rootFolder${File.separatorChar}unit.lca"
+    private val processFile = "$rootFolder${File.separatorChar}processes${File.separatorChar}electricity_high_voltage_import_from_uz_tj.lca"
 
     override fun setUp() {
         super.setUp()
@@ -92,6 +93,20 @@ class EcoSpoldImporterTest : BasePlatformTestCase() {
             because we avoid (as much as possible) redefining units that are already known.
          */
         assertEquals(708, lcaFile.getUnitDefinitions().size)
+    }
+
+    @Test
+    fun test_import_thenValidProcessFile() {
+        // given
+        val importer = EcoSpoldImporter(settings)
+
+        // when
+        importer.import(controller, watcher)
+        val vf = VirtualFileManager.getInstance().findFileByNioPath(Path.of(processFile))!!
+        val lcaFile = PsiManager.getInstance(project).findFile(vf) as LcaFile
+
+        // then
+        assertEquals(1, lcaFile.getProcesses().size)
     }
 
     @Test
