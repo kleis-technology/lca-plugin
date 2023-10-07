@@ -7,7 +7,6 @@ import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
 import ch.kleis.lcaac.plugin.imports.util.ImportException
-import ch.kleis.lcaac.plugin.imports.util.StringUtils
 import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import org.hamcrest.CoreMatchers.containsString
@@ -27,13 +26,6 @@ class UnitRendererTest {
     @Before
     fun before() {
         every { writer.writeAppendFile(capture(pathSlot), capture(bodySlot)) } returns Unit
-        mockkObject(StringUtils)
-        every { StringUtils.sanitize("k+g") } returns "k_g"
-        every { StringUtils.sanitize("kg") } returns "kg"
-        every { StringUtils.sanitize("s") } returns "s"
-        every { StringUtils.sanitize("s€c") } returns "s_c"
-        every { StringUtils.sanitize("me2") } returns "me2"
-        every { StringUtils.sanitize("m2") } returns "m2"
     }
 
     @After
@@ -44,8 +36,8 @@ class UnitRendererTest {
     @Test
     fun test_writeUnit_ShouldReturnWithoutWritingWhenAlreadyExistWithCompatibleDimension() {
         // Given
-        val sut = UnitRenderer.of(mapOf(Pair("kg", UnitValue(UnitSymbol.of("k+g"), 1.0, Prelude.mass))))
-        val data = ImportedUnit("Mass", "kg", 1.0, "kg")
+        val sut = UnitRenderer.of(mapOf("kg" to UnitValue(UnitSymbol.of("k+g"), 1.0, Prelude.mass)))
+        val data = ImportedUnit("Mass", "k+g", 1.0, "kg")
 
         // When
         sut.render(data, writer)
@@ -187,9 +179,9 @@ class UnitRendererTest {
     @Test
     fun test_writeUnit_ShouldFailWithAnotherDimension() {
         // Given
-        val sut = UnitRenderer.of(mapOf(Pair("kg", UnitValue(UnitSymbol.of("k+g"), 1.0, Prelude.mass))))
-        val data = ImportedUnit("Time", "kg", 1.0, "kg")
-        val message = "A Unit kg for kg already exists with another dimension, time is not compatible with mass."
+        val sut = UnitRenderer.of(mapOf("kg" to UnitValue(UnitSymbol.of("k+g"), 1.0, Prelude.mass)))
+        val data = ImportedUnit("Time", "k+g", 1.0, "kg")
+        val message = "A Unit kg for k+g already exists with another dimension, time is not compatible with mass."
 
         // When + Then
         val e = assertFailsWith(ImportException::class, null) { sut.render(data, writer) }
