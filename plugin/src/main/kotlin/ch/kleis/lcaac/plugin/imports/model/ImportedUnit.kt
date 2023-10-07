@@ -26,7 +26,7 @@ class ImportedUnitAliasFor(
     baseUnitExpressionStr: String, // e.g., kg/l, m2*year
 ) {
     val baseUnitExpressionStr = when(baseUnitExpressionStr) {
-        "metric ton*km" -> "metric_ton*km"
+        "metric ton*km" -> "ton*km"
         else -> baseUnitExpressionStr
     }
 }

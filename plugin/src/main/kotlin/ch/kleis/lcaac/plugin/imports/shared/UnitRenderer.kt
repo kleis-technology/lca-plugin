@@ -9,9 +9,9 @@ class UnitRenderer(
     private val serializer: UnitSerializer = UnitSerializer()
 ) {
     fun render(unit: ImportedUnit, writer: ModelWriter) {
-        if (manager.isAlreadyKnown(unit)) return
-        manager.add(unit)
-        val serialized = serializer.serialize(unit)
-        writer.writeAppendFile("unit", serialized)
+        manager.add(unit) {
+            val serialized = serializer.serialize(it)
+            writer.writeAppendFile("unit", serialized)
+        }
     }
 }

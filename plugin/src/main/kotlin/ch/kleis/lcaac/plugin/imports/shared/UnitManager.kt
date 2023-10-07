@@ -17,18 +17,16 @@ class UnitManager {
         val LOG = Logger.getInstance(UnitManager::class.java)
     }
 
-    fun add(unit: ImportedUnit) {
-        val ref = unit.ref()
+    fun add(unit: ImportedUnit, next: (ImportedUnit) -> Unit) {
         numberOfAddInvocations += 1
-        if (importedUnitsByRef.containsKey(ref)) {
-            LOG.warn("Reference $ref already exists: $unit skipped")
-            return
-        }
+        if (isAlreadyKnown(unit)) return
+        val ref = unit.ref()
         importedUnitsByRef[ref] = unit
         knownUnitRefs.add(ref)
+        next(unit)
     }
 
-    fun isAlreadyKnown(unit: ImportedUnit): Boolean {
+    private fun isAlreadyKnown(unit: ImportedUnit): Boolean {
         return knownUnitRefs.contains(unit.ref())
     }
 

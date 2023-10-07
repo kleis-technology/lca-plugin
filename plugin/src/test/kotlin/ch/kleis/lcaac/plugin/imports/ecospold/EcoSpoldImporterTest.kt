@@ -72,7 +72,7 @@ class EcoSpoldImporterTest : BasePlatformTestCase() {
 
         // then
         TestCase.assertTrue(result is SummaryInSuccess)
-        assertEquals("728 units, 1 processes", result.getResourcesAsString())
+        assertEquals("729 units, 1 processes", result.getResourcesAsString())
         TestCase.assertTrue(result.durationInSec >= 0)
     }
 
@@ -105,7 +105,7 @@ class EcoSpoldImporterTest : BasePlatformTestCase() {
             "cm2_m_year" to "1.0E-4 m2*year",
             "km2_m_year" to "1000000.0 m2*year",
             "square_feet_m_degree_F_m_hour_sl_British_thermal_unit_ISO_IT" to "0.176110184 m2*K/W",
-            "clo" to "0.155 m2 * K/W",
+            "clo" to "0.155 m2*K/W",
             "pound_per_cubic_foot" to "0.0160184633739601 kg/l",
             "short_ton_m_mile" to "1.45997231821056 ton*km",
             "km_m_year" to "1000.0 m*year",
@@ -115,7 +115,7 @@ class EcoSpoldImporterTest : BasePlatformTestCase() {
             "kgkm" to "0.001 ton*km",
             "short_ton_per_cubic_yard" to "1.18655284251557 kg/l",
             "ha_m_year" to "10000.0 m2*year",
-            "mm2_m_year" to "10000.0 m2*year",
+            "mm2_m_year" to "1.0E-6 m2*year",
             "pound_per_gallon_Imperial" to "0.0997763726631017 kg/l",
             "tog" to "0.1 m2*K/W",
             "long_ton_per_cubic_yard" to "1.32893918518697 kg/l",
@@ -129,7 +129,7 @@ class EcoSpoldImporterTest : BasePlatformTestCase() {
 
         // then
         cases.forEach { case ->
-            assertEquals(case.second, actual[case.first]?.aliasForField?.dataExpression?.text)
+            assertEquals("case ${case.first}", case.second, actual[case.first]?.aliasForField?.dataExpression?.text)
         }
     }
 
