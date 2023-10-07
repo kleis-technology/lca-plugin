@@ -10,11 +10,12 @@ import org.xml.sax.Attributes
 import java.io.InputStream
 
 object Parser {
-    fun readUnits(stream: InputStream): List<UnitConversion> {
+    fun readUnitConversions(stream: InputStream): List<UnitConversion> {
         val builder = getSAXBuilder()
         val root = rootElt(builder, stream)
         fun dimension(d: String): String {
             // Fix Typo in EcoInvent
+            @Suppress("SpellCheckingInspection")
             return if (d != "lenght") d else "length"
         }
 
@@ -29,6 +30,25 @@ object Parser {
             }
     }
 
+    // TODO: Test me
+    fun readIndicators(stream: InputStream, methodName: String): List<Indicator> {
+        val builder = getSAXBuilder()
+        val root = rootElt(builder, stream)
+
+        return root.getChildren("impactMethod").asSequence()
+            .filter { it.getChildText("name") == methodName }
+            .flatMap { m -> m.getChildren("category") }
+            .map { c ->
+                c.getChild("indicator").let {
+                    Indicator(
+                        it.getChildText("name"),
+                        it.getChildText("unitName"),
+                    )
+                }
+            }.toList()
+    }
+
+    @Deprecated("use readIndicators instead")
     fun readMethodUnits(stream: InputStream, methodName: String): List<UnitConversion> {
         val builder = getSAXBuilder()
         val root = rootElt(builder, stream)
@@ -37,15 +57,17 @@ object Parser {
         return root.getChildren("impactMethod").asSequence()
             .filter { it.getChildText("name") == methodName }
             .flatMap { m -> m.getChildren("category") }
-            .map { c -> c.getChild("indicator").let {
-                UnitConversion(
-                    1.0,
-                    realName(it.getChildText("unitName")),
-                    "No Ref",
-                    realName(it.getChildText("unitName")), // TODO: use indicator name as dimension
-                    it.getChildText("name"),
-                )
-            }}
+            .map { c ->
+                c.getChild("indicator").let {
+                    UnitConversion(
+                        1.0,
+                        realName(it.getChildText("unitName")),
+                        "No Ref",
+                        realName(it.getChildText("unitName")), // TODO: use indicator name as dimension
+                        it.getChildText("name"),
+                    )
+                }
+            }
             .distinctBy { it.fromUnit }
             .toList()
     }

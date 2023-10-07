@@ -1,9 +1,5 @@
 package ch.kleis.lcaac.plugin.imports.ecospold
 
-import ch.kleis.lcaac.core.lang.evaluator.ToValue
-import ch.kleis.lcaac.core.math.basic.BasicNumber
-import ch.kleis.lcaac.core.math.basic.BasicOperations
-import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.EcoSpoldImportSettings
 import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.LCIASettings
 import ch.kleis.lcaac.plugin.ide.imports.ecospold.settings.UPRSettings
@@ -14,12 +10,13 @@ import ch.kleis.lcaac.plugin.imports.ecospold.lci.*
 import ch.kleis.lcaac.plugin.imports.ecospold.model.ActivityDataset
 import ch.kleis.lcaac.plugin.imports.ecospold.model.Parser
 import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
-import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
+import ch.kleis.lcaac.plugin.imports.model.ImportedUnitAliasFor
+import ch.kleis.lcaac.plugin.imports.shared.UnitManager
+import ch.kleis.lcaac.plugin.imports.shared.UnitRenderer
 import ch.kleis.lcaac.plugin.imports.util.AsyncTaskController
 import ch.kleis.lcaac.plugin.imports.util.AsynchronousWatcher
 import ch.kleis.lcaac.plugin.imports.util.ImportInterruptedException
 import ch.kleis.lcaac.plugin.imports.util.StringUtils
-import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 import com.intellij.openapi.diagnostic.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -69,10 +66,7 @@ class EcoSpoldImporter(
         is UPRSettings -> "EcoSpold LCI library file."
         is LCIASettings -> settings.methodName
     }
-    private val mapper = ToValue(BasicOperations)
-    private val predefinedUnits = Prelude.unitMap<BasicNumber>()
-        .mapValues { with(mapper) { it.value.toUnitValue() } }
-    private val unitRenderer = EcoSpoldUnitRenderer.of(predefinedUnits)
+    private val unitManager = UnitManager()
 
     override fun importAll(controller: AsyncTaskController, watcher: AsynchronousWatcher) {
         val methodMapping =
@@ -112,7 +106,7 @@ class EcoSpoldImporter(
 
     override fun collectResults(): List<Imported> {
         return listOf(
-            Imported(unitRenderer.nbUnit, "units"),
+            Imported(unitManager.getNumberOfAddInvocations(), "units"),
             Imported(processRenderer.nbProcesses, "processes"),
         )
     }
@@ -143,7 +137,7 @@ class EcoSpoldImporter(
             }.buffer()
             .flowOn(Dispatchers.Default)
 
-        val knownUnitSymbols = unitRenderer.knownUnitsByRef.values.map { it.symbol.toString() }.toSet()
+        val knownUnitSymbols = emptySet<String>() // TODO: EcoSpoldManager
         runBlocking {
             parsedEntries.collect { it: Pair<String, ActivityDataset> ->
                 writeImportedDataset(it.second, processDict, knownUnitSymbols, writer, it.first)
@@ -151,7 +145,7 @@ class EcoSpoldImporter(
         }
 
         val duration = Duration.between(start, Instant.now())
-        renderMain(writer, unitRenderer.nbUnit, processRenderer.nbProcesses, methodName, duration)
+        renderMain(writer, unitManager.getNumberOfAddInvocations(), processRenderer.nbProcesses, methodName, duration)
     }
 
     private fun buildMethodMappingFunction(
@@ -193,35 +187,39 @@ class EcoSpoldImporter(
         f: SevenZFile,
         writer: ModelWriter
     ) {
+        val fromPrelude: Sequence<ImportedUnit> = sequenceOf()
+
         val unitConversionFile = entries.firstOrNull { it.name.endsWith("UnitConversions.xml") }
         val fromMeta = f.getInputStream(unitConversionFile).use {
-            val unitConversions = Parser.readUnits(it)
+            val unitConversions = Parser.readUnitConversions(it)
             unitConversions.asSequence()
                 .map { u ->
                     ImportedUnit(
-                        u.dimension, u.fromUnit, u.factor,
-                        sanitize(sanitizeSymbol(u.toUnit), toLowerCase = false)
+                        u.dimension,
+                        u.fromUnit,
+                        ImportedUnitAliasFor(
+                            u.factor,
+                            u.toUnit,
+                        ),
                     )
                 }
-                .filter { u -> u.name != "foot-candle" }
         }
 
         val methodsFile = entries.firstOrNull { it.name.endsWith("ImpactMethods.xml") }
         val fromMethod = f.getInputStream(methodsFile).use {
-            val unitConversions = Parser.readMethodUnits(it, methodName)
-            unitConversions.asSequence()
-                .map { u ->
+            val indicators = Parser.readIndicators(it, methodName)
+            indicators.asSequence()
+                .map { indicator ->
                     ImportedUnit(
-                        u.dimension, u.fromUnit, u.factor,
-                        sanitize(sanitizeSymbol(u.toUnit), toLowerCase = false)
+                        indicator.name,
+                        indicator.unitName,
                     )
                 }
-                .filter { u -> u.name != "foot-candle" }
-                .filter { u -> !predefinedUnits.containsKey(u.name) }
         }
 
-        (fromMeta + fromMethod)
-            .distinctBy { it.name }
+        val unitRenderer = UnitRenderer(unitManager)
+        (fromPrelude + fromMeta + fromMethod)
+            .distinctBy { it.symbol }
             .forEach { unitRenderer.render(it, writer) }
     }
 

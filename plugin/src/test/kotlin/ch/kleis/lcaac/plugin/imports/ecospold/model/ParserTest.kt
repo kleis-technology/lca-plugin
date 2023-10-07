@@ -12,7 +12,7 @@ class ParserTest {
         this::class.java.getResourceAsStream("units.xml")!!.use {
 
             // When
-            val units = Parser.readUnits(it)
+            val units = Parser.readUnitConversions(it)
 
             // Then
             assertEquals(1, units.size)

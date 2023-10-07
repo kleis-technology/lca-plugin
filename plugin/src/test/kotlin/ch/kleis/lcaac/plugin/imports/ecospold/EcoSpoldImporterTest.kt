@@ -16,7 +16,6 @@ import io.mockk.*
 import junit.framework.TestCase
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import org.junit.runners.Parameterized.Parameters
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -89,7 +88,7 @@ class EcoSpoldImporterTest : BasePlatformTestCase() {
 
         // then
         /*
-            The number of unit definitions is different than the number of "imported units"
+            The number of unit definitions is different from the number of "imported units"
             because we avoid (as much as possible) redefining units that are already known.
          */
         assertEquals(708, lcaFile.getUnitDefinitions().size)
@@ -119,7 +118,7 @@ class EcoSpoldImporterTest : BasePlatformTestCase() {
             "mm2_m_year" to "10000.0 m2*year",
             "pound_per_gallon_Imperial" to "0.0997763726631017 kg/l",
             "tog" to "0.1 m2*K/W",
-            "long_ton_per_cubic_yard" to "1.32893918518697 kg_sl_l",
+            "long_ton_per_cubic_yard" to "1.32893918518697 kg/l",
         )
 
         // when

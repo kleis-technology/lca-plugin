@@ -1,4 +1,4 @@
-package ch.kleis.lcaac.plugin.imports.ecospold
+package ch.kleis.lcaac.plugin.imports.shared
 
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
@@ -17,7 +17,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertFailsWith
 
-class EcoSpoldEcoSpoldUnitRendererTest {
+class UnitRendererTest {
 
     private val writer = mockk<ModelWriter>()
     private val pathSlot = slot<String>()
@@ -34,9 +34,15 @@ class EcoSpoldEcoSpoldUnitRendererTest {
     }
 
     @Test
+    fun fail() {
+        TODO("Fix tests below")
+    }
+
+    /*
+    @Test
     fun test_writeUnit_ShouldReturnWithoutWritingWhenAlreadyExistWithCompatibleDimension() {
         // Given
-        val sut = EcoSpoldUnitRenderer.of(mapOf("kg" to UnitValue(UnitSymbol.of("k+g"), 1.0, Prelude.mass)))
+        val sut = UnitRenderer.of(mapOf("kg" to UnitValue(UnitSymbol.of("k+g"), 1.0, Prelude.mass)))
         val data = ImportedUnit("Mass", "k+g", 1.0, "kg")
 
         // When
@@ -48,7 +54,7 @@ class EcoSpoldEcoSpoldUnitRendererTest {
     @Test
     fun test_writeUnit_ShouldDeclareUnitWhenItsTheReferenceForNewDimension() {
         // Given
-        val sut = EcoSpoldUnitRenderer.of(mapOf(Pair("kg", UnitValue(UnitSymbol.of("k+g"), 1.0, Prelude.mass))))
+        val sut = UnitRenderer.of(mapOf(Pair("kg", UnitValue(UnitSymbol.of("k+g"), 1.0, Prelude.mass))))
         val data = ImportedUnit("Time", "s€C", 1.0, "s")
 
         // When
@@ -70,7 +76,7 @@ class EcoSpoldEcoSpoldUnitRendererTest {
     @Test
     fun render_ShouldDeclareUnitWithComment_WhenItsTheReferenceForNewDimension() {
         // Given
-        val sut = EcoSpoldUnitRenderer.of(mapOf(Pair("kg", UnitValue(UnitSymbol.of("k+g"), 1.0, Prelude.mass))))
+        val sut = UnitRenderer.of(mapOf(Pair("kg", UnitValue(UnitSymbol.of("k+g"), 1.0, Prelude.mass))))
         val data = ImportedUnit("Time", "s€c", 1.0, "s", "Test")
 
         // When
@@ -84,7 +90,7 @@ class EcoSpoldEcoSpoldUnitRendererTest {
     @Test
     fun test_writeUnit_ShouldDeclareAliasWhenItsAnAliasForExistingDimension() {
         // Given
-        val sut = EcoSpoldUnitRenderer.of(mapOf(Pair("m2", UnitValue(UnitSymbol.of("m2"), 1.0, Prelude.length.pow(2.0)))))
+        val sut = UnitRenderer.of(mapOf(Pair("m2", UnitValue(UnitSymbol.of("m2"), 1.0, Prelude.length.pow(2.0)))))
         val data = ImportedUnit("Area", "me2", 1.0, "m2")
 
         // When
@@ -106,7 +112,7 @@ class EcoSpoldEcoSpoldUnitRendererTest {
     @Test
     fun render_ShouldWriteComment_WhenDeclareAliasWhenItsAnAliasForExistingDimension() {
         // Given
-        val sut = EcoSpoldUnitRenderer.of(mapOf(Pair("m2", UnitValue(UnitSymbol.of("m2"), 1.0, Prelude.length.pow(2.0)))))
+        val sut = UnitRenderer.of(mapOf(Pair("m2", UnitValue(UnitSymbol.of("m2"), 1.0, Prelude.length.pow(2.0)))))
         val data = ImportedUnit("Area", "me2", 1.0, "m2", "Test")
 
         // When
@@ -120,7 +126,7 @@ class EcoSpoldEcoSpoldUnitRendererTest {
     @Test
     fun test_writeUnit_ShouldDeclareAliasWithTheRightCase() {
         // Given
-        val sut = EcoSpoldUnitRenderer.of(mapOf(Pair("MJ", UnitValue(UnitSymbol.of("MJ"), 1.0, Prelude.length.pow(2.0)))))
+        val sut = UnitRenderer.of(mapOf(Pair("MJ", UnitValue(UnitSymbol.of("MJ"), 1.0, Prelude.length.pow(2.0)))))
         val data = ImportedUnit("Energy", "GJ", 1000.0, "mj")
 
         // When
@@ -142,7 +148,7 @@ class EcoSpoldEcoSpoldUnitRendererTest {
     @Test
     fun test_writeUnit_ShouldDeclareAliasWhenItsNotTheReference() {
         // Given
-        val sut = EcoSpoldUnitRenderer.of(mapOf(Pair("s", UnitValue(UnitSymbol.of("S"), 1.0, Prelude.mass))))
+        val sut = UnitRenderer.of(mapOf(Pair("s", UnitValue(UnitSymbol.of("S"), 1.0, Prelude.mass))))
         val data = ImportedUnit("Time", "s€c", 2.0, "s")
 
         // When
@@ -164,7 +170,7 @@ class EcoSpoldEcoSpoldUnitRendererTest {
     @Test
     fun test_writeUnit_ShouldRecordNewUnit() {
         // Given
-        val sut = EcoSpoldUnitRenderer.of(emptyMap())
+        val sut = UnitRenderer.of(emptyMap())
         val data = ImportedUnit("Time", "s€c", 2.0, "s")
 
         // When
@@ -179,7 +185,7 @@ class EcoSpoldEcoSpoldUnitRendererTest {
     @Test
     fun test_writeUnit_ShouldFailWithAnotherDimension() {
         // Given
-        val sut = EcoSpoldUnitRenderer.of(mapOf("kg" to UnitValue(UnitSymbol.of("k+g"), 1.0, Prelude.mass)))
+        val sut = UnitRenderer.of(mapOf("kg" to UnitValue(UnitSymbol.of("k+g"), 1.0, Prelude.mass)))
         val data = ImportedUnit("Time", "k+g", 1.0, "kg")
         val message = "A Unit kg for k+g already exists with another dimension, time is not compatible with mass."
 
@@ -191,7 +197,7 @@ class EcoSpoldEcoSpoldUnitRendererTest {
     @Test
     fun test_writeUnit_ShouldFailWithAReferenceToItselfInAnExistingDimension() {
         // Given
-        val sut = EcoSpoldUnitRenderer.of(mapOf(Pair("g", UnitValue(UnitSymbol.of("g"), 1.0, Prelude.mass))))
+        val sut = UnitRenderer.of(mapOf(Pair("g", UnitValue(UnitSymbol.of("g"), 1.0, Prelude.mass))))
         val data = ImportedUnit("mass", "kg", 1.0, "kg")
         val message = "Unit kg is referencing itself in its own declaration"
 
@@ -232,7 +238,7 @@ class EcoSpoldEcoSpoldUnitRendererTest {
             Triple(Prelude.radioactivity, Dimension.of("amount"), false),
             Triple(Dimension.of("amount"), Prelude.radioactivity, false),
         )
-        val sut = EcoSpoldUnitRenderer.of(emptyMap())
+        val sut = UnitRenderer.of(emptyMap())
 
         // When + Then
         input.forEach {
@@ -244,4 +250,6 @@ class EcoSpoldEcoSpoldUnitRendererTest {
         }
     }
 
+
+     */
 }
