@@ -4,7 +4,6 @@ import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
 import ch.kleis.lcaac.plugin.imports.util.ImportException
 
 class UnitSerializer {
-    // TODO: Test me
     fun serialize(unit: ImportedUnit): CharSequence {
         return if (unit.isAliasFor()) serializeAliasFor(unit) else serializeLiteral(unit)
     }
