@@ -40,10 +40,10 @@ class ParserTest {
     @Test
     fun readDataSet_UPR_Parse() {
         // Given
-        this::class.java.getResourceAsStream("dataset_upr.xml")!!.use { istream ->
+        this::class.java.getResourceAsStream("dataset_upr.xml")!!.use { inputStream ->
 
             // When
-            val dataset = Parser.readDataset(istream)
+            val dataset = Parser.readDataset(inputStream)
 
             // Then
             assertEquals(12, dataset.flowData.intermediateExchanges.count())
@@ -70,9 +70,9 @@ class ParserTest {
             "bc47228e-c762-5260-8193-ad730d2af531",
             "fba1d66b-f42d-50e3-be7f-8fd2b919753c",
         )
-        this::class.java.getResourceAsStream("dataset_upr.xml")!!.use { istream ->
+        this::class.java.getResourceAsStream("dataset_upr.xml")!!.use { inputStream ->
             // When
-            val dataset = Parser.readDataset(istream)
+            val dataset = Parser.readDataset(inputStream)
             val inputExchanges = dataset.flowData.intermediateExchanges.filter { it.inputGroup != null }
 
             // Then
@@ -96,45 +96,23 @@ class ParserTest {
     }
 
     @Test
-    fun readMethodUnits_Parse() {
+    fun readIndicators_Parse() {
         // Given
         this::class.java.getResourceAsStream("impact_method.xml")!!.use {
 
             // When
-            val units = Parser.readMethodUnits(it, "EF v3.1 no LT")
+            val units = Parser.readIndicators(it, "EF v3.1 no LT")
 
             // Then
             assertEquals(
                 listOf(
-                    UnitConversion(
-                        1.0,
+                    Indicator(
+                        "acidification_no_lt",
                         "mol H+-Eq",
-                        "No Ref",
+                    ),
+                    Indicator(
+                        "another_to_ignore_because_new_dimension_should_not_be_duplicated",
                         "mol H+-Eq",
-                        "accumulated exceedance (AE) no LT"
-                    )
-                ), units
-            )
-        }
-    }
-
-    @Test
-    fun readMethodUnits_ShouldReplaceDimension_WithDimensionless() {
-        // Given
-        this::class.java.getResourceAsStream("impact_method.xml")!!.use {
-
-            // When
-            val units = Parser.readMethodUnits(it, "EF v1.0")
-
-            // Then
-            assertEquals(
-                listOf(
-                    UnitConversion(
-                        1.0,
-                        "dimensionless_impact",
-                        "No Ref",
-                        "dimensionless_impact",
-                        "accumulated Bad"
                     )
                 ), units
             )

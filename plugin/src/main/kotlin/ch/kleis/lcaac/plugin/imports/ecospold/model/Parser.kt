@@ -31,7 +31,6 @@ object Parser {
             }
     }
 
-    // TODO: Test me
     fun readIndicators(stream: InputStream, methodName: String): List<Indicator> {
         val builder = getSAXBuilder()
         val root = rootElt(builder, stream)
@@ -46,31 +45,6 @@ object Parser {
                 )
             }.toList()
     }
-
-    @Deprecated("use readIndicators instead")
-    fun readMethodUnits(stream: InputStream, methodName: String): List<UnitConversion> {
-        val builder = getSAXBuilder()
-        val root = rootElt(builder, stream)
-        fun realName(unitName: String) = if (unitName == "dimensionless") "dimensionless_impact" else unitName
-
-        return root.getChildren("impactMethod").asSequence()
-            .filter { it.getChildText("name") == methodName }
-            .flatMap { m -> m.getChildren("category") }
-            .map { c ->
-                c.getChild("indicator").let {
-                    UnitConversion(
-                        1.0,
-                        realName(it.getChildText("unitName")),
-                        "No Ref",
-                        realName(it.getChildText("unitName")), // TODO: use indicator name as dimension
-                        it.getChildText("name"),
-                    )
-                }
-            }
-            .distinctBy { it.fromUnit }
-            .toList()
-    }
-
 
     fun readDataset(stream: InputStream): ActivityDataset {
         val builder = getSAXBuilder()
