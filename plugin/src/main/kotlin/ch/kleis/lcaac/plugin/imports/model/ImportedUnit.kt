@@ -25,8 +25,5 @@ class ImportedUnitAliasFor(
     val scale: Double,
     baseUnitExpressionStr: String, // e.g., kg/l, m2*year
 ) {
-    val baseUnitExpressionStr = when(baseUnitExpressionStr) {
-        "metric ton*km" -> "ton*km"
-        else -> baseUnitExpressionStr
-    }
+    val baseUnitExpressionStr = sanitizeSymbol(baseUnitExpressionStr)
 }
