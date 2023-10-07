@@ -15,7 +15,7 @@ import ch.kleis.lcaac.plugin.imports.ecospold.model.ActivityDataset
 import ch.kleis.lcaac.plugin.imports.ecospold.model.Parser
 import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
 import ch.kleis.lcaac.plugin.imports.shared.serializer.UnitRenderer
-import ch.kleis.lcaac.plugin.imports.simapro.sanitizeSymbol
+import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 import ch.kleis.lcaac.plugin.imports.util.AsyncTaskController
 import ch.kleis.lcaac.plugin.imports.util.AsynchronousWatcher
 import ch.kleis.lcaac.plugin.imports.util.ImportInterruptedException
@@ -71,9 +71,8 @@ class EcoSpoldImporter(
         is LCIASettings -> settings.methodName
     }
     private val mapper = ToValue(BasicOperations)
-    private val predefinedUnits = Prelude.unitMap<BasicNumber>().values
-        .map { with(mapper) { it.toUnitValue() } }
-        .associateBy { it.symbol.toString() }
+    private val predefinedUnits = Prelude.unitMap<BasicNumber>()
+        .mapValues { with(mapper) { it.value.toUnitValue() } }
     private val unitRenderer = UnitRenderer.of(predefinedUnits)
 
     override fun importAll(controller: AsyncTaskController, watcher: AsynchronousWatcher) {
@@ -145,7 +144,7 @@ class EcoSpoldImporter(
             }.buffer()
             .flowOn(Dispatchers.Default)
 
-        val knownUnitSymbols = unitRenderer.knownUnits.values.map { it.symbol.toString() }.toSet()
+        val knownUnitSymbols = unitRenderer.knownUnitsByRef.values.map { it.symbol.toString() }.toSet()
         runBlocking {
             parsedEntries.collect { it: Pair<String, ActivityDataset> ->
                 writeImportedDataset(it.second, processDict, knownUnitSymbols, writer, it.first)

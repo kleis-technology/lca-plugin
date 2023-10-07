@@ -2,7 +2,7 @@ package ch.kleis.lcaac.plugin.imports.shared.serializer
 
 import ch.kleis.lcaac.plugin.imports.model.ImportedImpact
 import ch.kleis.lcaac.plugin.imports.model.ImportedSubstance
-import ch.kleis.lcaac.plugin.imports.simapro.sanitizeSymbol
+import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.asComment
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.formatMetaValues
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize

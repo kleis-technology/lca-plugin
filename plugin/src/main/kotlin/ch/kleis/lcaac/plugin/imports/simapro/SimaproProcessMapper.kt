@@ -9,6 +9,7 @@ import ch.kleis.lcaac.plugin.imports.simapro.substance.SimaproDictionary
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.BASE_PAD
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.compact
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
+import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 import org.openlca.simapro.csv.process.*
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter

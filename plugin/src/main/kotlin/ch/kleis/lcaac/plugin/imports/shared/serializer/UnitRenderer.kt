@@ -7,11 +7,18 @@ import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
-import ch.kleis.lcaac.plugin.imports.simapro.sanitizeSymbol
+import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 import ch.kleis.lcaac.plugin.imports.util.ImportException
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 
-class UnitRenderer(val knownUnits: MutableMap<String, UnitValue<BasicNumber>>) {
+class UnitRenderer(
+    val knownUnitsByRef: MutableMap<String, UnitValue<BasicNumber>>,
+) {
+    private val knownUnitsBySymbol = knownUnitsByRef
+        .entries.map { it.key to it.value }
+        .associateBy { it.second.symbol.toString() }
+        .toMutableMap()
+
     data class AliasFor(val alias: Dimension, val aliasFor: Dimension) {
         constructor(alias: String, aliasFor: Dimension) : this(Dimension.of(alias), aliasFor)
     }
@@ -40,31 +47,36 @@ class UnitRenderer(val knownUnits: MutableMap<String, UnitValue<BasicNumber>>) {
     fun render(unit: ImportedUnit, writer: ModelWriter) {
         val dimensionName = unit.dimension.lowercase()
         val dimension = Dimension.of(dimensionName)
-        val sanitizedSymbol = sanitizeSymbol(sanitize(unit.name, false))
+        val ref = sanitizeSymbol(sanitize(unit.name, false))
         val existingUnit = getUnit(unit.name)
 
         when {
-            existingUnit != null && areCompatible(existingUnit.dimension, dimension) -> { /* Nothing to do */
+            existingUnit != null && areCompatible(existingUnit.second.dimension, dimension) -> {
+                /* Nothing to do */
             }
 
-            existingUnit != null && !areCompatible(existingUnit.dimension, dimension) ->
-                throw ImportException("A Unit ${sanitize(unit.name)} for ${unit.name} already exists with another dimension, $dimension is not compatible with ${existingUnit.dimension}.")
+            existingUnit != null && !areCompatible(existingUnit.second.dimension, dimension) ->
+                throw ImportException("A Unit ${unit.refUnitName} for ${unit.name} already exists with another dimension, $dimension is not compatible with ${existingUnit.second.dimension}.")
 
             isNewDimensionReference(dimension, unit.scaleFactor) -> {
-                addUnit(UnitValue(UnitSymbol.of(unit.name), 1.0, dimension))
-                val block = generateUnitBlockWithNewDimension(sanitizedSymbol, unit.name, dimensionName, unit.comment)
+                addUnit(ref, UnitValue(UnitSymbol.of(unit.name), 1.0, dimension))
+                val block = generateUnitBlockWithNewDimension(ref, unit.name, dimensionName, unit.comment)
                 writer.writeAppendFile("unit", block)
             }
 
             else -> {
-                addUnit(UnitValue(UnitSymbol.of(unit.name), unit.scaleFactor, dimension))
-                val refUnitSymbol = unit.refUnitName
+                addUnit(ref, UnitValue(UnitSymbol.of(unit.name), unit.scaleFactor, dimension))
 
-                if (refUnitSymbol == sanitizedSymbol) {
-                    throw ImportException("Unit $sanitizedSymbol is referencing itself in its own declaration")
+                if (unit.refUnitName == ref) {
+                    throw ImportException("Unit $ref is referencing itself in its own declaration")
                 } else {
                     val block =
-                        generateUnitAliasBlock(sanitizedSymbol, unit.name, "${unit.scaleFactor} $refUnitSymbol", unit.comment)
+                        generateUnitAliasBlock(
+                            ref,
+                            unit.name,
+                            "${unit.scaleFactor} ${unit.refUnitName}",
+                            unit.comment
+                        )
                     writer.writeAppendFile("unit", block)
                 }
             }
@@ -98,17 +110,19 @@ class UnitRenderer(val knownUnits: MutableMap<String, UnitValue<BasicNumber>>) {
         }""".trimIndent()
     }
 
-    private fun getUnit(symbolName: String): UnitValue<BasicNumber>? {
-        val symbol = sanitize(symbolName, false)
-        return knownUnits[symbol]
+    private fun getUnit(symbol: String): Pair<String, UnitValue<BasicNumber>>? {
+        val ref = knownUnitsBySymbol[symbol]?.first ?: return null
+        val unit = knownUnitsByRef[ref] ?: return null
+        return ref to unit
     }
 
-    private fun addUnit(value: UnitValue<BasicNumber>) {
-        knownUnits[value.symbol.toString().lowercase()] = value
+    private fun addUnit(ref: String, value: UnitValue<BasicNumber>) {
+        knownUnitsByRef[ref] = value
+        knownUnitsBySymbol[value.symbol.toString()] = ref to value
     }
 
     private fun isNewDimensionReference(dimension: Dimension, scaleFactor: Double): Boolean {
-        val allDimWithReference = knownUnits.values
+        val allDimWithReference = knownUnitsByRef.values
             .filter { it.scale == 1.0 }
             .map { it.dimension }
         val isCompatibleWithNoOne = allDimWithReference
