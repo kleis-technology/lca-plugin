@@ -110,7 +110,7 @@ class EcoSpoldProcessMapper(
         Pair("Impacts for method $methodName", impactIndicatorList.filter { it.methodName == methodName }.map {
             ImportedImpactExchange(
                 it.amount.toString(),
-                unitManager.findRefBySymbolOrLeaveUnchanged(it.unitName),
+                unitManager.findRefBySymbolOrSanitizeSymbol(it.unitName),
                 sanitize(it.name),
                 listOf(it.categoryName),
             )
@@ -122,7 +122,7 @@ class EcoSpoldProcessMapper(
     ): ImportedTechnosphereExchange {
         val name = sanitize(e.name)
         val amount = e.amount.toString()
-        val unit = unitManager.findRefBySymbolOrLeaveUnchanged(e.unit)
+        val unit = unitManager.findRefBySymbolOrSanitizeSymbol(e.unit)
         val comments = buildIntermediateExchangeComments(e)
 
         when {
@@ -184,7 +184,7 @@ class EcoSpoldProcessMapper(
         ImportedBioExchange(
             comments = elementaryExchange.comment?.let { listOf(it) } ?: listOf(),
             qty = elementaryExchange.amount.toString(),
-            unit = unitManager.findRefBySymbolOrLeaveUnchanged(elementaryExchange.unit),
+            unit = unitManager.findRefBySymbolOrSanitizeSymbol(elementaryExchange.unit),
             name = sanitize(elementaryExchange.name),
             compartment = elementaryExchange.compartment,
             subCompartment = elementaryExchange.subCompartment,

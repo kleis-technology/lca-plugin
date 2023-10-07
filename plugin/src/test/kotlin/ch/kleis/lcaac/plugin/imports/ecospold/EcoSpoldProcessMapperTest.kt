@@ -254,7 +254,7 @@ class EcoSpoldProcessMapperTest {
         val sanitizedUnitName = sanitize(sanitizeSymbol(unitName), toLowerCase = false)
 
         // when
-        val result = unitManager.findRefBySymbolOrLeaveUnchanged(unitName)
+        val result = unitManager.findRefBySymbolOrSanitizeSymbol(unitName)
 
         // then
         assertEquals(sanitizedUnitName, result)
@@ -267,7 +267,7 @@ class EcoSpoldProcessMapperTest {
         val unitName = "mol H+-Eq"
 
         // when
-        val result = unitManager.findRefBySymbolOrLeaveUnchanged(unitName)
+        val result = unitManager.findRefBySymbolOrSanitizeSymbol(unitName)
 
         // then
         assertEquals(unitName, result)

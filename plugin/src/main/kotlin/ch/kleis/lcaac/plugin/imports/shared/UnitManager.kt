@@ -3,6 +3,7 @@ package ch.kleis.lcaac.plugin.imports.shared
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
+import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 import com.intellij.openapi.diagnostic.Logger
 
 /*
@@ -38,7 +39,7 @@ class UnitManager {
             ?: preludeUnitsByRef.entries.firstOrNull { it.value.symbol.toString() == symbol }?.key
     }
 
-    fun findRefBySymbolOrLeaveUnchanged(symbol: String): String {
-        return findRefBySymbol(symbol) ?: symbol
+    fun findRefBySymbolOrSanitizeSymbol(symbol: String): String {
+        return findRefBySymbol(symbol) ?: sanitizeSymbol(symbol)
     }
 }
