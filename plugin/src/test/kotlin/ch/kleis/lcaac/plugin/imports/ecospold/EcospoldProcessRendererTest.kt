@@ -1,25 +1,17 @@
 package ch.kleis.lcaac.plugin.imports.ecospold
 
 import ch.kleis.lcaac.plugin.imports.ModelWriter
-import io.mockk.*
-import org.junit.After
-import org.junit.Before
+import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
+import ch.kleis.lcaac.plugin.imports.shared.UnitManager
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.junit.Test
 import kotlin.test.assertEquals
 
 
 class EcospoldProcessRendererTest {
-    private val writer = mockk<ModelWriter>()
-
-    @Before
-    fun before() {
-    }
-
-    @After
-    fun after() {
-        unmockkAll()
-    }
-
     @Test
     fun test_shouldRender() {
         // given
@@ -36,10 +28,13 @@ class EcospoldProcessRendererTest {
         val processComment = ""
         val methodName = "EF v3.1"
 
-        val renderer = EcoSpoldProcessRenderer()
+        val unitManager = UnitManager()
+        unitManager.add(ImportedUnit("climate_change", "kg CO2-Eq"))
+        unitManager.add(ImportedUnit("acidification", "mol H+-Eq"))
+        val renderer = EcoSpoldProcessRenderer(unitManager, dict, writer, methodName)
 
         // when
-        renderer.render(data, dict, knownUnits, writer, processComment, methodName)
+        renderer.render(data, processComment)
 
         // then
         verify {

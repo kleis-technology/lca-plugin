@@ -95,6 +95,25 @@ class EcoSpoldImporterTest : BasePlatformTestCase() {
     }
 
     @Test
+    fun test_import_thenNoDuplicateDimensions() {
+        // given
+        val importer = EcoSpoldImporter(settings)
+
+        // when
+        importer.import(controller, watcher)
+        val vf = VirtualFileManager.getInstance().findFileByNioPath(Path.of(outputUnitFile))!!
+        val lcaFile = PsiManager.getInstance(project).findFile(vf) as LcaFile
+        val unitDefinitions = lcaFile.getUnitDefinitions()
+
+        // then
+        val grouped=  unitDefinitions
+            .filter { it.dimField != null }
+            .groupBy { it.dimField!!.text }
+            .filter { it.value.size > 1 }
+        assertEmpty(grouped.entries)
+    }
+
+    @Test
     fun test_import_shouldDealWithProblematicUnitCases() {
         // given
         val importer = EcoSpoldImporter(settings)

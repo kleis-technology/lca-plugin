@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.imports.ecospold.model
 
 import ch.kleis.lcaac.core.lang.expression.SubstanceType
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 import org.jdom2.Element
 import org.jdom2.JDOMFactory
 import org.jdom2.input.SAXBuilder
@@ -39,12 +40,10 @@ object Parser {
             .filter { it.getChildText("name") == methodName }
             .flatMap { m -> m.getChildren("category") }
             .map { c ->
-                c.getChild("indicator").let {
-                    Indicator(
-                        it.getChildText("name"),
-                        it.getChildText("unitName"),
-                    )
-                }
+                Indicator(
+                    sanitize(c.getChildText("name")),
+                    c.getChild("indicator").getChildText("unitName"),
+                )
             }.toList()
     }
 

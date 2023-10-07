@@ -21,13 +21,11 @@ import com.intellij.openapi.diagnostic.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
-import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry
 import org.apache.commons.compress.archivers.sevenz.SevenZFile
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.io.input.BOMInputStream
 import java.io.FileInputStream
-import java.io.InputStream
 import java.io.InputStreamReader
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
@@ -59,14 +57,13 @@ class EcoSpoldImporter(
         }
     }
 
-    private var totalValue = 1
-    private var currentValue = 0
-    private val processRenderer = EcoSpoldProcessRenderer()
+    private var totalSteps = 1
+    private var currentStep = 0
+    private val results: MutableList<Imported> = mutableListOf()
     private val methodName: String = when (settings) {
         is UPRSettings -> "EcoSpold LCI library file."
         is LCIASettings -> settings.methodName
     }
-    private val unitManager = UnitManager()
 
     override fun importAll(controller: AsyncTaskController, watcher: AsynchronousWatcher) {
         val methodMapping =
@@ -105,10 +102,7 @@ class EcoSpoldImporter(
     }
 
     override fun collectResults(): List<Imported> {
-        return listOf(
-            Imported(unitManager.getNumberOfAddInvocations(), "units"),
-            Imported(processRenderer.nbProcesses, "processes"),
-        )
+        return results
     }
 
     private fun importEntries(
@@ -119,33 +113,106 @@ class EcoSpoldImporter(
         watcher: AsynchronousWatcher
     ) {
         val start = Instant.now()
-        totalValue = f.entries.count()
+        totalSteps = f.entries.count()
 
-        val processDict = readProcessDict(f, f.entries)
+        /*
+            Build process dict.
+         */
+        val dictEntry = f.entries.first { it.name.endsWith("FilenameToActivityLookup.csv") }
+        val csvFormat = CSVFormat.Builder.create().setDelimiter(";").setHeader().build()
+        val records = CSVParser.parse(f.getInputStream(dictEntry), Charset.defaultCharset(), csvFormat)
+        val processDict = records.map {
+            ProcessDictRecord(
+                it["Filename"].substring(0, it["Filename"].indexOf("_")),
+                it["Filename"],
+                it["ActivityName"],
+                it["Location"],
+                it["ReferenceProduct"],
+            )
+        }.associateBy { it.processId }
 
-        // must happen before activity parsing because of #348.
-        importUnits(f.entries, f, writer)
+        /*
+            Import units.
+            Must happen before activity parsing because of #348.
+         */
+        val unitManager = UnitManager()
+        val unitConversionFile = f.entries.firstOrNull { it.name.endsWith("UnitConversions.xml") }
+        val fromMeta = f.getInputStream(unitConversionFile).use {
+            val unitConversions = Parser.readUnitConversions(it)
+            unitConversions.asSequence()
+                .map { u ->
+                    ImportedUnit(
+                        u.dimension,
+                        u.fromUnit,
+                        ImportedUnitAliasFor(
+                            u.factor,
+                            u.toUnit,
+                        ),
+                    )
+                }
+        }
+        val methodsFile = f.entries.firstOrNull { it.name.endsWith("ImpactMethods.xml") }
+        val fromMethod = f.getInputStream(methodsFile).use {
+            val indicators = Parser.readIndicators(it, methodName)
+            indicators.asSequence()
+                .map { indicator ->
+                    ImportedUnit(
+                        indicator.name,
+                        indicator.unitName,
+                    )
+                }
+        }
+        val unitRenderer = UnitRenderer(unitManager)
+        (fromMeta + fromMethod)
+            .distinctBy { it.symbol }
+            .forEach { unitRenderer.render(it, writer) }
+        results.add(Imported(unitManager.numberOfAddInvocations, "units"))
 
+        /*
+            Import processes.
+         */
         val methodMappingFunction = methodMapping?.let { buildMethodMappingFunction(it) } ?: { it }
         val parsedEntries = f.entries.asFlow()
             .filter { it.hasStream() }
             .filter { it.name.endsWith(".spold") }
             .map {
-                (it.name to parseEntry(f.getInputStream(it), controller, watcher))
+                if (!controller.isActive()) throw ImportInterruptedException()
+                val activityDataset: ActivityDataset = Parser.readDataset(f.getInputStream(it))
+                currentStep++
+                watcher.notifyProgress((100.0 * currentStep / totalSteps).roundToInt())
+                it.name to activityDataset
             }.map {
                 methodMappingFunction(it)
             }.buffer()
             .flowOn(Dispatchers.Default)
 
-        val knownUnitSymbols = emptySet<String>() // TODO: EcoSpoldManager
+        val processRenderer = EcoSpoldProcessRenderer(unitManager, processDict, writer, methodName)
         runBlocking {
             parsedEntries.collect { it: Pair<String, ActivityDataset> ->
-                writeImportedDataset(it.second, processDict, knownUnitSymbols, writer, it.first)
+                LOG.info("Read dataset from ${it.first}")
+                processRenderer.render(
+                    activityDataset = it.second,
+                    processComment = "from ${it.first}",
+                )
             }
         }
+        results.add(Imported(processRenderer.nbProcesses, "processes"))
 
+        /*
+            Main.
+         */
         val duration = Duration.between(start, Instant.now())
-        renderMain(writer, unitManager.getNumberOfAddInvocations(), processRenderer.nbProcesses, methodName, duration)
+        val s = duration.seconds
+        val durAsStr = String.format("%02dm %02ds", s / 60, (s % 60))
+        val block = """
+            Import Method: $methodName
+            Date: ${ZonedDateTime.now()}
+            Import Summary:
+                * ${unitManager.numberOfAddInvocations} units
+                * ${processRenderer.nbProcesses} processes
+            Duration: $durAsStr
+        """.trimIndent()
+        writer.writeFile("main", StringUtils.asComment(block))
     }
 
     private fun buildMethodMappingFunction(
@@ -182,66 +249,6 @@ class EcoSpoldImporter(
             )
         }
 
-    private fun importUnits(
-        entries: Iterable<SevenZArchiveEntry>,
-        f: SevenZFile,
-        writer: ModelWriter
-    ) {
-        val unitConversionFile = entries.firstOrNull { it.name.endsWith("UnitConversions.xml") }
-        val fromMeta = f.getInputStream(unitConversionFile).use {
-            val unitConversions = Parser.readUnitConversions(it)
-            unitConversions.asSequence()
-                .map { u ->
-                    ImportedUnit(
-                        u.dimension,
-                        u.fromUnit,
-                        ImportedUnitAliasFor(
-                            u.factor,
-                            u.toUnit,
-                        ),
-                    )
-                }
-        }
-
-        val methodsFile = entries.firstOrNull { it.name.endsWith("ImpactMethods.xml") }
-        val fromMethod = f.getInputStream(methodsFile).use {
-            val indicators = Parser.readIndicators(it, methodName)
-            indicators.asSequence()
-                .map { indicator ->
-                    ImportedUnit(
-                        indicator.name,
-                        indicator.unitName,
-                    )
-                }
-        }
-
-        val unitRenderer = UnitRenderer(unitManager)
-        (fromMeta + fromMethod)
-            .distinctBy { it.symbol }
-            .forEach { unitRenderer.render(it, writer) }
-    }
-
-    private fun renderMain(
-        writer: ModelWriter,
-        nbUnits: Int,
-        nbProcess: Int,
-        methodName: String,
-        duration: Duration
-    ) {
-        val s = duration.seconds
-        val durAsStr = String.format("%02dm %02ds", s / 60, (s % 60))
-        val block = """
-            Import Method: $methodName
-            Date: ${ZonedDateTime.now()}
-            Import Summary:
-                * $nbUnits units
-                * $nbProcess processes
-            Duration: $durAsStr
-        """.trimIndent()
-
-        writer.writeFile("main", StringUtils.asComment(block))
-    }
-
     data class ProcessDictRecord(
         val processId: String,
         val fileName: String,
@@ -250,52 +257,4 @@ class EcoSpoldImporter(
         val productName: String
     )
 
-    private fun readProcessDict(
-        f: SevenZFile,
-        entries: Iterable<SevenZArchiveEntry>
-    ): Map<String, ProcessDictRecord> {
-        val dictEntry = entries.first { it.name.endsWith("FilenameToActivityLookup.csv") }
-        val csvFormat = CSVFormat.Builder.create().setDelimiter(";").setHeader().build()
-        val records = CSVParser.parse(f.getInputStream(dictEntry), Charset.defaultCharset(), csvFormat)
-        return records.map {
-            ProcessDictRecord(
-                it["Filename"].substring(0, it["Filename"].indexOf("_")),
-                it["Filename"],
-                it["ActivityName"],
-                it["Location"],
-                it["ReferenceProduct"],
-            )
-        }.associateBy { it.processId }
-    }
-
-    private fun parseEntry(
-        input: InputStream,
-        controller: AsyncTaskController,
-        watcher: AsynchronousWatcher
-    ): ActivityDataset {
-        if (!controller.isActive()) throw ImportInterruptedException()
-        val activityDataset: ActivityDataset = Parser.readDataset(input)
-
-        currentValue++
-        watcher.notifyProgress((100.0 * currentValue / totalValue).roundToInt())
-        return activityDataset
-    }
-
-    private fun writeImportedDataset(
-        dataset: ActivityDataset,
-        processDict: Map<String, ProcessDictRecord>,
-        knownUnits: Set<String>,
-        writer: ModelWriter,
-        path: String
-    ) {
-        LOG.info("Read dataset from $path")
-        processRenderer.render(
-            data = dataset,
-            processDict = processDict,
-            knownUnits = knownUnits,
-            writer = writer,
-            processComment = "from $path",
-            methodName = methodName
-        )
-    }
 }

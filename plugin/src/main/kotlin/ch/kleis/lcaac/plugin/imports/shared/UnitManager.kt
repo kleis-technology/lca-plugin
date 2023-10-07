@@ -10,25 +10,35 @@ import com.intellij.openapi.diagnostic.Logger
  */
 class UnitManager {
     private val importedUnitsByRef: MutableMap<String, ImportedUnit> = mutableMapOf()
-    private val knownUnitRefs: MutableSet<String> = Prelude.unitMap<BasicNumber>().keys.toMutableSet()
-    private var numberOfAddInvocations: Int = 0
+    private val preludeUnitsByRef = Prelude.unitMap<BasicNumber>()
+    private val knownUnitRefs: MutableSet<String> = preludeUnitsByRef.keys.toMutableSet()
+    var numberOfAddInvocations: Int = 0
+        private set
+
 
     companion object {
         val LOG = Logger.getInstance(UnitManager::class.java)
     }
 
-    fun add(unit: ImportedUnit, next: (ImportedUnit) -> Unit) {
+    fun add(unit: ImportedUnit, next: (ImportedUnit) -> Unit = {}) {
         numberOfAddInvocations += 1
-        if (isAlreadyKnown(unit)) return
+        if (isKnown(unit)) return
         val ref = unit.ref()
         importedUnitsByRef[ref] = unit
         knownUnitRefs.add(ref)
         next(unit)
     }
 
-    private fun isAlreadyKnown(unit: ImportedUnit): Boolean {
+    private fun isKnown(unit: ImportedUnit): Boolean {
         return knownUnitRefs.contains(unit.ref())
     }
 
-    fun getNumberOfAddInvocations(): Int = numberOfAddInvocations
+    private fun findRefBySymbol(symbol: String): String? {
+        return importedUnitsByRef.values.firstOrNull { it.symbol == symbol }?.ref()
+            ?: preludeUnitsByRef.entries.firstOrNull { it.value.symbol.toString() == symbol }?.key
+    }
+
+    fun findRefBySymbolOrLeaveUnchanged(symbol: String): String {
+        return findRefBySymbol(symbol) ?: symbol
+    }
 }
