@@ -187,8 +187,6 @@ class EcoSpoldImporter(
         f: SevenZFile,
         writer: ModelWriter
     ) {
-        val fromPrelude: Sequence<ImportedUnit> = sequenceOf()
-
         val unitConversionFile = entries.firstOrNull { it.name.endsWith("UnitConversions.xml") }
         val fromMeta = f.getInputStream(unitConversionFile).use {
             val unitConversions = Parser.readUnitConversions(it)
@@ -218,7 +216,7 @@ class EcoSpoldImporter(
         }
 
         val unitRenderer = UnitRenderer(unitManager)
-        (fromPrelude + fromMeta + fromMethod)
+        (fromMeta + fromMethod)
             .distinctBy { it.symbol }
             .forEach { unitRenderer.render(it, writer) }
     }
