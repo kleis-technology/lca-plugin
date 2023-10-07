@@ -10,7 +10,6 @@ import ch.kleis.lcaac.plugin.imports.Imported
 import ch.kleis.lcaac.plugin.imports.Importer
 import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
-import ch.kleis.lcaac.plugin.imports.shared.serializer.UnitRenderer
 import ch.kleis.lcaac.plugin.imports.simapro.substance.SimaproSubstanceRenderer
 import ch.kleis.lcaac.plugin.imports.util.AsyncTaskController
 import ch.kleis.lcaac.plugin.imports.util.AsynchronousWatcher
@@ -43,7 +42,7 @@ class SimaproImporter(
     private val inputParameterRenderer = InputParameterRenderer()
     private var counting: CountingInputStream? = null
     private val mapper = ToValue(BasicOperations)
-    private val unitRenderer = UnitRenderer.of(
+    private val unitRenderer = SimaproUnitRenderer.of(
         Prelude.unitMap<BasicNumber>().values
             .map { with(mapper) { it.toUnitValue() } }
             .associateBy { it.symbol.toString() }

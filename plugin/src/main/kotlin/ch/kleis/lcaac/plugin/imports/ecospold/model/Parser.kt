@@ -42,7 +42,7 @@ object Parser {
                     1.0,
                     realName(it.getChildText("unitName")),
                     "No Ref",
-                    realName(it.getChildText("unitName")),
+                    realName(it.getChildText("unitName")), // TODO: use indicator name as dimension
                     it.getChildText("name"),
                 )
             }}

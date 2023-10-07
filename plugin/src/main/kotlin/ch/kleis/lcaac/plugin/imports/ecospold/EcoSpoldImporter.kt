@@ -14,7 +14,6 @@ import ch.kleis.lcaac.plugin.imports.ecospold.lci.*
 import ch.kleis.lcaac.plugin.imports.ecospold.model.ActivityDataset
 import ch.kleis.lcaac.plugin.imports.ecospold.model.Parser
 import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
-import ch.kleis.lcaac.plugin.imports.shared.serializer.UnitRenderer
 import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 import ch.kleis.lcaac.plugin.imports.util.AsyncTaskController
 import ch.kleis.lcaac.plugin.imports.util.AsynchronousWatcher
@@ -73,7 +72,7 @@ class EcoSpoldImporter(
     private val mapper = ToValue(BasicOperations)
     private val predefinedUnits = Prelude.unitMap<BasicNumber>()
         .mapValues { with(mapper) { it.value.toUnitValue() } }
-    private val unitRenderer = UnitRenderer.of(predefinedUnits)
+    private val unitRenderer = EcoSpoldUnitRenderer.of(predefinedUnits)
 
     override fun importAll(controller: AsyncTaskController, watcher: AsynchronousWatcher) {
         val methodMapping =

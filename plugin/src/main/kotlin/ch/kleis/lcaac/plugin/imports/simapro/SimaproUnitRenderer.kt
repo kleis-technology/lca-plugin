@@ -1,4 +1,4 @@
-package ch.kleis.lcaac.plugin.imports.shared.serializer
+package ch.kleis.lcaac.plugin.imports.simapro
 
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
@@ -11,7 +11,7 @@ import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 import ch.kleis.lcaac.plugin.imports.util.ImportException
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 
-class UnitRenderer(
+class SimaproUnitRenderer(
     val knownUnitsByRef: MutableMap<String, UnitValue<BasicNumber>>,
 ) {
     private val knownUnitsBySymbol = knownUnitsByRef
@@ -38,8 +38,8 @@ class UnitRenderer(
     var nbUnit = 0
 
     companion object {
-        fun of(existingUnits: Map<String, UnitValue<BasicNumber>>): UnitRenderer {
-            return UnitRenderer(existingUnits.toMutableMap())
+        fun of(existingUnits: Map<String, UnitValue<BasicNumber>>): SimaproUnitRenderer {
+            return SimaproUnitRenderer(existingUnits.toMutableMap())
         }
     }
 
