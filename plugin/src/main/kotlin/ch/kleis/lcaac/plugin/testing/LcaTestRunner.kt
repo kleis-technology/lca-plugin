@@ -34,8 +34,13 @@ class LcaTestRunner(
                 val parser = LcaLoader(collector.collect(file), BasicOperations)
                 parser.load()
             }
-            val evaluator = Evaluator(symbolTable, BasicOperations)
             val testCase = runReadAction { testCase(test) }
+            val updatedSymbolTable = symbolTable // TODO: This is a hack.
+                .copy(
+                    processTemplates = Register(symbolTable.processTemplates)
+                        .plus(mapOf(testCase.template.body.name to testCase.template))
+                )
+            val evaluator = Evaluator(updatedSymbolTable, BasicOperations)
             val trace = evaluator.trace(testCase)
             val program = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint())
             val analysis = program.run()
@@ -102,7 +107,7 @@ class LcaTestRunner(
                     params = emptyMap(),
                     locals = emptyMap(),
                     body = EProcess(
-                        name = test.testRef.name,
+                        name = "__${test.testRef.name}__", // TODO: This is a hack.
                         products = listOf(
                             ETechnoExchange(
                                 EQuantityScale(BasicNumber(1.0), EDataRef("u")),
