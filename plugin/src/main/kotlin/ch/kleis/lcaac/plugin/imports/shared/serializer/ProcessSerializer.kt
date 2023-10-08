@@ -78,7 +78,7 @@ object ProcessSerializer {
         blocks
             .filter { (_, l) -> l.isNotEmpty() }
             .forEach { (keyword, blockList) ->
-                blockList.forEach { block ->
+                blockList.filter { it.exchanges.any() }.forEach { block ->
                     val doc = if (block.comment?.isNotBlank() == true) " // ${block.comment}" else ""
                     val exchanges = serialize(block.exchanges).toString().prependIndent()
                     val exchangeBlock = "$keyword {$doc\n$exchanges\n}".prependIndent()
