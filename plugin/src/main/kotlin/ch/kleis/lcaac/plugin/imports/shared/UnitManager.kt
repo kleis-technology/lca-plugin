@@ -21,13 +21,18 @@ class UnitManager {
         val LOG = Logger.getInstance(UnitManager::class.java)
     }
 
-    fun add(unit: ImportedUnit, next: (ImportedUnit) -> Unit = {}) {
+    /*
+        Returns
+        - the original unit if it is effectively added
+        - null otherwise
+     */
+    fun add(unit: ImportedUnit): ImportedUnit? {
         numberOfAddInvocations += 1
-        if (isKnown(unit)) return
+        if (isKnown(unit)) return null
         val ref = unit.ref()
         importedUnitsByRef[ref] = unit
         knownUnitRefs.add(ref)
-        next(unit)
+        return unit
     }
 
     private fun isKnown(unit: ImportedUnit): Boolean {

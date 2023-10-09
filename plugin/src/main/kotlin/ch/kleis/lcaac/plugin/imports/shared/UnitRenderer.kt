@@ -9,7 +9,7 @@ class UnitRenderer(
     private val serializer: UnitSerializer = UnitSerializer()
 ) {
     fun render(unit: ImportedUnit, writer: ModelWriter) {
-        manager.add(unit) {
+        manager.add(unit)?.let {
             val serialized = serializer.serialize(it)
             writer.writeAppendFile("unit", serialized)
         }
