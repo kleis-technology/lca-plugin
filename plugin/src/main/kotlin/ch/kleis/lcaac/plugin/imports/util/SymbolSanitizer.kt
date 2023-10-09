@@ -1,4 +1,4 @@
-package ch.kleis.lcaac.plugin.imports.simapro
+package ch.kleis.lcaac.plugin.imports.util
 
 import ch.kleis.lcaac.plugin.language.reservedWords
 

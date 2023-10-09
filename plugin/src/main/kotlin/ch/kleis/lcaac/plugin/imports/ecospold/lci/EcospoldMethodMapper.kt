@@ -23,7 +23,7 @@ data class OrphanMappingExchange(
     )
 }
 
-data class UnkownMappingExchange(
+data class UnknownMappingExchange(
     override val elementaryExchangeId: String,
     override val comment: String = "",
 ) : MappingExchange {
@@ -72,7 +72,7 @@ object EcospoldMethodMapper {
                     }
 
                     record["compartment_status"].isEmpty() -> {
-                        record["id"] to UnkownMappingExchange(record["id"])
+                        record["id"] to UnknownMappingExchange(record["id"])
                     }
 
                     else -> mappedElement(record)

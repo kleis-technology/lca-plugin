@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.plugin.imports.simapro
 
+import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 import junit.framework.TestCase
 import org.junit.Test
 

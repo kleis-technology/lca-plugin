@@ -1,16 +1,14 @@
 package ch.kleis.lcaac.plugin.imports.simapro
 
-import ch.kleis.lcaac.core.lang.evaluator.ToValue
-import ch.kleis.lcaac.core.math.basic.BasicNumber
-import ch.kleis.lcaac.core.math.basic.BasicOperations
-import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.ide.imports.simapro.SimaproImportSettings
 import ch.kleis.lcaac.plugin.ide.imports.simapro.SubstanceImportMode
 import ch.kleis.lcaac.plugin.imports.Imported
 import ch.kleis.lcaac.plugin.imports.Importer
 import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
-import ch.kleis.lcaac.plugin.imports.shared.serializer.UnitRenderer
+import ch.kleis.lcaac.plugin.imports.model.ImportedUnitAliasFor
+import ch.kleis.lcaac.plugin.imports.shared.UnitManager
+import ch.kleis.lcaac.plugin.imports.shared.UnitRenderer
 import ch.kleis.lcaac.plugin.imports.simapro.substance.SimaproSubstanceRenderer
 import ch.kleis.lcaac.plugin.imports.util.AsyncTaskController
 import ch.kleis.lcaac.plugin.imports.util.AsynchronousWatcher
@@ -38,16 +36,11 @@ class SimaproImporter(
         private val LOG = Logger.getInstance(SimaproImporter::class.java)
     }
 
-    private val processRenderer = ProcessRenderer(settings.importSubstancesMode)
+    private val processRenderer = SimaproProcessRenderer(settings.importSubstancesMode)
     private val simaproSubstanceRenderer = SimaproSubstanceRenderer()
     private val inputParameterRenderer = InputParameterRenderer()
     private var counting: CountingInputStream? = null
-    private val mapper = ToValue(BasicOperations)
-    private val unitRenderer = UnitRenderer.of(
-        Prelude.unitMap<BasicNumber>().values
-            .map { with(mapper) { it.toUnitValue() } }
-            .associateBy { it.symbol.toString() }
-    )
+    private val unitManager = UnitManager()
 
     override fun importAll(controller: AsyncTaskController, watcher: AsynchronousWatcher) {
         val path = Path.of(settings.libraryFile)
@@ -69,7 +62,7 @@ class SimaproImporter(
 
     override fun collectResults(): List<Imported> {
         return listOf(
-            Imported(unitRenderer.nbUnit, "units"),
+            Imported(unitManager.numberOfAddInvocations, "units"),
             Imported(inputParameterRenderer.nbParameters, "parameters"),
             Imported(processRenderer.nbProcesses, "processes"),
             Imported(simaproSubstanceRenderer.nbSubstances, "substances")
@@ -114,6 +107,7 @@ class SimaproImporter(
         watcher.notifyProgress((100.0 * read / totalValue).roundToInt())
 
         if (!controller.isActive()) throw ImportInterruptedException()
+        val unitRenderer = UnitRenderer(unitManager)
         when {
             block.isProcessBlock && settings.importProcesses -> processRenderer.render(
                 block.asProcessBlock(),
@@ -126,7 +120,7 @@ class SimaproImporter(
 
             block.isUnitBlock && settings.importUnits -> block.asUnitBlock().units()
                 .map {
-                    ImportedUnit(it.quantity().lowercase(), it.name(), it.conversionFactor(), it.referenceUnit())
+                    ImportedUnit(it.quantity().lowercase(), it.name(), ImportedUnitAliasFor(it.conversionFactor(), it.referenceUnit()))
                 }
                 .forEach { unitRenderer.render(it, writer) }
 

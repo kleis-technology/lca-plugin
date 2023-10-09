@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.imports.ecospold.model
 
 import ch.kleis.lcaac.core.lang.expression.SubstanceType
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 import org.jdom2.Element
 import org.jdom2.JDOMFactory
 import org.jdom2.input.SAXBuilder
@@ -10,11 +11,12 @@ import org.xml.sax.Attributes
 import java.io.InputStream
 
 object Parser {
-    fun readUnits(stream: InputStream): List<UnitConversion> {
+    fun readUnitConversions(stream: InputStream): List<UnitConversion> {
         val builder = getSAXBuilder()
         val root = rootElt(builder, stream)
         fun dimension(d: String): String {
             // Fix Typo in EcoInvent
+            @Suppress("SpellCheckingInspection")
             return if (d != "lenght") d else "length"
         }
 
@@ -29,27 +31,20 @@ object Parser {
             }
     }
 
-    fun readMethodUnits(stream: InputStream, methodName: String): List<UnitConversion> {
+    fun readMethodIndicators(stream: InputStream, methodName: String): List<MethodIndicator> {
         val builder = getSAXBuilder()
         val root = rootElt(builder, stream)
-        fun realName(unitName: String) = if (unitName == "dimensionless") "dimensionless_impact" else unitName
 
         return root.getChildren("impactMethod").asSequence()
             .filter { it.getChildText("name") == methodName }
             .flatMap { m -> m.getChildren("category") }
-            .map { c -> c.getChild("indicator").let {
-                UnitConversion(
-                    1.0,
-                    realName(it.getChildText("unitName")),
-                    "No Ref",
-                    realName(it.getChildText("unitName")),
-                    it.getChildText("name"),
+            .map { c ->
+                MethodIndicator(
+                    sanitize(c.getChildText("name")),
+                    c.getChild("indicator").getChildText("unitName"),
                 )
-            }}
-            .distinctBy { it.fromUnit }
-            .toList()
+            }.toList()
     }
-
 
     fun readDataset(stream: InputStream): ActivityDataset {
         val builder = getSAXBuilder()
@@ -72,7 +67,7 @@ object Parser {
     }
 
 
-    private fun readIndicators(indicators: Sequence<Element>): Sequence<ImpactIndicator> {
+    private fun readImpactIndicators(indicators: Sequence<Element>): Sequence<ImpactIndicator> {
         return indicators.map {
             ImpactIndicator(
                 amount = it.getAttributeValue("amount").toDouble(),
@@ -129,7 +124,7 @@ object Parser {
                     properties = readProperties(it.getChildren("property")),
                 )
             }
-        val indicators = readIndicators(xmlDesc.getChildren("impactIndicator").asSequence())
+        val indicators = readImpactIndicators(xmlDesc.getChildren("impactIndicator").asSequence())
         val elementaryExchangeList = readElementaryExchanges(xmlDesc.getChildren("elementaryExchange"))
 
         return FlowData(intermediateExchangeList, indicators, elementaryExchangeList)

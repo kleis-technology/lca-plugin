@@ -42,7 +42,7 @@ class SimaproProcessRendererTest {
         every { mapper.map(processBlock) } returns importedProcess
         mockkObject(ProcessSerializer)
         every { ProcessSerializer.serialize(importedProcess) } returns "serialized process"
-        val sut = ProcessRenderer(SubstanceImportMode.SIMAPRO)
+        val sut = SimaproProcessRenderer(SubstanceImportMode.SIMAPRO)
 
         // When
         sut.render(processBlock, writer)

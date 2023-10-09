@@ -1,70 +1,102 @@
 package ch.kleis.lcaac.plugin.imports.ecospold
 
 import ch.kleis.lcaac.plugin.imports.ModelWriter
-import ch.kleis.lcaac.plugin.imports.ecospold.model.ActivityDataset
-import ch.kleis.lcaac.plugin.imports.ecospold.model.Classification
-import ch.kleis.lcaac.plugin.imports.model.ImportedProcess
-import ch.kleis.lcaac.plugin.imports.model.ImportedSubstance
-import ch.kleis.lcaac.plugin.imports.shared.serializer.ProcessSerializer
-import ch.kleis.lcaac.plugin.imports.shared.serializer.SubstanceSerializer
-import io.mockk.*
-import org.junit.After
-import org.junit.Before
+import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
+import ch.kleis.lcaac.plugin.imports.shared.UnitManager
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
+import org.junit.Test
 import kotlin.test.assertEquals
 
 
 class EcospoldProcessRendererTest {
-    private val writer = mockk<ModelWriter>()
-
-    @Before
-    fun before() {
-    }
-
-    @After
-    fun after() {
-        unmockkAll()
-    }
-
-    // FIXME
-    fun render_shouldRender() {
-        // Given
-        justRun { writer.writeFile( any(), any()) }
-        val activity = mockk<ActivityDataset>()
-        every { activity.description.activity.name } returns "pName"
-        every { activity.description.geography?.shortName } returns "ch"
-        every { activity.description.classifications } returns listOf(Classification("EcoSpold01Categories", "cat"))
-        mockkObject(EcoSpoldProcessMapper)
-        val importedProcess = mockk<ImportedProcess>()
-        every { EcoSpoldProcessMapper.map(activity, emptyMap(), emptySet()) } returns importedProcess
-        val comments = mutableListOf<String>()
-        every { importedProcess.comments } returns comments
-        every { importedProcess.uid } returns "uid"
-        mockkObject(ProcessSerializer)
-        every { ProcessSerializer.serialize(importedProcess) } returns "serialized process"
-
-        mockkObject(EcoSpoldSubstanceMapper)
-        val importedSubstance = mockk<ImportedSubstance>()
-        every { EcoSpoldSubstanceMapper.map(activity, "EF v3.1") } returns importedSubstance
-        mockkObject(SubstanceSerializer)
-        every { SubstanceSerializer.serialize(importedSubstance) } returns "serialized substance"
-        val sut = EcoSpoldProcessRenderer()
-
-        // When
-        sut.render(
-            data = activity,
-            processDict = emptyMap(),
-            knownUnits = emptySet(),
-            writer = writer,
-            processComment = "a comment",
-            methodName = "EF v3.1"
+    @Test
+    fun test_shouldRender() {
+        // given
+        val data = EcoSpold2Fixture.buildData()
+        val dict = EcoSpold2Fixture.buildProcessDict()
+        val knownUnits = setOf(
+            "kg CO2-Eq",
+            "mol H+-Eq",
         )
+        val writer = mockk<ModelWriter>()
+        val blockSlot = slot<CharSequence>()
+        every { writer.writeRotateFile(any(), capture(blockSlot)) } returns Unit
 
-        // Then, Better way to view large diff than using mockk.verify
-        verifyOrder {
-            writer.writeFile("processes/cat/uid.lca", "serialized process")
-            writer.writeFile("substances/cat/uid.lca", "serialized substance")
+        val processComment = ""
+        val methodName = "EF v3.1"
+
+        val unitManager = UnitManager()
+        unitManager.add(ImportedUnit("climate_change", "kg CO2-Eq"))
+        unitManager.add(ImportedUnit("acidification", "mol H+-Eq"))
+        val renderer = EcoSpoldProcessRenderer(unitManager, dict, writer, methodName)
+
+        // when
+        renderer.render(data, processComment)
+
+        // then
+        verify {
+            writer.writeRotateFile(any(), any())
         }
-        assertEquals(mutableListOf("a comment"), comments)
+        val expected = """
+            |process aname_ch {
+            |
+            |    meta {
+            |        "id" = "aId"
+            |        "name" = "aName"
+            |        "type" = "1"
+            |        "description" = "ageneralComment"
+            |        "energyValues" = "123"
+            |        "includedActivitiesStart" = "includedActivitiesStart"
+            |        "includedActivitiesEnd" = "includedActivitiesEnd"
+            |        "geography-shortname" = "ch"
+            |        "geography-comment" = "comment"
+            |        "System" = "Value"
+            |    }
+            |
+            |    labels {
+            |        productName = "pname"
+            |    }
+            |
+            |    products {
+            |        // pName
+            |        // PSystem = PValue
+            |        // // uncertainty: logNormal mean=1.2, variance=2.3, mu=3.4
+            |        // synonym_0 = p1
+            |        1.0 km pname allocate 100.0 percent
+            |    }
+            |
+            |    inputs {
+            |        // iName
+            |        3.0 kg iname from iname_producing_process_glo match (productName = "iname")
+            |        // iName2
+            |        25.0 m3 iname2 from iname2_producing_process_ch match (productName = "iname2")
+            |    }
+            |
+            |    emissions {
+            |        1.8326477008541038E-8 kg _1_2_dichlorobenzene(compartment = "air", sub_compartment = "urban air close to ground")
+            |    }
+            |
+            |    resources {
+            |        0.004413253823373581 kg nitrogen(compartment = "natural resource", sub_compartment = "land")
+            |    }
+            |
+            |    land_use {
+            |        0.04997982922431679 m2*year occupation_annual_crop_irrigated(compartment = "natural resource", sub_compartment = "land")
+            |    }
+            |
+            |    impacts { // Impacts for method EF v3.1
+            |        // acidification
+            |        0.0013 mol_H_p_Eq accumulated_exceedance_ae
+            |        // climate change
+            |        0.6 kg_CO2_Eq global_warming_potential_gwp100
+            |    }
+            |
+            |}
+            |
+        """.trimMargin()
+        assertEquals(expected, blockSlot.captured.toString())
     }
-
 }

@@ -3,7 +3,7 @@ package ch.kleis.lcaac.plugin.imports.simapro.substance
 import ch.kleis.lcaac.core.lang.expression.SubstanceType
 import ch.kleis.lcaac.plugin.imports.model.ImportedImpact
 import ch.kleis.lcaac.plugin.imports.model.ImportedSubstance
-import ch.kleis.lcaac.plugin.imports.simapro.sanitizeSymbol
+import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 import org.openlca.simapro.csv.enums.ElementaryFlowType
 import org.openlca.simapro.csv.refdata.ElementaryFlowRow
 
