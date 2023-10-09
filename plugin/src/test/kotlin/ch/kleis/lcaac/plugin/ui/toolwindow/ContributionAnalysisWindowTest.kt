@@ -62,6 +62,7 @@ class ContributionAnalysisWindowTest {
             val controllablePorts = IndexedCollection(listOf(propanol, water))
             val connections = IndexedCollection<MatrixRowIndex<BasicNumber>>(listOf(pCarrot, pCarrotPack))
             val analysis = ContributionAnalysis(
+                entryPoint = pCarrot,
                 impactFactors = ImpactFactorMatrix(
                     observablePorts, controllablePorts,
                     MatrixFixture.basic(
