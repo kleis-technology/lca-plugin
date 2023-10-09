@@ -153,7 +153,7 @@ class EcoSpoldImporter(
         }
         val methodsFile = f.entries.firstOrNull { it.name.endsWith("ImpactMethods.xml") }
         val fromMethod = f.getInputStream(methodsFile).use {
-            val indicators = Parser.readIndicators(it, methodName)
+            val indicators = Parser.readMethodIndicators(it, methodName)
             indicators.asSequence()
                 .map { indicator ->
                     ImportedUnit(

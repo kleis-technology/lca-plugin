@@ -101,16 +101,16 @@ class ParserTest {
         this::class.java.getResourceAsStream("impact_method.xml")!!.use {
 
             // When
-            val units = Parser.readIndicators(it, "EF v3.1 no LT")
+            val units = Parser.readMethodIndicators(it, "EF v3.1 no LT")
 
             // Then
             assertEquals(
                 listOf(
-                    Indicator(
+                    MethodIndicator(
                         "acidification_no_lt",
                         "mol H+-Eq",
                     ),
-                    Indicator(
+                    MethodIndicator(
                         "another_to_ignore_because_new_dimension_should_not_be_duplicated",
                         "mol H+-Eq",
                     )

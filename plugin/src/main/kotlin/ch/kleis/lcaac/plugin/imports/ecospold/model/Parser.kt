@@ -31,7 +31,7 @@ object Parser {
             }
     }
 
-    fun readIndicators(stream: InputStream, methodName: String): List<Indicator> {
+    fun readMethodIndicators(stream: InputStream, methodName: String): List<MethodIndicator> {
         val builder = getSAXBuilder()
         val root = rootElt(builder, stream)
 
@@ -39,7 +39,7 @@ object Parser {
             .filter { it.getChildText("name") == methodName }
             .flatMap { m -> m.getChildren("category") }
             .map { c ->
-                Indicator(
+                MethodIndicator(
                     sanitize(c.getChildText("name")),
                     c.getChild("indicator").getChildText("unitName"),
                 )
@@ -67,7 +67,7 @@ object Parser {
     }
 
 
-    private fun readIndicators(indicators: Sequence<Element>): Sequence<ImpactIndicator> {
+    private fun readImpactIndicators(indicators: Sequence<Element>): Sequence<ImpactIndicator> {
         return indicators.map {
             ImpactIndicator(
                 amount = it.getAttributeValue("amount").toDouble(),
@@ -124,7 +124,7 @@ object Parser {
                     properties = readProperties(it.getChildren("property")),
                 )
             }
-        val indicators = readIndicators(xmlDesc.getChildren("impactIndicator").asSequence())
+        val indicators = readImpactIndicators(xmlDesc.getChildren("impactIndicator").asSequence())
         val elementaryExchangeList = readElementaryExchanges(xmlDesc.getChildren("elementaryExchange"))
 
         return FlowData(intermediateExchangeList, indicators, elementaryExchangeList)
