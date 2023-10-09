@@ -1,49 +1,48 @@
-package ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis
+package ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.impact_assessment
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysis
-import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
+import ch.kleis.lcaac.core.lang.value.IndicatorValue
+import ch.kleis.lcaac.core.lang.value.ProductValue
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.plugin.ui.toolwindow.FloatingPointRepresentation
 import javax.swing.event.TableModelListener
 import javax.swing.table.TableModel
 
-class ContributionTableModel(
+class ImpactAssessmentTableModel(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
-    observablePortComparator: Comparator<MatrixColumnIndex<BasicNumber>>,
+    private val requestedProducts: List<ProductValue<BasicNumber>> = analysis.getEntryPoint()
+        .products
+        .map { it.product },
+    indicators: List<IndicatorValue<BasicNumber>> = analysis.getIndicators(),
 ) : TableModel {
-    private val sortedObservablePorts = analysis.getObservablePorts().getElements().sortedWith(observablePortComparator)
-    private val sortedControllablePorts = analysis.getControllablePorts().getElements().sortedBy { it.getUID() }
+    private val indicators: List<IndicatorValue<BasicNumber>> = indicators.sortedBy { it.getDisplayName() }
 
     override fun getRowCount(): Int {
-        return sortedObservablePorts.size
+        return indicators.size
     }
 
     override fun getColumnCount(): Int {
-        return 3 + sortedControllablePorts.size
+        return 2 + requestedProducts.size
     }
 
     override fun getColumnName(columnIndex: Int): String {
         if (columnIndex == 0) {
-            return "item"
+            return "indicator"
         }
 
         if (columnIndex == 1) {
-            return "quantity"
-        }
-
-        if (columnIndex == 2) {
             return "unit"
         }
 
-        val product = sortedControllablePorts[columnIndex - 3]
-        return "${product.getDisplayName()} [${product.referenceUnit().symbol}]"
+        val product = requestedProducts[columnIndex - 2]
+        return "${product.getShortName()} [${product.referenceUnit()}]"
     }
 
     override fun getColumnClass(columnIndex: Int): Class<*> {
         return when (columnIndex) {
             0 -> String::class.java
-            2 -> String::class.java
+            1 -> String::class.java
             else -> FloatingPointRepresentation::class.java
         }
     }
@@ -53,21 +52,16 @@ class ContributionTableModel(
     }
 
     override fun getValueAt(rowIndex: Int, columnIndex: Int): Any {
-        val outputProduct = sortedObservablePorts[rowIndex]
+        val indicator = indicators[rowIndex]
         if (columnIndex == 0) {
-            return outputProduct.getDisplayName()
+            return indicator.getDisplayName()
         }
-
-        val quantity = analysis.supplyOf(outputProduct)
         if (columnIndex == 1) {
-            return FloatingPointRepresentation.of(quantity.amount.value)
-        }
-        if (columnIndex == 2) {
-            return "${quantity.unit.symbol}"
+            return "${indicator.referenceUnit.symbol}"
         }
 
-        val inputProduct = sortedControllablePorts[columnIndex - 3]
-        val contribution = analysis.getPortContribution(outputProduct, inputProduct).amount.value
+        val product = requestedProducts[columnIndex - 2]
+        val contribution = analysis.getUnitaryImpacts(product)[indicator]?.amount?.value ?: 0.0
         return FloatingPointRepresentation.of(contribution)
     }
 

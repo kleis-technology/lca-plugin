@@ -27,6 +27,7 @@ import java.nio.file.Paths
 import javax.swing.JButton
 import javax.swing.JPanel
 
+// TODO: Remove this
 class ContributionAnalysisHugeWindow(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
     observablePortComparator: Comparator<MatrixColumnIndex<BasicNumber>>,
