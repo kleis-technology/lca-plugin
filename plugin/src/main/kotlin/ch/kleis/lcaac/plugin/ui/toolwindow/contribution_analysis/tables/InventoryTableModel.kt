@@ -48,6 +48,7 @@ class InventoryTableModel(
         return false
     }
 
+    @Suppress("DuplicatedCode")
     override fun getValueAt(rowIndex: Int, columnIndex: Int): Any {
         val substance = substances[rowIndex]
         if (columnIndex == 0) return substance.type()

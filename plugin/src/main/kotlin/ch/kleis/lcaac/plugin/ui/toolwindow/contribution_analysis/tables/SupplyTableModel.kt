@@ -49,6 +49,7 @@ class SupplyTableModel(
         return false
     }
 
+    @Suppress("DuplicatedCode")
     override fun getValueAt(rowIndex: Int, columnIndex: Int): Any {
         val product = products[rowIndex]
         if (columnIndex == 0) return product.name

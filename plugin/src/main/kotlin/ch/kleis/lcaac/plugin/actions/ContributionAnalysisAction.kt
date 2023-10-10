@@ -7,7 +7,6 @@ import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
-import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.ContributionAnalysisHugeWindow
 import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.ContributionAnalysisWindow
 import com.intellij.icons.AllIcons
 import com.intellij.notification.NotificationGroupManager
@@ -22,8 +21,6 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.ContentFactory
-
-const val DISPLAY_MAX_CELLS = 1000
 
 class AssessProcessAction(
     private val processName: String,
@@ -71,11 +68,7 @@ class AssessProcessAction(
                 comparator: Comparator<MatrixColumnIndex<BasicNumber>>
             ) {
                 val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("LCA Output") ?: return
-                val assessResultContent = if (analysis.getNbCells() <= DISPLAY_MAX_CELLS) {
-                    ContributionAnalysisWindow(analysis, comparator, project, processName).getContent()
-                } else {
-                    ContributionAnalysisHugeWindow(analysis, comparator, "lca.dialog.export.warning", project).getContent()
-                }
+                val assessResultContent = ContributionAnalysisWindow(analysis, comparator, project, processName).getContent()
                 val content = ContentFactory.getInstance().createContent(
                     assessResultContent,
                     "Contribution analysis of $processName",
