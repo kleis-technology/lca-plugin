@@ -43,6 +43,7 @@ class CopyPastableTablePane(
          */
         val table = JBTable(model)
         table.transferHandler = WithHeaderTransferableHandler()
+        table.autoCreateRowSorter = true
         val cellRenderer = DefaultTableCellRenderer()
         cellRenderer.horizontalAlignment = JLabel.RIGHT
         table.setDefaultRenderer(FloatingPointRepresentation::class.java, cellRenderer)
