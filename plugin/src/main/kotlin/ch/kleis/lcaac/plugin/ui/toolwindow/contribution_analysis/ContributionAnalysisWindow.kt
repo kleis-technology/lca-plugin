@@ -31,11 +31,11 @@ class ContributionAnalysisWindow(
         /*
             Tab Panes
          */
-        val demandPane = CopyPastableTablePane(DemandTableModel(analysis))
-        val impactAssessmentPane = CopyPastableTablePane(ImpactAssessmentTableModel(analysis))
-        val inventoryPane = CopyPastableTablePane(InventoryTableModel(analysis, comparator))
-        val supplyPane = CopyPastableTablePane(SupplyTableModel(analysis, comparator))
-        val issuePane = IssuePane(analysis, comparator)
+        val demandPane = CopyPastableTablePane(DemandTableModel(analysis), project, "demand.csv")
+        val impactAssessmentPane = CopyPastableTablePane(ImpactAssessmentTableModel(analysis), project, "impact_assessment.csv")
+        val inventoryPane = CopyPastableTablePane(InventoryTableModel(analysis, comparator), project, "inventory.csv")
+        val supplyPane = CopyPastableTablePane(SupplyTableModel(analysis, comparator), project, "supply.csv")
+        val issuePane = IssuePane(analysis, comparator, project)
 
         val tabbed = JBTabbedPane()
         tabbed.add("Demand", demandPane.content)
