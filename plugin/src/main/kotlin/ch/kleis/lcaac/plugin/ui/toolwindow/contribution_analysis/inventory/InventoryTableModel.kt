@@ -1,10 +1,7 @@
 package ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.inventory
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysis
-import ch.kleis.lcaac.core.lang.value.FullyQualifiedSubstanceValue
-import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
-import ch.kleis.lcaac.core.lang.value.PartiallyQualifiedSubstanceValue
-import ch.kleis.lcaac.core.lang.value.SubstanceValue
+import ch.kleis.lcaac.core.lang.value.*
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.plugin.ui.toolwindow.FloatingPointRepresentation
@@ -15,15 +12,20 @@ class InventoryTableModel(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
     comparator: Comparator<MatrixColumnIndex<BasicNumber>>,
     substances: List<SubstanceValue<BasicNumber>> = analysis.getSubstances(),
+    private val requestedProducts: List<ProductValue<BasicNumber>> = analysis.getEntryPoint()
+        .products
+        .map { it.product },
 ) : TableModel {
     private val substances= substances.sortedWith(comparator)
+    private val displayTotal = requestedProducts.size > 1
+    private val columnPrefix = if (displayTotal) 6 else 5
 
     override fun getRowCount(): Int {
         return substances.size
     }
 
     override fun getColumnCount(): Int {
-        return 6
+        return columnPrefix + requestedProducts.size
     }
 
     override fun getColumnName(columnIndex: Int): String {
@@ -32,7 +34,9 @@ class InventoryTableModel(
         if (columnIndex == 2) return "compartment"
         if (columnIndex == 3) return "sub_compartment"
         if (columnIndex == 4) return "unit"
-        return "amount"
+        if (displayTotal && columnIndex == 5) return "total"
+        val product = requestedProducts[columnIndex - columnPrefix]
+        return product.name
     }
 
     override fun getColumnClass(columnIndex: Int): Class<*> {
@@ -50,9 +54,14 @@ class InventoryTableModel(
         if (columnIndex == 1) return substance.name()
         if (columnIndex == 2) return substance.compartment()
         if (columnIndex == 3) return substance.subCompartment()
-        val supply = analysis.supplyOf(substance)
-        if (columnIndex == 4) return "${supply.unit.symbol}"
-        return FloatingPointRepresentation.of(supply.amount.value)
+        val total = analysis.supplyOf(substance)
+        if (columnIndex == 4) return "${total.unit.symbol}"
+        if (displayTotal && columnIndex == 5) {
+            return FloatingPointRepresentation.of(total.amount.value)
+        }
+        val product = requestedProducts[columnIndex - columnPrefix]
+        val quantity = analysis.allocatedSupplyOf(substance, product)
+        return FloatingPointRepresentation.of(quantity.amount.value)
     }
 
     private fun SubstanceValue<BasicNumber>.name(): String = when(this) {

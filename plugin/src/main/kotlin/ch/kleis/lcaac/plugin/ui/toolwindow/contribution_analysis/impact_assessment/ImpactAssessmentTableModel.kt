@@ -17,13 +17,15 @@ class ImpactAssessmentTableModel(
     indicators: List<IndicatorValue<BasicNumber>> = analysis.getIndicators(),
 ) : TableModel {
     private val indicators: List<IndicatorValue<BasicNumber>> = indicators.sortedBy { it.getDisplayName() }
+    private val displayTotal = requestedProducts.size > 1
+    private val columnPrefix = if (displayTotal) 3 else 2
 
     override fun getRowCount(): Int {
         return indicators.size
     }
 
     override fun getColumnCount(): Int {
-        return 2 + requestedProducts.size
+        return columnPrefix + requestedProducts.size
     }
 
     override fun getColumnName(columnIndex: Int): String {
@@ -35,7 +37,11 @@ class ImpactAssessmentTableModel(
             return "unit"
         }
 
-        val product = requestedProducts[columnIndex - 2]
+        if (displayTotal && columnIndex == 2) {
+            return "total"
+        }
+
+        val product = requestedProducts[columnIndex - columnPrefix]
         return product.getShortName()
     }
 
@@ -60,7 +66,12 @@ class ImpactAssessmentTableModel(
             return "${indicator.referenceUnit.symbol}"
         }
 
-        val product = requestedProducts[columnIndex - 2]
+        if (displayTotal && columnIndex == 2) {
+            val total = analysis.supplyOf(indicator)
+            return FloatingPointRepresentation.of(total.amount.value)
+        }
+
+        val product = requestedProducts[columnIndex - columnPrefix]
         val contribution = analysis.getPortContribution(product, indicator)
         return FloatingPointRepresentation.of(contribution.amount.value)
     }

@@ -18,24 +18,23 @@ class DemandTableModel(
     }
 
     override fun getColumnCount(): Int {
-        // name, allocation (percent), unit, amount
         return 4
     }
 
     override fun getColumnName(columnIndex: Int): String {
         return when(columnIndex) {
             0 -> "name"
-            1 -> "allocation [percent]"
-            2 -> "unit"
-            3 -> "amount"
+            1 -> "unit"
+            2 -> "amount"
+            3 -> "allocation [percent]"
             else -> throw EvaluatorException("invalid column index")
         }
     }
 
     override fun getColumnClass(columnIndex: Int): Class<*> {
         return when(columnIndex) {
-            0, 2 -> String::class.java
-            1, 3 -> FloatingPointRepresentation::class.java
+            0, 1 -> String::class.java
+            2, 3 -> FloatingPointRepresentation::class.java
             else -> throw EvaluatorException("invalid column index")
         }
     }
@@ -48,9 +47,9 @@ class DemandTableModel(
         val exchange = productExchanges[rowIndex]
         return when(columnIndex) {
             0 -> exchange.product.name
-            1 -> FloatingPointRepresentation.of(exchange.allocation?.amount?.value ?: 100.0)
-            2 -> "${exchange.quantity.unit.symbol}"
-            3 -> FloatingPointRepresentation.of(exchange.quantity.amount.value)
+            1 -> "${exchange.quantity.unit.symbol}"
+            2 -> FloatingPointRepresentation.of(exchange.quantity.amount.value)
+            3 -> FloatingPointRepresentation.of(exchange.allocation?.amount?.value ?: 100.0)
             else -> throw EvaluatorException("invalid column index")
         }
     }

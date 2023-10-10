@@ -14,15 +14,20 @@ class SupplyTableModel(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
     comparator: Comparator<MatrixColumnIndex<BasicNumber>>,
     products: List<ProductValue<BasicNumber>> = analysis.getProducts(),
+    private val requestedProducts: List<ProductValue<BasicNumber>> = analysis.getEntryPoint()
+        .products
+        .map { it.product },
 ) : TableModel {
     private val products: List<ProductValue<BasicNumber>> = products.sortedWith(comparator)
+    private val displayTotal = requestedProducts.size > 1
+    private val columnPrefix = if (displayTotal) 6 else 5
 
     override fun getRowCount(): Int {
         return products.size
     }
 
     override fun getColumnCount(): Int {
-        return 6
+        return columnPrefix + requestedProducts.size
     }
 
     override fun getColumnName(columnIndex: Int): String {
@@ -31,7 +36,8 @@ class SupplyTableModel(
         if (columnIndex == 2) return "params"
         if (columnIndex == 3) return "labels"
         if (columnIndex == 4) return "unit"
-        return "amount"
+        if (displayTotal && columnIndex == 5) return "total"
+        return requestedProducts[columnIndex - columnPrefix].name
     }
 
     override fun getColumnClass(columnIndex: Int): Class<*> {
@@ -49,9 +55,12 @@ class SupplyTableModel(
         if (columnIndex == 1) return product.fromProcessRef?.name ?: ""
         if (columnIndex == 2) return product.fromProcessRef?.renderArguments() ?: ""
         if (columnIndex == 3) return product.fromProcessRef?.renderLabels() ?: ""
-        val supply = analysis.supplyOf(product)
-        if (columnIndex == 4) return "${supply.unit.symbol}"
-        return FloatingPointRepresentation.of(supply.amount.value)
+        val total = analysis.supplyOf(product)
+        if (columnIndex == 4) return "${total.unit.symbol}"
+        if (displayTotal && columnIndex == 5) return FloatingPointRepresentation.of(total.amount.value)
+        val requestedProduct = requestedProducts[columnIndex - columnPrefix]
+        val quantity = analysis.allocatedSupplyOf(product, requestedProduct)
+        return FloatingPointRepresentation.of(quantity.amount.value)
     }
 
     private fun FromProcessRefValue<BasicNumber>.renderArguments(): String {
