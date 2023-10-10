@@ -4,7 +4,7 @@ import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.type.*
 import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.fixture.DimensionFixture
-import ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssigmentStubKeyIndex
+import ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssignmentStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -154,7 +154,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.r")
+        val target = GlobalAssignmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.r")
             .first()
             .getValue()
         val checker = PsiLcaTypeChecker()
@@ -179,7 +179,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.r")
+        val target = GlobalAssignmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.r")
             .first()
             .getValue()
         val checker = PsiLcaTypeChecker()
@@ -568,7 +568,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
+        val target = GlobalAssignmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
         val checker = PsiLcaTypeChecker()
 
         // when
@@ -597,7 +597,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
+        val target = GlobalAssignmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
         val checker = PsiLcaTypeChecker()
 
         // when
@@ -626,7 +626,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
+        val target = GlobalAssignmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
         val checker = PsiLcaTypeChecker()
 
         // when
@@ -660,7 +660,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
+        val target = GlobalAssignmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
         val checker = PsiLcaTypeChecker()
 
         // when
@@ -694,7 +694,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
+        val target = GlobalAssignmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
         val checker = PsiLcaTypeChecker()
 
         // when
@@ -728,7 +728,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
+        val target = GlobalAssignmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
         val checker = PsiLcaTypeChecker()
 
         // when/then

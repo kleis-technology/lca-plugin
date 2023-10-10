@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.language.ide.insight
 
-import ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssigmentStubKeyIndex
+import ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssignmentStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex
 import com.intellij.codeInspection.ProblemHighlightType
@@ -30,7 +30,7 @@ class LcaDataAnnotatorTest : BasePlatformTestCase() {
             }
         """.trimIndent()
         )
-        val element = GlobalAssigmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
+        val element = GlobalAssignmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
             .getValue()
         val mock = AnnotationHolderMock()
         val annotator = LcaDataAnnotator()
@@ -59,7 +59,7 @@ class LcaDataAnnotatorTest : BasePlatformTestCase() {
             }
         """.trimIndent()
         )
-        val element = GlobalAssigmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
+        val element = GlobalAssignmentStubKeyIndex.findGlobalAssignments(project, "$pkgName.x").first()
             .getValue()
         val mock = AnnotationHolderMock()
         val annotator = LcaDataAnnotator()
@@ -85,7 +85,7 @@ class LcaDataAnnotatorTest : BasePlatformTestCase() {
             }
         """.trimIndent()
         )
-        val element = GlobalAssigmentStubKeyIndex
+        val element = GlobalAssignmentStubKeyIndex
             .findGlobalAssignments(project, "$pkgName.x").first()
             .getValue()
         val mock = AnnotationHolderMock()

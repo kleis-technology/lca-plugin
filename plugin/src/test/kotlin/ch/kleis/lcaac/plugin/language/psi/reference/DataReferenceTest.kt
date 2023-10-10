@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.language.psi.reference
 
-import ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssigmentStubKeyIndex
+import ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssignmentStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex
@@ -38,7 +38,7 @@ class DataReferenceTest : BasePlatformTestCase() {
         val actual = ref.reference.resolve()
 
         // then
-        val expected = GlobalAssigmentStubKeyIndex
+        val expected = GlobalAssignmentStubKeyIndex
             .findGlobalAssignments(project, "$pkgName.x").first()
         TestCase.assertEquals(expected, actual)
     }

@@ -9,7 +9,7 @@ import com.intellij.psi.stubs.StringStubIndexExtension
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
 
-class GlobalAssigmentStubKeyIndex : StringStubIndexExtension<LcaGlobalAssignment>() {
+class GlobalAssignmentStubKeyIndex : StringStubIndexExtension<LcaGlobalAssignment>() {
     override fun getKey(): StubIndexKey<String, LcaGlobalAssignment> {
         return LcaStubIndexKeys.GLOBAL_ASSIGNMENTS
     }

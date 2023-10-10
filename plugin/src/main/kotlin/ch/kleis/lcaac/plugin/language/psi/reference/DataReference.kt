@@ -2,7 +2,7 @@ package ch.kleis.lcaac.plugin.language.psi.reference
 
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.language.psi.stub.LcaStubIndexKeys
-import ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssigmentStubKeyIndex
+import ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssignmentStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataRef
 import com.intellij.codeInsight.lookup.LookupElementBuilder
@@ -16,7 +16,7 @@ class DataReference(
     private val globalAssignmentRef = GlobalUIDOwnerReference(
         element,
         { project, fqn ->
-            GlobalAssigmentStubKeyIndex.findGlobalAssignments(project, fqn)
+            GlobalAssignmentStubKeyIndex.findGlobalAssignments(project, fqn)
         },
         { project ->
             StubIndex.getInstance().getAllKeys(LcaStubIndexKeys.GLOBAL_ASSIGNMENTS, project)
