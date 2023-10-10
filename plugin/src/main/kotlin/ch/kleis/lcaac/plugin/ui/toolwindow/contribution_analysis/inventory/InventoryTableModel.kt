@@ -14,12 +14,12 @@ import javax.swing.table.TableModel
 class InventoryTableModel(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
     comparator: Comparator<MatrixColumnIndex<BasicNumber>>,
-    observableSubstances: List<SubstanceValue<BasicNumber>> = analysis.getObservableSubstances(),
+    substances: List<SubstanceValue<BasicNumber>> = analysis.getSubstances(),
 ) : TableModel {
-    private val observableSubstances: List<SubstanceValue<BasicNumber>> = observableSubstances.sortedWith(comparator)
+    private val substances= substances.sortedWith(comparator)
 
     override fun getRowCount(): Int {
-        return observableSubstances.size
+        return substances.size
     }
 
     override fun getColumnCount(): Int {
@@ -45,7 +45,7 @@ class InventoryTableModel(
     }
 
     override fun getValueAt(rowIndex: Int, columnIndex: Int): Any {
-        val substance = observableSubstances[rowIndex]
+        val substance = substances[rowIndex]
         if (columnIndex == 0) return substance.type()
         if (columnIndex == 1) return substance.name()
         if (columnIndex == 2) return substance.compartment()

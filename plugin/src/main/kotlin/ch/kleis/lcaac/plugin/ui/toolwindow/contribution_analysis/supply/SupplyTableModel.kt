@@ -13,12 +13,12 @@ import javax.swing.table.TableModel
 class SupplyTableModel(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
     comparator: Comparator<MatrixColumnIndex<BasicNumber>>,
-    observableProducts: List<ProductValue<BasicNumber>> = analysis.getObservableProducts(),
+    products: List<ProductValue<BasicNumber>> = analysis.getProducts(),
 ) : TableModel {
-    private val observableProducts: List<ProductValue<BasicNumber>> = observableProducts.sortedWith(comparator)
+    private val products: List<ProductValue<BasicNumber>> = products.sortedWith(comparator)
 
     override fun getRowCount(): Int {
-        return observableProducts.size
+        return products.size
     }
 
     override fun getColumnCount(): Int {
@@ -44,7 +44,7 @@ class SupplyTableModel(
     }
 
     override fun getValueAt(rowIndex: Int, columnIndex: Int): Any {
-        val product = observableProducts[rowIndex]
+        val product = products[rowIndex]
         if (columnIndex == 0) return product.name
         if (columnIndex == 1) return product.fromProcessRef?.name ?: ""
         if (columnIndex == 2) return product.fromProcessRef?.renderArguments() ?: ""

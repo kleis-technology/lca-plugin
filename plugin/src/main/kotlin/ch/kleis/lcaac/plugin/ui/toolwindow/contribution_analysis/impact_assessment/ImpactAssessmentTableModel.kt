@@ -36,7 +36,7 @@ class ImpactAssessmentTableModel(
         }
 
         val product = requestedProducts[columnIndex - 2]
-        return "${product.getShortName()} [${product.referenceUnit()}]"
+        return product.getShortName()
     }
 
     override fun getColumnClass(columnIndex: Int): Class<*> {
@@ -61,8 +61,8 @@ class ImpactAssessmentTableModel(
         }
 
         val product = requestedProducts[columnIndex - 2]
-        val contribution = analysis.getUnitaryImpacts(product)[indicator]?.amount?.value ?: 0.0
-        return FloatingPointRepresentation.of(contribution)
+        val contribution = analysis.getPortContribution(product, indicator)
+        return FloatingPointRepresentation.of(contribution.amount.value)
     }
 
     override fun setValueAt(aValue: Any?, rowIndex: Int, columnIndex: Int) {

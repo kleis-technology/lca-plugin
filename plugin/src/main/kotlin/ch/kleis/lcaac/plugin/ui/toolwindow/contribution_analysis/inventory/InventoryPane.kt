@@ -14,12 +14,12 @@ import javax.swing.table.DefaultTableCellRenderer
 
 class InventoryPane(
     analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
-    observablePortComparator: Comparator<MatrixColumnIndex<BasicNumber>>,
+    comparator: Comparator<MatrixColumnIndex<BasicNumber>>,
 ) {
     val content : JBScrollPane
 
     init {
-        val model = InventoryTableModel(analysis, observablePortComparator)
+        val model = InventoryTableModel(analysis, comparator)
         val table = JBTable(model)
         table.transferHandler = WithHeaderTransferableHandler()
 
