@@ -43,6 +43,14 @@ class LcaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LcaLan
         return getTests().firstOrNull { it.testRef.name == name }
     }
 
+    fun getRuns(): Collection<LcaRun> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaRun::class.java)
+    }
+
+    fun findRun(name: String): LcaRun? {
+        return getRuns().firstOrNull { it.runRef.name == name }
+    }
+
     fun getProcesses(): Collection<LcaProcess> {
         return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaProcess::class.java)
     }

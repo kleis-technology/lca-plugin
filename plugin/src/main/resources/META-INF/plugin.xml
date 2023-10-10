@@ -97,6 +97,7 @@
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex"/>
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssignmentStubKeyIndex"/>
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.test.TestStubKeyIndex"/>
+        <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.run.RunStubKeyIndex"/>
         <stubElementTypeHolder class="ch.kleis.lcaac.plugin.psi.LcaTypes" externalIdPrefix="lca."/>
 
         <fileBasedIndex implementation="ch.kleis.lcaac.plugin.language.psi.index.LcaProcessFileIndexExtension"/>
@@ -118,6 +119,9 @@
         <runLineMarkerContributor
                 language="LCA"
                 implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.TestMarkerContributor"/>
+        <runLineMarkerContributor
+                language="LCA"
+                implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.RunMarkerContributor"/>
 
         <notificationGroup id="LcaAsCode"
                            displayType="BALLOON"

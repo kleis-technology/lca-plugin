@@ -61,48 +61,52 @@ CommentContent = .*
 
 <COMMENT_BLOCK> {CommentContent}     { return LcaTypes.COMMENT_CONTENT; }
 
-<YYINITIAL> "package"                { return LcaTypes.PACKAGE_KEYWORD; }
-<YYINITIAL> "import"                { return LcaTypes.IMPORT_KEYWORD; }
-<YYINITIAL> "variables"                { return LcaTypes.VARIABLES_KEYWORD; }
-<YYINITIAL> "process"                { return LcaTypes.PROCESS_KEYWORD; }
-<YYINITIAL> "indicator"                { return LcaTypes.INDICATOR_KEYWORD; }
-<YYINITIAL> "substance"                { return LcaTypes.SUBSTANCE_KEYWORD; }
-<YYINITIAL> "compartment"                { return LcaTypes.COMPARTMENT_KEYWORD; }
-<YYINITIAL> "type"                { return LcaTypes.TYPE_KEYWORD; }
-<YYINITIAL> "Emission"             { return LcaTypes.TYPE_EMISSION_KEYWORD; }
-<YYINITIAL> "Resource"             { return LcaTypes.TYPE_RESOURCE_KEYWORD; }
-<YYINITIAL> "Land_use"             { return LcaTypes.TYPE_LAND_USE_KEYWORD; }
-<YYINITIAL> "sub_compartment"                { return LcaTypes.SUB_COMPARTMENT_KEYWORD; }
-<YYINITIAL> "impacts"                { return LcaTypes.IMPACTS_KEYWORD; }
-<YYINITIAL> "meta"                { return LcaTypes.META_KEYWORD; }
-<YYINITIAL> "from"                { return LcaTypes.FROM_KEYWORD; }
-<YYINITIAL> "name"                { return LcaTypes.NAME_KEYWORD; }
-<YYINITIAL> "unit"                   { return LcaTypes.UNIT_KEYWORD; }
-<YYINITIAL> "reference_unit"                   { return LcaTypes.REFERENCE_UNIT_KEYWORD; }
-<YYINITIAL> "symbol"                   { return LcaTypes.SYMBOL_KEYWORD; }
-<YYINITIAL> "alias_for"                   { return LcaTypes.ALIAS_FOR_KEYWORD; }
-<YYINITIAL> "allocate"                   { return LcaTypes.ALLOCATE_KEYWORD; }
-<YYINITIAL> "dimension"                   { return LcaTypes.DIMENSION_KEYWORD; }
+<YYINITIAL> "package"            { return LcaTypes.PACKAGE_KEYWORD; }
+<YYINITIAL> "import"             { return LcaTypes.IMPORT_KEYWORD; }
+<YYINITIAL> "variables"          { return LcaTypes.VARIABLES_KEYWORD; }
+<YYINITIAL> "process"            { return LcaTypes.PROCESS_KEYWORD; }
+<YYINITIAL> "indicator"          { return LcaTypes.INDICATOR_KEYWORD; }
+<YYINITIAL> "substance"          { return LcaTypes.SUBSTANCE_KEYWORD; }
+<YYINITIAL> "compartment"        { return LcaTypes.COMPARTMENT_KEYWORD; }
+<YYINITIAL> "type"               { return LcaTypes.TYPE_KEYWORD; }
+<YYINITIAL> "Emission"           { return LcaTypes.TYPE_EMISSION_KEYWORD; }
+<YYINITIAL> "Resource"           { return LcaTypes.TYPE_RESOURCE_KEYWORD; }
+<YYINITIAL> "Land_use"           { return LcaTypes.TYPE_LAND_USE_KEYWORD; }
+<YYINITIAL> "sub_compartment"    { return LcaTypes.SUB_COMPARTMENT_KEYWORD; }
+<YYINITIAL> "impacts"            { return LcaTypes.IMPACTS_KEYWORD; }
+<YYINITIAL> "meta"               { return LcaTypes.META_KEYWORD; }
+<YYINITIAL> "from"               { return LcaTypes.FROM_KEYWORD; }
+<YYINITIAL> "name"               { return LcaTypes.NAME_KEYWORD; }
+<YYINITIAL> "unit"               { return LcaTypes.UNIT_KEYWORD; }
+<YYINITIAL> "reference_unit"     { return LcaTypes.REFERENCE_UNIT_KEYWORD; }
+<YYINITIAL> "symbol"             { return LcaTypes.SYMBOL_KEYWORD; }
+<YYINITIAL> "alias_for"          { return LcaTypes.ALIAS_FOR_KEYWORD; }
+<YYINITIAL> "allocate"           { return LcaTypes.ALLOCATE_KEYWORD; }
+<YYINITIAL> "dimension"          { return LcaTypes.DIMENSION_KEYWORD; }
 <YYINITIAL> "params"             { return LcaTypes.PARAMETERS_KEYWORD; }
-<YYINITIAL> "products"             { return LcaTypes.PRODUCTS_KEYWORD; }
+<YYINITIAL> "products"           { return LcaTypes.PRODUCTS_KEYWORD; }
 <YYINITIAL> "inputs"             { return LcaTypes.INPUTS_KEYWORD; }
-<YYINITIAL> "emissions"             { return LcaTypes.EMISSIONS_KEYWORD; }
-<YYINITIAL> "land_use"             { return LcaTypes.LAND_USE_KEYWORD; }
-<YYINITIAL> "resources"             { return LcaTypes.RESOURCES_KEYWORD; }
+<YYINITIAL> "emissions"          { return LcaTypes.EMISSIONS_KEYWORD; }
+<YYINITIAL> "land_use"           { return LcaTypes.LAND_USE_KEYWORD; }
+<YYINITIAL> "resources"          { return LcaTypes.RESOURCES_KEYWORD; }
 <YYINITIAL> "labels"             { return LcaTypes.LABELS_KEYWORD; }
-<YYINITIAL> "match"             { return LcaTypes.MATCH_KEYWORD; }
+<YYINITIAL> "match"              { return LcaTypes.MATCH_KEYWORD; }
 
-<YYINITIAL> "test"                { return LcaTypes.TEST_KEYWORD; }
-<YYINITIAL> "given"                { return LcaTypes.GIVEN_KEYWORD; }
-<YYINITIAL> "assert"                { return LcaTypes.ASSERT_KEYWORD; }
-<YYINITIAL> "between"                { return LcaTypes.BETWEEN_KEYWORD; }
+<YYINITIAL> "test"               { return LcaTypes.TEST_KEYWORD; }
+<YYINITIAL> "given"              { return LcaTypes.GIVEN_KEYWORD; }
+<YYINITIAL> "assert"             { return LcaTypes.ASSERT_KEYWORD; }
+<YYINITIAL> "between"            { return LcaTypes.BETWEEN_KEYWORD; }
 <YYINITIAL> "and"                { return LcaTypes.AND_KEYWORD; }
+
+<YYINITIAL> "run"                { return LcaTypes.RUN_KEYWORD; }
+<YYINITIAL> "assess"             { return LcaTypes.ASSESS_KEYWORD; }
+<YYINITIAL> "generate"           { return LcaTypes.GENERATE_KEYWORD; }
 
 
 
 <YYINITIAL> [-]?{Number_Int} ("." {Number_Int}? )? {Number_Exp}? { return LcaTypes.NUMBER; }
-<YYINITIAL> {Identifier}             { return LcaTypes.IDENTIFIER; }
-<YYINITIAL> {StringLiteral}          { return LcaTypes.STRING_LITERAL; }
+<YYINITIAL> {Identifier}         { return LcaTypes.IDENTIFIER; }
+<YYINITIAL> {StringLiteral}      { return LcaTypes.STRING_LITERAL; }
 
 <YYINITIAL> "="                      { return LcaTypes.EQUAL; }
 <YYINITIAL> "["                      { return LcaTypes.LSQBRACE; }

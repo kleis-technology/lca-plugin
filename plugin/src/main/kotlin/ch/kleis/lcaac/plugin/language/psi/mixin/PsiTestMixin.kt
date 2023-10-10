@@ -3,7 +3,6 @@ package ch.kleis.lcaac.plugin.language.psi.mixin
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.language.psi.stub.test.TestStub
 import ch.kleis.lcaac.plugin.psi.LcaTest
-import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.extapi.psi.StubBasedPsiElementBase
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
@@ -31,7 +30,7 @@ abstract class PsiTestMixin : StubBasedPsiElementBase<TestStub>, LcaTest {
         lastParent: PsiElement?,
         place: PsiElement
     ): Boolean {
-        for (block in getVariablesList()) {
+        for (block in variablesList) {
             if (!processor.execute(block, state)) {
                 return false
             }

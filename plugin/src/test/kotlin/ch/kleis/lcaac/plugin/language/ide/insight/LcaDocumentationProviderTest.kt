@@ -5,6 +5,7 @@ import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.psi.util.PsiUtilBase
 import io.mockk.every
 import io.mockk.mockkObject
+import junit.framework.TestCase
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -161,7 +162,7 @@ class LcaDocumentationProviderTest : LcaCompletionTestCase() {
     }
 
     @Test
-    fun cursorOnProcessReference_ShouldTriggerDoc() {
+    fun cursorOnProcessReference_ShouldTriggerDoc_WhenReceiveAProcessRef() {
         // Given
         every { LcaDocumentGenerator.generateProcess(any()) } returns mockk_message
 
@@ -171,6 +172,24 @@ class LcaDocumentationProviderTest : LcaCompletionTestCase() {
         )
     }
 
+    @Test
+    fun cursorOnComplexProcessReference_ShouldTriggerDoc_WhenReceiveAndLcaUID() {
+        // Given
+        every { LcaDocumentGenerator.generateProcess(any()) } returns mockk_message
+
+        // When + Then
+        doTest(
+            getContent(Caret.PROCESS_REF2)
+        )
+    }
+
+    @Test
+    fun cursorOnProcessReference_ShouldNotFail_WhenReceiveANonValidProcessRef() {
+        // Given
+
+        // When + Then
+        doTest(getContent(Caret.PROCESS_REF3), true)
+    }
 
     enum class Caret {
         UNIT_DECLARATION, UNIT_ALIAS, UNIT_VAR_DECLARATION, UNIT_QTY_REF,
@@ -178,7 +197,7 @@ class LcaDocumentationProviderTest : LcaCompletionTestCase() {
         PROD_REF, PROD_DECLARATION,
         LOCAL_REF, LOCAL_DECLARATION,
         GLOBAL_REF, GLOBAL_DECLARATION,
-        PROCESS_REF, PROCESS_DECLARATION
+        PROCESS_REF, PROCESS_REF2, PROCESS_REF3, PROCESS_DECLARATION
     }
 
     private fun getContent(car: Caret): String {
@@ -206,6 +225,8 @@ class LcaDocumentationProviderTest : LcaCompletionTestCase() {
 
                 inputs {
                    3 g ca${caret(car, Caret.PROD_REF)}rrot from far${caret(car, Caret.PROCESS_REF)}m
+                   2 g carrot from far${caret(car, Caret.PROCESS_REF2)}m2 match (model = "bio")
+                   2 g carrot from bad${caret(car, Caret.PROCESS_REF3)}bad
                    qt${caret(car, Caret.LOCAL_REF)}y salad
                    gl${caret(car, Caret.GLOBAL_REF)}o salad
                 }
@@ -213,6 +234,15 @@ class LcaDocumentationProviderTest : LcaCompletionTestCase() {
                 emissions {
                     1.5 g myS${caret(car, Caret.SUBSTANCE_REF)}ubstance(compartment="air")
                 }
+            }
+            process farm2 {
+                labels {
+                    model = "bio"
+                }
+                products {
+                   1 kg carrot
+                }
+
             }
 
             substance mySub${caret(car, Caret.SUBSTANCE_DECLARATION)}stance {
@@ -234,7 +264,7 @@ class LcaDocumentationProviderTest : LcaCompletionTestCase() {
 
     private fun caret(current: Caret, required: Caret) = if (current == required) "<caret>" else ""
 
-    private fun doTest(content: String) {
+    private fun doTest(content: String, expectedNullText: Boolean = false) {
         fixture.configureByText("sample.lca", content)
         val originalElt = PsiUtilBase.getElementAtCaret(fixture.editor)
         val element = DocumentationManager.getInstance(myFixture!!.project).findTargetElement(
@@ -244,8 +274,12 @@ class LcaDocumentationProviderTest : LcaCompletionTestCase() {
         val provider = DocumentationManager.getProviderFromElement(element)
         kotlin.test.assertNotNull(provider)
         val text = provider.generateDoc(element, originalElt)
-        kotlin.test.assertNotNull(text)
-        assertEquals(mockk_message, text)
+        if (expectedNullText) {
+            TestCase.assertNull(text)
+        } else {
+            kotlin.test.assertNotNull(text)
+            assertEquals(mockk_message, text)
+        }
     }
 
 

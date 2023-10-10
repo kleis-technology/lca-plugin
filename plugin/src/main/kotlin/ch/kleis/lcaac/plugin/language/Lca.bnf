@@ -51,6 +51,10 @@
       BETWEEN_KEYWORD = 'between'
       AND_KEYWORD = 'and'
 
+      RUN_KEYWORD = 'run'
+      ASSESS_KEYWORD = 'assess'
+      GENERATE_KEYWORD = 'generate'
+
       NUMBER = 'number'
       LSQBRACE = ']'
       RSQBRACE = '['
@@ -80,7 +84,7 @@
     LCA File
  */
 
-lcaFile ::= package? import* (process | test | unitDefinition | substance | globalVariables )*
+lcaFile ::= package? import* (process | test | run | unitDefinition | substance | globalVariables )*
 
 /*
     Package
@@ -107,6 +111,21 @@ globalAssignment ::= dataRef '=' dataExpression {
     elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssignmentStubElementType"
     stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssignmentStub"
 }
+
+/*
+    Run
+ */
+
+run ::= 'run' runRef '{'
+    (assess | generate )*
+'}' {
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiRunMixin"
+    elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.run.RunElementType"
+    stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.run.RunStub"
+}
+assess ::= 'assess'  processTemplateSpec
+generate ::= 'generate' processTemplateSpec
+
 
 /*
     Test
@@ -336,6 +355,11 @@ testRef ::= uid {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUIDOwner"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiTestRefMixin"
 }
+
+runRef ::= uid {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUIDOwner"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiRunRefMixin"
+}
 /*
    Spec
  */
@@ -348,12 +372,12 @@ outputProductSpec ::= productRef allocateField? {
 }
 allocateField ::= "allocate" dataExpression
 
-inputProductSpec ::= productRef processTemplateSpec? {
+inputProductSpec ::= productRef ("from" processTemplateSpec)? {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.spec.PsiInputProductSpec"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.spec.PsiInputProductSpecMixin"
 }
 
-processTemplateSpec ::= "from" processRef ("(" comma_sep_arguments? ")")? matchLabels? {
+processTemplateSpec ::= processRef ("(" comma_sep_arguments? ")")? matchLabels? {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.spec.PsiProcessTemplateSpec"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.spec.PsiProcessTemplateSpecMixin"
 }

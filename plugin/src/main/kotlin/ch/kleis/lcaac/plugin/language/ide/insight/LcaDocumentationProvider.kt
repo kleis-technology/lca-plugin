@@ -37,16 +37,18 @@ class LcaDocumentationProvider : AbstractDocumentationProvider() {
             is LcaAssignment -> generateAssignment(element)
 
             is LcaParameterRef -> {
-                when (val target = element.reference.resolve()) {
-                    is LcaAssignment -> generateAssignment(target)
+                val target = element.reference.resolve()
+                if (target != null && target is LcaAssignment) generateAssignment(target)
+                else super.generateDoc(element, originalElement)
+            }
 
-                    else -> super.generateDoc(element, originalElement)
-                }
+            is LcaUid -> {
+                val parent = element.parent.reference?.resolve()
+                if (parent != null && parent is LcaProcess) generateProcess(parent)
+                else super.generateDoc(element, originalElement)
             }
 
             else -> super.generateDoc(element, originalElement)
         }
     }
-
-
 }

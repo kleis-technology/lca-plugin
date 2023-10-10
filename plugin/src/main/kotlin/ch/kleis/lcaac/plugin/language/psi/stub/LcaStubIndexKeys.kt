@@ -23,4 +23,8 @@ object LcaStubIndexKeys {
 
     val GLOBAL_ASSIGNMENTS: StubIndexKey<String, LcaGlobalAssignment> =
         StubIndexKey.createIndexKey("lca.globalAssignments")
+
+    val RUNS: StubIndexKey<String, LcaRun> =
+        StubIndexKey.createIndexKey("lca.runs")
+
 }

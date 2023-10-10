@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.language.psi
 
 import ch.kleis.lcaac.plugin.psi.LcaProcess
+import ch.kleis.lcaac.plugin.psi.LcaRun
 import ch.kleis.lcaac.plugin.psi.LcaTest
 import ch.kleis.lcaac.plugin.psi.LcaTypes
 import com.intellij.psi.PsiElement
@@ -16,3 +17,6 @@ fun isProcess(element: PsiElement): Boolean =
 
 fun isTest(element: PsiElement): Boolean =
     element.elementType == LcaTypes.TEST_KEYWORD && element.parent is LcaTest
+
+fun isRun(element: PsiElement): Boolean =
+    element.elementType == LcaTypes.RUN_KEYWORD && element.parent is LcaRun
