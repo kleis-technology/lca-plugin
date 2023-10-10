@@ -16,8 +16,12 @@ class CsvProcessor(
     private val evaluator = Evaluator(symbolTable, ops)
 
     fun process(request: CsvRequest): List<CsvResult> {
-        val processName = request.processName
-        val template = symbolTable.getTemplate(processName)!!
+        val reqName = request.processName
+        val reqLabels = request.matchLabels
+        val template =
+            symbolTable.getTemplate(reqName, reqLabels)
+                ?: throw EvaluatorException("Could not get template for ${request.processName}")
+
         val arguments = template.params
             .mapValues { entry ->
                 when (val v = entry.value) {
