@@ -1,9 +1,8 @@
-package ch.kleis.lcaac.plugin.ui.toolwindow
+package ch.kleis.lcaac.plugin.ui.toolwindow.shared
 
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import org.junit.runners.Parameterized.Parameters
 import kotlin.test.assertEquals
 
 private fun digits(s: String): List<Int> {
@@ -17,7 +16,7 @@ class FloatingPointRepresentationTest(
 ) {
     companion object {
 
-        @Parameters
+        @Parameterized.Parameters
         @JvmStatic
         fun getFloatingPointRepresentationSamples(): Collection<Array<Any>> {
             return listOf(

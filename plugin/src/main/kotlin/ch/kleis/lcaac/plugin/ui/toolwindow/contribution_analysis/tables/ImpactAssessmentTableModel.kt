@@ -1,11 +1,11 @@
-package ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.impact_assessment
+package ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysis
 import ch.kleis.lcaac.core.lang.value.IndicatorValue
 import ch.kleis.lcaac.core.lang.value.ProductValue
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
-import ch.kleis.lcaac.plugin.ui.toolwindow.FloatingPointRepresentation
+import ch.kleis.lcaac.plugin.ui.toolwindow.shared.FloatingPointRepresentation
 import javax.swing.event.TableModelListener
 import javax.swing.table.TableModel
 

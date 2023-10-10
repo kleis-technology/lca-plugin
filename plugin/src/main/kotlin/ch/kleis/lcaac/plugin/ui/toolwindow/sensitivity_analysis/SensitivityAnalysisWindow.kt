@@ -3,9 +3,9 @@ package ch.kleis.lcaac.plugin.ui.toolwindow.sensitivity_analysis
 import ch.kleis.lcaac.core.assessment.SensitivityAnalysis
 import ch.kleis.lcaac.core.lang.value.ProductValue
 import ch.kleis.lcaac.core.math.dual.DualNumber
-import ch.kleis.lcaac.plugin.ui.toolwindow.FloatingPointRepresentation
+import ch.kleis.lcaac.plugin.ui.toolwindow.shared.FloatingPointRepresentation
 import ch.kleis.lcaac.plugin.ui.toolwindow.LcaToolWindowContent
-import ch.kleis.lcaac.plugin.ui.toolwindow.WithHeaderTransferableHandler
+import ch.kleis.lcaac.plugin.ui.toolwindow.shared.WithHeaderTransferableHandler
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox

@@ -1,11 +1,9 @@
-package ch.kleis.lcaac.plugin.ui.toolwindow
+package ch.kleis.lcaac.plugin.ui.toolwindow.shared
 
-import org.junit.Assert.assertEquals
+import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import org.junit.runners.Parameterized.Parameters
-
 
 @RunWith(Parameterized::class)
 class DisplayedNumberTest(
@@ -13,7 +11,7 @@ class DisplayedNumberTest(
     private val expected: String,
 ) {
     companion object {
-        @Parameters
+        @Parameterized.Parameters
         @JvmStatic
         fun getDisplayedStrings(): Collection<Array<Any>> {
             return listOf(
@@ -63,6 +61,6 @@ class DisplayedNumberTest(
         val actual = FloatingPointRepresentation.of(value).toString()
 
         // then
-        assertEquals(expected, actual)
+        Assert.assertEquals(expected, actual)
     }
 }

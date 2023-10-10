@@ -10,6 +10,7 @@ import ch.kleis.lcaac.core.matrix.IndexedCollection
 import ch.kleis.lcaac.core.matrix.IntensityMatrix
 import ch.kleis.lcaac.plugin.fixture.*
 import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.ContributionAnalysisWindow
+import ch.kleis.lcaac.plugin.ui.toolwindow.shared.WithHeaderTransferableHandler
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBViewport
 import com.intellij.ui.table.JBTable
@@ -97,7 +98,7 @@ class ContributionAnalysisWindowTest {
                 "name"
             )
             val panel = window.getContent()
-            val tablePane = panel.getComponent(1) as JBScrollPane
+            val tablePane = panel.getComponent(0) as JBScrollPane
             val viewPort = tablePane.getComponent(0) as JBViewport
             val table = viewPort.getComponent(0) as JBTable
             table.setRowSelectionInterval(0, 0)

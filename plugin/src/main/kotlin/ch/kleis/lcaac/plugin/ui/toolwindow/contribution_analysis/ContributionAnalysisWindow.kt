@@ -5,11 +5,11 @@ import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.plugin.ui.toolwindow.LcaToolWindowContent
-import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.demand.DemandPane
-import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.impact_assessment.ImpactAssessmentPane
-import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.inventory.InventoryPane
-import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.issues.IssuePane
-import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.supply.SupplyPane
+import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.DemandTableModel
+import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.ImpactAssessmentTableModel
+import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.InventoryTableModel
+import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.SupplyTableModel
+import ch.kleis.lcaac.plugin.ui.toolwindow.shared.CopyPastableTablePane
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBTabbedPane
 import java.awt.BorderLayout
@@ -29,16 +29,12 @@ class ContributionAnalysisWindow(
 
     init {
         /*
-            Demand pane
-         */
-
-        /*
             Tab Panes
          */
-        val demandPane = DemandPane(analysis)
-        val impactAssessmentPane = ImpactAssessmentPane(analysis)
-        val inventoryPane = InventoryPane(analysis, comparator)
-        val supplyPane = SupplyPane(analysis, comparator)
+        val demandPane = CopyPastableTablePane(DemandTableModel(analysis))
+        val impactAssessmentPane = CopyPastableTablePane(ImpactAssessmentTableModel(analysis))
+        val inventoryPane = CopyPastableTablePane(InventoryTableModel(analysis, comparator))
+        val supplyPane = CopyPastableTablePane(SupplyTableModel(analysis, comparator))
         val issuePane = IssuePane(analysis, comparator)
 
         val tabbed = JBTabbedPane()

@@ -9,7 +9,7 @@ import ch.kleis.lcaac.core.lang.value.SubstanceValue
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
-import ch.kleis.lcaac.plugin.ui.toolwindow.FloatingPointRepresentation
+import ch.kleis.lcaac.plugin.ui.toolwindow.shared.FloatingPointRepresentation
 
 class SankeyGraphBuilder(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
