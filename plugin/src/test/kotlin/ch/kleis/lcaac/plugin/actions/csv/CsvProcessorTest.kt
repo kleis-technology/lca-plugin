@@ -1,10 +1,7 @@
 package ch.kleis.lcaac.plugin.actions.csv
 
 import ch.kleis.lcaac.core.lang.evaluator.ToValue
-import ch.kleis.lcaac.core.lang.value.FromProcessRefValue
-import ch.kleis.lcaac.core.lang.value.IndicatorValue
-import ch.kleis.lcaac.core.lang.value.ProductValue
-import ch.kleis.lcaac.core.lang.value.QuantityValue
+import ch.kleis.lcaac.core.lang.value.*
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.core.prelude.Prelude
@@ -132,6 +129,72 @@ class CsvProcessorTest : BasePlatformTestCase() {
             "out", kg,
             FromProcessRefValue(
                 name = "p",
+                arguments = mapOf(
+                    "a" to QuantityValue(ops.pure(1.0), kg),
+                    "b" to QuantityValue(ops.pure(1.0), kg),
+                    "c" to QuantityValue(ops.pure(1.0), kg),
+                )
+            )
+        )
+        assertEquals(
+            out, actual.output
+        )
+        val key = ProductValue(
+            "in", kg,
+        )
+        assertEquals(
+            QuantityValue(ops.pure(3.0), kg), actual.impacts[key]
+        )
+    }
+
+    @Test
+    fun test_csvProcessor_withLabels() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        val vf = myFixture.createFile(
+            "$pkgName.lca", """
+                package $pkgName
+                
+                process p {
+                    params {
+                        a = 0 kg
+                        b = 0 kg
+                        c = 1 kg
+                    }
+                    labels {
+                        foo = "bar"
+                    }
+                    products {
+                        1 kg out
+                    }
+                    inputs {
+                        a + b + c in
+                    }
+                }
+            """.trimIndent()
+        )
+        val kg = umap["kg"]!!
+        val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
+        val parser = LcaLoader(sequenceOf(file, UnitFixture.getInternalUnitFile(myFixture)), ops)
+        val symbolTable = parser.load()
+        val csvProcessor = CsvProcessor(symbolTable)
+        val request = CsvRequest(
+            "p",
+            mapOf("foo" to "bar"),
+            mapOf("geo" to 0, "id" to 1, "a" to 2, "b" to 2),
+            listOf("UK", "s00", "1.0", "1.0"),
+        )
+
+        // when
+        val actual = csvProcessor.process(request)[0]
+
+        // then
+        assertEquals(request, actual.request)
+        val out = ProductValue(
+            "out", kg,
+            FromProcessRefValue(
+                name = "p",
+                matchLabels = mapOf("foo" to StringValue("bar")),
                 arguments = mapOf(
                     "a" to QuantityValue(ops.pure(1.0), kg),
                     "b" to QuantityValue(ops.pure(1.0), kg),
