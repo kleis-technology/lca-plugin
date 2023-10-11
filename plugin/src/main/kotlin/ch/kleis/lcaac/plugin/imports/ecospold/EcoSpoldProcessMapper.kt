@@ -10,6 +10,7 @@ import ch.kleis.lcaac.plugin.imports.util.StringUtils.compact
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.compactList
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.merge
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
+import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 
 class EcoSpoldProcessMapper(
     private val processDict: Map<String, EcoSpoldImporter.ProcessDictRecord>,
@@ -111,8 +112,8 @@ class EcoSpoldProcessMapper(
             ImportedImpactExchange(
                 it.amount.toString(),
                 unitManager.findRefBySymbolOrSanitizeSymbol(it.unitName),
-                sanitize(it.name),
-                listOf(it.categoryName),
+                sanitizeSymbol(sanitize(it.categoryName)),
+                listOf(it.name),
             )
         })
 
