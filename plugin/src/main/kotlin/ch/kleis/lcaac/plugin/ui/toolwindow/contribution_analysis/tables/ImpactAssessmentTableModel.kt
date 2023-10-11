@@ -11,7 +11,7 @@ import javax.swing.table.TableModel
 
 class ImpactAssessmentTableModel(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
-    private val requestedProducts: List<ProductValue<BasicNumber>> = analysis.getEntryPoint()
+    private val requestedProducts: List<ProductValue<BasicNumber>> = analysis.entryPoint
         .products
         .map { it.product },
     indicators: List<IndicatorValue<BasicNumber>> = analysis.getIndicators(),

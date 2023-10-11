@@ -12,7 +12,7 @@ class InventoryTableModel(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
     comparator: Comparator<MatrixColumnIndex<BasicNumber>>,
     substances: List<SubstanceValue<BasicNumber>> = analysis.getSubstances(),
-    private val requestedProducts: List<ProductValue<BasicNumber>> = analysis.getEntryPoint()
+    private val requestedProducts: List<ProductValue<BasicNumber>> = analysis.entryPoint
         .products
         .map { it.product },
 ) : TableModel {

@@ -11,7 +11,7 @@ import javax.swing.table.TableModel
 class DemandTableModel(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
 ) : TableModel {
-    private val productExchanges = analysis.getEntryPoint().products
+    private val productExchanges = analysis.entryPoint.products
 
     override fun getRowCount(): Int {
         return productExchanges.size

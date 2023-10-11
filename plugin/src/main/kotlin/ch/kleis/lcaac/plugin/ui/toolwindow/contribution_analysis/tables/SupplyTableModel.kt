@@ -14,7 +14,7 @@ class SupplyTableModel(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
     comparator: Comparator<MatrixColumnIndex<BasicNumber>>,
     products: List<ProductValue<BasicNumber>> = analysis.getProducts(),
-    private val requestedProducts: List<ProductValue<BasicNumber>> = analysis.getEntryPoint()
+    private val requestedProducts: List<ProductValue<BasicNumber>> = analysis.entryPoint
         .products
         .map { it.product },
 ) : TableModel {
