@@ -50,7 +50,7 @@ class EcoSpoldProcessMapper(
         }
 
         val (mappedImpactsComment, mappedImpactsExchanges) = methodName?.let {
-            mapImpacts(methodName, process.flowData.impactIndicators)
+            mapImpactExchanges(methodName, process.flowData.impactExchanges)
         } ?: (null to emptySequence())
 
         return ImportedProcess(
@@ -104,16 +104,16 @@ class EcoSpoldProcessMapper(
             it.system to compact(it.value)
         }
 
-    private fun mapImpacts(
+    private fun mapImpactExchanges(
         methodName: String,
-        impactIndicatorList: Sequence<ImpactIndicator>,
+        impactIndicatorList: Sequence<ImpactExchange>,
     ): Pair<String, Sequence<ImportedImpactExchange>> =
-        Pair("Impacts for method $methodName", impactIndicatorList.filter { it.methodName == methodName }.map {
+        Pair("Impacts for method $methodName", impactIndicatorList.filter { it.indicator.methodName == methodName }.map {
             ImportedImpactExchange(
                 it.amount.toString(),
-                unitManager.findRefBySymbolOrSanitizeSymbol(it.unitName),
-                sanitizeSymbol(sanitize(it.categoryName)),
-                listOf(it.name),
+                unitManager.findRefBySymbolOrSanitizeSymbol(it.indicator.unitName),
+                sanitizeSymbol(sanitize(it.indicator.categoryName)),
+                listOf(it.indicator.name),
             )
         })
 

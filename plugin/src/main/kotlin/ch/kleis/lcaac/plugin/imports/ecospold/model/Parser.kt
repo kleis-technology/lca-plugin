@@ -1,7 +1,6 @@
 package ch.kleis.lcaac.plugin.imports.ecospold.model
 
 import ch.kleis.lcaac.core.lang.expression.SubstanceType
-import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 import org.jdom2.Element
 import org.jdom2.JDOMFactory
 import org.jdom2.input.SAXBuilder
@@ -37,12 +36,16 @@ object Parser {
 
         return root.getChildren("impactMethod").asSequence()
             .filter { it.getChildText("name") == methodName }
-            .flatMap { m -> m.getChildren("category") }
-            .map { c ->
-                MethodIndicator(
-                    sanitize(c.getChildText("name")),
-                    c.getChild("indicator").getChildText("unitName"),
-                )
+            .flatMap { m ->
+                m.getChildren("category")
+                    .map { c ->
+                        MethodIndicator(
+                            methodName = methodName,
+                            categoryName = c.getChildText("name"),
+                            name = c.getChild("indicator").getChildText("name"),
+                            unitName = c.getChild("indicator").getChildText("unitName"),
+                        )
+                    }
             }.toList()
     }
 
@@ -67,14 +70,16 @@ object Parser {
     }
 
 
-    private fun readImpactIndicators(indicators: Sequence<Element>): Sequence<ImpactIndicator> {
+    private fun readImpactExchanges(indicators: Sequence<Element>): Sequence<ImpactExchange> {
         return indicators.map {
-            ImpactIndicator(
+            ImpactExchange(
                 amount = it.getAttributeValue("amount").toDouble(),
-                name = it.getChildText("name"),
-                unitName = it.getChildText("unitName"),
-                categoryName = it.getChildText("impactCategoryName"),
-                methodName = it.getChildText("impactMethodName"),
+                indicator = MethodIndicator(
+                    methodName = it.getChildText("impactMethodName"),
+                    categoryName = it.getChildText("impactCategoryName"),
+                    name = it.getChildText("name"),
+                    unitName = it.getChildText("unitName"),
+                )
             )
         }
     }
@@ -124,7 +129,7 @@ object Parser {
                     properties = readProperties(it.getChildren("property")),
                 )
             }
-        val indicators = readImpactIndicators(xmlDesc.getChildren("impactIndicator").asSequence())
+        val indicators = readImpactExchanges(xmlDesc.getChildren("impactIndicator").asSequence())
         val elementaryExchangeList = readElementaryExchanges(xmlDesc.getChildren("elementaryExchange"))
 
         return FlowData(intermediateExchangeList, indicators, elementaryExchangeList)
