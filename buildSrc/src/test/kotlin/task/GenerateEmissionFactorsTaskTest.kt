@@ -38,8 +38,8 @@ class GenerateEmissionFactorsTaskTest {
                     reference_unit = kg
 
                     impacts {
-                        2.0522E-08 u Human_toxicity_non_cancer
-                        2.0522E-08 u Human_toxicity_non_cancer_organics
+                        2.0522E-08 CTUh human_toxicity_non_carcinogenic
+                        2.0522E-08 CTUh human_toxicity_non_carcinogenic_organics
                     }
 
                     meta {
@@ -59,7 +59,7 @@ class GenerateEmissionFactorsTaskTest {
                     reference_unit = kg
 
                     impacts {
-                        4.02E-08 u Human_toxicity_non_cancer_organics
+                        4.02E-08 CTUh human_toxicity_non_carcinogenic_organics
                     }
 
                     meta {
@@ -102,8 +102,8 @@ class GenerateEmissionFactorsTaskTest {
                     reference_unit = kg
 
                     impacts {
-                        1199.7 u Ecotoxicity_freshwater
-                        1199.7 u Ecotoxicity_freshwater_organics
+                        1199.7 CTUe ecotoxicity_freshwater
+                        1199.7 CTUe ecotoxicity_freshwater_organics
                     }
                 
                     meta {

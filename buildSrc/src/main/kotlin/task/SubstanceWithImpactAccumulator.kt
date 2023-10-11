@@ -62,16 +62,18 @@ class SubstanceWithImpactAccumulator {
     }
 
     @Suppress("SameParameterValue")
-    private fun impactsContent(pad: Int = 4): String = factorRecords
-        .filter { it.methodLocation().isBlank() }
-        .joinToString("\n") {
-            "|".plus(
-                padStart(
-                    "${it.characterizationFactor()} ${it.unit()} ${it.methodName()}",
-                    pad
+    private fun impactsContent(pad: Int = 4): String =
+        factorRecords
+            .filter { it.methodLocation().isBlank() }
+            .joinToString("\n") {
+                val mappedIndicator = EcoinventMethodIndicatorMapping[it.methodName()]
+                "|".plus(
+                    padStart(
+                        "${it.characterizationFactor()} ${mappedIndicator.unit} ${mappedIndicator.categoryName}",
+                        pad
+                    )
                 )
-            )
-        }
+            }
 
     private val impactsSubsection: String
         get() = if (factorRecords.size > 0) {
