@@ -5,6 +5,7 @@ import ch.kleis.lcaac.core.lang.value.IndicatorValue
 import ch.kleis.lcaac.core.lang.value.ProductValue
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
+import ch.kleis.lcaac.plugin.MyBundle
 import ch.kleis.lcaac.plugin.ui.toolwindow.shared.FloatingPointRepresentation
 import javax.swing.event.TableModelListener
 import javax.swing.table.TableModel
@@ -31,9 +32,9 @@ class ImpactAssessmentTableModel(
 
     override fun getColumnName(columnIndex: Int): String {
         return when {
-            columnIndex == 0 -> "indicator"
-            columnIndex == 1 -> "unit"
-            displayTotal && columnIndex == 2 -> "total"
+            columnIndex == 0 -> MyBundle.message("lca.results.tables.columns.indicator")
+            columnIndex == 1 -> MyBundle.message("lca.results.tables.columns.unit")
+            displayTotal && columnIndex == 2 -> MyBundle.message("lca.results.tables.columns.total")
             else -> {
                 val product = requestedProducts[columnIndex - columnPrefix]
                 product.getShortName()

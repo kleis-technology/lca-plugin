@@ -4,6 +4,7 @@ import ch.kleis.lcaac.core.assessment.ContributionAnalysis
 import ch.kleis.lcaac.core.lang.value.*
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
+import ch.kleis.lcaac.plugin.MyBundle
 import ch.kleis.lcaac.plugin.ui.toolwindow.shared.FloatingPointRepresentation
 import javax.swing.event.TableModelListener
 import javax.swing.table.TableModel
@@ -31,12 +32,12 @@ class InventoryTableModel(
 
     override fun getColumnName(columnIndex: Int): String {
         return when {
-            columnIndex == 0 -> "type"
-            columnIndex == 1 -> "name"
-            columnIndex == 2 -> "compartment"
-            columnIndex == 3 -> "sub_compartment"
-            columnIndex == 4 -> "unit"
-            displayTotal && columnIndex == 5 -> "total"
+            columnIndex == 0 -> MyBundle.message("lca.results.tables.columns.type")
+            columnIndex == 1 -> MyBundle.message("lca.results.tables.columns.name")
+            columnIndex == 2 -> MyBundle.message("lca.results.tables.columns.compartment")
+            columnIndex == 3 -> MyBundle.message("lca.results.tables.columns.sub_compartment")
+            columnIndex == 4 -> MyBundle.message("lca.results.tables.columns.unit")
+            displayTotal && columnIndex == 5 -> MyBundle.message("lca.results.tables.columns.total")
             else -> {
                 val product = requestedProducts[columnIndex - columnPrefix]
                 product.name

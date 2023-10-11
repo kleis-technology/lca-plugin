@@ -4,6 +4,7 @@ import ch.kleis.lcaac.core.assessment.ContributionAnalysis
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
+import ch.kleis.lcaac.plugin.MyBundle
 import ch.kleis.lcaac.plugin.ui.toolwindow.shared.FloatingPointRepresentation
 import javax.swing.event.TableModelListener
 import javax.swing.table.TableModel
@@ -23,10 +24,10 @@ class DemandTableModel(
 
     override fun getColumnName(columnIndex: Int): String {
         return when(columnIndex) {
-            0 -> "name"
-            1 -> "unit"
-            2 -> "amount"
-            3 -> "allocation [percent]"
+            0 -> MyBundle.message("lca.results.tables.columns.name")
+            1 -> MyBundle.message("lca.results.tables.columns.unit")
+            2 -> MyBundle.message("lca.results.tables.columns.amount")
+            3 -> MyBundle.message("lca.results.tables.columns.allocation_percent")
             else -> throw EvaluatorException("invalid column index")
         }
     }
