@@ -46,7 +46,7 @@ class LcaRootLibraryProvider : AdditionalLibraryRootsProvider() {
 
     private fun getUnitLibrary(plugin: IdeaPluginDescriptor?): LcaLibrary {
         val version: String = plugin?.version ?: "unknown"
-        val jarName = "${Prelude.pkgName}-$version.jar"
+        val jarName = "${Prelude.PKG_NAME}-$version.jar"
         val folder = cacheFolder()
         val fullPath = Path.of(folder.toString(), jarName)
         val generator = UnitLcaFileFromPreludeGenerator<BasicNumber>()

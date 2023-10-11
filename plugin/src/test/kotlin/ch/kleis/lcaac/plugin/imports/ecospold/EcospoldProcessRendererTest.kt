@@ -17,10 +17,6 @@ class EcospoldProcessRendererTest {
         // given
         val data = EcoSpold2Fixture.buildData()
         val dict = EcoSpold2Fixture.buildProcessDict()
-        val knownUnits = setOf(
-            "kg CO2-Eq",
-            "mol H+-Eq",
-        )
         val writer = mockk<ModelWriter>()
         val blockSlot = slot<CharSequence>()
         every { writer.writeRotateFile(any(), capture(blockSlot)) } returns Unit

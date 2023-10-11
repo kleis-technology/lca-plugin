@@ -133,7 +133,7 @@ object EcoinventMethodIndicatorMapping {
 
             "Photochemical ozone formation - human health" -> MethodIndicator(
                 "photochemical_oxidant_formation_human_health",
-                "disease_incidence",
+                "kg_NMVOC_Eq",
             )
 
             "Resource use, fossils" -> MethodIndicator(
