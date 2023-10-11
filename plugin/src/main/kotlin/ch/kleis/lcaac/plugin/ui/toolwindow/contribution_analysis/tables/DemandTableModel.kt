@@ -9,7 +9,7 @@ import javax.swing.event.TableModelListener
 import javax.swing.table.TableModel
 
 class DemandTableModel(
-    private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
+    analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
 ) : TableModel {
     private val productExchanges = analysis.entryPoint.products
 
