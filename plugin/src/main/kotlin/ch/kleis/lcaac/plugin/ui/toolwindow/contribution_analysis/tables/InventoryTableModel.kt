@@ -18,6 +18,7 @@ class InventoryTableModel(
 ) : TableModel {
     private val substances= substances.sortedWith(comparator)
     private val displayTotal = requestedProducts.size > 1
+    // 5 + 1 if more than products: type, name, compartment, sub_compartment, unit, [total]
     private val columnPrefix = if (displayTotal) 6 else 5
 
     override fun getRowCount(): Int {
@@ -29,14 +30,18 @@ class InventoryTableModel(
     }
 
     override fun getColumnName(columnIndex: Int): String {
-        if (columnIndex == 0) return "type"
-        if (columnIndex == 1) return "name"
-        if (columnIndex == 2) return "compartment"
-        if (columnIndex == 3) return "sub_compartment"
-        if (columnIndex == 4) return "unit"
-        if (displayTotal && columnIndex == 5) return "total"
-        val product = requestedProducts[columnIndex - columnPrefix]
-        return product.name
+        return when {
+            columnIndex == 0 -> "type"
+            columnIndex == 1 -> "name"
+            columnIndex == 2 -> "compartment"
+            columnIndex == 3 -> "sub_compartment"
+            columnIndex == 4 -> "unit"
+            displayTotal && columnIndex == 5 -> "total"
+            else -> {
+                val product = requestedProducts[columnIndex - columnPrefix]
+                product.name
+            }
+        }
     }
 
     override fun getColumnClass(columnIndex: Int): Class<*> {
@@ -51,18 +56,25 @@ class InventoryTableModel(
     @Suppress("DuplicatedCode")
     override fun getValueAt(rowIndex: Int, columnIndex: Int): Any {
         val substance = substances[rowIndex]
-        if (columnIndex == 0) return substance.type()
-        if (columnIndex == 1) return substance.name()
-        if (columnIndex == 2) return substance.compartment()
-        if (columnIndex == 3) return substance.subCompartment()
-        val total = analysis.supplyOf(substance)
-        if (columnIndex == 4) return "${total.unit.symbol}"
-        if (displayTotal && columnIndex == 5) {
-            return FloatingPointRepresentation.of(total.amount.value)
+        return when {
+            columnIndex == 0 -> substance.type()
+            columnIndex == 1 -> substance.name()
+            columnIndex ==2 -> substance.compartment()
+            columnIndex == 3 -> substance.subCompartment()
+            columnIndex == 4 -> {
+                val total = analysis.supplyOf(substance)
+                "${total.unit.symbol}"
+            }
+            displayTotal && columnIndex == 5 -> {
+                val total = analysis.supplyOf(substance)
+                FloatingPointRepresentation.of(total.amount.value)
+            }
+            else -> {
+                val product = requestedProducts[columnIndex - columnPrefix]
+                val quantity = analysis.allocatedSupplyOf(substance, product)
+                FloatingPointRepresentation.of(quantity.amount.value)
+            }
         }
-        val product = requestedProducts[columnIndex - columnPrefix]
-        val quantity = analysis.allocatedSupplyOf(substance, product)
-        return FloatingPointRepresentation.of(quantity.amount.value)
     }
 
     private fun SubstanceValue<BasicNumber>.name(): String = when(this) {

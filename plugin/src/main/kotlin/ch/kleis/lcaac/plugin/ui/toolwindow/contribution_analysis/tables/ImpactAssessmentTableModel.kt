@@ -18,6 +18,7 @@ class ImpactAssessmentTableModel(
 ) : TableModel {
     private val indicators: List<IndicatorValue<BasicNumber>> = indicators.sortedBy { it.getDisplayName() }
     private val displayTotal = requestedProducts.size > 1
+    // 2 + 1 if more than one product: indicator, unit, [total]
     private val columnPrefix = if (displayTotal) 3 else 2
 
     override fun getRowCount(): Int {
@@ -29,20 +30,15 @@ class ImpactAssessmentTableModel(
     }
 
     override fun getColumnName(columnIndex: Int): String {
-        if (columnIndex == 0) {
-            return "indicator"
+        return when {
+            columnIndex == 0 -> "indicator"
+            columnIndex == 1 -> "unit"
+            displayTotal && columnIndex == 2 -> "total"
+            else -> {
+                val product = requestedProducts[columnIndex - columnPrefix]
+                product.getShortName()
+            }
         }
-
-        if (columnIndex == 1) {
-            return "unit"
-        }
-
-        if (displayTotal && columnIndex == 2) {
-            return "total"
-        }
-
-        val product = requestedProducts[columnIndex - columnPrefix]
-        return product.getShortName()
     }
 
     override fun getColumnClass(columnIndex: Int): Class<*> {
@@ -59,21 +55,19 @@ class ImpactAssessmentTableModel(
 
     override fun getValueAt(rowIndex: Int, columnIndex: Int): Any {
         val indicator = indicators[rowIndex]
-        if (columnIndex == 0) {
-            return indicator.getDisplayName()
+        return when {
+            columnIndex == 0 -> indicator.getDisplayName()
+            columnIndex == 1 -> "${indicator.referenceUnit.symbol}"
+            displayTotal && columnIndex == 2 -> {
+                val total = analysis.supplyOf(indicator)
+                FloatingPointRepresentation.of(total.amount.value)
+            }
+            else -> {
+                val product = requestedProducts[columnIndex - columnPrefix]
+                val contribution = analysis.getPortContribution(product, indicator)
+                FloatingPointRepresentation.of(contribution.amount.value)
+            }
         }
-        if (columnIndex == 1) {
-            return "${indicator.referenceUnit.symbol}"
-        }
-
-        if (displayTotal && columnIndex == 2) {
-            val total = analysis.supplyOf(indicator)
-            return FloatingPointRepresentation.of(total.amount.value)
-        }
-
-        val product = requestedProducts[columnIndex - columnPrefix]
-        val contribution = analysis.getPortContribution(product, indicator)
-        return FloatingPointRepresentation.of(contribution.amount.value)
     }
 
     override fun setValueAt(aValue: Any?, rowIndex: Int, columnIndex: Int) {
