@@ -1,4 +1,4 @@
-package ch.kleis.lcaac.plugin.ui.toolwindow
+package ch.kleis.lcaac.plugin.ui.toolwindow.shared
 
 import org.jdesktop.swingx.plaf.basic.core.BasicTransferable
 import java.awt.datatransfer.Transferable

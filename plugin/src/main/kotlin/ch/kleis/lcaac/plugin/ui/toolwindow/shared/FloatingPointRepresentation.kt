@@ -1,4 +1,4 @@
-package ch.kleis.lcaac.plugin.ui.toolwindow
+package ch.kleis.lcaac.plugin.ui.toolwindow.shared
 
 import arrow.core.flatten
 import arrow.core.replicate

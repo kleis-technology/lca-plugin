@@ -58,7 +58,7 @@ class SankeyGraphAction(
 
                 // generate graph
                 progress.text = "Generating sankey graph"
-                graphBuilder = SankeyGraphBuilder(analysis, trace.getObservableOrder())
+                graphBuilder = SankeyGraphBuilder(analysis, trace.getComparator())
                 this.graph = graphBuilder!!.buildContributionGraph(sankeyIndicator)
             }
 
