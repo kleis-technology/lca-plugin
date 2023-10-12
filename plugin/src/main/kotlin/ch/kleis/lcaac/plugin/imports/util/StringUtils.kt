@@ -1,14 +1,7 @@
 package ch.kleis.lcaac.plugin.imports.util
 
-import ch.kleis.lcaac.core.prelude.Prelude
-import com.intellij.util.applyIf
-
 object StringUtils {
     const val BASE_PAD = 4
-
-    // TODO: Move related tests to core package
-    @Suppress("DuplicatedCode")
-    fun sanitize(s: String, toLowerCase: Boolean = true): String = Prelude.sanitize(s, toLowerCase)
 
     fun merge(s: Collection<CharSequence>): String = s.joinToString("\n")
 

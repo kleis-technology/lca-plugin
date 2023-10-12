@@ -1,11 +1,11 @@
 package ch.kleis.lcaac.plugin.imports.ecospold
 
+import ch.kleis.lcaac.core.prelude.Prelude.Companion.sanitize
 import ch.kleis.lcaac.plugin.imports.ecospold.model.ActivityDataset
 import ch.kleis.lcaac.plugin.imports.model.ImportedImpactExchange
 import ch.kleis.lcaac.plugin.imports.model.ImportedUnit
 import ch.kleis.lcaac.plugin.imports.shared.UnitManager
 import ch.kleis.lcaac.plugin.imports.util.ImportException
-import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 import com.intellij.testFramework.UsefulTestCase.assertThrows
 import org.junit.Test

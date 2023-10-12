@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.imports.model
 
-import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
+import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 
 
@@ -13,7 +13,7 @@ class ImportedUnit(
     val aliasFor = if (aliasFor?.baseUnitExpressionStr == symbol) null else aliasFor
 
     fun ref(): String {
-        return sanitize(sanitizeSymbol(symbol), toLowerCase = false)
+        return Prelude.sanitize(sanitizeSymbol(symbol), toLowerCase = false)
     }
 
     fun isAliasFor(): Boolean {

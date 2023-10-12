@@ -1,11 +1,11 @@
 package ch.kleis.lcaac.plugin.imports.shared.serializer
 
+import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.imports.model.ImportedImpact
 import ch.kleis.lcaac.plugin.imports.model.ImportedSubstance
 import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.asComment
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.formatMetaValues
-import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 
 class SubstanceSerializer {
 
@@ -57,7 +57,7 @@ class SubstanceSerializer {
         }
 
         private fun serializeImportedImpact(ii: ImportedImpact, builder: StringBuilder = StringBuilder()): CharSequence {
-            val name = sanitizeSymbol(sanitize(ii.name))
+            val name = sanitizeSymbol(Prelude.sanitize(ii.name))
             ii.comment?.apply {
                 builder.append(asComment(ii.comment))
                 builder.appendLine()
