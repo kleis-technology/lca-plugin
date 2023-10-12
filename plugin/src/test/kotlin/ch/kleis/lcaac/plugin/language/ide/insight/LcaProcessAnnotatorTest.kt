@@ -17,6 +17,7 @@ class LcaProcessAnnotatorTest : BasePlatformTestCase() {
         return "testdata"
     }
 
+    @Suppress("DialogTitleCapitalization")
     @Test
     fun testAnnotate_whenCoproductIsMissingAllocationField() {
         // given

@@ -123,7 +123,10 @@ run ::= 'run' runRef '{'
     elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.run.RunElementType"
     stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.run.RunStub"
 }
-assess ::= 'assess'  processTemplateSpec
+assess ::= 'assess'  processTemplateSpec{
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiAssess"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiAssessMixin"
+    }
 generate ::= 'generate' processTemplateSpec
 
 
