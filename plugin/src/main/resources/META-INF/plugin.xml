@@ -57,6 +57,9 @@
         <annotator
                 language="LCA"
                 implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.LcaAssignmentAnnotator"/>
+        <annotator
+                language="LCA"
+                implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.LcaProcessRefAnnotator"/>
 
         <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataRef"
                                  implementationClass="ch.kleis.lcaac.plugin.language.psi.manipulators.PsiQuantityRefManipulator"/>
@@ -95,7 +98,8 @@
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.output_product.OutputProductStubKeyIndex"/>
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex"/>
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex"/>
-        <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssignmentStubKeyIndex"/>
+        <stubIndex
+                implementation="ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssignmentStubKeyIndex"/>
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.test.TestStubKeyIndex"/>
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.run.RunStubKeyIndex"/>
         <stubElementTypeHolder class="ch.kleis.lcaac.plugin.psi.LcaTypes" externalIdPrefix="lca."/>
@@ -138,8 +142,8 @@
         <liveTemplateContext implementation="ch.kleis.lcaac.plugin.ide.template.LcaRootContext" contextId="LCARoot"/>
 
         <lang.psiStructureViewFactory
-            language="LCA"
-            implementationClass="ch.kleis.lcaac.plugin.language.ide.structure.LcaStructureViewFactory" />
+                language="LCA"
+                implementationClass="ch.kleis.lcaac.plugin.language.ide.structure.LcaStructureViewFactory"/>
         <navbar implementation="ch.kleis.lcaac.plugin.language.ide.structure.LcaStructureAwareNavBar"/>
     </extensions>
 
