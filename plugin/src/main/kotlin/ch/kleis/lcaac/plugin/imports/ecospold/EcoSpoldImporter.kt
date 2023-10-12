@@ -157,7 +157,7 @@ class EcoSpoldImporter(
             indicators.asSequence()
                 .map { indicator ->
                     ImportedUnit(
-                        indicator.name,
+                        indicator.categoryName,
                         indicator.unitName,
                     )
                 }

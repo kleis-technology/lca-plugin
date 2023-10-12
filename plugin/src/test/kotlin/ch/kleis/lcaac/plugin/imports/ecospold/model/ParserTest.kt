@@ -107,12 +107,16 @@ class ParserTest {
             assertEquals(
                 listOf(
                     MethodIndicator(
-                        "acidification_no_lt",
-                        "mol H+-Eq",
+                        methodName = "EF v3.1 no LT",
+                        categoryName = "acidification no LT",
+                        name = "accumulated exceedance (AE) no LT",
+                        unitName = "mol H+-Eq",
                     ),
                     MethodIndicator(
-                        "another_to_ignore_because_new_dimension_should_not_be_duplicated",
-                        "mol H+-Eq",
+                        methodName = "EF v3.1 no LT",
+                        categoryName = "another to ignore, because new dimension should not be duplicated",
+                        name = "accumulated to ignore",
+                        unitName = "mol H+-Eq",
                     )
                 ), units
             )
@@ -153,17 +157,17 @@ class ParserTest {
             ), exchange.properties
         )
 
-        assertEqualsToIndicators(flowData.impactIndicators)
+        assertEqualImpactExchanges(flowData.impactExchanges)
 
     }
 
-    private fun assertEqualsToIndicators(impactIndicators: Sequence<ImpactIndicator>) {
-        assertEquals(1, impactIndicators.count())
-        assertEquals("acidification (incl. fate, average Europe total, A&B)", impactIndicators.first().name)
-        assertEquals(0.0011083933659871714, impactIndicators.first().amount, 1E-20)
-        assertEquals("kg SO2-Eq", impactIndicators.first().unitName)
-        assertEquals("CML v4.8 2016", impactIndicators.first().methodName)
-        assertEquals("acidification", impactIndicators.first().categoryName)
+    private fun assertEqualImpactExchanges(impactExchanges: Sequence<ImpactExchange>) {
+        assertEquals(1, impactExchanges.count())
+        assertEquals("acidification (incl. fate, average Europe total, A&B)", impactExchanges.first().indicator.name)
+        assertEquals(0.0011083933659871714, impactExchanges.first().amount, 1E-20)
+        assertEquals("kg SO2-Eq", impactExchanges.first().indicator.unitName)
+        assertEquals("CML v4.8 2016", impactExchanges.first().indicator.methodName)
+        assertEquals("acidification", impactExchanges.first().indicator.categoryName)
     }
 
 

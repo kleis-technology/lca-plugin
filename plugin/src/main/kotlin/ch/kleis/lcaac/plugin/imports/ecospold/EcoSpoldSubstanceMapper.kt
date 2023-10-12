@@ -15,14 +15,14 @@ class EcoSpoldSubstanceMapper {
                 "geography" to (process.description.geography?.shortName ?: "")
             )
             val pUid = EcoSpoldProcessMapper.buildName(process)
-            val impacts = process.flowData.impactIndicators
-                .filter { it.methodName == methodName }
+            val impacts = process.flowData.impactExchanges
+                .filter { it.indicator.methodName == methodName }
                 .map {
                     ImportedImpact(
                         it.amount,
-                        it.unitName,
-                        it.categoryName,
-                        it.name
+                        it.indicator.unitName,
+                        it.indicator.categoryName,
+                        it.indicator.name
                     )
                 }.toMutableList()
 

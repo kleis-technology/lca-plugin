@@ -65,9 +65,9 @@ object EcoSpold2Fixture {
             activityLinkId = "iName2ProcessID"
         )
         val impacts = sequenceOf(
-            ImpactIndicator("EF v3.0 no LT", "water use", "deprivation", 0.1188, "m3 world eq. deprived"),
-            ImpactIndicator("EF v3.1", "acidification", "accumulated exceedance (AE)", 0.0013, "mol H+-Eq"),
-            ImpactIndicator("EF v3.1", "climate change", "global warming potential (GWP100)", 0.6, "kg CO2-Eq"),
+            ImpactExchange(0.1188, MethodIndicator("EF v3.0 no LT", "water use", "deprivation", "m3 world eq. deprived")),
+            ImpactExchange(0.0013, MethodIndicator("EF v3.1", "acidification", "accumulated exceedance (AE)", "mol H+-Eq")),
+            ImpactExchange(0.6, MethodIndicator("EF v3.1", "climate change", "global warming potential (GWP100)", "kg CO2-Eq")),
         )
         val emissions = sequenceOf(
             ElementaryExchange(
@@ -104,7 +104,7 @@ object EcoSpold2Fixture {
         return ActivityDataset(
             description, FlowData(
                 intermediateExchanges = sequenceOf(prod, i1, i2),
-                impactIndicators = impacts,
+                impactExchanges = impacts,
                 elementaryExchanges = emissions,
             )
         )

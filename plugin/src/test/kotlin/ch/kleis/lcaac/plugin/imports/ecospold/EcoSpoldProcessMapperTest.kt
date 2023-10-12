@@ -238,8 +238,8 @@ class EcoSpoldProcessMapperTest {
             ImportedImpactExchange(
                 qty = "0.0013",
                 unit = "mol_H_p_Eq",
-                name = "accumulated_exceedance_ae",
-                comments = listOf("acidification"),
+                name = "acidification",
+                comments = listOf("accumulated exceedance (AE)"),
             ),
             result.impactBlocks[0].exchanges.first()
         )

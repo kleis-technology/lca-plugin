@@ -88,10 +88,10 @@ class EcospoldProcessRendererTest {
             |    }
             |
             |    impacts { // Impacts for method EF v3.1
-            |        // acidification
-            |        0.0013 mol_H_p_Eq accumulated_exceedance_ae
-            |        // climate change
-            |        0.6 kg_CO2_Eq global_warming_potential_gwp100
+            |        // accumulated exceedance (AE)
+            |        0.0013 mol_H_p_Eq acidification
+            |        // global warming potential (GWP100)
+            |        0.6 kg_CO2_Eq climate_change
             |    }
             |
             |}

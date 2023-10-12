@@ -10,6 +10,7 @@ import ch.kleis.lcaac.plugin.imports.util.StringUtils.compact
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.compactList
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.merge
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
+import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 
 class EcoSpoldProcessMapper(
     private val processDict: Map<String, EcoSpoldImporter.ProcessDictRecord>,
@@ -49,7 +50,7 @@ class EcoSpoldProcessMapper(
         }
 
         val (mappedImpactsComment, mappedImpactsExchanges) = methodName?.let {
-            mapImpacts(methodName, process.flowData.impactIndicators)
+            mapImpactExchanges(methodName, process.flowData.impactExchanges)
         } ?: (null to emptySequence())
 
         return ImportedProcess(
@@ -103,16 +104,16 @@ class EcoSpoldProcessMapper(
             it.system to compact(it.value)
         }
 
-    private fun mapImpacts(
+    private fun mapImpactExchanges(
         methodName: String,
-        impactIndicatorList: Sequence<ImpactIndicator>,
+        impactIndicatorList: Sequence<ImpactExchange>,
     ): Pair<String, Sequence<ImportedImpactExchange>> =
-        Pair("Impacts for method $methodName", impactIndicatorList.filter { it.methodName == methodName }.map {
+        Pair("Impacts for method $methodName", impactIndicatorList.filter { it.indicator.methodName == methodName }.map {
             ImportedImpactExchange(
                 it.amount.toString(),
-                unitManager.findRefBySymbolOrSanitizeSymbol(it.unitName),
-                sanitize(it.name),
-                listOf(it.categoryName),
+                unitManager.findRefBySymbolOrSanitizeSymbol(it.indicator.unitName),
+                sanitizeSymbol(sanitize(it.indicator.categoryName)),
+                listOf(it.indicator.name),
             )
         })
 
