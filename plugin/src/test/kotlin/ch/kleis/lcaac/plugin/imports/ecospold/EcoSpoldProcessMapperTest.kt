@@ -264,7 +264,7 @@ class EcoSpoldProcessMapperTest {
     fun test_unitToStr_should_not_rewrite_unknown_unit() {
         // given
         val unitManager = UnitManager()
-        val unitName = "mol H+-Eq"
+        val unitName = "an unknown unit"
 
         // when
         val result = unitManager.findRefBySymbolOrSanitizeSymbol(unitName)
