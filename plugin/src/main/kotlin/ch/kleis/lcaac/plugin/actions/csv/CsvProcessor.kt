@@ -38,7 +38,7 @@ class CsvProcessor(
                 }
             }
 
-        val trace = evaluator.trace(EProcessTemplateApplication(template, arguments))
+        val trace = evaluator.trace(template, arguments)
         val systemValue = trace.getSystemValue()
         val entryPoint = trace.getEntryPoint()
         val program = ContributionAnalysisProgram(systemValue, entryPoint)

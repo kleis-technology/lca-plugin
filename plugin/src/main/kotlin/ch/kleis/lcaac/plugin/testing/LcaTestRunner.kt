@@ -35,10 +35,10 @@ class LcaTestRunner(
                 parser.load()
             }
             val testCase = runReadAction { testCase(test) }
-            val updatedSymbolTable = symbolTable // TODO: This is a hack.
+            val updatedSymbolTable = symbolTable
                 .copy(
                     processTemplates = Register(symbolTable.processTemplates)
-                        .plus(mapOf(testCase.template.body.name to testCase.template))
+                        .plus(mapOf(testCase.body.name to testCase))
                 )
             val evaluator = Evaluator(updatedSymbolTable, BasicOperations)
             val trace = evaluator.trace(testCase)
@@ -61,7 +61,7 @@ class LcaTestRunner(
                 results,
                 test,
             )
-        } catch (e : EvaluatorException) {
+        } catch (e: EvaluatorException) {
             return LcaTestResult(
                 test.testRef.name,
                 listOf(
@@ -99,29 +99,25 @@ class LcaTestRunner(
         return this.dataExpressionList[1]
     }
 
-    private fun testCase(test: LcaTest): EProcessTemplateApplication<BasicNumber> {
+    private fun testCase(test: LcaTest): EProcessTemplate<BasicNumber> {
         with(mapper) {
             val name = test.testRef.name
-            return EProcessTemplateApplication(
-                template = EProcessTemplate(
-                    params = emptyMap(),
-                    locals = emptyMap(),
-                    body = EProcess(
-                        name = "__${test.testRef.name}__", // TODO: This is a hack.
-                        products = listOf(
-                            ETechnoExchange(
-                                EQuantityScale(BasicNumber(1.0), EDataRef("u")),
-                                EProductSpec(name, EDataRef("u"))
-                            )
-                        ),
-                        inputs = test.givenList
-                            .flatMap { it.technoInputExchangeList }
-                            .map { technoInputExchange(it) },
-                    )
-                ),
-                arguments = emptyMap(),
+            return EProcessTemplate(
+                params = emptyMap(),
+                locals = emptyMap(),
+                body = EProcess(
+                    name = "__${test.testRef.name}__", // TODO: This is a hack.
+                    products = listOf(
+                        ETechnoExchange(
+                            EQuantityScale(BasicNumber(1.0), EDataRef("u")),
+                            EProductSpec(name, EDataRef("u"))
+                        )
+                    ),
+                    inputs = test.givenList
+                        .flatMap { it.technoInputExchangeList }
+                        .map { technoInputExchange(it) },
+                )
             )
         }
     }
-
 }

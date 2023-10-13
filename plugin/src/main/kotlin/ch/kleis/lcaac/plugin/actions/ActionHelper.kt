@@ -2,7 +2,6 @@ package ch.kleis.lcaac.plugin.actions
 
 import ch.kleis.lcaac.core.lang.evaluator.EvaluationTrace
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
-import ch.kleis.lcaac.core.lang.expression.EProcessTemplateApplication
 import ch.kleis.lcaac.core.math.QuantityOperations
 import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
@@ -29,12 +28,6 @@ fun <Q> traceSystemWithIndicator(
 
     // compute
     indicator.text = "Solving system"
-    val template =
-        symbolTable.getTemplate(processName, matchLabels)!! // We are called from a process, so it must exist
-    val entryPoint = EProcessTemplateApplication(
-        template = template,
-        arguments = template.params,
-    )
-
-    return Evaluator(symbolTable, ops).trace(entryPoint)
+    val template = symbolTable.getTemplate(processName, matchLabels)!! // We are called from a process, so it must exist
+    return Evaluator(symbolTable, ops).trace(template)
 }
