@@ -12,146 +12,173 @@ object EcoinventMethodIndicatorMapping {
     operator fun get(s: String): MethodIndicator {
         return when (s) {
             "Acidification" -> MethodIndicator(
-                "acidification",
-                "mol_H_p_Eq",
+                sanitize("acidification"),
+                sanitize("mol H+-Eq", toLowerCase = false),
             )
 
             "Climate change" -> MethodIndicator(
-                "climate_change",
-                "kg_CO2_Eq",
+                sanitize("climate change"),
+                sanitize("kg CO2-Eq", toLowerCase = false),
             )
 
             "Climate change-Biogenic" -> MethodIndicator(
-                "climate_change_biogenic",
-                "kg_CO2_Eq",
+                sanitize("climate change: biogenic"),
+                sanitize("kg CO2-Eq", toLowerCase = false),
             )
 
             "Climate change-Fossil" -> MethodIndicator(
-                "climate_change_fossil",
-                "kg_CO2_Eq",
+                sanitize("climate change: fossil"),
+                sanitize("kg CO2-Eq", toLowerCase = false),
             )
 
             "Climate change-Land use and land use change" -> MethodIndicator(
-                "climate_change_land_use_and_land_use_change",
-                "kg_CO2_Eq"
+                sanitize("climate change: land use and land use change"),
+                sanitize("kg CO2-Eq", toLowerCase = false),
             )
 
             "Ecotoxicity, freshwater" -> MethodIndicator(
-                "ecotoxicity_freshwater",
-                "CTUe",
+                sanitize("ecotoxicity: freshwater"),
+                sanitize("CTUe", toLowerCase = false),
             )
 
             "Ecotoxicity, freshwater_inorganics" -> MethodIndicator(
-                "ecotoxicity_freshwater_inorganics",
-                "CTUe",
+                sanitize("ecotoxicity: freshwater, inorganics"),
+                sanitize("CTUe", toLowerCase = false),
             )
 
             "Ecotoxicity, freshwater_metals" -> MethodIndicator(
-                "ecotoxicity_freshwater_metals",
-                "CTUe",
+                sanitize("ecotoxicity: freshwater, metals"),
+                sanitize("CTUe", toLowerCase = false),
             )
 
             "Ecotoxicity, freshwater_organics" -> MethodIndicator(
-                "ecotoxicity_freshwater_organics",
-                "CTUe",
+                sanitize("ecotoxicity: freshwater, organics"),
+                sanitize("CTUe", toLowerCase = false),
             )
 
             "EF-particulate Matter" -> MethodIndicator(
-                "particulate_matter_formation",
-                "disease_incidence",
+                sanitize("particulate matter formation"),
+                sanitize("disease incidence", toLowerCase = false),
             )
 
             "Eutrophication marine" -> MethodIndicator(
-                "eutrophication_marine",
-                "kg_N_Eq",
+                sanitize("eutrophication: marine"),
+                sanitize("kg N-Eq", toLowerCase = false),
             )
 
             "Eutrophication, freshwater" -> MethodIndicator(
-                "eutrophication_freshwater",
-                "kg_P_Eq",
+                sanitize("eutrophication: freshwater"),
+                sanitize("kg P-Eq", toLowerCase = false),
             )
 
             "Eutrophication, terrestrial" -> MethodIndicator(
-                "eutrophication_terrestrial",
-                "mol_N_Eq"
+                sanitize("eutrophication: terrestrial"),
+                sanitize("mol N-Eq", toLowerCase = false),
             )
 
             "Human toxicity, cancer" -> MethodIndicator(
-                "human_toxicity_carcinogenic",
-                "CTUh",
+                sanitize("human toxicity: carcinogenic"),
+                sanitize("CTUh", toLowerCase = false),
             )
 
             "Human toxicity, cancer_inorganics" -> MethodIndicator(
-                "human_toxicity_carcinogenic_inorganics",
-                "CTUh",
+                sanitize("human toxicity: non-carcinogenic, inorganics"),
+                sanitize("CTUh", toLowerCase = false),
             )
 
             "Human toxicity, cancer_metals" -> MethodIndicator(
-                "human_toxicity_carcinogenic_metals",
-                "CTUh",
+                sanitize("human toxicity: carcinogenic, metals"),
+                sanitize("CTUh", toLowerCase = false),
             )
 
             "Human toxicity, cancer_organics" -> MethodIndicator(
-                "human_toxicity_carcinogenic_organics",
-                "CTUh",
+                sanitize("human toxicity: carcinogenic, organics"),
+                sanitize("CTUh", toLowerCase = false),
             )
 
             "Human toxicity, non-cancer" -> MethodIndicator(
-                "human_toxicity_non_carcinogenic",
-                "CTUh",
+                sanitize("human toxicity: non-carcinogenic"),
+                sanitize("CTUh", toLowerCase = false),
             )
 
             "Human toxicity, non-cancer_inorganics" -> MethodIndicator(
-                "human_toxicity_non_carcinogenic_inorganics",
-                "CTUh",
+                sanitize("human toxicity: non-carcinogenic, inorganics"),
+                sanitize("CTUh", toLowerCase = false),
             )
 
             "Human toxicity, non-cancer_metals" -> MethodIndicator(
-                "human_toxicity_non_carcinogenic_metals",
-                "CTUh",
+                sanitize("human toxicity: non-carcinogenic, metals"),
+                sanitize("CTUh", toLowerCase = false),
             )
 
             "Human toxicity, non-cancer_organics" -> MethodIndicator(
-                "human_toxicity_non_carcinogenic_organics",
-                "CTUh"
+                sanitize("human toxicity: non-carcinogenic, organics"),
+                sanitize("CTUh", toLowerCase = false),
             )
 
             "Ionising radiation, human health" -> MethodIndicator(
-                "ionising_radiation_human_health",
-                "kBq_U235_Eq",
+                sanitize("ionising radiation: human health"),
+                sanitize("kBq U235-Eq", toLowerCase = false),
             )
 
             "Land use" -> MethodIndicator(
-                "_land_use",
-                "dimensionless",
+                sanitize("_land use"),
+                sanitize("dimensionless", toLowerCase = false),
             )
 
             "Ozone depletion" -> MethodIndicator(
-                "ozone_depletion",
-                "kg_CFC_11_Eq",
+                sanitize("ozone depletion"),
+                sanitize("kg CFC-11-Eq", toLowerCase = false),
             )
 
             "Photochemical ozone formation - human health" -> MethodIndicator(
-                "photochemical_oxidant_formation_human_health",
-                "kg_NMVOC_Eq",
+                sanitize("photochemical oxidant formation: human health"),
+                sanitize("kg NMVOC-Eq", toLowerCase = false),
             )
 
             "Resource use, fossils" -> MethodIndicator(
-                "energy_resources_non_renewable",
-                "MJ_net_calorific_value",
+                sanitize("energy resources: non-renewable"),
+                sanitize("MJ, net calorific value", toLowerCase = false),
             )
 
             "Resource use, minerals and metals" -> MethodIndicator(
-                "material_resources_metals_sl_minerals",
-                "kg_Sb_Eq",
+                sanitize("material resources: metals/minerals"),
+                sanitize("kg Sb-Eq", toLowerCase = false),
             )
 
             "Water use" -> MethodIndicator(
-                "water_use",
-                "m3_world_eq_deprived",
+                sanitize("water use"),
+                sanitize("m3 world eq. deprived", toLowerCase = false),
             )
 
             else -> throw IllegalArgumentException("unknown indicator $s")
         }
     }
+}
+
+// TODO: Find a way to write this function once and for all
+fun sanitize(s: String, toLowerCase: Boolean = true): String {
+    if (s.isBlank()) {
+        return s
+    }
+
+    val r = if (s[0].isDigit()) "_$s" else s
+    val spaces = """\s+""".toRegex()
+    val nonAlphaNumeric = """[^a-zA-Z0-9_]+""".toRegex()
+    val underscores = Regex("_{2,}")
+
+    return r.let {
+        if (toLowerCase) it.lowercase()
+        else it
+    }.trim()
+        .replace(spaces, "_")
+        .replace("*", "_m_")
+        .replace("+", "_p_")
+        .replace("&", "_a_")
+        .replace(">", "_gt_")
+        .replace("<", "_lt_")
+        .replace("/", "_sl_")
+        .replace(nonAlphaNumeric, "_")
+        .replace(underscores, "_")
+        .trimEnd('_')
 }
