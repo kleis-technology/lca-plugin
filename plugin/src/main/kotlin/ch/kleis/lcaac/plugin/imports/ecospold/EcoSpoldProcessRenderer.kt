@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.plugin.imports.ecospold
 
+import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.ecospold.EcoSpoldImporter.ProcessDictRecord
 import ch.kleis.lcaac.plugin.imports.ecospold.model.ActivityDataset
@@ -38,6 +39,6 @@ class EcoSpoldProcessRenderer(
         val desc = data.description.classifications
             .firstOrNull { it.system == "EcoSpold01Categories" }
             ?.value
-        return desc?.let { StringUtils.sanitize(it) }
+        return desc?.let { Prelude.sanitize(it) }
     }
 }

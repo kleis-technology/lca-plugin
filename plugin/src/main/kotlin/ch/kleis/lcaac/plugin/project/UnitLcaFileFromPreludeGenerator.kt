@@ -35,13 +35,13 @@ class UnitLcaFileFromPreludeGenerator<Q> {
             FileOutputStream(file)
                 .use { fileOut ->
                     ZipOutputStream(fileOut).use { jar ->
-                        val je = ZipEntry("${Prelude.pkgName}.lca")
-                        je.comment = Prelude.pkgName;
+                        val je = ZipEntry("${Prelude.PKG_NAME}.lca")
+                        je.comment = Prelude.PKG_NAME
                         jar.putNextEntry(je)
                         jar.write(newContent.toByteArray())
                         jar.closeEntry()
-                        val jeMd5 = ZipEntry("${Prelude.pkgName}.lca.md5")
-                        jeMd5.comment = "${Prelude.pkgName}_mda";
+                        val jeMd5 = ZipEntry("${Prelude.PKG_NAME}.lca.md5")
+                        jeMd5.comment = "${Prelude.PKG_NAME}_mda"
                         jar.putNextEntry(jeMd5)
                         jar.write(newHash.toByteArray())
                         jar.closeEntry()
@@ -52,7 +52,7 @@ class UnitLcaFileFromPreludeGenerator<Q> {
 
     private fun haveToRecreate(path: Path, newHash: String): Boolean {
         if (path.exists()) {
-            val oldHash = readEntry(path, "${Prelude.pkgName}.lca.md5")
+            val oldHash = readEntry(path, "${Prelude.PKG_NAME}.lca.md5")
             if (oldHash == newHash) {
                 return false
             }
@@ -60,6 +60,7 @@ class UnitLcaFileFromPreludeGenerator<Q> {
         return true
     }
 
+    @Suppress("SameParameterValue")
     private fun readEntry(path: Path, entryName: String): String? {
         FileInputStream(path.toFile()).use { fis ->
             BufferedInputStream(fis).use { bis ->
@@ -87,59 +88,40 @@ class UnitLcaFileFromPreludeGenerator<Q> {
 
     private fun getContent(): String {
         val buffer = StringBuilder()
+        buffer.append("package ${Prelude.PKG_NAME}\n")
         Prelude.primitiveUnits<Q>().values
-        buffer.append("package ${Prelude.pkgName}\n")
-        Prelude.primitiveUnits<Q>().values
-            .filter { it.scale == 1.0 }
-            .mapNotNull { mapUnitWithNewDimension(it) }
+            .filter { it.value.scale == 1.0 }
+            .mapNotNull { mapUnitWithNewDimension(it.ref, it.value) }
             .forEach { buffer.append(it.toString()) }
-        Prelude.primitiveUnits<Q>().values
-            .mapNotNull { mapUnitAsAlias(it) }
-            .forEach { buffer.append(it.toString()) }
-        Prelude.compositeUnits<Q>()
-            .map { mapUnitWithAlias(it.key, it.value) }
+        Prelude.compositeUnits<Q>().values
+            .mapNotNull { it.rawAlias?.let { rawAlias -> mapUnitWithAlias(it.ref, it.value, rawAlias) } }
             .forEach { buffer.append(it.toString()) }
         return buffer.toString()
     }
 
 
-    private fun mapUnitWithAlias(unit: EUnitLiteral<Q>, alias: String): UnitBlock {
+    private fun mapUnitWithAlias(ref: String, unit: EUnitLiteral<Q>, alias: String): UnitBlock {
         return """
-
-unit ${unit.symbol} {
-    symbol = "${unit.symbol}"
-    alias_for = $alias
-}
-"""
+            
+            unit $ref {
+                symbol = "${unit.symbol}"
+                alias_for = $alias
+            }
+        """.trimIndent()
     }
 
-    private fun mapUnitAsAlias(unit: EUnitLiteral<Q>): UnitBlock? {
-        val refUnit = existingRefUnit[unit.dimension]!!
-        return if (refUnit == unit) {
-            null
-        } else {
-            """
-
-unit ${unit.symbol} {
-    symbol = "${unit.symbol}"
-    alias_for = ${unit.scale} ${refUnit.symbol}
-}
-"""
-        }
-    }
-
-    private fun mapUnitWithNewDimension(unit: EUnitLiteral<Q>): UnitBlock? {
+    private fun mapUnitWithNewDimension(ref: String, unit: EUnitLiteral<Q>): UnitBlock? {
         return if (existingRefUnit.containsKey(unit.dimension)) {
             null
         } else {
             existingRefUnit[unit.dimension] = unit
             """
-
-unit ${unit.symbol} {
-    symbol = "${unit.symbol}"
-    dimension = "${unit.dimension}"
-}
-    """
+                
+                unit $ref {
+                    symbol = "${unit.symbol}"
+                    dimension = "${unit.dimension}"
+                }
+            """.trimIndent()
         }
     }
 

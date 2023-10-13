@@ -32,7 +32,7 @@ class LcaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LcaLan
     }
 
     fun getImportNames(): Collection<String> {
-        return listOf(Prelude.pkgName) + getImports().map { it.name }
+        return listOf(Prelude.PKG_NAME) + getImports().map { it.name }
     }
 
     fun getTests(): Collection<LcaTest> {

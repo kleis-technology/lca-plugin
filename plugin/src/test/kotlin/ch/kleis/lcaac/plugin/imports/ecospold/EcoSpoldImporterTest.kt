@@ -92,7 +92,7 @@ class EcoSpoldImporterTest : BasePlatformTestCase() {
             The number of unit definitions is different from the number of "imported units"
             because we avoid (as much as possible) redefining units that are already known.
          */
-        assertEquals(708, lcaFile.getUnitDefinitions().size)
+        assertEquals(694, lcaFile.getUnitDefinitions().size)
     }
 
     @Test

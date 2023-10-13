@@ -40,12 +40,7 @@ sealed class EFRecord(val record: CSVRecord) {
     fun substanceName(): String = sanitizeString(record["FLOW_name"].replace("\"", "\\\""))
     fun casNumber(): String = record["FLOW_casnumber"].trim()
     fun ecNumber(): String = record["FLOW_ecnumber"].trim()
-    fun methodName(): String {
-        val san = sanitizeString(record["LCIAMethod_name"].trim())
-        // Hack to avoid conflict between
-        return if (san == "Land_use") "Land_Use" else san
-    }
-
+    fun methodName(): String = record["LCIAMethod_name"].trim()
     fun methodLocation(): String = record["LCIAMethod_location"].trim()
 
     fun compartment(): String {

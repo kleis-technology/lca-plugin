@@ -90,7 +90,7 @@ class E2ETest : BasePlatformTestCase() {
         val symbolTable = createFilesAndSymbols(vf)
 
         // when
-        val entryPoint = EProcessTemplateApplication<BasicNumber>(template = symbolTable.getTemplate("p")!!)
+        val entryPoint = EProcessTemplateApplication(template = symbolTable.getTemplate("p")!!)
         val trace = Evaluator(symbolTable, ops).trace(entryPoint)
         val system = trace.getSystemValue()
         val assessment = ContributionAnalysisProgram(system, trace.getEntryPoint())
@@ -343,7 +343,7 @@ class E2ETest : BasePlatformTestCase() {
 
         // then
         val expected =
-            EQuantityScale(ops.pure(200.0), EUnitLiteral(UnitSymbol.of("m").pow(4.0), 1.0, Prelude.length.pow(4.0)))
+            EQuantityScale(ops.pure(200.0), EUnitLiteral(UnitSymbol.of("m").pow(4.0), 1.0, Dimension.of("length").pow(4.0)))
         TestCase.assertEquals(expected, actual)
     }
 

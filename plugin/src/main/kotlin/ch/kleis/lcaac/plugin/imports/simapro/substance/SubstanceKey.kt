@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.imports.simapro.substance
 
-import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
+import ch.kleis.lcaac.core.prelude.Prelude.Companion.sanitize
 import org.apache.commons.csv.CSVRecord
 
 data class SubstanceKey(

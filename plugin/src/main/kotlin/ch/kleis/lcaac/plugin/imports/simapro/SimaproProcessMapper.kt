@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.plugin.imports.simapro
 
+import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.ide.imports.simapro.SubstanceImportMode
 import ch.kleis.lcaac.plugin.imports.model.*
 import ch.kleis.lcaac.plugin.imports.shared.serializer.FormulaConverter
@@ -8,7 +9,6 @@ import ch.kleis.lcaac.plugin.imports.simapro.substance.Ef3xDictionary
 import ch.kleis.lcaac.plugin.imports.simapro.substance.SimaproDictionary
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.BASE_PAD
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.compact
-import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 import org.openlca.simapro.csv.process.*
 import java.time.ZoneId
@@ -21,7 +21,7 @@ fun ProcessBlock.uid(): String {
     } else {
         this.products()[0].uid()
     }
-    val mainProductName = sanitize(mainProductNameRaw)
+    val mainProductName = Prelude.sanitize(mainProductNameRaw)
     val identifierRaw = if (this.identifier().isNullOrEmpty()) {
         "unknown"
     } else {
@@ -36,11 +36,11 @@ fun ProcessBlock.uid(): String {
         // * same process name and diff product name with same identifier : 2 coproducts
         this.name() + "_" + (mainProductNameRaw.hashCode() % 10000) + "_" + (identifierRaw.hashCode() % 10000)
     }
-    return sanitize(uidRaw)
+    return Prelude.sanitize(uidRaw)
 }
 
 fun ProductOutputRow.uid(): String {
-    return sanitize(this.name())
+    return Prelude.sanitize(this.name())
 }
 
 
@@ -199,7 +199,7 @@ class SimaproProcessMapper(mode: SubstanceImportMode) {
     ): ImportedProductExchange {
         val comments = createComments(exchange.comment(), additionalComments)
         val unit = sanitizeSymbol(exchange.unit())
-        val name = sanitize(exchange.name()) + suffix
+        val name = Prelude.sanitize(exchange.name()) + suffix
         val amount = FormulaConverter.compute(exchange.amount().toString(), comments)
         return ImportedProductExchange(
             name = name,

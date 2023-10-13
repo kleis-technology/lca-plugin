@@ -991,7 +991,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
 
         // then
         val expected = TTechnoExchange(
-            TProduct("foo_product", Prelude.mass)
+            TProduct("foo_product", Dimension.of("mass"))
         )
         TestCase.assertEquals(expected, actual)
     }

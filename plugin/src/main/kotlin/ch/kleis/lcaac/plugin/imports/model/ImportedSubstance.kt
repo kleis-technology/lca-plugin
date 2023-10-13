@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.plugin.imports.model
 
+import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.imports.util.StringUtils
 
 class ImportedSubstance(
@@ -15,10 +16,10 @@ class ImportedSubstance(
     val uid: String
 
     init {
-        uid = pUid?.let { StringUtils.sanitize(it) } ?: StringUtils.sanitize(name)
+        uid = pUid?.let { Prelude.sanitize(it) } ?: Prelude.sanitize(name)
     }
 
-    fun referenceUnitSymbol() = StringUtils.sanitize(referenceUnit, false)
+    fun referenceUnitSymbol() = Prelude.sanitize(referenceUnit, false)
 }
 
 data class ImportedImpact(
@@ -29,10 +30,10 @@ data class ImportedImpact(
         val comment: String?
 ) {
     constructor(value: Double, unitName: String, name: String, comment: String? = null) : this(
-            StringUtils.sanitize(name),
+            Prelude.sanitize(name),
             name,
             value,
-            StringUtils.sanitize(unitName, toLowerCase = false),
+            Prelude.sanitize(unitName, toLowerCase = false),
             comment
     )
 }

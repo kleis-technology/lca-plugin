@@ -1,32 +1,7 @@
 package ch.kleis.lcaac.plugin.imports.util
 
-import com.intellij.util.applyIf
-
 object StringUtils {
     const val BASE_PAD = 4
-
-    fun sanitize(s: String, toLowerCase: Boolean = true): String {
-        if (s.isBlank()) {
-            return s
-        }
-
-        val r = if (s[0].isDigit()) "_$s" else s
-        val spaces = """\s+""".toRegex()
-        val nonAlphaNumeric = """[^a-zA-Z0-9_]+""".toRegex()
-        val underscores = Regex("_{2,}")
-
-        return r.applyIf(toLowerCase, String::lowercase).trim()
-            .replace(spaces, "_")
-            .replace("*", "_m_")
-            .replace("+", "_p_")
-            .replace("&", "_a_")
-            .replace(">", "_gt_")
-            .replace("<", "_lt_")
-            .replace("/", "_sl_")
-            .replace(nonAlphaNumeric, "_")
-            .replace(underscores, "_")
-            .trimEnd('_')
-    }
 
     fun merge(s: Collection<CharSequence>): String = s.joinToString("\n")
 

@@ -1,8 +1,8 @@
 package ch.kleis.lcaac.plugin.imports.simapro.substance
 
+import ch.kleis.lcaac.core.prelude.Prelude.Companion.sanitize
 import ch.kleis.lcaac.plugin.imports.ModelWriter
 import ch.kleis.lcaac.plugin.imports.shared.serializer.SubstanceSerializer
-import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 import org.openlca.simapro.csv.enums.ElementaryFlowType
 import org.openlca.simapro.csv.refdata.ElementaryFlowBlock
 import org.openlca.simapro.csv.refdata.ElementaryFlowRow

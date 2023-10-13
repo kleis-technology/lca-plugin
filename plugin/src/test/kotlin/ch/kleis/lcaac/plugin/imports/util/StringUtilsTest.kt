@@ -1,10 +1,9 @@
 package ch.kleis.lcaac.plugin.imports.util
 
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.asComment
-import ch.kleis.lcaac.plugin.imports.util.StringUtils.formatMetaValues
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.compact
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.compactList
-import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
+import ch.kleis.lcaac.plugin.imports.util.StringUtils.formatMetaValues
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.trimTrailingNonPrinting
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -63,24 +62,6 @@ class StringUtilsTest {
     fun trimTrailingNonPrinting_removes_trailing_newline() {
         assertEquals("a string", trimTrailingNonPrinting("a string\n"))
         assertEquals("a string", trimTrailingNonPrinting("a string\r\n"))
-    }
-
-    @Test
-    fun test_sanitize() {
-        // Given
-        val data = listOf(
-            "01" to "_01",
-            "ab" to "ab",
-            "a_+__b" to "a_p_b",
-            "a_*__b" to "a_m_b",
-            "m*2a" to "m_m_2a",
-            "a&b" to "a_a_b",
-            "  a&b++" to "a_a_b_p_p",
-        )
-
-        data.forEach { (given, expected) ->
-            assertEquals(expected, sanitize(given))
-        }
     }
 
     @Test

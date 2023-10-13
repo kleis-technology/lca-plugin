@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.imports.ecospold
 
 import ch.kleis.lcaac.core.lang.expression.SubstanceType
+import ch.kleis.lcaac.core.prelude.Prelude.Companion.sanitize
 import ch.kleis.lcaac.plugin.imports.ecospold.model.*
 import ch.kleis.lcaac.plugin.imports.model.*
 import ch.kleis.lcaac.plugin.imports.shared.UnitManager
@@ -9,7 +10,6 @@ import ch.kleis.lcaac.plugin.imports.util.StringUtils.asComment
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.compact
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.compactList
 import ch.kleis.lcaac.plugin.imports.util.StringUtils.merge
-import ch.kleis.lcaac.plugin.imports.util.StringUtils.sanitize
 import ch.kleis.lcaac.plugin.imports.util.sanitizeSymbol
 
 class EcoSpoldProcessMapper(
