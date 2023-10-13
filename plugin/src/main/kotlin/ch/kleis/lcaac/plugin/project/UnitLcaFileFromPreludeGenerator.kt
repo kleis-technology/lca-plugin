@@ -60,6 +60,7 @@ class UnitLcaFileFromPreludeGenerator<Q> {
         return true
     }
 
+    @Suppress("SameParameterValue")
     private fun readEntry(path: Path, entryName: String): String? {
         FileInputStream(path.toFile()).use { fis ->
             BufferedInputStream(fis).use { bis ->
@@ -90,10 +91,10 @@ class UnitLcaFileFromPreludeGenerator<Q> {
         buffer.append("package ${Prelude.PKG_NAME}\n")
         Prelude.primitiveUnits<Q>().values
             .filter { it.value.scale == 1.0 }
-            .mapNotNull { mapUnitWithNewDimension(it.ref(), it.value) }
+            .mapNotNull { mapUnitWithNewDimension(it.ref, it.value) }
             .forEach { buffer.append(it.toString()) }
         Prelude.compositeUnits<Q>().values
-            .map { mapUnitWithAlias(it.ref(), it.value, it.rawAlias) }
+            .mapNotNull { it.rawAlias?.let { rawAlias -> mapUnitWithAlias(it.ref, it.value, rawAlias) } }
             .forEach { buffer.append(it.toString()) }
         return buffer.toString()
     }
