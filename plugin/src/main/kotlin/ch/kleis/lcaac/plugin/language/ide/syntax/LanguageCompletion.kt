@@ -55,5 +55,7 @@ class LanguageCompletion : CompletionContributor() {
         strings.forEach { this.addElement(LookupElementBuilder.create(it)) }
     }
 
+    // TODO import completion
+    // Add error on bad reference
 
 }
