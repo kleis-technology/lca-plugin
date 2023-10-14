@@ -13,7 +13,7 @@ class LcaProcessTemplateSpecAnnotator : Annotator {
         }
         val products = element.processRef.reference.resolve()
         if (products == null) {
-            val name = element.processRef.uid
+            val name = element.processRef.name
             annotateErrWithMessage(
                 element,
                 holder,

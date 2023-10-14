@@ -20,18 +20,12 @@ abstract class PsiAssessMixin(node: ASTNode) : ASTWrapperPsiElement(node), PsiAs
     }
 
     override fun getProcessRef(): PsiProcessRef {
-        val template = PsiTreeUtil.getChildrenOfTypeAsList(this, LcaProcessTemplateSpec::class.java).first()
-        return PsiTreeUtil.getChildrenOfTypeAsList(template, LcaProcessRef::class.java).elementAt(0)
+        return PsiTreeUtil.getChildrenOfTypeAsList(getProcessTemplateSpecRef(), LcaProcessRef::class.java).elementAt(0)
     }
 
-
-//    override fun setName(name: String): PsiElement {
-//        val newIdentifier = LcaUIDFactory(
-//            LcaFileFactory(project)::createFile
-//        ).createUid(name)
-//        node.treeParent.replaceChild(node, newIdentifier.node)
-//        return newIdentifier
-//    }
+    override fun getProcessTemplateSpecRef(): LcaProcessTemplateSpec {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaProcessTemplateSpec::class.java).first()
+    }
 
     override fun toString(): String {
         return "uid(${this.name})"
