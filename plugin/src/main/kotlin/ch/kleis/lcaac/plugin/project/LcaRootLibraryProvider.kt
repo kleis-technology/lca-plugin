@@ -18,9 +18,13 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.createDirectories
 import com.intellij.util.io.isDirectory
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.nio.file.Path
 import java.nio.file.Paths.get
+import java.util.zip.CRC32
+import java.util.zip.CheckedInputStream
 import kotlin.io.path.notExists
 
 data class AdditionalLib(val alias: String, val jarName: String)
@@ -46,7 +50,7 @@ class LcaRootLibraryProvider : AdditionalLibraryRootsProvider() {
     private fun getUnitLibrary(plugin: IdeaPluginDescriptor?): LcaLibrary {
         val version: String = plugin?.version ?: "unknown"
         val jarName = "${Prelude.PKG_NAME}-$version.jar"
-        val folder = cacheFolder(plugin)
+        val folder = cacheFolder()
         val fullPath = Path.of(folder.toString(), jarName)
         val generator = UnitLcaFileFromPreludeGenerator<BasicNumber>()
         generator.recreate(fullPath)
@@ -67,7 +71,7 @@ class LcaRootLibraryProvider : AdditionalLibraryRootsProvider() {
             }
 
             val virtualFile =
-                VfsUtil.findFile(jarFile, false) ?: extractLibToFolder(lib, plugin)
+                VfsUtil.findFile(jarFile, false) ?: extractLibToFolder(lib)
 
             if (virtualFile == null) {
                 LOG.error("Unable to locate LCAProvider jar files, jar File was $jarFile")
@@ -83,10 +87,11 @@ class LcaRootLibraryProvider : AdditionalLibraryRootsProvider() {
     }
 
     // Case of the LCA As Code run as an installed IDE
-    private fun extractLibToFolder(lib: AdditionalLib, plugin: IdeaPluginDescriptor?): VirtualFile? {
-        val targetFolder = cacheFolder(plugin)
+    private fun extractLibToFolder(lib: AdditionalLib): VirtualFile? {
+        val targetFolder = cacheFolder()
         val targetFile = Path.of(targetFolder.toString() + File.separatorChar + lib.jarName)
-        if (targetFile.notExists()) {
+        if (targetFile.notExists()
+            || checksumOf(targetFile) != checksumOf(lib)) {
             FileOutputStream(targetFile.toFile()).use { target ->
                 this.javaClass.getResourceAsStream("/${lib.jarName}").use { src ->
                     StreamUtil.copy(src!!, target)
@@ -96,10 +101,25 @@ class LcaRootLibraryProvider : AdditionalLibraryRootsProvider() {
         return VfsUtil.findFile(targetFile, false)
     }
 
-    private fun cacheFolder(plugin: IdeaPluginDescriptor?): Path {
-        val version: String = plugin?.version ?: "unknown"
+    private fun checksumOf(path: Path): Long {
+        return checksumOf(FileInputStream(path.toFile()))
+    }
+
+    private fun checksumOf(lib: AdditionalLib): Long {
+        return checksumOf(this.javaClass.getResourceAsStream("/${lib.jarName}"))
+    }
+
+    private fun checksumOf(stream: InputStream?): Long {
+        if (stream == null) return 0
+        return CheckedInputStream(stream, CRC32()).use {
+            it.readAllBytes()
+            it.checksum.value
+        }
+    }
+
+    private fun cacheFolder(): Path {
         val targetFolder =
-            Path.of(PathManager.getDefaultPluginPathFor("CacheLcaAsCode1.x") + File.separatorChar + "lca-as-code" + File.separatorChar + version)
+            Path.of(PathManager.getDefaultPluginPathFor("CacheLcaAsCode1.x") + File.separatorChar + "lca-as-code")
         if (targetFolder.notExists()) targetFolder.createDirectories()
         return targetFolder
     }
