@@ -20,6 +20,7 @@ import com.intellij.util.io.isDirectory
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.nio.file.Path
 import java.nio.file.Paths.get
 import java.util.zip.CRC32
@@ -101,13 +102,17 @@ class LcaRootLibraryProvider : AdditionalLibraryRootsProvider() {
     }
 
     private fun checksumOf(path: Path): Long {
-        return CheckedInputStream(FileInputStream(path.toFile()), CRC32()).use {
-            it.checksum.value
-        }
+        return checksumOf(FileInputStream(path.toFile()))
     }
 
     private fun checksumOf(lib: AdditionalLib): Long {
-        return CheckedInputStream(this.javaClass.getResourceAsStream("/${lib.jarName}"), CRC32()).use {
+        return checksumOf(this.javaClass.getResourceAsStream("/${lib.jarName}"))
+    }
+
+    private fun checksumOf(stream: InputStream?): Long {
+        if (stream == null) return 0
+        return CheckedInputStream(stream, CRC32()).use {
+            it.readAllBytes()
             it.checksum.value
         }
     }
