@@ -21,7 +21,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Path
 import java.nio.file.Paths.get
-import kotlin.io.path.exists
 import kotlin.io.path.notExists
 
 data class AdditionalLib(val alias: String, val jarName: String)
@@ -47,7 +46,7 @@ class LcaRootLibraryProvider : AdditionalLibraryRootsProvider() {
     private fun getUnitLibrary(plugin: IdeaPluginDescriptor?): LcaLibrary {
         val version: String = plugin?.version ?: "unknown"
         val jarName = "${Prelude.PKG_NAME}-$version.jar"
-        val folder = cacheFolder()
+        val folder = cacheFolder(plugin)
         val fullPath = Path.of(folder.toString(), jarName)
         val generator = UnitLcaFileFromPreludeGenerator<BasicNumber>()
         generator.recreate(fullPath)
@@ -68,7 +67,7 @@ class LcaRootLibraryProvider : AdditionalLibraryRootsProvider() {
             }
 
             val virtualFile =
-                VfsUtil.findFile(jarFile, false) ?: extractLibToFolder(lib)
+                VfsUtil.findFile(jarFile, false) ?: extractLibToFolder(lib, plugin)
 
             if (virtualFile == null) {
                 LOG.error("Unable to locate LCAProvider jar files, jar File was $jarFile")
@@ -84,11 +83,8 @@ class LcaRootLibraryProvider : AdditionalLibraryRootsProvider() {
     }
 
     // Case of the LCA As Code run as an installed IDE
-    private fun extractLibToFolder(lib: AdditionalLib): VirtualFile? {
-        // TODO Remove cleaning after next deployment ie after august 2023
-        val oldPath = Path.of(PathManager.getDefaultPluginPathFor("LcaAsCode1.x")).parent
-        if (oldPath.exists()) oldPath.toFile().deleteRecursively()
-        val targetFolder = cacheFolder()
+    private fun extractLibToFolder(lib: AdditionalLib, plugin: IdeaPluginDescriptor?): VirtualFile? {
+        val targetFolder = cacheFolder(plugin)
         val targetFile = Path.of(targetFolder.toString() + File.separatorChar + lib.jarName)
         if (targetFile.notExists()) {
             FileOutputStream(targetFile.toFile()).use { target ->
@@ -100,9 +96,10 @@ class LcaRootLibraryProvider : AdditionalLibraryRootsProvider() {
         return VfsUtil.findFile(targetFile, false)
     }
 
-    private fun cacheFolder(): Path {
+    private fun cacheFolder(plugin: IdeaPluginDescriptor?): Path {
+        val version: String = plugin?.version ?: "unknown"
         val targetFolder =
-            Path.of(PathManager.getDefaultPluginPathFor("CacheLcaAsCode1.x") + File.separatorChar + "lca-as-code")
+            Path.of(PathManager.getDefaultPluginPathFor("CacheLcaAsCode1.x") + File.separatorChar + "lca-as-code" + File.separatorChar + version)
         if (targetFolder.notExists()) targetFolder.createDirectories()
         return targetFolder
     }
