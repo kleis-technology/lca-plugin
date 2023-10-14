@@ -12,7 +12,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 @RunWith(JUnit4::class)
-class LcaProcessRefAnnotatorTest : BasePlatformTestCase() {
+class LcaProcessTemplateSpecAnnotatorTest : BasePlatformTestCase() {
     override fun getTestDataPath(): String {
         return "testdata"
     }

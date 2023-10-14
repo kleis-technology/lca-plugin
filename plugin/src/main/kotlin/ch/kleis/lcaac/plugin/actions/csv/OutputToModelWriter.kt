@@ -1,6 +1,5 @@
 package ch.kleis.lcaac.plugin.actions.csv
 
-import ch.kleis.lcaac.plugin.imports.util.StringUtils
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.psi.LcaDataRef
 import ch.kleis.lcaac.plugin.psi.LcaProcess
@@ -51,7 +50,7 @@ class OutputToModelWriter(
     }
 
     private fun writeModel(request: CsvRequest, fileWriter: FileWriter) {
-        val label = request["model"] ?: StringUtils.sanitize(processTemplate.name)
+        val label = request["model"] ?: processTemplate.name
         val variables = processTemplate.variablesList
             .flatMap { it.assignmentList }
             .associate { it.name to it.dataExpressionList[1].text }
