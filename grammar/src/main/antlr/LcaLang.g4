@@ -224,14 +224,14 @@ unitDefinition
     Reference
 */
 
-labelRef : uid ;
-dataRef : uid ;
-productRef : uid ;
-processRef : uid ;
-substanceRef : uid ;
-indicatorRef : uid ;
-parameterRef : uid ;
-testRef : uid ;
+labelRef : urn ;
+dataRef : urn ;
+productRef : urn ;
+processRef : urn ;
+substanceRef : urn ;
+indicatorRef : urn ;
+parameterRef : urn ;
+testRef : urn ;
 
 /*
     Spec

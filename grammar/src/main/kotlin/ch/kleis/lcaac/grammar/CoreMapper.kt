@@ -293,9 +293,13 @@ class CoreMapper<Q>(
     fun TerminalNode.innerText(): String {
         return this.text.trim('"')
     }
+    
+    fun LcaLangParser.UrnContext.innerText(): String {
+        return this.text.trim('"')
+    }
 
     fun LcaLangParser.SubstanceRefContext.innerText(): String {
-        return this.uid().ID().innerText()
+        return this.urn().innerText()
     }
 
     fun LcaLangParser.DimFieldContext.innerText(): String {
@@ -303,23 +307,23 @@ class CoreMapper<Q>(
     }
 
     fun LcaLangParser.DataRefContext.innerText(): String {
-        return this.uid().ID().innerText()
+        return this.urn().innerText()
     }
 
     fun LcaLangParser.ProcessRefContext.innerText(): String {
-        return this.uid().ID().innerText()
+        return this.urn().innerText()
     }
 
     fun LcaLangParser.LabelRefContext.innerText(): String {
-        return this.uid().ID().innerText()
+        return this.urn().innerText()
     }
 
     fun LcaLangParser.IndicatorRefContext.innerText(): String {
-        return this.uid().ID().innerText()
+        return this.urn().innerText()
     }
 
     fun LcaLangParser.ProductRefContext.innerText(): String {
-        return this.uid().ID().innerText()
+        return this.urn().innerText()
     }
 
     fun LcaLangParser.ProcessDefinitionContext.buildUniqueKey(): ProcessKey {
