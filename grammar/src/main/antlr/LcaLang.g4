@@ -276,7 +276,7 @@ substanceSpec
     Identifier
 */
 
-urn : uid DOT urn | uid ;
+urn : uid (DOT uid)* ;
 uid : ID ;
 
 
@@ -328,7 +328,7 @@ RBRACE : '}' ;
 LPAREN : '(' ;
 RPAREN : ')' ;
 COMMA : ',' ;
-DOT : ' . ' ;
+DOT : '.' ;
 PLUS : '+' ;
 MINUS : '-' ;
 STAR : '*' ;
