@@ -68,7 +68,7 @@ object LcaDocumentGenerator {
 
 
     private fun documentBlockLabels(sb: StringBuilder, lcaProcess: LcaProcess?) {
-        if (lcaProcess == null || lcaProcess.labelsList.isEmpty()) return
+        if (lcaProcess == null || lcaProcess.blockLabelsList.isEmpty()) return
 
         sb.append(DocumentationMarkup.CONTENT_START).append("\n")
         val att = TextAttributes()
@@ -76,7 +76,7 @@ object LcaDocumentGenerator {
         att.fontType = Font.ITALIC
         HtmlSyntaxInfoUtil.appendStyledSpan(sb, att, "Process Labels:", 1f)
         sb.append(DocumentationMarkup.SECTIONS_START).append("\n")
-        lcaProcess.labelsList.flatMap { it.labelAssignmentList }
+        lcaProcess.blockLabelsList.flatMap { it.labelAssignmentList }
             .forEach {
                 addKeyValueSection("${it.name} = ", """"${it.getValue()}"""", sb)
             }
@@ -91,7 +91,7 @@ object LcaDocumentGenerator {
         att.fontType = Font.ITALIC
         HtmlSyntaxInfoUtil.appendStyledSpan(sb, att, "Process Parameters:", 1f)
         sb.append(DocumentationMarkup.SECTIONS_START).append("\n")
-        lcaProcess?.paramsList?.flatMap { it.guardedAssignmentList}?.map { it.assignment }
+        lcaProcess?.blockParametersList?.flatMap { it.guardedAssignmentList}?.map { it.assignment }
             ?.forEach {
                 addKeyValueSection("${it.name} = ", it.getValue().text, sb)
             }

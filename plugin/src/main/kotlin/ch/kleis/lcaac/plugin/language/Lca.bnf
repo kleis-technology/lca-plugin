@@ -113,7 +113,7 @@ globalAssignment ::= dataRef '=' dataExpression {
  */
 
 test ::= 'test' testRef '{'
-    (given | assert | variables)*
+    (given | assert | block_variables)*
 '}' {
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiTestMixin"
     elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.test.TestElementType"
@@ -193,9 +193,9 @@ aliasForField ::= "alias_for" "=" dataExpression
 
 process ::= "process" processRef
 "{" (
-    params
-    | labels
-    | variables
+    block_parameters
+    | block_labels
+    | block_variables
     | block_products
     | block_inputs
     | block_emissions
@@ -210,15 +210,15 @@ process ::= "process" processRef
     stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStub"
 }
 
-labels ::= "labels" "{" labelAssignment* "}"
+block_labels ::= "labels" "{" labelAssignment* "}"
 labelAssignment ::= labelRef "=" STRING_LITERAL {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiLabelAssignment"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiLabelAssignmentMixin"
 }
 
-params ::= "params" "{" guardedAssignment* "}"
+block_parameters ::= "params" "{" guardedAssignment* "}"
 
-variables ::= "variables" "{" assignment* "}"
+block_variables ::= "variables" "{" assignment* "}"
 
 guardedAssignment ::= assignment guard?
 
@@ -227,7 +227,12 @@ assignment ::= dataRef "=" dataExpression {
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiAssignmentMixin"
 }
 
-guard ::= 'between' dataExpression 'and' dataExpression
+guard ::= 'between' dataExpression 'and' dataExpression {
+    methods=[
+        low="/dataExpression[0]"
+        high="/dataExpression[1]"
+    ]
+    }
 
 /*
     Blocks

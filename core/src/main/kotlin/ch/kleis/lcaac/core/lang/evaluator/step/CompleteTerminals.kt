@@ -68,7 +68,10 @@ class CompleteTerminals<Q>(
         this.copy(impacts = completeIndicators(this.impacts))
 
     private fun exchangeReferenceUnit(exchange: LcaExchangeExpression<Q>): EQuantityScale<Q> {
-        val quantityExpression = exchange.quantity
+        val quantityExpression = when (exchange.quantity) {
+            is EGuardedExpression -> (exchange.quantity as EGuardedExpression<Q>).expression
+            else -> exchange.quantity
+        }
         val referenceUnit = when {
             quantityExpression is EUnitLiteral ->
                 EQuantityScale(ops.pure(1.0), quantityExpression)

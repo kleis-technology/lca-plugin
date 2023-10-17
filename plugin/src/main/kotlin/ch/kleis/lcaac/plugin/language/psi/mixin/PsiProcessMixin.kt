@@ -30,7 +30,7 @@ abstract class PsiProcessMixin : StubBasedPsiElementBase<ProcessStub>, LcaProces
     }
 
     override fun getParameters(): Map<String, LcaDataExpression> {
-        return paramsList
+        return blockParametersList
             .flatMap {
                 it.guardedAssignmentList.map(LcaGuardedAssignment::getAssignment).map { a ->
                     a.getDataRef().name to a.getValue()
@@ -50,7 +50,7 @@ abstract class PsiProcessMixin : StubBasedPsiElementBase<ProcessStub>, LcaProces
     }
 
     override fun getLabels(): Map<String, String> {
-        return labelsList
+        return blockLabelsList
             .flatMap { it.labelAssignmentList }
             .associate { it.name to it.getValue() }
     }
@@ -76,7 +76,7 @@ abstract class PsiProcessMixin : StubBasedPsiElementBase<ProcessStub>, LcaProces
     }
 
     override fun getVariables(): Map<String, LcaDataExpression> {
-        return variablesList
+        return blockVariablesList
             .flatMap {
                 it.assignmentList.map { a ->
                     a.getDataRef().name to a.getValue()
@@ -91,19 +91,19 @@ abstract class PsiProcessMixin : StubBasedPsiElementBase<ProcessStub>, LcaProces
         lastParent: PsiElement?,
         place: PsiElement
     ): Boolean {
-        for (block in getLabelsList()) {
+        for (block in blockLabelsList) {
             if (!processor.execute(block, state)) {
                 return false
             }
         }
 
-        for (block in getVariablesList()) {
+        for (block in blockVariablesList) {
             if (!processor.execute(block, state)) {
                 return false
             }
         }
 
-        for (block in getParamsList()) {
+        for (block in blockParametersList) {
             if (!processor.execute(block, state)) {
                 return false
             }

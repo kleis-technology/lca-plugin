@@ -147,7 +147,7 @@ class LcaAssignmentAnnotatorTest : BasePlatformTestCase() {
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p")
             .first()
-            .variablesList
+            .blockVariablesList
             .first()
             .assignmentList
             .first()
@@ -182,7 +182,7 @@ class LcaAssignmentAnnotatorTest : BasePlatformTestCase() {
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p")
             .first()
-            .variablesList
+            .blockVariablesList
             .first()
             .assignmentList
             .first()

@@ -32,7 +32,7 @@ class LabelReferenceTest : BasePlatformTestCase() {
             project, "$pkgName.p",
             mapOf("geo" to "FR"),
         ).first()
-            .labelsList.first()
+            .blockLabelsList.first()
             .labelAssignmentList.first()
         val ref = labelAssignment
             .getLabelRef()
@@ -80,7 +80,7 @@ class LabelReferenceTest : BasePlatformTestCase() {
         val expected = ProcessStubKeyIndex.findProcesses(
             project, "$pkgName.carrot_production", mapOf("geo" to "FR"),
         ).first()
-            .labelsList.first()
+            .blockLabelsList.first()
             .labelAssignmentList.first()
         assertEquals(expected, actual)
     }

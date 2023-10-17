@@ -1,10 +1,10 @@
 package ch.kleis.lcaac.plugin.language.psi.reference
 
 import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataRef
+import ch.kleis.lcaac.plugin.psi.LcaBlockLabels
+import ch.kleis.lcaac.plugin.psi.LcaBlockParameters
+import ch.kleis.lcaac.plugin.psi.LcaBlockVariables
 import ch.kleis.lcaac.plugin.psi.LcaGuardedAssignment
-import ch.kleis.lcaac.plugin.psi.LcaLabels
-import ch.kleis.lcaac.plugin.psi.LcaParams
-import ch.kleis.lcaac.plugin.psi.LcaVariables
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.ResolveState
@@ -17,15 +17,15 @@ interface DataRefScopeProcessor : PsiScopeProcessor {
 class DataRefCollectorScopeProcessor : DataRefScopeProcessor {
     private var results: MutableSet<PsiNameIdentifierOwner> = mutableSetOf()
     override fun execute(element: PsiElement, state: ResolveState): Boolean {
-        if (element is LcaVariables) {
+        if (element is LcaBlockVariables) {
             results.addAll(element.assignmentList)
         }
 
-        if (element is LcaParams) {
+        if (element is LcaBlockParameters) {
             results.addAll(element.guardedAssignmentList.map(LcaGuardedAssignment::getAssignment))
         }
 
-        if (element is LcaLabels) {
+        if (element is LcaBlockLabels) {
             results.addAll(element.labelAssignmentList)
         }
         return true
@@ -42,15 +42,15 @@ class DataRefExactNameMatcherScopeProcessor(
     private var results: Set<PsiNameIdentifierOwner> = emptySet()
 
     override fun execute(element: PsiElement, state: ResolveState): Boolean {
-        if (element is LcaVariables) {
+        if (element is LcaBlockVariables) {
             return checkDecl(element.assignmentList)
         }
 
-        if (element is LcaParams) {
+        if (element is LcaBlockParameters) {
             return checkDecl(element.guardedAssignmentList.map(LcaGuardedAssignment::getAssignment))
         }
 
-        if (element is LcaLabels) {
+        if (element is LcaBlockLabels) {
             return checkDecl(element.labelAssignmentList)
         }
 

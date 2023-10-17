@@ -15,7 +15,7 @@ class LabelReference(
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         return when {
-            isInsideMatchLabels(element) -> resolveProcess()?.getLabelsList()
+            isInsideMatchLabels(element) -> resolveProcess()?.blockLabelsList
                 ?.flatMap { it.labelAssignmentList }
                 ?.filter { it.name == element.name }
                 ?.map { PsiElementResolveResult(it) }
@@ -37,7 +37,7 @@ class LabelReference(
     }
 
     private fun isInsideBlockLabels(element: PsiLabelRef): Boolean {
-        return PsiTreeUtil.getParentOfType(element, LcaLabels::class.java) != null
+        return PsiTreeUtil.getParentOfType(element, LcaBlockLabels::class.java) != null
     }
 
     private fun findTemplateSpec(): LcaProcessTemplateSpec? {

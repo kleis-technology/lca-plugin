@@ -31,27 +31,38 @@ class LcaMapper<Q>(
     }
 
     fun process(
-        psiProcess: LcaProcess,
+        lcaProcess: LcaProcess,
         globals: Register<DataExpression<Q>>,
     ): EProcessTemplate<Q> {
-        val name = psiProcess.name
-        val labels = psiProcess.getLabels().mapValues { EStringLiteral<Q>(it.value) }
-        val locals = psiProcess.getVariables().mapValues { dataExpression(it.value) }
-        val params = psiProcess.getParameters().mapValues { dataExpression(it.value) }
+        val name = lcaProcess.name
+        val labels = lcaProcess.getLabels().mapValues { EStringLiteral<Q>(it.value) }
+        val locals = lcaProcess.getVariables().mapValues { dataExpression(it.value) }
+        val guardedParams =
+            lcaProcess.blockParametersList.flatMap(LcaBlockParameters::getGuardedAssignmentList)
+                .associate { guardedAssignment ->
+                    guardedAssignment.assignment.getDataRef().name to
+                            (guardedAssignment.guard?.let {
+                                EGuardedExpression(
+                                    dataExpression(guardedAssignment.assignment.getValue()),
+                                    dataExpression(it.low),
+                                    dataExpression(it.high!!)
+                                )
+                            } ?: dataExpression(guardedAssignment.assignment.getValue()))
+                }
         val symbolTable = SymbolTable(
             data = try {
-                Register(globals.plus(params).plus(locals))
+                Register(globals.plus(guardedParams).plus(locals))
             } catch (e: RegisterException) {
                 throw EvaluatorException("Conflict between local variable(s) ${e.duplicates} and a global definition.")
             },
         )
-        val products = generateTechnoProductExchanges(psiProcess, symbolTable)
-        val inputs = psiProcess.getInputs().map { technoInputExchange(it) }
-        val emissions = psiProcess.getEmissions().map { bioExchange(it, symbolTable) }
-        val landUse = psiProcess.getLandUse().map { bioExchange(it, symbolTable) }
-        val resources = psiProcess.getResources().map { bioExchange(it, symbolTable) }
+        val products = generateTechnoProductExchanges(lcaProcess, symbolTable)
+        val inputs = lcaProcess.getInputs().map { technoInputExchange(it) }
+        val emissions = lcaProcess.getEmissions().map { bioExchange(it, symbolTable) }
+        val landUse = lcaProcess.getLandUse().map { bioExchange(it, symbolTable) }
+        val resources = lcaProcess.getResources().map { bioExchange(it, symbolTable) }
         val biosphere = emissions.plus(resources).plus(landUse)
-        val impacts = psiProcess.getImpacts().map(::impact)
+        val impacts = lcaProcess.getImpacts().map(::impact)
         val body = EProcess(
             name = name,
             labels = labels,
@@ -61,7 +72,7 @@ class LcaMapper<Q>(
             impacts = impacts,
         )
         return EProcessTemplate(
-            params,
+            guardedParams,
             locals,
             body,
         )

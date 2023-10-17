@@ -26,7 +26,8 @@ data class EDataRef<Q>(val name: String) : DataExpression<Q>, RefExpression {
 @optics
 data class EGuardedExpression<Q>(
     val expression: DataExpression<Q>,
-    val guard: Pair<DataExpression<Q>, DataExpression<Q>>
+    val low: DataExpression<Q>,
+    val high: DataExpression<Q>,
 ): DataExpression<Q> {
     companion object
 }

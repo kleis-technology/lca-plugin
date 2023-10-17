@@ -81,7 +81,7 @@ class DataReferenceTest : BasePlatformTestCase() {
 
         // then
         val expected = ProcessStubKeyIndex.findProcesses(project, "$pkgName.called").first()
-            .getParamsList().first()
+            .blockParametersList.first()
             .guardedAssignmentList.map(LcaGuardedAssignment::getAssignment).first()
         TestCase.assertEquals(expected, actual)
     }

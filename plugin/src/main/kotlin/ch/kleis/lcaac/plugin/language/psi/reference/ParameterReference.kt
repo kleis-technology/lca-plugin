@@ -1,7 +1,7 @@
 package ch.kleis.lcaac.plugin.language.psi.reference
 
 import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiParameterRef
-import ch.kleis.lcaac.plugin.psi.LcaParams
+import ch.kleis.lcaac.plugin.psi.LcaBlockParameters
 import ch.kleis.lcaac.plugin.psi.LcaProcess
 import ch.kleis.lcaac.plugin.psi.LcaProcessTemplateSpec
 import com.intellij.codeInsight.lookup.LookupElementBuilder
@@ -32,11 +32,11 @@ class ParameterReference(
     }
 
     private fun findParameters(process: LcaProcess): List<PsiElementResolveResult> {
-        return process.paramsList
+        return process.blockParametersList
             .flatMap { filterAndMap(it) }
     }
 
-    private fun filterAndMap(parameters: LcaParams): List<PsiElementResolveResult> {
+    private fun filterAndMap(parameters: LcaBlockParameters): List<PsiElementResolveResult> {
         return parameters.guardedAssignmentList
             .mapNotNull { assignment ->
                 assignment.assignment

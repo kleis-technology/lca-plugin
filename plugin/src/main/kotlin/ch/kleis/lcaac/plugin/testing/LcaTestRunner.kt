@@ -70,7 +70,7 @@ class LcaTestRunner(
     private fun assertions(symbolTable: SymbolTable<BasicNumber>, test: LcaTest): List<RangeAssertion> {
         val data = Register(symbolTable.data)
             .plus(
-                test.variablesList.flatMap { it.assignmentList }
+                test.blockVariablesList.flatMap { it.assignmentList }
                     .map { it.getDataRef().name to mapper.dataExpression(it.getValue()) }
             )
         val reducer = DataExpressionReducer(data, BasicOperations)

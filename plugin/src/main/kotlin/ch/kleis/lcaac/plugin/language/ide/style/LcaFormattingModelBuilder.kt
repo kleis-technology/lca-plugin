@@ -8,9 +8,8 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 
 class LcaFormattingModelBuilder : FormattingModelBuilder {
 
-    companion object {
-
-        private fun createSpaceBuilder(settings: CodeStyleSettings): SpacingBuilder {
+    object Util {
+        fun createSpaceBuilder(settings: CodeStyleSettings): SpacingBuilder {
             return SpacingBuilder(settings, INSTANCE)
                 // Before Block
                 .before(IMPORT)
@@ -52,11 +51,11 @@ class LcaFormattingModelBuilder : FormattingModelBuilder {
                 .spacing(1, 1, 0, false, 0)
                 .betweenInside(LBRACE, RBRACE, PROCESS)
                 .spacing(0, 0, 2, false, 0)
-                .beforeInside(PARAMS, PROCESS)
+                .beforeInside(BLOCK_PARAMETERS, PROCESS)
                 .spacing(0, 0, 0, true, 1)
                 .before(GLOBAL_VARIABLES)
                 .spacing(0, 0, 0, true, 1)
-                .before(VARIABLES)
+                .before(BLOCK_VARIABLES)
                 .spacing(0, 0, 0, true, 1)
                 .beforeInside(BLOCK_PRODUCTS, PROCESS)
                 .spacing(0, 0, 0, true, 1)
@@ -121,7 +120,7 @@ class LcaFormattingModelBuilder : FormattingModelBuilder {
                 formattingContext.containingFile,
                 LcaIndentBlock(
                     formattingContext.node,
-                    createSpaceBuilder(formattingContext.codeStyleSettings)
+                    Util.createSpaceBuilder(formattingContext.codeStyleSettings)
                 ),
                 formattingContext.codeStyleSettings
             )
