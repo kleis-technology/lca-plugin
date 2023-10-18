@@ -10,8 +10,8 @@ class CompleteDefaultArguments<Q>(
 ) {
     private val everyInputProduct =
         EProcessTemplateApplication.template<Q>().body().inputs() compose
-            Every.list() compose
-            ETechnoExchange.product()
+                Every.list() compose
+                ETechnoExchange.product()
 
     fun apply(expression: EProcessTemplateApplication<Q>): EProcessTemplateApplication<Q> {
         return everyInputProduct.modify(expression) {
@@ -20,7 +20,8 @@ class CompleteDefaultArguments<Q>(
                 val matchLabels = ref.matchLabels.elements.mapValues { entry -> evalLabel(entry) }
                 val process = symbolTable.getTemplate(name, matchLabels)
                     ?: throw EvaluatorException("unknown process $name$matchLabels")
-                val actualArguments = process.params.plus(ref.arguments)
+                // FIXME: check for bounds before replacing.
+                val actualArguments = updateArguments(process.params, ref.arguments)
                 it.copy(
                     fromProcess = it.fromProcess.copy(
                         matchLabels = MatchLabels(matchLabels.mapValues { entry -> EStringLiteral(entry.value) }),
@@ -30,6 +31,19 @@ class CompleteDefaultArguments<Q>(
             } ?: it
         }
     }
+
+    private fun updateArguments(
+        processParams: Map<String, DataExpression<Q>>,
+        refArguments: Map<String, DataExpression<Q>>
+    ): Map<String, DataExpression<Q>> =
+        processParams.plus(refArguments.map { (s, dataExpression) ->
+            processParams[s]?.let {
+                when (it) {
+                    is EGuardedExpression -> s to EGuardedExpression(dataExpression, it.low, it.high)
+                    else -> s to dataExpression
+                }
+            } ?: (s to dataExpression)
+        })
 
     private fun evalLabel(entry: Map.Entry<String, DataExpression<Q>>): String {
         val key = entry.key
