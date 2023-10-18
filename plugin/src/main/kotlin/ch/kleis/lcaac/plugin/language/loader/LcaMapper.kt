@@ -155,7 +155,7 @@ class LcaMapper<Q>(
 
     private fun fromProcess(spec: LcaProcessTemplateSpec): FromProcess<Q> {
         val arguments = spec.argumentList
-        val labelSelectors = spec.getMatchLabels()?.labelSelectorList ?: emptyList()
+        val labelSelectors = spec.matchLabels?.labelSelectorList ?: emptyList()
         return FromProcess(
             name = spec.name,
             matchLabels = MatchLabels(

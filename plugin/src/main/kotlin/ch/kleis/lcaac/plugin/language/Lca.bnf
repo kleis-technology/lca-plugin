@@ -126,11 +126,15 @@ run ::= 'run' runRef '{'
 
 runnable ::= (assess | generate )
 
-assess ::= 'assess'  processTemplateSpec{
+assess ::= 'assess'  processTemplateSpec {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiAssess"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiAssessMixin"
-    }
-generate ::= 'generate' processTemplateSpec
+}
+
+generate ::= 'generate' processTemplateSpec {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiGenerate"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiGenerateMixin"
+}
 
 
 /*

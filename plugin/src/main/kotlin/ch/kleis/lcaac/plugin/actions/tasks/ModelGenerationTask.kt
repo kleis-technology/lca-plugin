@@ -28,6 +28,7 @@ class ModelGenerationTask(
     private val processName: String,
     private val file: LcaFile,
     private val containingDirectory: PsiDirectory,
+    private val csvFile: String = "$processName.csv"
 ) : Task.Backgroundable(project, "Run with ${processName}.csv") {
     companion object {
         private val LOG = Logger.getInstance(ModelGenerationTask::class.java)
@@ -39,25 +40,18 @@ class ModelGenerationTask(
             // read
             indicator.fraction = 0.0
             indicator.text = "Reading $processName.csv"
-            val csvFile = Path(containingDirectory.virtualFile.path, "$processName.csv").toFile()
+            val csvFile = Path(containingDirectory.virtualFile.path, csvFile).toFile()
             val requests = csvFile.inputStream().use {
                 val requestReader = CsvRequestReader(processName, process.getLabels(), it)
                 requestReader.read()
             }
 
             // process
-            val symbolTable = runReadAction {
+            runReadAction {
                 val collector = LcaFileCollector(file.project)
                 val parser = LcaLoader(collector.collect(file), BasicOperations)
                 parser.load()
             }
-//                    val csvProcessor = CsvProcessor(symbolTable)
-//                    val results = requests.flatMap { request ->
-//                        ProgressManager.checkCanceled()
-//                        indicator.text = "Processing using ${request.arguments()}"
-//                        indicator.fraction += 1.0 / requests.size
-//                        csvProcessor.process(request)
-//                    }
 
             // write
             val outputPath = writeModel(indicator, containingDirectory, requests)
