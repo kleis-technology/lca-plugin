@@ -57,10 +57,6 @@
         <annotator
                 language="LCA"
                 implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.LcaAssignmentAnnotator"/>
-        <annotator
-                language="LCA"
-                implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.LcaProcessRefAnnotator"/>
-
         <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataRef"
                                  implementationClass="ch.kleis.lcaac.plugin.language.psi.manipulators.PsiQuantityRefManipulator"/>
         <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.ref.PsiSubstanceRef"

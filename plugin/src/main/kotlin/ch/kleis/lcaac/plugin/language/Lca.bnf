@@ -117,12 +117,15 @@ globalAssignment ::= dataRef '=' dataExpression {
  */
 
 run ::= 'run' runRef '{'
-    (assess | generate )*
+    runnable*
 '}' {
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiRunMixin"
     elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.run.RunElementType"
     stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.run.RunStub"
 }
+
+runnable ::= (assess | generate )
+
 assess ::= 'assess'  processTemplateSpec{
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiAssess"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiAssessMixin"
