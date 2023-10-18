@@ -58,13 +58,15 @@ class ToValue<Q>(
 
         return when (listOf(expression, low, high).map { it.unit.dimension }.distinct().size) {
             1 -> {
-                val dLow = doubleValueOf { low.amount }
-                val dHigh = doubleValueOf { high.amount }
-                val dExpr = doubleValueOf { expression.amount }
+                val dLow = doubleValueOf { low.amount } * low.unit.scale
+                val dHigh = doubleValueOf { high.amount } * high.unit.scale
+                val dExpr = doubleValueOf { expression.amount } * expression.unit.scale
                 if (dExpr in dLow..dHigh) {
                     expression
                 } else {
-                    throw EvaluatorException("Bounds are not respected in guard: $dExpr not between $dLow and $dHigh")
+                    throw EvaluatorException("""
+                    Bounds are not respected in guard: ${expression.amount} [${expression.unit.symbol}] not between ${low.amount} [${low.unit.symbol}] and ${high.amount} [${high.unit.symbol}]
+                    """.trim())
                 }
             }
             else -> throw EvaluatorException("Incompatible dimensions: ${expression.unit.dimension} between ${low.unit.dimension} and ${high.unit.dimension}")
