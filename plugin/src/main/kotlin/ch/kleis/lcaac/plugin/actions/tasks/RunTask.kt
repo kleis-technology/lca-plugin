@@ -1,10 +1,14 @@
 package ch.kleis.lcaac.plugin.actions.tasks
 
+import ch.kleis.lcaac.plugin.language.psi.LcaFile
+import ch.kleis.lcaac.plugin.psi.LcaProcess
 import ch.kleis.lcaac.plugin.psi.LcaRun
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 
@@ -21,8 +25,29 @@ class RunTask(
         val size = run.runnableList.size
         run.runnableList.forEachIndexed { index, element ->
 
+            element.assess?.let { assess ->
+//                val assess = element.assess
+                ApplicationManager.getApplication().runReadAction {
+                    val process = assess.getProcessRef().reference.resolve() as LcaProcess
+//                    val process = processRef.reference.resolve()
+                    val file = process.containingFile as LcaFile?
+                    val containingDirectory = file?.containingDirectory
+                    containingDirectory?.let {
+                        val task = ModelGenerationTask(
+                            project = project,
+                            process = process,
+                            processName = process.name,
+                            file = run.containingFile as LcaFile,
+                            containingDirectory = it
+                        )
+                        ProgressManager.getInstance().run(task)
+                    }
+                }
+            }
+
             indicator.fraction = index.toDouble() / size
         }
+
 
     }
 
