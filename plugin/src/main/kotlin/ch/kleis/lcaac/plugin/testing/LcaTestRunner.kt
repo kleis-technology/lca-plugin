@@ -1,6 +1,8 @@
 package ch.kleis.lcaac.plugin.testing
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
+import ch.kleis.lcaac.core.lang.DataKey
+import ch.kleis.lcaac.core.lang.ProcessKey
 import ch.kleis.lcaac.core.lang.Register
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
@@ -38,7 +40,7 @@ class LcaTestRunner(
             val updatedSymbolTable = symbolTable
                 .copy(
                     processTemplates = Register(symbolTable.processTemplates)
-                        .plus(mapOf(testCase.body.name to testCase))
+                        .plus(mapOf(ProcessKey(testCase.body.name) to testCase))
                 )
             val evaluator = Evaluator(updatedSymbolTable, BasicOperations)
             val trace = evaluator.trace(testCase)
@@ -76,7 +78,7 @@ class LcaTestRunner(
         val data = Register(symbolTable.data)
             .plus(
                 test.variablesList.flatMap { it.assignmentList }
-                    .map { it.getDataRef().name to mapper.dataExpression(it.getValue()) }
+                    .map { DataKey(it.getDataRef().name) to mapper.dataExpression(it.getValue()) }
             )
         val reducer = DataExpressionReducer(data, BasicOperations)
         return test.assertList.flatMap { it.rangeAssertionList }

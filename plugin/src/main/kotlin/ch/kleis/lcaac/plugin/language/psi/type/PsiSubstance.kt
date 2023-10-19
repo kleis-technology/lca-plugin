@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.plugin.language.psi.type
 
+import ch.kleis.lcaac.core.lang.SubstanceKey
 import ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceStub
 import ch.kleis.lcaac.plugin.language.psi.type.field.PsiStringLiteralField
 import ch.kleis.lcaac.plugin.language.psi.type.field.PsiSubstanceTypeField
@@ -15,7 +16,7 @@ import com.intellij.psi.StubBasedPsiElement
 
 interface PsiSubstance : BlockMetaOwner, PsiNameIdentifierOwner, StubBasedPsiElement<SubstanceStub> {
 
-    fun buildUniqueKey(): String
+    fun buildUniqueKey(): SubstanceKey
 
     fun getImpactExchanges(): List<LcaImpactExchange>
 }

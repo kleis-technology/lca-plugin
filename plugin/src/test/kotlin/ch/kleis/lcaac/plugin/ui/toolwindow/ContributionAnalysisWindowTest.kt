@@ -239,7 +239,7 @@ class ContributionAnalysisWindowTest : BasePlatformTestCase() {
         val builtinUnitsLcaFile = PsiManager.getInstance(project).findFile(builtinUnitsVirtualFile) as LcaFile
         val loader = LcaLoader(sequenceOf(lcaFile, builtinUnitsLcaFile), ops)
         val symbolTable = loader.load()
-        val template = symbolTable.processTemplates["p"]!!
+        val template = symbolTable.getTemplate("p")!!
         val evaluator = Evaluator(symbolTable, ops)
         val trace = evaluator.trace(template)
         val program = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint())

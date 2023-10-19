@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.plugin.language.psi.mixin
 
+import ch.kleis.lcaac.core.lang.SubstanceKey
 import ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceStub
 import ch.kleis.lcaac.plugin.psi.LcaImpactExchange
 import ch.kleis.lcaac.plugin.psi.LcaSubstance
@@ -12,13 +13,13 @@ abstract class PsiSubstanceMixin : StubBasedPsiElementBase<SubstanceStub>, LcaSu
     constructor(node: ASTNode) : super(node)
     constructor(stub: SubstanceStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
-    override fun buildUniqueKey(): String {
-        return listOfNotNull(
+    override fun buildUniqueKey(): SubstanceKey {
+        return SubstanceKey(
             this.name,
             getCompartmentField().getValue(),
             getSubCompartmentField()?.getValue(),
             getTypeField().getValue(),
-        ).joinToString("_")
+        )
     }
 
     override fun getName(): String {

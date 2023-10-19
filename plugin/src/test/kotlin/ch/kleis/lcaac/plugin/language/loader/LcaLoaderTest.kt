@@ -161,7 +161,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val symbolTable = parser.load()
 
         // then
-        Prelude.units<BasicNumber>().getValues().onEach {
+        Prelude.unitMap<BasicNumber>().onEach {
             assertNotNull(symbolTable.getData(it.toString()))
         }
     }
@@ -974,7 +974,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val symbolTable = parser.load()
 
         // then
-        val actual = symbolTable.data["r"]!!
+        val actual = symbolTable.getData("r")!!
         assertEquals(expected, actual)
     }
 
@@ -1007,7 +1007,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val symbolTable = parser.load()
 
         // then
-        val actual = symbolTable.data["r"]!!
+        val actual = symbolTable.getData("r")!!
         assertEquals(expected, actual)
     }
 
