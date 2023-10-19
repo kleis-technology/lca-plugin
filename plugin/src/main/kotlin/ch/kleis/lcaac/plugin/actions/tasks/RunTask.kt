@@ -9,6 +9,9 @@ import ch.kleis.lcaac.plugin.language.loader.LcaMapper
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.psi.*
 import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.DemandTableModel
+import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.ImpactAssessmentTableModel
+import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.InventoryTableModel
+import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.SupplyTableModel
 import ch.kleis.lcaac.plugin.ui.toolwindow.shared.SaveTableModelTask
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
@@ -20,6 +23,8 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFileManager
 import kotlin.io.path.Path
+
+typealias Contrib = ContributionAnalysis<BasicNumber, BasicMatrix>
 
 class RunTask(
     project: Project,
@@ -74,19 +79,12 @@ class RunTask(
                     selector.labelRef.name to mapper.dataExpression(selector.dataExpression).toString()
                 }
 
-            //fun onSuccess (        project: Project,
-//            analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
-//            comparator: Comparator<MatrixColumnIndex<BasicNumber>>
-//            ) -> {}
-//            val onSuccess :OnSuccess = {p,a,c->
-//                saveInventory(p,a,process.name)
-//            }
-            fun onSuccess2(
+            fun onSuccess(
                 p: Project,
                 a: ContributionAnalysis<BasicNumber, BasicMatrix>,
                 c: Comparator<MatrixColumnIndex<BasicNumber>>
             ) {
-                saveInventory(p, a, process.name)
+                saveInventory(p, a, c, process.name)
             }
 
             containingDirectory?.let {
@@ -95,7 +93,7 @@ class RunTask(
                     processName = process.name,
                     file = file,
                     matchLabels = labels,
-                    success = ::onSuccess2
+                    success = ::onSuccess
                 )
                 ProgressManager.getInstance().run(task)
             }
@@ -105,18 +103,25 @@ class RunTask(
     private fun saveInventory(
         project: Project,
         analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
+        comparator: Comparator<MatrixColumnIndex<BasicNumber>>,
         processName: String
     ) {
-//        val descriptor = FileSaverDescriptor("Save as CSV", "Save data as CSV file")
-//        val saveFileDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, project)
-        val path = Path("${project.basePath}/out/${processName}-demand.csv")
-//        VfsUtil.fin
-//        VirtualFileManager.getInstance().cr
-//        val vf  = saveFileDialog.save(project.projectFile, defaultFilename) ?: return@addActionListener
-        val model = DemandTableModel(analysis)
-        val task = SaveTableModelTask(project, model, path.toFile())
-        ProgressManager.getInstance().run(task)
-        VirtualFileManager.getInstance().refreshAndFindFileByNioPath(path)
+        val nonCharacterizedSubstances = analysis.getNonCharacterizedSubstances()
+        val unresolvedProducts = analysis.getUnresolvedProducts()
+        val output = listOf(
+            "demand" to DemandTableModel(analysis),
+            "impact_assessment.csv" to ImpactAssessmentTableModel(analysis),
+            "inventory" to InventoryTableModel(analysis, comparator),
+            "supply" to SupplyTableModel(analysis, comparator),
+            "issue-product-without-process" to SupplyTableModel(analysis, comparator, unresolvedProducts),
+            "issue-product-without-impact" to InventoryTableModel(analysis, comparator, nonCharacterizedSubstances)
+        )
+        output.forEach { (file, model) ->
+            val path = Path("${project.basePath}/out/${processName}-$file.csv")
+            val task = SaveTableModelTask(project, model, path.toFile())
+            ProgressManager.getInstance().run(task)
+            VirtualFileManager.getInstance().refreshAndFindFileByNioPath(path)
+        }
     }
 
     override fun onSuccess() {
@@ -142,3 +147,4 @@ class RunTask(
         LOG.warn("Unable to process computation", e)
     }
 }
+
