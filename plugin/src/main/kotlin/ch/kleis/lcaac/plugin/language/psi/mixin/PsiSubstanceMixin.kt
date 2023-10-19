@@ -16,9 +16,9 @@ abstract class PsiSubstanceMixin : StubBasedPsiElementBase<SubstanceStub>, LcaSu
     override fun buildUniqueKey(): SubstanceKey {
         return SubstanceKey(
             this.name,
+            getTypeField().getValue(),
             getCompartmentField().getValue(),
             getSubCompartmentField()?.getValue(),
-            getTypeField().getValue(),
         )
     }
 

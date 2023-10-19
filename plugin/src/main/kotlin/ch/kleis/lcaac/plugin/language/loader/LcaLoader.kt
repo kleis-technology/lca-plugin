@@ -3,6 +3,9 @@ package ch.kleis.lcaac.plugin.language.loader
 import ch.kleis.lcaac.core.lang.*
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
+import ch.kleis.lcaac.core.lang.expression.DataExpression
+import ch.kleis.lcaac.core.lang.expression.EProcessTemplate
+import ch.kleis.lcaac.core.lang.expression.ESubstanceCharacterization
 import ch.kleis.lcaac.core.math.QuantityOperations
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.language.psi.type.unit.UnitDefinitionType
@@ -20,35 +23,37 @@ class LcaLoader<Q>(
             val substanceDefinitions = files.flatMap { it.getSubstances() }
 
             val dimensions: DimensionRegister = try {
-                DimensionRegister(
+                DimensionRegister.empty<DimensionKey, Dimension>()
+                    .plus(
                         unitDefinitions
                             .filter { it.getType() == UnitDefinitionType.LITERAL }
                             .map {
                                 val value = it.dimField!!.getValue()
                                 DimensionKey(value) to Dimension.of(value)
-                            }
-                            .toMap()
+                            }.asIterable()
                     )
             } catch (e: RegisterException) {
                 throw EvaluatorException("Duplicate reference units for dimensions ${e.duplicates}")
             }
 
             val substanceCharacterizations = try {
-                SubstanceCharacterizationRegister(
+                SubstanceCharacterizationRegister.empty<SubstanceKey, ESubstanceCharacterization<Q>>()
+                    .plus(
                         substanceDefinitions
                             .map { Pair(it.buildUniqueKey(), substanceCharacterization(it)) }
-                            .toMap()
+                            .asIterable()
                     )
             } catch (e: RegisterException) {
                 throw EvaluatorException("Duplicate substance ${e.duplicates} defined")
             }
 
             val globals= try {
-                DataRegister(
+                DataRegister.empty<DataKey, DataExpression<Q>>()
+                    .plus(
                         unitDefinitions
                             .filter { it.getType() == UnitDefinitionType.LITERAL }
                             .map { DataKey(it.getDataRef().getUID().name) to (unitLiteral(it)) }
-                            .toMap()
+                            .asIterable()
                     )
                     .plus(
                         unitDefinitions
@@ -67,10 +72,11 @@ class LcaLoader<Q>(
             }
 
             val processTemplates = try {
-                ProcessTemplateRegister(
+                ProcessTemplateRegister.empty<ProcessKey, EProcessTemplate<Q>>()
+                    .plus(
                         processDefinitions
                             .map { Pair(it.buildUniqueKey(), process(it, globals)) }
-                            .toMap()
+                            .asIterable()
                     )
             } catch (e: RegisterException) {
                 throw EvaluatorException("Duplicate process ${e.duplicates} defined")

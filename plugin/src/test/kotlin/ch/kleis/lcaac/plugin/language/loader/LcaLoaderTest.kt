@@ -162,7 +162,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
 
         // then
         Prelude.unitMap<BasicNumber>().onEach {
-            assertNotNull(symbolTable.getData(it.toString()))
+            assertNotNull(symbolTable.getData(it.key))
         }
     }
 
@@ -417,7 +417,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
 
         // when/then
         val e = assertFailsWith(EvaluatorException::class, null) { parser.load() }
-        assertEquals("Duplicate substance [a_compartment_Resource] defined", e.message)
+        assertEquals("Duplicate substance [a(type=Resource, compartment=compartment)] defined", e.message)
     }
 
     @Test
