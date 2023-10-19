@@ -21,6 +21,7 @@ import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.actions.csv.CsvProcessor
 import ch.kleis.lcaac.plugin.actions.csv.CsvRequest
 import ch.kleis.lcaac.plugin.fixture.UnitFixture
+import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.openapi.vfs.VirtualFile
@@ -100,6 +101,39 @@ class E2ETest : BasePlatformTestCase() {
             cf,
         )
     }
+
+    @Test
+    fun test_whenReferencingBuiltinUnits_shouldLoadPreludeUnits() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        val vf = myFixture.createFile(
+            "$pkgName.lca", """
+                package $pkgName
+                
+                unit foo {
+                    symbol = "foo"
+                    alias_for = 1 kg
+                }
+        """.trimIndent()
+        )
+        val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
+        val collector = LcaFileCollector(project)
+        val files = collector.collect(file)
+        val parser = LcaLoader(
+            files,
+            ops,
+        )
+
+
+        // when
+        val symbolTable = parser.load()
+
+        // then
+        Prelude.unitMap<BasicNumber>().forEach {
+            assertNotNull(symbolTable.getData(it.key))
+        }
+    }
+
 
     @Test
     fun test_patternMatching() {
@@ -399,7 +433,10 @@ class E2ETest : BasePlatformTestCase() {
 
         // then
         val expected =
-            EQuantityScale(ops.pure(200.0), EUnitLiteral(UnitSymbol.of("m").pow(4.0), 1.0, Dimension.of("length").pow(4.0)))
+            EQuantityScale(
+                ops.pure(200.0),
+                EUnitLiteral(UnitSymbol.of("m").pow(4.0), 1.0, Dimension.of("length").pow(4.0))
+            )
         TestCase.assertEquals(expected, actual)
     }
 

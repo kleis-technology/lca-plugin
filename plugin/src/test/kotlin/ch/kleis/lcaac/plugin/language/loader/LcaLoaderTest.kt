@@ -145,28 +145,6 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     }
 
     @Test
-    fun testParse_shouldLoadPreludeUnits() {
-        // given
-        val file = parseFile(
-            "hello", """
-        """.trimIndent()
-        ) as LcaFile
-        val parser = LcaLoader(
-            sequenceOf(file),
-            ops,
-        )
-
-
-        // when
-        val symbolTable = parser.load()
-
-        // then
-        Prelude.unitMap<BasicNumber>().onEach {
-            assertNotNull(symbolTable.getData(it.key))
-        }
-    }
-
-    @Test
     fun testParse_blockUnit_shouldDeclareQuantityRef() {
         // given
         val file = parseFile(
