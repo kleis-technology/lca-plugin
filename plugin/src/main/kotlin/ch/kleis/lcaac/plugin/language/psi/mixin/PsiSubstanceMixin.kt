@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.language.psi.mixin
 
 import ch.kleis.lcaac.core.lang.SubstanceKey
+import ch.kleis.lcaac.core.lang.expression.SubstanceType
 import ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceStub
 import ch.kleis.lcaac.plugin.psi.LcaImpactExchange
 import ch.kleis.lcaac.plugin.psi.LcaSubstance
@@ -16,7 +17,7 @@ abstract class PsiSubstanceMixin : StubBasedPsiElementBase<SubstanceStub>, LcaSu
     override fun buildUniqueKey(): SubstanceKey {
         return SubstanceKey(
             this.name,
-            getTypeField().getValue(),
+            SubstanceType.of(getTypeField().getValue()),
             getCompartmentField().getValue(),
             getSubCompartmentField()?.getValue(),
         )
