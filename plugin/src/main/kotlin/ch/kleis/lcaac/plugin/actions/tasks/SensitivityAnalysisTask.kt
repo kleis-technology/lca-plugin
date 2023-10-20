@@ -9,7 +9,6 @@ import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.evaluator.ToValue
 import ch.kleis.lcaac.core.lang.evaluator.reducer.DataExpressionReducer
 import ch.kleis.lcaac.core.lang.expression.DataExpression
-import ch.kleis.lcaac.core.lang.expression.EProcessTemplateApplication
 import ch.kleis.lcaac.core.lang.expression.EQuantityScale
 import ch.kleis.lcaac.core.lang.value.QuantityValue
 import ch.kleis.lcaac.core.math.dual.DualNumber
@@ -87,11 +86,7 @@ class SensitivityAnalysisTask(
                 matchLabels
             )!! // We are called from a process, so it must exist
         val (arguments, parameters) = prepareArguments(ops, symbolTable, template.params)
-        val entryPoint = EProcessTemplateApplication(
-            template,
-            arguments,
-        )
-        val trace = Evaluator(symbolTable, ops).trace(entryPoint)
+        val trace = Evaluator(symbolTable, ops).trace(template, arguments)
         this.analysis = SensitivityAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint(), parameters).run()
     }
 

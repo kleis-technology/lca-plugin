@@ -3,7 +3,6 @@ package ch.kleis.lcaac.plugin.ui.toolwindow
 import ch.kleis.lcaac.core.assessment.ContributionAnalysis
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
-import ch.kleis.lcaac.core.lang.expression.EProcessTemplateApplication
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
@@ -241,9 +240,8 @@ class ContributionAnalysisWindowTest : BasePlatformTestCase() {
         val loader = LcaLoader(sequenceOf(lcaFile, builtinUnitsLcaFile), ops)
         val symbolTable = loader.load()
         val template = symbolTable.processTemplates["p"]!!
-        val expression = EProcessTemplateApplication(template, emptyMap())
         val evaluator = Evaluator(symbolTable, ops)
-        val trace = evaluator.trace(expression)
+        val trace = evaluator.trace(template)
         val program = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint())
         return program.run()
     }

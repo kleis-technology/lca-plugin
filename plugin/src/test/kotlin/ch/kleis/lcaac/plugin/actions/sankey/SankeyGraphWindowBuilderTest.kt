@@ -3,7 +3,6 @@ package ch.kleis.lcaac.plugin.actions.sankey
 import ch.kleis.lcaac.core.assessment.ContributionAnalysis
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
-import ch.kleis.lcaac.core.lang.expression.EProcessTemplateApplication
 import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
@@ -40,8 +39,8 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
         val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
         val parser = LcaLoader(sequenceOf(UnitFixture.getInternalUnitFile(myFixture), file), ops)
         val symbolTable = parser.load()
-        val entryPoint = EProcessTemplateApplication(template = symbolTable.getTemplate(process)!!)
-        val trace = Evaluator(symbolTable, ops).trace(entryPoint)
+        val template = symbolTable.getTemplate(process)!!
+        val trace = Evaluator(symbolTable, ops).trace(template)
         val assessment = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint())
         val analysis = assessment.run()
         val sankeyPort = analysis.getControllablePorts().getElements().first()
