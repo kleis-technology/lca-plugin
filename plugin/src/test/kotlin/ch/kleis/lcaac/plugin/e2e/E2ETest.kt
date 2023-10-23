@@ -45,6 +45,63 @@ class E2ETest : BasePlatformTestCase() {
     }
 
     @Test
+    fun test_shouldHandleKnowledgeCorrectly() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        val vf = myFixture.createFile(
+            "$pkgName.lca", """
+                process a_proc {
+                    products {
+                        1 kg a
+                    }
+                    inputs {
+                        1 kg b from b_proc
+                        1 l c from c_proc
+                    }
+                }
+                
+                process b_proc {
+                    products {
+                        1 kg b
+                    }
+                    impacts {
+                        1 kg gwp
+                    }
+                }
+                
+                process c_proc {
+                    products {
+                        1 l c
+                    }
+                    inputs {
+                        1kg b from b_proc
+                    }
+                    impacts {
+                        1 kg gwp
+                    }
+                }
+            """.trimIndent()
+        )
+        val symbolTable = createFilesAndSymbols(vf)
+
+        // when
+        val template = symbolTable.getTemplate("a_proc")!!
+        val trace = Evaluator(symbolTable, ops).trace(template)
+        val system = trace.getSystemValue()
+        val assessment = ContributionAnalysisProgram(system, trace.getEntryPoint())
+        val result = assessment.run().getImpactFactors()
+        val output = result.observablePorts.get("a from a_proc{}{}")
+        val input = result.controllablePorts.get("gwp")
+        val cf = result.characterizationFactor(output, input)
+
+        // then
+        assertEquals(
+            QuantityValue(ops.pure(3.0), umap["kg"]!! / umap["kg"]!!),
+            cf,
+        )
+    }
+
+    @Test
     fun test_patternMatching() {
         // given
         val pkgName = {}.javaClass.enclosingMethod.name
