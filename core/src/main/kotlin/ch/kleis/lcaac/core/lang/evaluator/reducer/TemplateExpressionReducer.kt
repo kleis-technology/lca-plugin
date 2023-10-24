@@ -53,6 +53,16 @@ class TemplateExpressionReducer<Q>(
         return EProcessFinal(result)
     }
 
+    private fun fillInParameters(
+        templateParams: Map<String, DataExpression<Q>>,
+        exprArguments: Map<String, DataExpression<Q>>
+    ): Map<String, DataExpression<Q>> =
+        // This language... List<Map.Entry<A,B>>.toMap() does not exist, but List<Pair<A,B>>.toMap() does.
+        templateParams.map {
+            (exprArguments[it.key]?.let { argVal ->
+            } ?: it).toPair()
+        }.toMap()
+
     private fun concretizeProducts(
         result: EProcess<Q>,
         actualArguments: Map<String, DataExpression<Q>>,

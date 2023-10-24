@@ -45,6 +45,51 @@ class E2ETest : BasePlatformTestCase() {
     }
 
     @Test
+    fun test_paramDimension_shouldMatter() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        val vf = myFixture.createFile(
+            "$pkgName.lca", """
+                process a_proc {
+                    products {
+                        1 kg a_prod
+                    }
+                    inputs {
+                        1 kg b_prod from b_proc(x = 1 l)
+                    }
+                }
+                process b_proc {
+                    params {
+                        x = 1 kg
+                    }
+                    products {
+                        1 kg b_prod
+                    }
+                    impacts {
+                        x b_imp
+                    }
+                }
+            """.trimIndent())
+        val symbolTable = createFilesAndSymbols(vf)
+
+        // when
+        val template = symbolTable.getTemplate("a_proc")!!
+        val trace = Evaluator(symbolTable, ops).trace(template)
+        val system = trace.getSystemValue()
+        val assessment = ContributionAnalysisProgram(system, trace.getEntryPoint())
+        val result = assessment.run().getImpactFactors()
+        val output = result.observablePorts.get("a_prod from a_proc{}{}")
+        val input = result.controllablePorts.get("b_imp")
+        val cf = result.characterizationFactor(output, input)
+
+        // then
+        assertEquals(
+            QuantityValue(ops.pure(1.0), umap["kg"]!! / umap["kg"]!!),
+            cf,
+        )
+    }
+
+    @Test
     fun test_shouldHandleKnowledgeCorrectly() {
         // given
         val pkgName = {}.javaClass.enclosingMethod.name
