@@ -14,6 +14,13 @@ class UnitaryTableModel(private val analysis: ContributionAnalysis<BasicNumber, 
     private val unitaryImpacts = (0 until products.size()).map {
         analysis.getUnitaryImpacts(products[it])
     }
+    private val signs = (0 until products.size()).map {
+        if (analysis.supplyOf(products[it]).amount.value < 0.0) {
+            -1
+        } else {
+            1
+        }
+    }
 
     override fun getRowCount(): Int = products.size()
 
@@ -36,7 +43,7 @@ class UnitaryTableModel(private val analysis: ContributionAnalysis<BasicNumber, 
         else -> {
             val indicator = indicators[colIdx - 1]
             val value = unitaryImpacts[rowIdx][indicator]
-            FloatingPointRepresentation.of(value?.amount?.value ?: 0.0)
+            FloatingPointRepresentation.of(signs[rowIdx] * (value?.amount?.value ?: 0.0))
         }
     }
 
