@@ -646,23 +646,28 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphNode("H from pH{}{}", "H"),
             GraphNode("my_emission", "my_emission")
         ).addLink(
-            GraphLink("F from pF{}{}", "H from pH{}{}", value = 1.5, "1.5 u"),
-            GraphLink("C from pC{}{}", "F from pF{}{}", value = 0.5, "0.5 u"),
-            GraphLink("A from pA{}{}", "B from pB{}{}", value = 3.0, "3 u"),
-            GraphLink("A from pA{}{}", "C from pC{}{}", value = 0.5, "0.5 u"),
-            GraphLink("D from pD{}{}", "F from pF{}{}", value = 1.0, "1.0 u"),
-            GraphLink("H from pH{}{}", "my_emission", value = 3.5, "3.5 u"),
-            GraphLink("B from pB{}{}", "D from pD{}{}", value = 1.0, "1 u"),
-            GraphLink("B from pB{}{}", "E from pE{}{}", value = 2.0, "2 u"),
-            GraphLink("E from pE{}{}", "G from pG{}{}", value = 4.0, "4 u"),
-            GraphLink("G from pG{}{}", "H from pH{}{}", value = 2.0, "2 u"),
+            GraphLink("F from pF{}{}", "H from pH{}{}", value = 1.5, "1.5 kg"),
+            GraphLink("C from pC{}{}", "F from pF{}{}", value = 0.5, "0.5 kg"),
+            GraphLink("A from pA{}{}", "B from pB{}{}", value = 3.0, "3 kg"),
+            GraphLink("A from pA{}{}", "C from pC{}{}", value = 0.5, "0.5 kg"),
+            GraphLink("D from pD{}{}", "F from pF{}{}", value = 1.0, "1 kg"),
+            GraphLink("H from pH{}{}", "my_emission", value = 3.5, "3.5 kg"),
+            GraphLink("B from pB{}{}", "D from pD{}{}", value = 1.0, "1 kg"),
+            GraphLink("B from pB{}{}", "E from pE{}{}", value = 2.0, "2 kg"),
+            GraphLink("E from pE{}{}", "G from pG{}{}", value = 4.0, "4 kg"),
+            GraphLink("G from pG{}{}", "H from pH{}{}", value = 2.0, "2 kg"),
         )
 
         assertEquals(expected.nodes.naturalSorted(), graph.nodes.naturalSorted())
-        expected.links.naturalSorted().zip(graph.links.naturalSorted()).forEach { (expected, actual) ->
+        expected.links.sortBySourceAndTarget().zip(graph.links.sortBySourceAndTarget()).forEach { (expected, actual) ->
             assertEquals(expected.source, actual.source)
             assertEquals(expected.target, actual.target)
             assertEquals(expected.value, actual.value, 0.0001)
+            assertEquals(expected.name, actual.name)
         }
+    }
+
+    private fun Set<GraphLink>.sortBySourceAndTarget(): List<GraphLink> {
+        return this.sortedBy { "${it.source}, ${it.target}" }
     }
 }
