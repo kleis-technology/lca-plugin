@@ -5,10 +5,7 @@ import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.plugin.ui.toolwindow.LcaToolWindowContent
-import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.DemandTableModel
-import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.ImpactAssessmentTableModel
-import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.InventoryTableModel
-import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.SupplyTableModel
+import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.*
 import ch.kleis.lcaac.plugin.ui.toolwindow.shared.CopyPastableTablePane
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBTabbedPane
@@ -36,6 +33,7 @@ class ContributionAnalysisWindow(
         val inventoryPane = CopyPastableTablePane(InventoryTableModel(analysis, comparator), project, "inventory.csv")
         val supplyPane = CopyPastableTablePane(SupplyTableModel(analysis, comparator), project, "supply.csv")
         val issuePane = IssuePane(analysis, comparator, project)
+        val unitaryPane = CopyPastableTablePane(UnitaryTableModel(analysis), project, "unitary.csv")
 
         val tabbed = JBTabbedPane()
         tabbed.add("Demand", demandPane.content)
@@ -43,6 +41,7 @@ class ContributionAnalysisWindow(
         tabbed.add("Inventory", inventoryPane.content)
         tabbed.add("Supply", supplyPane.content)
         tabbed.add("Issues (${issuePane.nbIssues})", issuePane.content)
+        tabbed.add(" Unitary", unitaryPane.content)
         tabbed.selectedIndex = 1
         /*
             Content

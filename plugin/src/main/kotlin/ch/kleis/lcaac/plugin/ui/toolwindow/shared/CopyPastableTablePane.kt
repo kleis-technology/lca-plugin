@@ -40,7 +40,11 @@ class CopyPastableTablePane(
         /*
             Table
          */
-        val table = JBTable(model)
+        val table = if (model.rowCount < 1000) {
+            JBTable(model)
+        } else {
+            JBTable(null)
+        }
         table.transferHandler = WithHeaderTransferableHandler()
         table.autoCreateRowSorter = true
         val cellRenderer = QuantityRenderer
@@ -62,7 +66,7 @@ class CopyPastableTablePane(
         button.addActionListener {
             val descriptor = FileSaverDescriptor("Save as CSV", "Save data as CSV file")
             val saveFileDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, project)
-            val vf  = saveFileDialog.save(project.projectFile, defaultFilename) ?: return@addActionListener
+            val vf = saveFileDialog.save(project.projectFile, defaultFilename) ?: return@addActionListener
             val task = SaveTableModelTask(project, model, vf.file)
             ProgressManager.getInstance().run(task)
         }
