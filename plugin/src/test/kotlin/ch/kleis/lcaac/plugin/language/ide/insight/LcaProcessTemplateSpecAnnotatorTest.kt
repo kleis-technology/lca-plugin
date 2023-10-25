@@ -31,7 +31,7 @@ class LcaProcessTemplateSpecAnnotatorTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val runElement = RunStubKeyIndex.findRun(project, "$pkgName.ci").first()
-        val element: PsiProcessTemplateSpec = runElement.assessList.first().getProcessTemplateSpecRef()
+        val element: PsiProcessTemplateSpec = runElement.runnableList.first().assess!!.processTemplateSpec
         val mock = AnnotationHolderMock()
         val annotator = LcaProcessTemplateSpecAnnotator()
 
@@ -88,7 +88,7 @@ class LcaProcessTemplateSpecAnnotatorTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val runElement = RunStubKeyIndex.findRun(project, "$pkgName.ci").first()
-        val element: PsiProcessTemplateSpec = runElement.assessList.first().getProcessTemplateSpecRef()
+        val element: PsiProcessTemplateSpec = runElement.runnableList.first().assess!!.processTemplateSpec
         val mock = AnnotationHolderMock()
         val annotator = LcaProcessTemplateSpecAnnotator()
 
