@@ -11,11 +11,14 @@ import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.psi.LcaProcess
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiDirectory
 import java.io.FileNotFoundException
@@ -54,15 +57,33 @@ class ModelGenerationTask(
             }
 
             // write
-            val outputPath = writeModel(indicator, containingDirectory, requests)
+            val fileName = "$processName.generated.models.lca"
+            val outputPath = writeModel(indicator, containingDirectory, requests, fileName)
 
             // TODO Refactor
             // done
-            indicator.text = "Written to $processName.results.csv"
+            indicator.text = "Written to $fileName"
             indicator.fraction = 1.0
             val title = "${requests.size} successful assessments of process $processName"
-            val message = "Results stored in ${processName}.results.csv"
-            VirtualFileManager.getInstance().refreshAndFindFileByNioPath(outputPath)
+            val message = "Results stored in $fileName"
+//            VirtualFileManager.getInstance().refreshAndFindFileByNioPath(outputPath)
+//            ApplicationManager.getApplication().runWriteAction{}
+//
+            ApplicationManager.getApplication().invokeAndWait { ->
+
+//                runWriteAction {
+                val vfile = VfsUtil.findFile(
+                    outputPath, true
+                )
+                VirtualFileManager.getInstance().syncRefresh()
+                vfile?.refresh(false, false)
+                LOG.info("Now refresh")
+//                }
+                val dumbSrv = DumbService.getInstance(project)
+                //ApplicationManager.getApplication().getService(DumbService::class.java)
+                dumbSrv.completeJustSubmittedTasks()
+
+            }
             NotificationGroupManager.getInstance()
                 .getNotificationGroup("LcaAsCode")
                 .createNotification(title, message, NotificationType.INFORMATION)
@@ -90,10 +111,15 @@ class ModelGenerationTask(
         }
     }
 
-    private fun writeModel(indicator: ProgressIndicator, outDir: PsiDirectory, results: List<CsvRequest>): Path {
-        indicator.text = "Writing to $processName.results.csv"
+    private fun writeModel(
+        indicator: ProgressIndicator,
+        outDir: PsiDirectory,
+        results: List<CsvRequest>,
+        outFile: String
+    ): Path {
+        indicator.text = "Writing to $outFile"
         indicator.fraction = 1.0
-        val path = Path(outDir.virtualFile.path, "$processName.generated.models.lca")
+        val path = Path(outDir.virtualFile.path, outFile)
         OutputToModelWriter(process, results, path).writeModels()
         return path
     }

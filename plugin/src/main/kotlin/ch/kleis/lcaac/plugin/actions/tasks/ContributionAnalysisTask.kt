@@ -32,7 +32,7 @@ class ContributionAnalysisTask(
         private val LOG = Logger.getInstance(ContributionAnalysisTask::class.java)
     }
 
-    private var data: Pair<ContributionAnalysis<BasicNumber, BasicMatrix>, Comparator<MatrixColumnIndex<BasicNumber>>>? =
+    var data: Pair<ContributionAnalysis<BasicNumber, BasicMatrix>, Comparator<MatrixColumnIndex<BasicNumber>>>? =
         null
 
     override fun run(indicator: ProgressIndicator) {

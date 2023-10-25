@@ -39,8 +39,8 @@ class RunTask(
         val size = run.runnableList.size
         run.runnableList.forEachIndexed { index, element ->
 
-            element.generate?.let { generate(it) }
-            element.assess?.let { assess(it) }
+            element.generate?.let { generate(it, indicator) }
+            element.assess?.let { assess(it, indicator) }
 
             indicator.fraction = index.toDouble() / size
         }
@@ -48,38 +48,51 @@ class RunTask(
 
     }
 
-    private fun generate(generate: LcaGenerate) {
+    private fun generate(generate: LcaGenerate, indicator: ProgressIndicator) {
+        var task: ModelGenerationTask? = null
         ApplicationManager.getApplication().runReadAction {
+//            var file: PsiFile? = null
+//            var process: LcaProcess? = null
+//            var containingDirectory: PsiDirectory? = null
             val process = generate.getProcessRef().reference.resolve() as LcaProcess
             val file = process.containingFile as LcaFile?
             val containingDirectory = file?.containingDirectory
+
+//            process.let {
             containingDirectory?.let {
-                val task = ModelGenerationTask(
+                task = ModelGenerationTask(
                     project = project,
                     process = process,
                     processName = process.name,
                     file = run.containingFile as LcaFile,
                     containingDirectory = it
                 )
-                ProgressManager.getInstance().run(task)
+//                }
             }
         }
+        task?.run(indicator)
+//        ApplicationManager.getApplication().invokeAndWait { ->
+////                runWriteAction {
+//            val dumbSrv = DumbService.getInstance(project)
+//            //ApplicationManager.getApplication().getService(DumbService::class.java)
+//            dumbSrv.completeJustSubmittedTasks()
+//        }
     }
 
-    private fun assess(assess: LcaAssess) {
+    private fun assess(assess: LcaAssess, indicator: ProgressIndicator) {
+        var task: ContributionAnalysisTask? = null
         ApplicationManager.getApplication().runReadAction {
             val processTemplateSpec = assess.getProcessTemplateSpecRef() as LcaProcessTemplateSpec
             val process = assess.getProcessRef().reference.resolve() as LcaProcess
             val file = process.containingFile as LcaFile?
-            val containingDirectory = file?.containingDirectory
+//            val containingDirectory = file?.containingDirectory
             val labelList = processTemplateSpec.matchLabels?.labelSelectorList ?: emptyList()
             val mapper = LcaMapper(BasicOperations)
-            val labels =
-                labelList.associate { selector ->
-                    selector.labelRef.name to mapper.dataExpression(selector.dataExpression).toString()
-                }
+            val labels = labelList.associate { selector ->
+                selector.labelRef.name to mapper.dataExpression(selector.dataExpression).toString()
+            }
 
-            fun onSuccess(
+            fun assesOnSuccess(
                 p: Project,
                 a: ContributionAnalysis<BasicNumber, BasicMatrix>,
                 c: Comparator<MatrixColumnIndex<BasicNumber>>
@@ -87,16 +100,18 @@ class RunTask(
                 saveInventory(p, a, c, process.name)
             }
 
-            containingDirectory?.let {
-                val task = ContributionAnalysisTask(
+            file?.let {
+                task = ContributionAnalysisTask(
                     project = project,
                     processName = process.name,
                     file = file,
                     matchLabels = labels,
-                    success = ::onSuccess
+                    success = ::assesOnSuccess
                 )
-                ProgressManager.getInstance().run(task)
+//                ProgressManager.getInstance().run(task)
             }
+            task?.run(indicator)
+            task?.onSuccess()
         }
     }
 
@@ -121,6 +136,7 @@ class RunTask(
             val task = SaveTableModelTask(project, model, path.toFile())
             ProgressManager.getInstance().run(task)
             VirtualFileManager.getInstance().refreshAndFindFileByNioPath(path)
+            LOG.info("File $path generated")
         }
     }
 
