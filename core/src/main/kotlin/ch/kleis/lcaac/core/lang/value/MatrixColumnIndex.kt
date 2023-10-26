@@ -72,6 +72,7 @@ sealed interface SubstanceValue<Q> : Value<Q>, MatrixColumnIndex<Q>
 data class PartiallyQualifiedSubstanceValue<Q>(
     val name: String,
     val referenceUnit: UnitValue<Q>,
+    val pkg: PackageValue<Q>,
 ) : SubstanceValue<Q> {
     override fun getDimension(): Dimension {
         return referenceUnit.dimension
@@ -117,6 +118,7 @@ data class FullyQualifiedSubstanceValue<Q>(
     val compartment: String,
     val subcompartment: String?,
     val referenceUnit: UnitValue<Q>,
+    val pkg: PackageValue<Q>,
 ) : SubstanceValue<Q> {
     override fun getDimension(): Dimension {
         return referenceUnit.dimension
