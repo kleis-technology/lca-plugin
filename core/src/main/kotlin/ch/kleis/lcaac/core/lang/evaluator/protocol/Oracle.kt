@@ -1,24 +1,26 @@
 package ch.kleis.lcaac.core.lang.evaluator.protocol
 
-import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.step.CompleteTerminals
 import ch.kleis.lcaac.core.lang.evaluator.step.Reduce
 import ch.kleis.lcaac.core.lang.evaluator.step.ReduceLabelSelectors
+import ch.kleis.lcaac.core.lang.expression.EPackage
 import ch.kleis.lcaac.core.lang.expression.EProcess
 import ch.kleis.lcaac.core.lang.expression.EProcessTemplateApplication
+import ch.kleis.lcaac.core.lang.resolver.PkgResolver
 import ch.kleis.lcaac.core.lang.resolver.ProcessResolver
 import ch.kleis.lcaac.core.lang.resolver.SubstanceCharacterizationResolver
 import ch.kleis.lcaac.core.math.QuantityOperations
 
 class Oracle<Q>(
-    val symbolTable: SymbolTable<Q>,
+    pkg: EPackage<Q>,
+    pkgResolver: PkgResolver<Q>,
     val ops: QuantityOperations<Q>,
 ) {
-    private val reduceLabelSelectors = ReduceLabelSelectors(symbolTable, ops)
-    private val reduceDataExpressions = Reduce(symbolTable, ops)
+    private val reduceLabelSelectors = ReduceLabelSelectors(pkg, pkgResolver, ops)
+    private val reduceDataExpressions = Reduce(pkg, pkgResolver, ops)
     private val completeTerminals = CompleteTerminals(ops)
-    private val processResolver = ProcessResolver(symbolTable)
-    private val substanceCharacterizationResolver = SubstanceCharacterizationResolver(symbolTable)
+    private val processResolver = ProcessResolver(pkg, pkgResolver)
+    private val substanceCharacterizationResolver = SubstanceCharacterizationResolver(pkg, pkgResolver)
 
     fun answer(ports: Set<Request<Q>>): Set<Response<Q>> {
         return ports.mapNotNull { answerRequest(it) }.toSet()

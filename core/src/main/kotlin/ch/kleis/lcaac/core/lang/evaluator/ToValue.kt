@@ -11,6 +11,18 @@ class ToValue<Q>(
         return with(ops) { q().toDouble() }
     }
 
+    private fun PackageExpression<Q>.toValue(): PackageValue<Q> {
+        return when(this) {
+            is EPackage -> PackageValue(
+                this.name,
+                this.params.data.mapValues { it.value.toValue() }.mapKeys { it.key.name },
+                this.with.mapValues { it.value.toValue() },
+            )
+            is EImport -> TODO("Should throw appropriate exception")
+            is EImportRef -> TODO("Should throw appropriate exception")
+        }
+    }
+
     fun EProcess<Q>.toValue(): ProcessValue<Q> {
         return ProcessValue(
             this.name,
@@ -22,7 +34,7 @@ class ToValue<Q>(
         )
     }
 
-    fun DataExpression<Q>.toValue(): DataValue<Q> {
+    private fun DataExpression<Q>.toValue(): DataValue<Q> {
         return when (this) {
             is EStringLiteral -> StringValue(this.value)
 
@@ -60,7 +72,7 @@ class ToValue<Q>(
         )
     }
 
-    fun EProductSpec<Q>.toValue(): ProductValue<Q> {
+    private fun EProductSpec<Q>.toValue(): ProductValue<Q> {
         val name = this.name
         @Suppress("UNCHECKED_CAST")
         val referenceUnitValue = (this.referenceUnit as QuantityExpression<Q>?)
@@ -93,19 +105,20 @@ class ToValue<Q>(
             else -> throw EvaluatorException("$this is not reduced")
         }
 
-    fun ESubstanceSpec<Q>.toValue(): SubstanceValue<Q> {
+    private fun ESubstanceSpec<Q>.toValue(): SubstanceValue<Q> {
         @Suppress("UNCHECKED_CAST")
         val referenceUnit = (this.referenceUnit as QuantityExpression<Q>?)
             ?.toUnitValue()
             ?: throw EvaluatorException("$this has no reference unit")
-        val type = this.type ?: return PartiallyQualifiedSubstanceValue(this.name, referenceUnit)
-        val compartment = this.compartment ?: return PartiallyQualifiedSubstanceValue(this.name, referenceUnit)
+        val type = this.type ?: return PartiallyQualifiedSubstanceValue(this.name, referenceUnit, this.pkg!!.toValue())
+        val compartment = this.compartment ?: return PartiallyQualifiedSubstanceValue(this.name, referenceUnit, this.pkg!!.toValue())
         return FullyQualifiedSubstanceValue(
             this.name,
             type,
             compartment,
             this.subCompartment,
             referenceUnit,
+            this.pkg?.toValue() ?: PackageValue.default(),
         )
     }
 
@@ -139,6 +152,7 @@ class ToValue<Q>(
                     is EDataRef -> throw EvaluatorException("$it is not reduced")
                 }
             },
+            this.pkg?.toValue() ?: PackageValue.default(),
         )
     }
 

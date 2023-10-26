@@ -3,7 +3,7 @@ package ch.kleis.lcaac.core.lang.register
 import arrow.optics.Fold
 
 class Register<K, E> (
-    private val data: Map<K, E> = HashMap()
+    val data: Map<K, E> = HashMap()
 ) {
     constructor(register: Register<K, E>) : this(register.data)
 

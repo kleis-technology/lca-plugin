@@ -2,9 +2,9 @@ package ch.kleis.lcaac.core.lang.resolver
 
 import ch.kleis.lcaac.core.lang.register.ProcessKey
 import ch.kleis.lcaac.core.lang.register.ProcessTemplateRegister
-import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.*
+import ch.kleis.lcaac.core.lang.fixture.PkgResolverFixture
 import ch.kleis.lcaac.core.lang.fixture.ProductFixture
 import ch.kleis.lcaac.core.lang.fixture.QuantityFixture
 import org.junit.jupiter.api.Test
@@ -47,10 +47,10 @@ class ProcessResolverTest {
                 emptyMap(),
             )
         )
-        val symbolTable = SymbolTable(
+        val rootPkg = EPackage(
             processTemplates = processTemplates,
         )
-        val resolver = ProcessResolver(symbolTable)
+        val resolver = ProcessResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
 
         // when
         val actual = resolver.resolve(carrotSpec)
@@ -88,10 +88,10 @@ class ProcessResolverTest {
             name = "irrelevant_product",
             fromProcess = FromProcess("carrot_production", MatchLabels(emptyMap()), emptyMap())
         )
-        val symbolTable = SymbolTable(
+        val rootPkg = EPackage(
             processTemplates = processTemplates,
         )
-        val resolver = ProcessResolver(symbolTable)
+        val resolver = ProcessResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
 
         // when/then
         val e = assertFailsWith(EvaluatorException::class) {
@@ -140,10 +140,10 @@ class ProcessResolverTest {
         val carrotSpec = ProductFixture.carrot.copy(
             fromProcess = FromProcess("carrot_production", MatchLabels(emptyMap()), emptyMap())
         )
-        val symbolTable = SymbolTable(
+        val rootPkg = EPackage(
             processTemplates = processTemplates,
         )
-        val resolver = ProcessResolver(symbolTable)
+        val resolver = ProcessResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
 
         // when
         val actual = resolver.resolve(carrotSpec)
@@ -190,10 +190,10 @@ class ProcessResolverTest {
             ).mapKeys { ProcessKey(it.key) }
         )
         val carrotSpec = ProductFixture.carrot
-        val symbolTable = SymbolTable(
+        val rootPkg = EPackage(
             processTemplates = processTemplates,
         )
-        val resolver = ProcessResolver(symbolTable)
+        val resolver = ProcessResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
 
         // when
         val actual = resolver.resolve(carrotSpec)
@@ -249,10 +249,10 @@ class ProcessResolverTest {
             ).mapKeys { ProcessKey(it.key) }
         )
         val carrotSpec = ProductFixture.carrot
-        val symbolTable = SymbolTable(
+        val rootPkg = EPackage(
             processTemplates = processTemplates,
         )
-        val resolver = ProcessResolver(symbolTable)
+        val resolver = ProcessResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
 
         // {w,t}hen
         val exception = assertFailsWith(EvaluatorException::class) { resolver.resolve(carrotSpec) }

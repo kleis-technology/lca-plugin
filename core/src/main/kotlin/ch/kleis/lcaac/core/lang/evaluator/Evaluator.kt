@@ -1,14 +1,15 @@
 package ch.kleis.lcaac.core.lang.evaluator
 
-import ch.kleis.lcaac.core.lang.SymbolTable
-import ch.kleis.lcaac.core.lang.evaluator.protocol.Oracle
 import ch.kleis.lcaac.core.lang.evaluator.protocol.Learner
+import ch.kleis.lcaac.core.lang.evaluator.protocol.Oracle
 import ch.kleis.lcaac.core.lang.expression.*
+import ch.kleis.lcaac.core.lang.resolver.PkgResolver
 import ch.kleis.lcaac.core.math.QuantityOperations
 import org.slf4j.LoggerFactory
 
 class Evaluator<Q>(
-    private val symbolTable: SymbolTable<Q>,
+    private val pkg: EPackage<Q>,
+    private val pkgResolver: PkgResolver<Q>,
     private val ops: QuantityOperations<Q>,
 ) {
     @Suppress("PrivatePropertyName")
@@ -16,7 +17,7 @@ class Evaluator<Q>(
 
     fun trace(initialRequests: Set<EProductSpec<Q>>): EvaluationTrace<Q> {
         val learner = Learner(initialRequests, ops)
-        val oracle = Oracle(symbolTable, ops)
+        val oracle = Oracle(pkg, pkgResolver, ops)
         LOG.info("Start evaluation")
         try {
             var requests = learner.start()

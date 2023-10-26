@@ -1,9 +1,9 @@
 package ch.kleis.lcaac.core.lang.evaluator.reducer
 
-import ch.kleis.lcaac.core.lang.register.DataKey
-import ch.kleis.lcaac.core.lang.register.DataRegister
 import ch.kleis.lcaac.core.lang.expression.*
 import ch.kleis.lcaac.core.lang.fixture.*
+import ch.kleis.lcaac.core.lang.register.DataKey
+import ch.kleis.lcaac.core.lang.register.DataRegister
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import org.junit.jupiter.api.Test
@@ -26,10 +26,14 @@ class LcaExpressionReducerTest {
                 )
             )
         )
-        val reducer = LcaExpressionReducer(
-            DataRegister(
+        val pkg = EPackage<BasicNumber>(
+            data = DataRegister(
                 mapOf(DataKey("geo") to EStringLiteral("FR"))
-            ),
+            )
+        )
+        val reducer = LcaExpressionReducer(
+            pkg,
+            PkgResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -66,14 +70,18 @@ class LcaExpressionReducerTest {
                 EBioExchange(EDataRef("q_propanol"), SubstanceFixture.propanol),
             ),
         )
-        val reducer = LcaExpressionReducer(
-            dataRegister = DataRegister(
+        val pkg = EPackage(
+            data = DataRegister(
                 mapOf(
                     "q_carrot" to QuantityFixture.oneKilogram,
                     "q_water" to QuantityFixture.oneLitre,
                     "q_propanol" to QuantityFixture.oneKilogram,
                 ).mapKeys { DataKey(it.key) }
             ),
+        )
+        val reducer = LcaExpressionReducer(
+            pkg,
+            PkgResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -112,12 +120,16 @@ class LcaExpressionReducerTest {
             EDataRef("q"),
             EIndicatorSpec("cc")
         )
-        val reducer = LcaExpressionReducer(
-            dataRegister = DataRegister(
+        val pkg = EPackage(
+            data = DataRegister(
                 mapOf(
                     DataKey("q") to QuantityFixture.oneKilogram,
                 )
             ),
+        )
+        val reducer = LcaExpressionReducer(
+            pkg,
+            PkgResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -139,12 +151,16 @@ class LcaExpressionReducerTest {
             EDataRef("q"),
             EProductSpec("carrot"),
         )
-        val reducer = LcaExpressionReducer(
-            dataRegister = DataRegister(
+        val pkg = EPackage(
+            data = DataRegister(
                 mapOf(
                     DataKey("q") to QuantityFixture.oneKilogram,
                 )
-            ),
+            )
+        )
+        val reducer = LcaExpressionReducer(
+            pkg,
+            PkgResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -166,12 +182,16 @@ class LcaExpressionReducerTest {
             EDataRef("q"),
             ESubstanceSpec("propanol"),
         )
-        val reducer = LcaExpressionReducer(
-            dataRegister = DataRegister(
+        val pkg = EPackage(
+            data = DataRegister(
                 mapOf(
                     DataKey("q") to QuantityFixture.oneKilogram,
                 )
-            ),
+            )
+        )
+        val reducer = LcaExpressionReducer(
+            pkg,
+            PkgResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -193,12 +213,16 @@ class LcaExpressionReducerTest {
             "cc",
             EDataRef("kg"),
         )
-        val reducer = LcaExpressionReducer(
-            dataRegister = DataRegister(
+        val pkg = EPackage(
+            data = DataRegister(
                 mapOf(
                     DataKey("kg") to UnitFixture.kg
                 )
             ),
+        )
+        val reducer = LcaExpressionReducer(
+            pkg,
+            PkgResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -224,12 +248,16 @@ class LcaExpressionReducerTest {
             null,
             EDataRef("kg"),
         )
-        val reducer = LcaExpressionReducer(
-            dataRegister = DataRegister(
+        val pkg = EPackage(
+            data = DataRegister(
                 mapOf(
                     DataKey("kg") to UnitFixture.kg
                 )
             ),
+        )
+        val reducer = LcaExpressionReducer(
+            pkg,
+            PkgResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -255,12 +283,16 @@ class LcaExpressionReducerTest {
             "carrot",
             EDataRef("kg"),
         )
-        val reducer = LcaExpressionReducer(
-            dataRegister = DataRegister(
+        val pkg = EPackage(
+            data = DataRegister(
                 mapOf(
                     DataKey("kg") to UnitFixture.kg
                 )
             ),
+        )
+        val reducer = LcaExpressionReducer(
+            pkg,
+            PkgResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -282,12 +314,16 @@ class LcaExpressionReducerTest {
             "carrot",
             EDataRef("kg"),
         )
-        val reducer = LcaExpressionReducer(
-            dataRegister = DataRegister(
+        val pkg = EPackage(
+            data = DataRegister(
                 mapOf(
                     DataKey("kg") to UnitFixture.kg
                 )
             ),
+        )
+        val reducer = LcaExpressionReducer(
+            pkg,
+            PkgResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -316,13 +352,17 @@ class LcaExpressionReducerTest {
                 )
             )
         )
-        val reducer = LcaExpressionReducer(
-            dataRegister = DataRegister(
+        val pkg = EPackage(
+            data = DataRegister(
                 mapOf(
                     "q" to EQuantityScale(ops.pure(3.0), EDataRef("kg")),
                     "kg" to UnitFixture.kg
                 ).mapKeys { DataKey(it.key) }
             ),
+        )
+        val reducer = LcaExpressionReducer(
+            pkg,
+            PkgResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -359,13 +399,17 @@ class LcaExpressionReducerTest {
                 ),
             )
         )
-        val reducer = LcaExpressionReducer(
-            dataRegister = DataRegister(
+        val pkg = EPackage(
+            data = DataRegister(
                 mapOf(
                     "q_propanol" to QuantityFixture.oneKilogram,
                     "q_cc" to QuantityFixture.oneKilogram,
                 ).mapKeys { DataKey(it.key) }
             ),
+        )
+        val reducer = LcaExpressionReducer(
+            pkg,
+            PkgResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 

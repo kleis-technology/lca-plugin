@@ -1,10 +1,11 @@
 package ch.kleis.lcaac.core.lang.evaluator.step
 
+import ch.kleis.lcaac.core.lang.expression.*
+import ch.kleis.lcaac.core.lang.fixture.PkgResolverFixture
+import ch.kleis.lcaac.core.lang.fixture.QuantityFixture
 import ch.kleis.lcaac.core.lang.register.DataKey
 import ch.kleis.lcaac.core.lang.register.DataRegister
-import ch.kleis.lcaac.core.lang.SymbolTable
-import ch.kleis.lcaac.core.lang.expression.*
-import ch.kleis.lcaac.core.lang.fixture.QuantityFixture
+import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -38,7 +39,8 @@ class ReduceLabelSelectorsTest {
             ),
             mapOf("geo" to EStringLiteral("FR")),
         )
-        val reduceLabelSelectors = ReduceLabelSelectors(SymbolTable(), ops)
+        val pkg = EPackage.empty<BasicNumber>()
+        val reduceLabelSelectors = ReduceLabelSelectors(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = reduceLabelSelectors.apply(instance)
@@ -93,7 +95,8 @@ class ReduceLabelSelectorsTest {
                 )
             ),
         )
-        val reduceLabelSelectors = ReduceLabelSelectors(SymbolTable(), ops)
+        val pkg = EPackage.empty<BasicNumber>()
+        val reduceLabelSelectors = ReduceLabelSelectors(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = reduceLabelSelectors.apply(instance)
@@ -147,7 +150,8 @@ class ReduceLabelSelectorsTest {
                 )
             ),
         )
-        val reduceLabelSelectors = ReduceLabelSelectors(SymbolTable(), ops)
+        val pkg = EPackage.empty<BasicNumber>()
+        val reduceLabelSelectors = ReduceLabelSelectors(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = reduceLabelSelectors.apply(instance)
@@ -200,13 +204,10 @@ class ReduceLabelSelectorsTest {
                 )
             ),
         )
-
-        val reduceLabelSelectors = ReduceLabelSelectors(
-            SymbolTable(
-                data = DataRegister(mapOf(DataKey("geo") to EStringLiteral("FR")))
-            ),
-            ops,
+        val pkg = EPackage<BasicNumber>(
+            data = DataRegister(mapOf(DataKey("geo") to EStringLiteral("FR")))
         )
+        val reduceLabelSelectors = ReduceLabelSelectors(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = reduceLabelSelectors.apply(instance)
@@ -259,7 +260,8 @@ class ReduceLabelSelectorsTest {
                 )
             ),
         )
-        val reduceLabelSelectors = ReduceLabelSelectors(SymbolTable(), ops)
+        val pkg = EPackage.empty<BasicNumber>()
+        val reduceLabelSelectors = ReduceLabelSelectors(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = reduceLabelSelectors.apply(instance)

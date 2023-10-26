@@ -1,27 +1,23 @@
 package ch.kleis.lcaac.core.lang.evaluator.step
 
-import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.evaluator.Helper
 import ch.kleis.lcaac.core.lang.evaluator.reducer.LcaExpressionReducer
 import ch.kleis.lcaac.core.lang.evaluator.reducer.TemplateExpressionReducer
+import ch.kleis.lcaac.core.lang.expression.EPackage
 import ch.kleis.lcaac.core.lang.expression.EProcess
 import ch.kleis.lcaac.core.lang.expression.EProcessTemplateApplication
 import ch.kleis.lcaac.core.lang.expression.ESubstanceCharacterization
+import ch.kleis.lcaac.core.lang.resolver.PkgResolver
 import ch.kleis.lcaac.core.math.QuantityOperations
 
 class Reduce<Q>(
-    symbolTable: SymbolTable<Q>,
+    pkg: EPackage<Q>,
+    pkgResolver: PkgResolver<Q>,
     ops: QuantityOperations<Q>,
 ) {
-    private val lcaReducer = LcaExpressionReducer(
-        symbolTable.data,
-        ops
-    )
-    private val templateReducer = TemplateExpressionReducer(
-        ops,
-        symbolTable.data,
-    )
+    private val lcaReducer = LcaExpressionReducer(pkg, pkgResolver, ops)
+    private val templateReducer = TemplateExpressionReducer(pkg, pkgResolver, ops)
 
     fun apply(expression: EProcessTemplateApplication<Q>): EProcess<Q> {
         val reduced = templateReducer.reduce(expression)

@@ -402,8 +402,9 @@ class ContributionAnalysisTest {
     @Test
     fun supplyOf_whenSubstance() {
         // given
+        val pkg = PackageValue<BasicNumber>("default")
         val a = ProductValue("a", UnitValueFixture.kg<BasicNumber>())
-        val b = PartiallyQualifiedSubstanceValue("b", UnitValueFixture.kg<BasicNumber>())
+        val b = PartiallyQualifiedSubstanceValue("b", UnitValueFixture.kg(), pkg)
         val c = IndicatorValue("c", UnitValueFixture.kg<BasicNumber>())
         val pa = ProcessValue(
             name = "pa",

@@ -1,6 +1,5 @@
 package ch.kleis.lcaac.core.lang.evaluator
 
-import ch.kleis.lcaac.core.lang.*
 import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
 import ch.kleis.lcaac.core.lang.expression.*
 import ch.kleis.lcaac.core.lang.fixture.*
@@ -34,14 +33,15 @@ class EvaluatorTest {
                 ),
             )
         )
-        val symbolTable = SymbolTable(
+        val pkg = EPackage(
             processTemplates = ProcessTemplateRegister(
                 mapOf(
                     ProcessKey("eProcess") to template,
                 )
             )
         )
-        val evaluator = Evaluator(symbolTable, ops)
+        val pkgResolver = PkgResolverFixture.alwaysResolveTo(pkg)
+        val evaluator = Evaluator(pkg, pkgResolver, ops)
         val expected = ImpactValue(
             QuantityValueFixture.oneKilogram,
             IndicatorValueFixture.climateChange,
@@ -77,20 +77,21 @@ class EvaluatorTest {
                 ),
             )
         )
-        val symbolTable = SymbolTable(
+        val pkg = EPackage(
             processTemplates = ProcessTemplateRegister.from(
                 mapOf(
                     ProcessKey("eProcess") to template
                 )
             )
         )
-        val evaluator = Evaluator(symbolTable, ops)
+        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
         val expected = FullyQualifiedSubstanceValue<BasicNumber>(
             "doesNotExist",
             type = SubstanceType.EMISSION,
             compartment = "water",
             subcompartment = "sea water",
-            referenceUnit = UnitValue(UnitSymbol.of("kg"), 1.0, DimensionFixture.mass)
+            referenceUnit = UnitValue(UnitSymbol.of("kg"), 1.0, DimensionFixture.mass),
+            PackageValue(EPackage.DEFAULT_PKG_NAME),
         )
 
         // when
@@ -104,14 +105,14 @@ class EvaluatorTest {
     fun eval_whenTwoInstancesOfSameTemplate_thenDifferentProduct() {
         // given
         val template = TemplateFixture.carrotProduction
-        val symbolTable = SymbolTable(
+        val pkg = EPackage(
             processTemplates = ProcessTemplateRegister.from(
                 mapOf(
                     ProcessKey("carrot_production") to template,
                 )
             )
         )
-        val evaluator = Evaluator(symbolTable, ops)
+        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val p1 = evaluator.trace(template, mapOf("q_water" to QuantityFixture.oneLitre))
@@ -132,8 +133,8 @@ class EvaluatorTest {
         val template = TemplateFixture.cyclicProduction
         val register = ProcessTemplateRegister(mapOf(ProcessKey("carrot_production") to template))
 
-        val symbolTable = SymbolTable(processTemplates = register)
-        val evaluator = Evaluator(symbolTable, BasicOperations)
+        val pkg = EPackage(processTemplates = register)
+        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), BasicOperations)
 
         // when
 
@@ -165,7 +166,7 @@ class EvaluatorTest {
                 ),
             )
         )
-        val symbolTable = SymbolTable(
+        val pkg = EPackage(
             processTemplates = ProcessTemplateRegister(
                 mapOf(
                     ProcessKey("carrot_production") to TemplateFixture.carrotProduction,
@@ -173,7 +174,7 @@ class EvaluatorTest {
                 )
             ),
         )
-        val evaluator = Evaluator(symbolTable, ops)
+        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = evaluator.trace(template).getSystemValue().processes
@@ -191,6 +192,7 @@ class EvaluatorTest {
                                 arguments = mapOf(
                                     "q_water" to QuantityValueFixture.oneLitre
                                 ),
+                                pkg = PackageValue(EPackage.DEFAULT_PKG_NAME),
                             )
                         )
                     )
@@ -210,6 +212,7 @@ class EvaluatorTest {
                         ProductValueFixture.salad.withFromProcessRef(
                             FromProcessRefValue(
                                 name = "salad_production",
+                                pkg = PackageValue(EPackage.DEFAULT_PKG_NAME),
                             )
                         )
                     )
@@ -223,6 +226,7 @@ class EvaluatorTest {
                                 arguments = mapOf(
                                     "q_water" to QuantityValueFixture.oneLitre,
                                 ),
+                                pkg = PackageValue(EPackage.DEFAULT_PKG_NAME),
                             )
                         )
                     )
@@ -260,16 +264,16 @@ class EvaluatorTest {
             ),
         )
         // given
-        val processTemplates=  ProcessTemplateRegister(
+        val processTemplates = ProcessTemplateRegister(
             mapOf(
                 ProcessKey("carrot_production") to TemplateFixture.carrotProduction,
                 ProcessKey("salad_production") to template,
             )
         )
-        val symbolTable = SymbolTable(
+        val pkg = EPackage(
             processTemplates = processTemplates,
         )
-        val evaluator = Evaluator(symbolTable, ops)
+        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = evaluator.trace(template).getSystemValue().processes
@@ -284,6 +288,7 @@ class EvaluatorTest {
                         ProductValueFixture.salad.withFromProcessRef(
                             FromProcessRefValue(
                                 name = "salad_production",
+                                pkg = PackageValue(EPackage.DEFAULT_PKG_NAME),
                             )
                         )
                     )
@@ -296,7 +301,8 @@ class EvaluatorTest {
                                 name = "carrot_production",
                                 arguments = mapOf(
                                     "q_water" to QuantityValueFixture.twoLitres
-                                )
+                                ),
+                                pkg = PackageValue(EPackage.DEFAULT_PKG_NAME),
                             )
                         )
                     )
@@ -313,6 +319,7 @@ class EvaluatorTest {
                                 arguments = mapOf(
                                     "q_water" to QuantityValueFixture.twoLitres
                                 ),
+                                pkg = PackageValue(EPackage.DEFAULT_PKG_NAME),
                             ),
                         )
                     )
@@ -356,7 +363,7 @@ class EvaluatorTest {
                 ),
             )
         )
-        val symbolTable = SymbolTable(
+        val pkg = EPackage(
             processTemplates = ProcessTemplateRegister(
                 mapOf(
                     "carrot_production" to TemplateFixture.carrotProduction,
@@ -364,7 +371,7 @@ class EvaluatorTest {
                 ).mapKeys { ProcessKey(it.key) }
             )
         )
-        val evaluator = Evaluator(symbolTable, ops)
+        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when/then
         val e = assertFailsWith(
@@ -396,10 +403,14 @@ class EvaluatorTest {
                 ),
             )
         )
-        val symbolTable = SymbolTable(
+        val pkg = EPackage(
             substanceCharacterizations = SubstanceCharacterizationRegister(
                 mapOf(
-                    SubstanceKey("propanol", SubstanceType.RESOURCE, "air") to SubstanceCharacterizationFixture.propanolCharacterization,
+                    SubstanceKey(
+                        "propanol",
+                        SubstanceType.RESOURCE,
+                        "air"
+                    ) to SubstanceCharacterizationFixture.propanolCharacterization,
                 )
             ),
             processTemplates = ProcessTemplateRegister(
@@ -408,7 +419,7 @@ class EvaluatorTest {
                 )
             )
         )
-        val evaluator = Evaluator(symbolTable, ops)
+        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = evaluator.trace(template).getSystemValue().substanceCharacterizations
@@ -440,7 +451,7 @@ class EvaluatorTest {
                 ),
             )
         )
-        val symbolTable = SymbolTable(
+        val pkg = EPackage(
             processTemplates = ProcessTemplateRegister(
                 mapOf(
                     "carrot_production" to TemplateFixture.carrotProduction,
@@ -448,7 +459,7 @@ class EvaluatorTest {
                 ).mapKeys { ProcessKey(it.key) }
             )
         )
-        val evaluator = Evaluator(symbolTable, ops)
+        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when/then
         val e = assertFailsWith(

@@ -1,15 +1,15 @@
 package ch.kleis.lcaac.core.lang.evaluator.reducer
 
-import ch.kleis.lcaac.core.lang.register.DataRegister
 import ch.kleis.lcaac.core.lang.expression.*
+import ch.kleis.lcaac.core.lang.resolver.PkgResolver
 import ch.kleis.lcaac.core.math.QuantityOperations
 
 class LcaExpressionReducer<Q>(
-    dataRegister: DataRegister<Q> = DataRegister.empty(),
+    pkg: EPackage<Q>,
+    pkgResolver: PkgResolver<Q>,
     ops: QuantityOperations<Q>,
+    private val dataExpressionReducer: DataExpressionReducer<Q> = DataExpressionReducer(pkg, pkgResolver, ops),
 ) {
-    private val dataExpressionReducer = DataExpressionReducer(dataRegister, ops)
-
     fun reduce(expression: LcaExpression<Q>): LcaExpression<Q> {
         return when (expression) {
             is EProcess -> reduceProcess(expression)

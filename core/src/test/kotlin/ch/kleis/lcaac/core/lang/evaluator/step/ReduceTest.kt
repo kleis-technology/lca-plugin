@@ -1,17 +1,16 @@
 package ch.kleis.lcaac.core.lang.evaluator.step
 
-import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.evaluator.ToValue
+import ch.kleis.lcaac.core.lang.expression.EPackage
 import ch.kleis.lcaac.core.lang.expression.EProcessTemplateApplication
 import ch.kleis.lcaac.core.lang.expression.EQuantityAdd
-import ch.kleis.lcaac.core.lang.fixture.ProductValueFixture
-import ch.kleis.lcaac.core.lang.fixture.QuantityFixture
-import ch.kleis.lcaac.core.lang.fixture.QuantityValueFixture
-import ch.kleis.lcaac.core.lang.fixture.TemplateFixture
+import ch.kleis.lcaac.core.lang.fixture.*
 import ch.kleis.lcaac.core.lang.value.FromProcessRefValue
+import ch.kleis.lcaac.core.lang.value.PackageValue
 import ch.kleis.lcaac.core.lang.value.ProcessValue
 import ch.kleis.lcaac.core.lang.value.TechnoExchangeValue
+import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -35,7 +34,8 @@ class ReduceTest {
             )
         )
         )
-        val reduceAndComplete = Reduce(SymbolTable.empty(), ops)
+        val pkg = EPackage.empty<BasicNumber>()
+        val reduceAndComplete = Reduce(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = with(ToValue(BasicOperations)) { reduceAndComplete.apply(instance).toValue() }
@@ -50,6 +50,7 @@ class ReduceTest {
                         FromProcessRefValue(
                             name = "carrot_production",
                             arguments = mapOf("q_water" to QuantityValueFixture.twoLitres),
+                            pkg = PackageValue(EPackage.DEFAULT_PKG_NAME),
                         )
                     ),
                 )
@@ -68,7 +69,8 @@ class ReduceTest {
     fun eval_whenProcessTemplate_shouldAutomaticallyInstantiateWithoutArguments() {
         // given
         val template = EProcessTemplateApplication(TemplateFixture.carrotProduction, emptyMap())
-        val reduceAndComplete = Reduce(SymbolTable.empty(), ops)
+        val pkg = EPackage.empty<BasicNumber>()
+        val reduceAndComplete = Reduce(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = with(ToValue(BasicOperations)) { reduceAndComplete.apply(template).toValue() }
@@ -83,6 +85,7 @@ class ReduceTest {
                         FromProcessRefValue(
                             name = "carrot_production",
                             arguments = mapOf("q_water" to QuantityValueFixture.oneLitre),
+                            pkg = PackageValue(EPackage.DEFAULT_PKG_NAME),
                         )
                     )
                 )
@@ -101,7 +104,8 @@ class ReduceTest {
     fun eval_whenContainsUnboundedReference_shouldThrow() {
         // given
         val template = EProcessTemplateApplication(TemplateFixture.withUnboundedRef, emptyMap())
-        val reduceAndComplete = Reduce(SymbolTable.empty(), ops)
+        val pkg = EPackage.empty<BasicNumber>()
+        val reduceAndComplete = Reduce(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when/then
         assertFailsWith(

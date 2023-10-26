@@ -1,9 +1,10 @@
 package ch.kleis.lcaac.core.lang.resolver
 
+import ch.kleis.lcaac.core.lang.expression.EPackage
 import ch.kleis.lcaac.core.lang.register.SubstanceCharacterizationRegister
 import ch.kleis.lcaac.core.lang.register.SubstanceKey
-import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.expression.SubstanceType
+import ch.kleis.lcaac.core.lang.fixture.PkgResolverFixture
 import ch.kleis.lcaac.core.lang.fixture.SubstanceCharacterizationFixture
 import ch.kleis.lcaac.core.lang.fixture.SubstanceFixture
 import ch.kleis.lcaac.core.math.basic.BasicNumber
@@ -16,8 +17,8 @@ class SubstanceCharacterizationResolverTest {
     @Test
     fun resolve_whenEmptyTable_thenNull() {
         // given
-        val symbolTable = SymbolTable.empty<BasicNumber>()
-        val resolver = SubstanceCharacterizationResolver(symbolTable)
+        val rootPkg = EPackage.empty<BasicNumber>()
+        val resolver = SubstanceCharacterizationResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
         val substance = SubstanceFixture.propanol
 
         // when
@@ -35,11 +36,10 @@ class SubstanceCharacterizationResolverTest {
         val substanceCharacterizations =
             SubstanceCharacterizationRegister(mapOf("propanol" to substanceCharacterization).mapKeys { SubstanceKey(it.key) }
             )
-
-        val symbolTable = SymbolTable(
+        val rootPkg = EPackage(
             substanceCharacterizations = substanceCharacterizations,
         )
-        val resolver = SubstanceCharacterizationResolver(symbolTable)
+        val resolver = SubstanceCharacterizationResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
 
         // when
         val actual = resolver.resolve(substance)
@@ -56,11 +56,10 @@ class SubstanceCharacterizationResolverTest {
         val substanceCharacterizations =
             SubstanceCharacterizationRegister(mapOf("propanol" to substanceCharacterization).mapKeys { SubstanceKey(it.key) }
             )
-
-        val symbolTable = SymbolTable(
+        val rootPkg = EPackage(
             substanceCharacterizations = substanceCharacterizations,
         )
-        val resolver = SubstanceCharacterizationResolver(symbolTable)
+        val resolver = SubstanceCharacterizationResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
 
         // when
         val actual = resolver.resolve(substance)
@@ -80,11 +79,10 @@ class SubstanceCharacterizationResolverTest {
                     SubstanceKey("propanol", SubstanceType.RESOURCE, "air") to substanceCharacterization
                 )
             )
-
-        val symbolTable = SymbolTable(
+        val rootPkg = EPackage(
             substanceCharacterizations = substanceCharacterizations,
         )
-        val resolver = SubstanceCharacterizationResolver(symbolTable)
+        val resolver = SubstanceCharacterizationResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
 
         // when
         val actual = resolver.resolve(substance)
@@ -108,11 +106,10 @@ class SubstanceCharacterizationResolverTest {
                 SubstanceKey("propanol", SubstanceType.RESOURCE, "water") to propanolWaterCharacterization,
             )
         )
-
-        val symbolTable = SymbolTable(
+        val rootPkg = EPackage(
             substanceCharacterizations = substanceCharacterizations,
         )
-        val resolver = SubstanceCharacterizationResolver(symbolTable)
+        val resolver = SubstanceCharacterizationResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
 
         // when
         val actual = resolver.resolve(propanolAir)
@@ -138,11 +135,10 @@ class SubstanceCharacterizationResolverTest {
                 SubstanceKey("propanol", SubstanceType.RESOURCE, "air", "airspace E") to propanolAirECharacterization
             )
         )
-
-        val symbolTable = SymbolTable(
+        val rootPkg = EPackage(
             substanceCharacterizations = substanceCharacterizations,
         )
-        val resolver = SubstanceCharacterizationResolver(symbolTable)
+        val resolver = SubstanceCharacterizationResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
 
         // when
         val actual = resolver.resolve(query)
@@ -168,11 +164,10 @@ class SubstanceCharacterizationResolverTest {
                 SubstanceKey("propanol", SubstanceType.RESOURCE, "air", "airspace E") to propanolAirSpaceECharacterization,
             )
         )
-
-        val symbolTable = SymbolTable(
+        val rootPkg = EPackage(
             substanceCharacterizations = substanceCharacterizations,
         )
-        val resolver = SubstanceCharacterizationResolver(symbolTable)
+        val resolver = SubstanceCharacterizationResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
 
         // when
         val actual = resolver.resolve(propanolAirSpaceG)

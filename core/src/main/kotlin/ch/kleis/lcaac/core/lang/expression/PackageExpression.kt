@@ -8,16 +8,17 @@ sealed interface PackageExpression<Q>
 
 data class EPackage<Q>(
     val name: String = DEFAULT_PKG_NAME,
-    val params: DataRegister<Q> = DataRegister.empty(),
+    val params: DataRegister<Q> = DataRegister.empty(), // TODO: Manage this
     val data: DataRegister<Q> = DataRegister.empty(),
     val dimensions: DimensionRegister = DimensionRegister.empty(),
     val processTemplates: ProcessTemplateRegister<Q> = ProcessTemplateRegister.empty(),
     val substanceCharacterizations: SubstanceCharacterizationRegister<Q> = SubstanceCharacterizationRegister.empty(),
     val imports: ImportRegister<Q> = ImportRegister.empty(),
+    val with: Map<String, EProductSpec<Q>> = emptyMap(), // TODO: Manage this
 ) : PackageExpression<Q> {
 
     companion object {
-        private const val DEFAULT_PKG_NAME = "default"
+        const val DEFAULT_PKG_NAME = "default"
         fun <Q> empty() = EPackage<Q>(name = DEFAULT_PKG_NAME)
     }
 
