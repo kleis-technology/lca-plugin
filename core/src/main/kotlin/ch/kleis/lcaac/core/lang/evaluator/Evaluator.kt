@@ -33,12 +33,18 @@ class Evaluator<Q>(
         }
     }
 
-    fun trace(template: EProcessTemplate<Q>, arguments: Map<String, DataExpression<Q>> = emptyMap()): EvaluationTrace<Q> {
+    fun trace(
+        templateName: String,
+        arguments: Map<String, DataExpression<Q>> = emptyMap(),
+        labels: Map<String, String> = emptyMap(),
+    ): EvaluationTrace<Q> {
+        val template = pkg.getTemplate(templateName, labels)
+            ?: throw EvaluatorException("unknown process template $templateName$labels")
         return prepareRequests(template, arguments)
             .let(this::trace)
     }
 
-    private fun <Q> prepareRequests(
+    private fun prepareRequests(
         template: EProcessTemplate<Q>,
         arguments: Map<String, DataExpression<Q>> = emptyMap(),
     ): Set<EProductSpec<Q>> {
@@ -48,7 +54,8 @@ class Evaluator<Q>(
                 fromProcess = FromProcess(
                     body.name,
                     MatchLabels(body.labels),
-                    template.params.plus(arguments)
+                    template.params.plus(arguments),
+                    pkg = pkg,
                 )
             )
         }.toSet()

@@ -48,7 +48,7 @@ class EvaluatorTest {
         )
 
         // when
-        val actual = evaluator.trace(template).getEntryPoint().impacts.first()
+        val actual = evaluator.trace("eProcess").getEntryPoint().impacts.first()
 
         // then
         assertEquals(expected, actual)
@@ -95,7 +95,7 @@ class EvaluatorTest {
         )
 
         // when
-        val actual = evaluator.trace(template).getEntryPoint().biosphere.first().substance
+        val actual = evaluator.trace("eProcess").getEntryPoint().biosphere.first().substance
 
         // then
         assertEquals(expected, actual)
@@ -115,9 +115,9 @@ class EvaluatorTest {
         val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
-        val p1 = evaluator.trace(template, mapOf("q_water" to QuantityFixture.oneLitre))
+        val p1 = evaluator.trace("carrot_production", mapOf("q_water" to QuantityFixture.oneLitre))
             .getEntryPoint().products.first().product
-        val p2 = evaluator.trace(template, mapOf("q_water" to QuantityFixture.twoLitres))
+        val p2 = evaluator.trace("carrot_production", mapOf("q_water" to QuantityFixture.twoLitres))
             .getEntryPoint().products.first().product
 
         // then
@@ -138,7 +138,7 @@ class EvaluatorTest {
 
         // when
 
-        val p1 = evaluator.trace(template).getEntryPoint().products.first().product
+        val p1 = evaluator.trace("carrot_production").getEntryPoint().products.first().product
 
         // then
         assertEquals("carrot", p1.name)
@@ -177,7 +177,7 @@ class EvaluatorTest {
         val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
-        val actual = evaluator.trace(template).getSystemValue().processes
+        val actual = evaluator.trace("salad_production").getSystemValue().processes
 
         // then
         val expected = setOf(
@@ -276,7 +276,7 @@ class EvaluatorTest {
         val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
-        val actual = evaluator.trace(template).getSystemValue().processes
+        val actual = evaluator.trace("salad_production").getSystemValue().processes
 
         // then
         val expected = setOf(
@@ -376,7 +376,7 @@ class EvaluatorTest {
         // when/then
         val e = assertFailsWith(
             EvaluatorException::class,
-        ) { evaluator.trace(template) }
+        ) { evaluator.trace("salad_production") }
         assertEquals("no process 'carrot_production' providing 'irrelevant_product' found", e.message)
     }
 
@@ -422,7 +422,7 @@ class EvaluatorTest {
         val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
-        val actual = evaluator.trace(template).getSystemValue().substanceCharacterizations
+        val actual = evaluator.trace("carrot_production").getSystemValue().substanceCharacterizations
 
         // then
         val expected = setOf(
@@ -464,7 +464,7 @@ class EvaluatorTest {
         // when/then
         val e = assertFailsWith(
             EvaluatorException::class,
-        ) { evaluator.trace(template) }
+        ) { evaluator.trace("salad_production") }
         assertEquals("incompatible dimensions: length³ vs mass for product carrot", e.message)
     }
 }
