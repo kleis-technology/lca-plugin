@@ -77,7 +77,7 @@ fun <Q> everyDataRefInDataExpression(): PEvery<DataExpression<Q>, DataExpression
                 )
 
                 is EQuantityClosure -> EQuantityClosure(
-                    source.symbolTable,
+                    source.pkg,
                     modify(source.expression, map),
                 )
 

@@ -1,9 +1,5 @@
 package ch.kleis.lcaac.core.lang.evaluator.reducer
 
-import ch.kleis.lcaac.core.lang.register.DataKey
-import ch.kleis.lcaac.core.lang.register.DataRegister
-import ch.kleis.lcaac.core.lang.register.Register
-import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
@@ -11,6 +7,9 @@ import ch.kleis.lcaac.core.lang.expression.*
 import ch.kleis.lcaac.core.lang.fixture.DimensionFixture
 import ch.kleis.lcaac.core.lang.fixture.QuantityFixture
 import ch.kleis.lcaac.core.lang.fixture.UnitFixture
+import ch.kleis.lcaac.core.lang.register.DataKey
+import ch.kleis.lcaac.core.lang.register.DataRegister
+import ch.kleis.lcaac.core.lang.register.Register
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import org.junit.jupiter.api.Test
@@ -577,12 +576,12 @@ class DataExpressionReducerTest {
     @Test
     fun reduce_whenUnitClosure_shouldReduceWithGivenTable() {
         // given
-        val symbolTable = SymbolTable(
+        val pkg = EPackage(
             data = DataRegister(
                 mapOf(DataKey("a") to UnitFixture.kg)
             ),
         )
-        val unit = EQuantityClosure(symbolTable, EDataRef("a"))
+        val unit = EQuantityClosure(pkg, EDataRef("a"))
         val reducer = DataExpressionReducer(
             DataRegister(
                 mapOf(DataKey("a") to UnitFixture.l)

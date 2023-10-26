@@ -1,7 +1,6 @@
 package ch.kleis.lcaac.core.lang.expression
 
 import arrow.optics.optics
-import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
 
@@ -95,7 +94,8 @@ data class EQuantityPow<Q>(val quantity: DataExpression<Q>, val exponent: Double
 
 @optics
 data class EQuantityClosure<Q>(
-    val symbolTable: SymbolTable<Q>, val expression: DataExpression<Q>
+    val pkg: EPackage<Q>,
+    val expression: DataExpression<Q>,
 ) : DataExpression<Q>, QuantityExpression<Q> {
     companion object
 }

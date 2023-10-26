@@ -7,7 +7,7 @@ import ch.kleis.lcaac.core.lang.register.*
 sealed interface PackageExpression<Q>
 
 data class EPackage<Q>(
-    val name: String,
+    val name: String = DEFAULT_PKG_NAME,
     val params: DataRegister<Q> = DataRegister.empty(),
     val data: DataRegister<Q> = DataRegister.empty(),
     val dimensions: DimensionRegister = DimensionRegister.empty(),
@@ -22,7 +22,7 @@ data class EPackage<Q>(
     }
 
     override fun toString(): String {
-        return "[symbolTable]"
+        return "[pkg]"
     }
 
     /*

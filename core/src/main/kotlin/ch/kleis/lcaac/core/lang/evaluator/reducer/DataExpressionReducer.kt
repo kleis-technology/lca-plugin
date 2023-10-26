@@ -68,7 +68,7 @@ class DataExpressionReducer<Q>(
     }
 
     private fun reduceClosure(closure: EQuantityClosure<Q>): DataExpression<Q> =
-        DataExpressionReducer(closure.symbolTable.data, ops).reduce(closure.expression)
+        DataExpressionReducer(closure.pkg.data, ops).reduce(closure.expression)
 
     private fun reduceDiv(expression: EQuantityDiv<Q>): DataExpression<Q> {
         with(ops) {
