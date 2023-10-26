@@ -14,7 +14,10 @@ sealed interface QuantityExpression<Q>
 sealed interface StringExpression
 
 @optics
-data class EDataRef<Q>(val name: String) : DataExpression<Q> {
+data class EDataRef<Q>(
+    val name: String,
+    val pkg: PackageExpression<Q>? = null,
+) : DataExpression<Q> {
     fun name(): String {
         return name
     }
@@ -41,7 +44,8 @@ data class EUnitLiteral<Q>(val symbol: UnitSymbol, val scale: Double, val dimens
 }
 
 @optics
-data class EUnitAlias<Q>(val symbol: String, val aliasFor: DataExpression<Q>) : DataExpression<Q>, QuantityExpression<Q> {
+data class EUnitAlias<Q>(val symbol: String, val aliasFor: DataExpression<Q>) : DataExpression<Q>,
+    QuantityExpression<Q> {
     companion object
 }
 
@@ -60,27 +64,32 @@ data class EUnitOf<Q>(val expression: DataExpression<Q>) : DataExpression<Q>, Qu
 }
 
 @optics
-data class EQuantityAdd<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) : DataExpression<Q>, QuantityExpression<Q> {
+data class EQuantityAdd<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) :
+    DataExpression<Q>, QuantityExpression<Q> {
     companion object
 }
 
 @optics
-data class EQuantitySub<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) : DataExpression<Q>, QuantityExpression<Q> {
+data class EQuantitySub<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) :
+    DataExpression<Q>, QuantityExpression<Q> {
     companion object
 }
 
 @optics
-data class EQuantityMul<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) : DataExpression<Q>, QuantityExpression<Q> {
+data class EQuantityMul<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) :
+    DataExpression<Q>, QuantityExpression<Q> {
     companion object
 }
 
 @optics
-data class EQuantityDiv<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) : DataExpression<Q>, QuantityExpression<Q> {
+data class EQuantityDiv<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) :
+    DataExpression<Q>, QuantityExpression<Q> {
     companion object
 }
 
 @optics
-data class EQuantityPow<Q>(val quantity: DataExpression<Q>, val exponent: Double) : DataExpression<Q>, QuantityExpression<Q> {
+data class EQuantityPow<Q>(val quantity: DataExpression<Q>, val exponent: Double) : DataExpression<Q>,
+    QuantityExpression<Q> {
     companion object
 }
 

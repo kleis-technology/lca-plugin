@@ -7,6 +7,7 @@ data class FromProcess<Q>(
     val name: String,
     val matchLabels: MatchLabels<Q>,
     val arguments: Map<String, DataExpression<Q>> = emptyMap(),
+    val pkg: PackageExpression<Q>? = null,
 ) {
     override fun toString(): String {
         return "from $name$matchLabels$arguments"
