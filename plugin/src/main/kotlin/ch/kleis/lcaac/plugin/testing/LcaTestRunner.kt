@@ -1,9 +1,9 @@
 package ch.kleis.lcaac.plugin.testing
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
-import ch.kleis.lcaac.core.lang.DataKey
-import ch.kleis.lcaac.core.lang.ProcessKey
-import ch.kleis.lcaac.core.lang.Register
+import ch.kleis.lcaac.core.lang.register.DataKey
+import ch.kleis.lcaac.core.lang.register.ProcessKey
+import ch.kleis.lcaac.core.lang.register.Register
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException

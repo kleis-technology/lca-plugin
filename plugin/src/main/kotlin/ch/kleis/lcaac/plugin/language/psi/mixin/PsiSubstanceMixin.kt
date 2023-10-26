@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.language.psi.mixin
 
-import ch.kleis.lcaac.core.lang.SubstanceKey
+import ch.kleis.lcaac.core.lang.register.SubstanceKey
 import ch.kleis.lcaac.core.lang.expression.SubstanceType
 import ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceStub
 import ch.kleis.lcaac.plugin.psi.LcaImpactExchange

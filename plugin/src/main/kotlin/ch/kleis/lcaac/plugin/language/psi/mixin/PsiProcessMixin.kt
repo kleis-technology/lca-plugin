@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.language.psi.mixin
 
-import ch.kleis.lcaac.core.lang.ProcessKey
+import ch.kleis.lcaac.core.lang.register.ProcessKey
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStub
 import ch.kleis.lcaac.plugin.psi.*
 import com.intellij.extapi.psi.StubBasedPsiElementBase
