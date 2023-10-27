@@ -38,8 +38,8 @@ class GenerateEmissionFactorsTaskTest {
                     reference_unit = kg
 
                     impacts {
-                        2.0522E-08 CTUh human_toxicity_non_carcinogenic
-                        2.0522E-08 CTUh human_toxicity_non_carcinogenic_organics
+                        2.0522E-8 CTUh human_toxicity_non_carcinogenic
+                        2.0522E-8 CTUh human_toxicity_non_carcinogenic_organics
                     }
 
                     meta {
@@ -59,7 +59,7 @@ class GenerateEmissionFactorsTaskTest {
                     reference_unit = kg
 
                     impacts {
-                        4.02E-08 CTUh human_toxicity_non_carcinogenic_organics
+                        4.02E-8 CTUh human_toxicity_non_carcinogenic_organics
                     }
 
                     meta {

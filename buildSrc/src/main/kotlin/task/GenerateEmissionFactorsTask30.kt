@@ -27,7 +27,7 @@ abstract class GenerateEmissionFactorsTask30 : DefaultTask() {
     @Suppress("UNUSED_PARAMETER")
     fun execute(inputChanges: InputChanges) {
         GenerateEmissionFactorsTask<EF30Record>(inputDir, outputDir)
-            .createLibArchive("30", "3.0", { i -> EF30Record(i) })
+            .createLibArchive("30", "3.0") { i -> EF30Record(i) }
     }
 
 

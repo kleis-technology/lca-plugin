@@ -39,7 +39,7 @@ class SimaproImportSettings : PersistentStateComponent<SimaproImportSettings.Sta
 
     var importUnits: Boolean
         get() = true
-        set(value) {
+        set(_) {
             // do nothing
         }
 
