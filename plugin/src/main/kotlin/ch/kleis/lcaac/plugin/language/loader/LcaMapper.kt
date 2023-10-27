@@ -1,12 +1,14 @@
 package ch.kleis.lcaac.plugin.language.loader
 
-import ch.kleis.lcaac.core.lang.Register
-import ch.kleis.lcaac.core.lang.RegisterException
-import ch.kleis.lcaac.core.lang.SymbolTable
+import ch.kleis.lcaac.core.lang.*
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.*
+import ch.kleis.lcaac.core.lang.register.DataKey
+import ch.kleis.lcaac.core.lang.register.DataRegister
+import ch.kleis.lcaac.core.lang.register.Register
+import ch.kleis.lcaac.core.lang.register.RegisterException
 import ch.kleis.lcaac.core.math.QuantityOperations
 import ch.kleis.lcaac.plugin.language.psi.type.PsiProcess
 import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiIndicatorRef
@@ -32,7 +34,7 @@ class LcaMapper<Q>(
 
     fun process(
         psiProcess: LcaProcess,
-        globals: Register<DataExpression<Q>>,
+        globals: DataRegister<Q>,
     ): EProcessTemplate<Q> {
         val name = psiProcess.name
         val labels = psiProcess.getLabels().mapValues { EStringLiteral<Q>(it.value) }
@@ -40,7 +42,10 @@ class LcaMapper<Q>(
         val params = psiProcess.getParameters().mapValues { dataExpression(it.value) }
         val symbolTable = SymbolTable(
             data = try {
-                Register(globals.plus(params).plus(locals))
+                Register(globals
+                    .plus(params.mapKeys { DataKey(it.key) })
+                    .plus(locals.mapKeys { DataKey(it.key) })
+                )
             } catch (e: RegisterException) {
                 throw EvaluatorException("Conflict between local variable(s) ${e.duplicates} and a global definition.")
             },

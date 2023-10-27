@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.plugin.language.psi.mixin
 
+import ch.kleis.lcaac.core.lang.register.ProcessKey
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStub
 import ch.kleis.lcaac.plugin.psi.*
 import com.intellij.extapi.psi.StubBasedPsiElementBase
@@ -13,8 +14,7 @@ abstract class PsiProcessMixin : StubBasedPsiElementBase<ProcessStub>, LcaProces
     constructor(node: ASTNode) : super(node)
     constructor(stub: ProcessStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
-    override fun buildUniqueKey(): String =
-        if (this.getLabels().isEmpty()) this.name else "${this.name}${this.getLabels()}"
+    override fun buildUniqueKey(): ProcessKey = ProcessKey(this.name, this.getLabels())
 
     override fun getName(): String {
         return processRef.name

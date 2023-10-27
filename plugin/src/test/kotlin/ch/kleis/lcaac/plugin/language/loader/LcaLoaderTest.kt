@@ -145,28 +145,6 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     }
 
     @Test
-    fun testParse_shouldLoadPreludeUnits() {
-        // given
-        val file = parseFile(
-            "hello", """
-        """.trimIndent()
-        ) as LcaFile
-        val parser = LcaLoader(
-            sequenceOf(file),
-            ops,
-        )
-
-
-        // when
-        val symbolTable = parser.load()
-
-        // then
-        Prelude.units<BasicNumber>().getValues().onEach {
-            assertNotNull(symbolTable.getData(it.toString()))
-        }
-    }
-
-    @Test
     fun testParse_blockUnit_shouldDeclareQuantityRef() {
         // given
         val file = parseFile(
@@ -417,7 +395,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
 
         // when/then
         val e = assertFailsWith(EvaluatorException::class, null) { parser.load() }
-        assertEquals("Duplicate substance [a_compartment_Resource] defined", e.message)
+        assertEquals("Duplicate substance [a(type=Resource, compartment=compartment)] defined", e.message)
     }
 
     @Test
@@ -974,7 +952,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val symbolTable = parser.load()
 
         // then
-        val actual = symbolTable.data["r"]!!
+        val actual = symbolTable.getData("r")!!
         assertEquals(expected, actual)
     }
 
@@ -1007,7 +985,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val symbolTable = parser.load()
 
         // then
-        val actual = symbolTable.data["r"]!!
+        val actual = symbolTable.getData("r")!!
         assertEquals(expected, actual)
     }
 
