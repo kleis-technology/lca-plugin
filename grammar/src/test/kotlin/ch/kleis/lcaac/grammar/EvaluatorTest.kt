@@ -68,7 +68,7 @@ class EvaluatorTest {
         val analysis = program.run()
 
         // then
-        val port = analysis.getObservablePorts().get("a from a_proc{}{}")
+        val port = analysis.getObservablePorts().get("a from default.a_proc{}{}")
         val indicator = analysis.getControllablePorts().get("gwp")
         val expected = QuantityValue(BasicNumber(3.0), UnitValue(UnitSymbol.of("kg"), 1.0, Dimension.of("mass")))
         val actual = analysis.getPortContribution(port, indicator)
@@ -156,7 +156,7 @@ class EvaluatorTest {
         val analysis = program.run()
 
         // then
-        val port = analysis.getObservablePorts().get("carrot from p{}{}")
+        val port = analysis.getObservablePorts().get("carrot from default.p{}{}")
         val indicator = analysis.getControllablePorts().get("GWP")
         val expected = QuantityValue(BasicNumber(4.0), UnitValue(UnitSymbol.of("kg"), 1.0, Dimension.of("mass")))
         val actual = analysis.getPortContribution(port, indicator)
@@ -210,7 +210,7 @@ class EvaluatorTest {
         val analysis = program.run()
 
         // then
-        val port = analysis.getObservablePorts().get("carrot from p{}{}")
+        val port = analysis.getObservablePorts().get("carrot from default.p{}{}")
         val indicator = analysis.getControllablePorts().get("GWP")
         val expected = QuantityValue(BasicNumber(1.0), UnitValue(UnitSymbol.of("kg"), 1.0, Dimension.of("mass")))
         val actual = analysis.getPortContribution(port, indicator)
@@ -255,7 +255,7 @@ class EvaluatorTest {
         val analysis = program.run()
 
         // then
-        val port = analysis.getObservablePorts().get("carrot from p{}{}")
+        val port = analysis.getObservablePorts().get("carrot from default.p{}{}")
         val indicator = analysis.getControllablePorts().get("GWP")
         val expected = QuantityValue(BasicNumber(1.0), UnitValue(UnitSymbol.of("kg"), 1.0, Dimension.of("mass")))
         val actual = analysis.getPortContribution(port, indicator)
@@ -301,7 +301,7 @@ class EvaluatorTest {
         val analysis = program.run()
 
         // then
-        val port = analysis.getObservablePorts().get("carrot from p{}{}")
+        val port = analysis.getObservablePorts().get("carrot from default.p{}{}")
         val indicator = analysis.getControllablePorts().get("GWP")
         val expected = QuantityValue(BasicNumber(1.0), UnitValue(UnitSymbol.of("kg"), 1.0, Dimension.of("mass")))
         val actual = analysis.getPortContribution(port, indicator)
@@ -357,7 +357,7 @@ class EvaluatorTest {
         val analysis = program.run()
 
         // then
-        val port = analysis.getObservablePorts().get("carrot from p{}{}")
+        val port = analysis.getObservablePorts().get("carrot from default.p{}{}")
         val indicator = analysis.getControllablePorts().get("GWP")
         val expected = QuantityValue(BasicNumber(1.0), UnitValue(UnitSymbol.of("kg"), 1.0, Dimension.of("mass")))
         val actual = analysis.getPortContribution(port, indicator)

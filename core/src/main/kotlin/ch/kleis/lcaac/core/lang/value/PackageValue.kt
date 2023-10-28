@@ -10,5 +10,10 @@ data class PackageValue<Q>(
     companion object {
         fun <Q> default(): PackageValue<Q> = PackageValue(EPackage.DEFAULT_PKG_NAME)
     }
-}
 
+    override fun toString(): String {
+        val sArgs = if (arguments.isEmpty()) "" else "$arguments"
+        val sWith = if (with.isEmpty()) "" else "$with"
+        return "$name$sArgs$sWith"
+    }
+}
