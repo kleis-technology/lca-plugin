@@ -66,11 +66,14 @@ class LcaExpressionReducer<Q>(
         return EProductSpec(
             expression.name,
             expression.referenceUnit?.let { dataExpressionReducer.reduce(it) },
-            expression.fromProcess?.let { ref ->
-                ref.copy(
-                    matchLabels = MatchLabels(ref.matchLabels.elements.mapValues { dataExpressionReducer.reduce(it.value) }),
-                    arguments = ref.arguments.mapValues { dataExpressionReducer.reduce(it.value) }
-                )
+            expression.from?.let { ref ->
+                when (ref) {
+                    is FromPackage -> TODO()
+                    is FromProcess -> ref.copy(
+                        matchLabels = MatchLabels(ref.matchLabels.elements.mapValues { dataExpressionReducer.reduce(it.value) }),
+                        arguments = ref.arguments.mapValues { dataExpressionReducer.reduce(it.value) }
+                    )
+                }
             },
         )
     }

@@ -51,7 +51,7 @@ class Evaluator<Q>(
         val body = template.body
         return body.products.map {
             it.product.copy(
-                fromProcess = FromProcess(
+                from = FromProcess(
                     body.name,
                     MatchLabels(body.labels),
                     template.params.plus(arguments),

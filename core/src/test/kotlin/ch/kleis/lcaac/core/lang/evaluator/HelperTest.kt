@@ -26,7 +26,7 @@ class HelperTest {
                 ETechnoExchange(
                     QuantityFixture.oneKilogram,
                     ProductFixture.carrot.copy(
-                        fromProcess = FromProcess(
+                        from = FromProcess(
                             name = "another_process",
                             matchLabels = MatchLabels(mapOf("class" to ref)),
                         ),
@@ -49,7 +49,7 @@ class HelperTest {
                 ETechnoExchange(
                     QuantityFixture.oneKilogram,
                     ProductFixture.carrot.copy(
-                        fromProcess = FromProcess(
+                        from = FromProcess(
                             name = "another_process",
                             matchLabels = MatchLabels(mapOf("class" to EStringLiteral("foo"))),
                         ),

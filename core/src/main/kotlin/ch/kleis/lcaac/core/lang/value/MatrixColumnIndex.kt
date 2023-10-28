@@ -17,7 +17,7 @@ sealed interface MatrixColumnIndex<Q> : Value<Q>, HasUID {
 data class ProductValue<Q>(
     val name: String,
     val referenceUnit: UnitValue<Q>,
-    val fromProcessRef: FromProcessRefValue<Q>? = null
+    val from: FromValue<Q>? = null
 ) : Value<Q>, MatrixColumnIndex<Q> {
 
     override fun getDimension(): Dimension {
@@ -25,10 +25,11 @@ data class ProductValue<Q>(
     }
 
     override fun getDisplayName(): String {
-        if (fromProcessRef is FromProcessRefValue) {
-            return "$name from ${fromProcessRef.name}${fromProcessRef.matchLabels}${fromProcessRef.arguments}"
+        return when(from) {
+            is FromPackageValue -> "${from.pkg}.$name" // TODO: Implement PackageValue<Q>.toString()
+            is FromProcessValue -> "$name from ${from.pkg}.${from.name}${from.matchLabels}${from.arguments}"
+            else -> name
         }
-        return name
     }
 
     override fun getShortName(): String {
@@ -39,7 +40,7 @@ data class ProductValue<Q>(
         return referenceUnit
     }
 
-    fun withFromProcessRef(fromProcessRef: FromProcessRefValue<Q>): ProductValue<Q> {
+    fun withFromProcessRef(fromProcessRef: FromProcessValue<Q>): ProductValue<Q> {
         return ProductValue(name, referenceUnit, fromProcessRef)
     }
 
@@ -56,13 +57,13 @@ data class ProductValue<Q>(
 
         if (name != other.name) return false
         if (referenceUnit.dimension != other.referenceUnit.dimension) return false
-        return fromProcessRef == other.fromProcessRef
+        return from == other.from
     }
 
     override fun hashCode(): Int {
         var result = name.hashCode()
         result = 31 * result + referenceUnit.dimension.hashCode()
-        result = 31 * result + (fromProcessRef?.hashCode() ?: 0)
+        result = 31 * result + (from?.hashCode() ?: 0)
         return result
     }
 }

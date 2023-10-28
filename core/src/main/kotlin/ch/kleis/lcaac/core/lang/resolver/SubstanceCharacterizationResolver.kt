@@ -10,7 +10,7 @@ class SubstanceCharacterizationResolver<Q>(
 ) {
     // TODO: Test the root pkg  vs pkg resolve logic
     fun resolve(spec: ESubstanceSpec<Q>): ESubstanceCharacterization<Q>? {
-        val pkg = if (spec.pkg == null) rootPkg else pkgResolver.resolve(spec)
+        val pkg = if (spec.from == null) rootPkg else pkgResolver.resolve(spec)
         val name = spec.name
         val type = spec.type ?: return null
         val compartment = spec.compartment ?: return null

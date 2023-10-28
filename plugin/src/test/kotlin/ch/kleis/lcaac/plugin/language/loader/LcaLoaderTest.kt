@@ -8,7 +8,6 @@ import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.*
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
-import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.fixture.UnitFixture
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.testFramework.ParsingTestCase
@@ -705,7 +704,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                 EQuantityScale(ops.pure(10.0), EDataRef("l")),
                 EProductSpec(
                     "water",
-                    fromProcess = FromProcess(
+                    from = FromProcess(
                         "water_proc",
                         MatchLabels(emptyMap()),
                         mapOf("x" to EQuantityScale(ops.pure(3.0), EDataRef("l"))),

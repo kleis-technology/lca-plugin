@@ -57,7 +57,7 @@ class TemplateExpressionReducer<Q>(
         .modify(result) { productSpec ->
             val reducedActualArguments = actualArguments.mapValues { dataExpressionReducer.reduce(it.value) }
             productSpec.copy(
-                fromProcess =
+                from =
                 FromProcess(
                     result.name,
                     MatchLabels(result.labels),

@@ -41,7 +41,7 @@ class ProcessResolverTest {
             )
         )
         val carrotSpec = ProductFixture.carrot.copy(
-            fromProcess = FromProcess(
+            from = FromProcess(
                 "carrot_production",
                 MatchLabels(mapOf("geo" to EStringLiteral("UK"))),
                 emptyMap(),
@@ -86,7 +86,7 @@ class ProcessResolverTest {
         )
         val carrotSpec = ProductFixture.carrot.copy(
             name = "irrelevant_product",
-            fromProcess = FromProcess("carrot_production", MatchLabels(emptyMap()), emptyMap())
+            from = FromProcess("carrot_production", MatchLabels(emptyMap()), emptyMap())
         )
         val rootPkg = EPackage(
             processTemplates = processTemplates,
@@ -138,7 +138,7 @@ class ProcessResolverTest {
             ).mapKeys { ProcessKey(it.key) }
         )
         val carrotSpec = ProductFixture.carrot.copy(
-            fromProcess = FromProcess("carrot_production", MatchLabels(emptyMap()), emptyMap())
+            from = FromProcess("carrot_production", MatchLabels(emptyMap()), emptyMap())
         )
         val rootPkg = EPackage(
             processTemplates = processTemplates,

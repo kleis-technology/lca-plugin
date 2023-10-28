@@ -6,6 +6,7 @@ import ch.kleis.lcaac.core.lang.evaluator.step.ReduceLabelSelectors
 import ch.kleis.lcaac.core.lang.expression.EPackage
 import ch.kleis.lcaac.core.lang.expression.EProcess
 import ch.kleis.lcaac.core.lang.expression.EProcessTemplateApplication
+import ch.kleis.lcaac.core.lang.expression.FromProcess
 import ch.kleis.lcaac.core.lang.resolver.PkgResolver
 import ch.kleis.lcaac.core.lang.resolver.ProcessResolver
 import ch.kleis.lcaac.core.lang.resolver.SubstanceCharacterizationResolver
@@ -37,7 +38,7 @@ class Oracle<Q>(
         val spec = request.value
         val template = processResolver.resolve(spec) ?: return null
         val arguments = template.params
-            .plus(spec.fromProcess?.arguments ?: emptyMap())
+            .plus(if (spec.from is FromProcess<Q>) spec.from.arguments else emptyMap())
         val expression = EProcessTemplateApplication(template, arguments)
         val process = expression
             .let(reduceLabelSelectors::apply)

@@ -139,7 +139,7 @@ class CoreMapper<Q>(
     fun inputProductSpec(ctx: LcaLangParser.InputProductSpecContext): EProductSpec<Q> {
         return EProductSpec(
             name = ctx.productRef().innerText(),
-            fromProcess = ctx.processTemplateSpec()?.let { fromProcess(it) }
+            from = ctx.processTemplateSpec()?.let { fromProcess(it) }
         )
     }
 

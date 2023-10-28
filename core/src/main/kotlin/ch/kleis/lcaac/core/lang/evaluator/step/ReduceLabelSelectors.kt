@@ -19,7 +19,7 @@ class ReduceLabelSelectors<Q>(
             Every.list() compose
             ETechnoExchange.product()
     private val everyLabelSelector = everyInputProduct compose
-        EProductSpec.fromProcess<Q>().matchLabels().elements() compose
+        EProductSpec.from<Q>().fromProcess().matchLabels().elements() compose
         Every.map() compose
         everyDataRefInDataExpression()
 

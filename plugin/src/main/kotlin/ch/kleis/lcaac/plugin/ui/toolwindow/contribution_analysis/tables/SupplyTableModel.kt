@@ -1,7 +1,7 @@
 package ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysis
-import ch.kleis.lcaac.core.lang.value.FromProcessRefValue
+import ch.kleis.lcaac.core.lang.value.FromProcessValue
 import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaac.core.lang.value.ProductValue
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
@@ -57,9 +57,9 @@ class SupplyTableModel(
         val product = products[rowIndex]
         return when {
             columnIndex == 0 -> product.name
-            columnIndex == 1 -> product.fromProcessRef?.name ?: ""
-            columnIndex == 2 -> product.fromProcessRef?.renderArguments() ?: ""
-            columnIndex == 3 -> product.fromProcessRef?.renderLabels() ?: ""
+            columnIndex == 1 -> product.from?.name ?: ""
+            columnIndex == 2 -> product.from?.renderArguments() ?: ""
+            columnIndex == 3 -> product.from?.renderLabels() ?: ""
             columnIndex == 4 -> {
                 val total = analysis.supplyOf(product)
                 "${total.unit.symbol}"
@@ -76,11 +76,11 @@ class SupplyTableModel(
         }
     }
 
-    private fun FromProcessRefValue<BasicNumber>.renderArguments(): String {
+    private fun FromProcessValue<BasicNumber>.renderArguments(): String {
         return this.arguments.entries.joinToString { "${it.key}=${it.value}" }
     }
 
-    private fun FromProcessRefValue<BasicNumber>.renderLabels(): String {
+    private fun FromProcessValue<BasicNumber>.renderLabels(): String {
         return this.matchLabels.entries.joinToString { "${it.key}=${it.value}" }
     }
 

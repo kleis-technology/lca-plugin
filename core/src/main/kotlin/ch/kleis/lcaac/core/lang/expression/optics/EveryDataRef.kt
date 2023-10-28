@@ -113,11 +113,11 @@ private fun <Q> everyDataRefInConstraint(): PEvery<FromProcess<Q>, FromProcess<Q
 private fun <Q> everyDataRefInEProductSpec(): PEvery<EProductSpec<Q>, EProductSpec<Q>, EDataRef<Q>, DataExpression<Q>> =
     Merge(
         listOf(
-            EProductSpec.fromProcess<Q>() compose everyDataRefInConstraint(),
-            EProductSpec.fromProcess<Q>().arguments() compose
+            EProductSpec.from<Q>().fromProcess() compose everyDataRefInConstraint(),
+            EProductSpec.from<Q>().fromProcess().arguments() compose
                 Every.map() compose
                 everyDataRefInDataExpression(),
-            EProductSpec.fromProcess<Q>().matchLabels().elements() compose
+            EProductSpec.from<Q>().fromProcess().matchLabels().elements() compose
                 Every.map() compose
                 everyDataRefInDataExpression(),
         )
@@ -165,7 +165,7 @@ fun <Q> everyDataRefInLcaExpression(): PEvery<LcaExpression<Q>, LcaExpression<Q>
                 everyDataRefInETechnoExchange(),
             LcaExpression.lcaExchangeExpression<Q>().eBioExchange() compose
                 everyDataRefInEBioExchange(),
-            LcaExpression.eProductSpec<Q>().fromProcess().arguments() compose
+            LcaExpression.eProductSpec<Q>().from().fromProcess().arguments() compose
                 Every.map() compose
                 everyDataRefInDataExpression(),
             LcaExpression.eSubstanceCharacterization<Q>() compose

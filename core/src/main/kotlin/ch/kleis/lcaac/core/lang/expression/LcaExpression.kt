@@ -15,7 +15,7 @@ sealed interface ConnectionExpression<Q>
 data class EProductSpec<Q>(
     val name: String,
     val referenceUnit: DataExpression<Q>? = null,
-    val fromProcess: FromProcess<Q>? = null,
+    val from: FromExpression<Q>? = null,
 ) : LcaExpression<Q>, PortExpression<Q> {
     companion object
 }
@@ -45,7 +45,7 @@ data class ESubstanceSpec<Q>(
     val compartment: String? = null,
     val subCompartment: String? = null,
     val referenceUnit: DataExpression<Q>? = null,
-    val pkg: PackageExpression<Q>? = null,
+    val from: PackageExpression<Q>? = null,
 ) : LcaExpression<Q>, PortExpression<Q> {
     companion object
 }

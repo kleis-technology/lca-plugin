@@ -149,7 +149,7 @@ class LcaMapper<Q>(
     ): EProductSpec<Q> {
         return EProductSpec(
             inputProductSpec.name,
-            fromProcess = inputProductSpec.getProcessTemplateSpec()?.let { fromProcess(it) },
+            from = inputProductSpec.getProcessTemplateSpec()?.let { fromProcess(it) },
         )
     }
 

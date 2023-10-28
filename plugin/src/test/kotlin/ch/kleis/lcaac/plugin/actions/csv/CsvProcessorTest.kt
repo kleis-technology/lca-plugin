@@ -127,7 +127,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
         assertEquals(request, actual.request)
         val out = ProductValue(
             "out", kg,
-            FromProcessRefValue(
+            FromProcessValue(
                 name = "p",
                 arguments = mapOf(
                     "a" to QuantityValue(ops.pure(1.0), kg),
@@ -192,7 +192,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
         assertEquals(request, actual.request)
         val out = ProductValue(
             "out", kg,
-            FromProcessRefValue(
+            FromProcessValue(
                 name = "p",
                 matchLabels = mapOf("foo" to StringValue("bar")),
                 arguments = mapOf(

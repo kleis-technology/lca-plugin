@@ -11,7 +11,7 @@ import ch.kleis.lcaac.core.lang.evaluator.reducer.DataExpressionReducer
 import ch.kleis.lcaac.core.lang.expression.EProcessTemplate
 import ch.kleis.lcaac.core.lang.expression.EQuantityScale
 import ch.kleis.lcaac.core.lang.expression.EUnitLiteral
-import ch.kleis.lcaac.core.lang.value.FromProcessRefValue
+import ch.kleis.lcaac.core.lang.value.FromProcessValue
 import ch.kleis.lcaac.core.lang.value.ProductValue
 import ch.kleis.lcaac.core.lang.value.QuantityValue
 import ch.kleis.lcaac.core.lang.value.UnitValue
@@ -384,7 +384,7 @@ class E2ETest : BasePlatformTestCase() {
         assertEquals(request, actual[0].request)
         val out = ProductValue(
             "out", kg,
-            FromProcessRefValue(
+            FromProcessValue(
                 name = "p",
                 arguments = mapOf(
                     "a" to QuantityValue(BasicNumber(1.0), kg),

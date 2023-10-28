@@ -28,7 +28,7 @@ class ReduceLabelSelectorsTest {
                             product = EProductSpec(
                                 name = "carrot",
                                 referenceUnit = QuantityFixture.oneKilogram,
-                                fromProcess = FromProcess(
+                                from = FromProcess(
                                     name = "carrot_production",
                                     matchLabels = MatchLabels(mapOf("geo" to EDataRef("geo"))),
                                 )

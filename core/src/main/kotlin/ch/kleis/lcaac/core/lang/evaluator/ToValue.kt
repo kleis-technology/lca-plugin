@@ -12,12 +12,13 @@ class ToValue<Q>(
     }
 
     private fun PackageExpression<Q>.toValue(): PackageValue<Q> {
-        return when(this) {
+        return when (this) {
             is EPackage -> PackageValue(
                 this.name,
                 this.params.data.mapValues { it.value.toValue() }.mapKeys { it.key.name },
                 this.with.mapValues { it.value.toValue() },
             )
+
             is EImport -> TODO("Should throw appropriate exception")
             is EImportRef -> TODO("Should throw appropriate exception")
         }
@@ -74,11 +75,17 @@ class ToValue<Q>(
 
     private fun EProductSpec<Q>.toValue(): ProductValue<Q> {
         val name = this.name
+
         @Suppress("UNCHECKED_CAST")
         val referenceUnitValue = (this.referenceUnit as QuantityExpression<Q>?)
             ?.toUnitValue()
             ?: throw EvaluatorException("$this has no reference unit")
-        val fromProcessRefValue = this.fromProcess?.toValue()
+        val fromProcessRefValue = this.from?.let {
+            when (it) {
+                is FromPackage -> TODO()
+                is FromProcess -> it.toValue()
+            }
+        }
         return ProductValue(
             name,
             referenceUnitValue,
@@ -110,15 +117,16 @@ class ToValue<Q>(
         val referenceUnit = (this.referenceUnit as QuantityExpression<Q>?)
             ?.toUnitValue()
             ?: throw EvaluatorException("$this has no reference unit")
-        val type = this.type ?: return PartiallyQualifiedSubstanceValue(this.name, referenceUnit, this.pkg!!.toValue())
-        val compartment = this.compartment ?: return PartiallyQualifiedSubstanceValue(this.name, referenceUnit, this.pkg!!.toValue())
+        val type = this.type ?: return PartiallyQualifiedSubstanceValue(this.name, referenceUnit, this.from!!.toValue())
+        val compartment =
+            this.compartment ?: return PartiallyQualifiedSubstanceValue(this.name, referenceUnit, this.from!!.toValue())
         return FullyQualifiedSubstanceValue(
             this.name,
             type,
             compartment,
             this.subCompartment,
             referenceUnit,
-            this.pkg?.toValue() ?: PackageValue.default(),
+            this.from?.toValue() ?: PackageValue.default(),
         )
     }
 
@@ -141,8 +149,8 @@ class ToValue<Q>(
         )
     }
 
-    private fun FromProcess<Q>.toValue(): FromProcessRefValue<Q> {
-        return FromProcessRefValue(
+    private fun FromProcess<Q>.toValue(): FromProcessValue<Q> {
+        return FromProcessValue(
             this.name,
             this.matchLabels.elements.mapValues { it.value.toValue() as StringValue },
             this.arguments.mapValues {

@@ -57,7 +57,7 @@ class EvaluatorTest {
         val symbolTable = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "a",
-            fromProcess = FromProcess("a_proc", MatchLabels(emptyMap())),
+            from = FromProcess("a_proc", MatchLabels(emptyMap())),
         )
         val evaluator = Evaluator(symbolTable, BasicOperations)
 
@@ -105,7 +105,7 @@ class EvaluatorTest {
         val symbolTable = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "A",
-            fromProcess = FromProcess("p1", MatchLabels(emptyMap())),
+            from = FromProcess("p1", MatchLabels(emptyMap())),
         )
         val evaluator = Evaluator(symbolTable, BasicOperations)
 
@@ -143,7 +143,7 @@ class EvaluatorTest {
         val symbolTable = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "carrot",
-            fromProcess = FromProcess("p", MatchLabels(emptyMap())),
+            from = FromProcess("p", MatchLabels(emptyMap())),
         )
         val evaluator = Evaluator(symbolTable, BasicOperations)
 
@@ -196,7 +196,7 @@ class EvaluatorTest {
         val symbolTable = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "carrot",
-            fromProcess = FromProcess("p", MatchLabels(emptyMap())),
+            from = FromProcess("p", MatchLabels(emptyMap())),
         )
         val evaluator = Evaluator(symbolTable, BasicOperations)
 
@@ -240,7 +240,7 @@ class EvaluatorTest {
         val symbolTable = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "carrot",
-            fromProcess = FromProcess("p", MatchLabels(emptyMap())),
+            from = FromProcess("p", MatchLabels(emptyMap())),
         )
         val evaluator = Evaluator(symbolTable, BasicOperations)
 
@@ -285,7 +285,7 @@ class EvaluatorTest {
         val symbolTable = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "carrot",
-            fromProcess = FromProcess("p", MatchLabels(emptyMap())),
+            from = FromProcess("p", MatchLabels(emptyMap())),
         )
         val evaluator = Evaluator(symbolTable, BasicOperations)
 
@@ -340,7 +340,7 @@ class EvaluatorTest {
         val symbolTable = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "carrot",
-            fromProcess = FromProcess("p", MatchLabels(emptyMap())),
+            from = FromProcess("p", MatchLabels(emptyMap())),
         )
         val evaluator = Evaluator(symbolTable, BasicOperations)
 

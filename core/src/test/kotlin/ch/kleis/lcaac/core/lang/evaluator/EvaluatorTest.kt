@@ -187,7 +187,7 @@ class EvaluatorTest {
                     TechnoExchangeValue(
                         QuantityValueFixture.oneKilogram,
                         ProductValueFixture.carrot.withFromProcessRef(
-                            FromProcessRefValue(
+                            FromProcessValue(
                                 name = "carrot_production",
                                 arguments = mapOf(
                                     "q_water" to QuantityValueFixture.oneLitre
@@ -210,7 +210,7 @@ class EvaluatorTest {
                     TechnoExchangeValue(
                         QuantityValueFixture.oneKilogram,
                         ProductValueFixture.salad.withFromProcessRef(
-                            FromProcessRefValue(
+                            FromProcessValue(
                                 name = "salad_production",
                                 pkg = PackageValue(EPackage.DEFAULT_PKG_NAME),
                             )
@@ -221,7 +221,7 @@ class EvaluatorTest {
                     TechnoExchangeValue(
                         QuantityValueFixture.oneKilogram,
                         ProductValueFixture.carrot.withFromProcessRef(
-                            FromProcessRefValue(
+                            FromProcessValue(
                                 name = "carrot_production",
                                 arguments = mapOf(
                                     "q_water" to QuantityValueFixture.oneLitre,
@@ -286,7 +286,7 @@ class EvaluatorTest {
                     TechnoExchangeValue(
                         QuantityValueFixture.oneKilogram,
                         ProductValueFixture.salad.withFromProcessRef(
-                            FromProcessRefValue(
+                            FromProcessValue(
                                 name = "salad_production",
                                 pkg = PackageValue(EPackage.DEFAULT_PKG_NAME),
                             )
@@ -297,7 +297,7 @@ class EvaluatorTest {
                     TechnoExchangeValue(
                         QuantityValueFixture.oneKilogram,
                         ProductValueFixture.carrot.withFromProcessRef(
-                            FromProcessRefValue(
+                            FromProcessValue(
                                 name = "carrot_production",
                                 arguments = mapOf(
                                     "q_water" to QuantityValueFixture.twoLitres
@@ -314,7 +314,7 @@ class EvaluatorTest {
                     TechnoExchangeValue(
                         QuantityValueFixture.oneKilogram,
                         ProductValueFixture.carrot.withFromProcessRef(
-                            FromProcessRefValue(
+                            FromProcessValue(
                                 "carrot_production",
                                 arguments = mapOf(
                                     "q_water" to QuantityValueFixture.twoLitres

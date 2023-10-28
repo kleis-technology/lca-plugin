@@ -59,7 +59,7 @@ class ProcessTemplateExpressionReducerTest {
                     ETechnoExchange(
                         EQuantityScale(ops.pure(3.0), UnitFixture.kg),
                         ProductFixture.carrot.copy(
-                            fromProcess =
+                            from =
                             FromProcess(
                                 "carrot_production",
                                 MatchLabels(emptyMap()),

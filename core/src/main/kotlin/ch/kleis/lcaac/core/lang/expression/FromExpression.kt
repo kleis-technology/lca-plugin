@@ -3,12 +3,24 @@ package ch.kleis.lcaac.core.lang.expression
 import arrow.optics.optics
 
 @optics
+sealed interface FromExpression<Q> {
+    companion object
+}
+
+@optics
+data class FromPackage<Q>(
+    val pkg: PackageExpression<Q>
+) : FromExpression<Q> {
+    companion object
+}
+
+@optics
 data class FromProcess<Q>(
     val name: String,
     val matchLabels: MatchLabels<Q>,
     val arguments: Map<String, DataExpression<Q>> = emptyMap(),
     val pkg: PackageExpression<Q>? = null,
-) {
+) : FromExpression<Q> {
     override fun toString(): String {
         return "from $name$matchLabels$arguments"
     }

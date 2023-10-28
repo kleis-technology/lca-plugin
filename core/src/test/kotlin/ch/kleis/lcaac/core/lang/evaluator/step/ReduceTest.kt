@@ -6,7 +6,7 @@ import ch.kleis.lcaac.core.lang.expression.EPackage
 import ch.kleis.lcaac.core.lang.expression.EProcessTemplateApplication
 import ch.kleis.lcaac.core.lang.expression.EQuantityAdd
 import ch.kleis.lcaac.core.lang.fixture.*
-import ch.kleis.lcaac.core.lang.value.FromProcessRefValue
+import ch.kleis.lcaac.core.lang.value.FromProcessValue
 import ch.kleis.lcaac.core.lang.value.PackageValue
 import ch.kleis.lcaac.core.lang.value.ProcessValue
 import ch.kleis.lcaac.core.lang.value.TechnoExchangeValue
@@ -47,7 +47,7 @@ class ReduceTest {
                 TechnoExchangeValue(
                     QuantityValueFixture.oneKilogram,
                     ProductValueFixture.carrot.withFromProcessRef(
-                        FromProcessRefValue(
+                        FromProcessValue(
                             name = "carrot_production",
                             arguments = mapOf("q_water" to QuantityValueFixture.twoLitres),
                             pkg = PackageValue(EPackage.DEFAULT_PKG_NAME),
@@ -82,7 +82,7 @@ class ReduceTest {
                 TechnoExchangeValue(
                     QuantityValueFixture.oneKilogram,
                     ProductValueFixture.carrot.withFromProcessRef(
-                        FromProcessRefValue(
+                        FromProcessValue(
                             name = "carrot_production",
                             arguments = mapOf("q_water" to QuantityValueFixture.oneLitre),
                             pkg = PackageValue(EPackage.DEFAULT_PKG_NAME),
