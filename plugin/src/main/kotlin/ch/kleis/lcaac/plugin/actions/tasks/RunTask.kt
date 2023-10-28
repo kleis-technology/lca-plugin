@@ -13,8 +13,6 @@ import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.ImpactAs
 import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.InventoryTableModel
 import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.SupplyTableModel
 import ch.kleis.lcaac.plugin.ui.toolwindow.shared.SaveTableModelTask
-import com.intellij.notification.NotificationGroupManager
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
@@ -27,14 +25,16 @@ import kotlin.io.path.Path
 typealias Contrib = ContributionAnalysis<BasicNumber, BasicMatrix>
 
 class RunTask(
-    project: Project,
+    private val project: Project,
     private val run: LcaRun,
-    runnerName: String,
+    private val logger: TaskLogger,
+    runnerName: String
 ) : Task.Backgroundable(project, runnerName) {
     companion object {
         private val LOG = Logger.getInstance(RunTask::class.java)
     }
 
+    //    private val logger = TerminalTaskLogger()
     override fun run(indicator: ProgressIndicator) {
         val size = run.runnableList.size
         run.runnableList.forEachIndexed { index, element ->
@@ -51,32 +51,22 @@ class RunTask(
     private fun generate(generate: LcaGenerate, indicator: ProgressIndicator) {
         var task: ModelGenerationTask? = null
         ApplicationManager.getApplication().runReadAction {
-//            var file: PsiFile? = null
-//            var process: LcaProcess? = null
-//            var containingDirectory: PsiDirectory? = null
             val process = generate.getProcessRef().reference.resolve() as LcaProcess
             val file = process.containingFile as LcaFile?
             val containingDirectory = file?.containingDirectory
 
-//            process.let {
             containingDirectory?.let {
                 task = ModelGenerationTask(
                     project = project,
                     process = process,
                     processName = process.name,
                     file = run.containingFile as LcaFile,
-                    containingDirectory = it
+                    containingDirectory = it,
+                    logger = logger
                 )
-//                }
             }
         }
         task?.run(indicator)
-//        ApplicationManager.getApplication().invokeAndWait { ->
-////                runWriteAction {
-//            val dumbSrv = DumbService.getInstance(project)
-//            //ApplicationManager.getApplication().getService(DumbService::class.java)
-//            dumbSrv.completeJustSubmittedTasks()
-//        }
     }
 
     private fun assess(assess: LcaAssess, indicator: ProgressIndicator) {
@@ -133,7 +123,7 @@ class RunTask(
         )
         output.forEach { (file, model) ->
             val path = Path("${project.basePath}/out/${processName}-$file.csv")
-            val task = SaveTableModelTask(project, model, path.toFile())
+            val task = SaveTableModelTask(project, model, path.toFile(), logger)
             ProgressManager.getInstance().run(task)
             VirtualFileManager.getInstance().refreshAndFindFileByNioPath(path)
             LOG.info("File $path generated")
@@ -141,6 +131,7 @@ class RunTask(
     }
 
     override fun onSuccess() {
+        logger.info("Run ${run.runRef.name}", "Success")
 //        val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("LCA Tests") ?: return
 //        val testResultsContent = TestResultsWindow(results).getContent()
 //        val content = ContentFactory.getInstance().createContent(
@@ -154,12 +145,9 @@ class RunTask(
 //        toolWindow.show()
     }
 
+
     override fun onThrowable(e: Throwable) {
-        val title = "Error"
-        NotificationGroupManager.getInstance()
-            .getNotificationGroup("LcaAsCode")
-            .createNotification(title, e.message ?: "unknown error", NotificationType.ERROR)
-            .notify(project)
+        logger.error("Run ${run.runRef.name} finish with Errors", e.message ?: "unknown error")
         LOG.warn("Unable to process computation", e)
     }
 }

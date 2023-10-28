@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.plugin.ui.toolwindow.shared
 
+import ch.kleis.lcaac.plugin.actions.tasks.EventTaskLogger
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
@@ -63,8 +64,8 @@ class CopyPastableTablePane(
         button.addActionListener {
             val descriptor = FileSaverDescriptor("Save as CSV", "Save data as CSV file")
             val saveFileDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, project)
-            val vf  = saveFileDialog.save(project.projectFile, defaultFilename) ?: return@addActionListener
-            val task = SaveTableModelTask(project, model, vf.file)
+            val vf = saveFileDialog.save(project.projectFile, defaultFilename) ?: return@addActionListener
+            val task = SaveTableModelTask(project, model, vf.file, EventTaskLogger(project))
             ProgressManager.getInstance().run(task)
         }
     }

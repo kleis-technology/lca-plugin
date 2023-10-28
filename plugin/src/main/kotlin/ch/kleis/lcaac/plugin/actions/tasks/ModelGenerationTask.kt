@@ -9,8 +9,6 @@ import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.psi.LcaProcess
-import com.intellij.notification.NotificationGroupManager
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.Logger
@@ -31,6 +29,7 @@ class ModelGenerationTask(
     private val processName: String,
     private val file: LcaFile,
     private val containingDirectory: PsiDirectory,
+    private val logger: TaskLogger,
     private val csvFile: String = "$processName.csv"
 ) : Task.Backgroundable(project, "Run with ${processName}.csv") {
     companion object {
@@ -72,11 +71,11 @@ class ModelGenerationTask(
             ApplicationManager.getApplication().invokeAndWait { ->
 
 //                runWriteAction {
-                val vfile = VfsUtil.findFile(
+                val vFile = VfsUtil.findFile(
                     outputPath, true
                 )
                 VirtualFileManager.getInstance().syncRefresh()
-                vfile?.refresh(false, false)
+                vFile?.refresh(false, false)
                 LOG.info("Now refresh")
 //                }
                 val dumbSrv = DumbService.getInstance(project)
@@ -84,30 +83,19 @@ class ModelGenerationTask(
                 dumbSrv.completeJustSubmittedTasks()
 
             }
-            NotificationGroupManager.getInstance()
-                .getNotificationGroup("LcaAsCode")
-                .createNotification(title, message, NotificationType.INFORMATION)
-                .notify(project)
+            logger.info(title, message)
         } catch (e: EvaluatorException) {
             val title = "Error while assessing $processName"
-            NotificationGroupManager.getInstance()
-                .getNotificationGroup("LcaAsCode")
-                .createNotification(title, e.message ?: "unknown error", NotificationType.ERROR)
-                .notify(project)
+            logger.info(title, e.message ?: "unknown error")
             LOG.warn("Unable to process computation", e)
         } catch (e: NoSuchElementException) {
             val title = "Error while assessing $processName"
-            NotificationGroupManager.getInstance()
-                .getNotificationGroup("LcaAsCode")
-                .createNotification(title, e.message ?: "unknown error", NotificationType.ERROR)
-                .notify(project)
+            logger.info(title, e.message ?: "unknown error")
             LOG.warn("Unable to process computation", e)
         } catch (e: FileNotFoundException) {
             val title = "Error while assessing $processName"
-            NotificationGroupManager.getInstance()
-                .getNotificationGroup("LcaAsCode")
-                .createNotification(title, e.message ?: "unknown error", NotificationType.ERROR)
-                .notify(project)
+            logger.info(title, e.message ?: "unknown error")
+            LOG.warn("Unable to process computation, file not found", e)
         }
     }
 

@@ -112,6 +112,11 @@
                     anchor="bottom"
                     factoryClass="ch.kleis.lcaac.plugin.ui.toolwindow.LcaTestsToolWindowFactory"
                     canCloseContents="true"/>
+        <toolWindow id="LCA Run"
+                    icon="AllIcons.General.Modified"
+                    anchor="bottom"
+                    factoryClass="ch.kleis.lcaac.plugin.ui.toolwindow.LcaRunToolWindowFactory"
+                    canCloseContents="true"/>
 
         <runLineMarkerContributor
                 language="LCA"

@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.plugin.actions
 
+import ch.kleis.lcaac.plugin.actions.tasks.EventTaskLogger
 import ch.kleis.lcaac.plugin.actions.tasks.ModelGenerationTask
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.psi.LcaProcess
@@ -24,7 +25,11 @@ class ModelGenerationWithDataAction(
         val file = e.getData(LangDataKeys.PSI_FILE) as LcaFile? ?: return
         val containingDirectory = file.containingDirectory ?: return
 
-        val task = ModelGenerationTask(project, process, processName, file, containingDirectory)
+        val task = ModelGenerationTask(
+            project, process, processName, file,
+            containingDirectory,
+            logger = EventTaskLogger(project)
+        )
         ProgressManager.getInstance().run(task)
     }
 

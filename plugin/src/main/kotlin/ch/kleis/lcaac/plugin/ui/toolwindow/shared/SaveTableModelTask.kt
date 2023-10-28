@@ -1,8 +1,7 @@
 package ch.kleis.lcaac.plugin.ui.toolwindow.shared
 
 import ch.kleis.lcaac.plugin.MyBundle
-import com.intellij.notification.NotificationGroupManager
-import com.intellij.notification.NotificationType
+import ch.kleis.lcaac.plugin.actions.tasks.TaskLogger
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
@@ -20,6 +19,7 @@ class SaveTableModelTask(
     private val project: Project,
     private val model: TableModel,
     private val file: File,
+    private val logger: TaskLogger
 ) : Task.Backgroundable(project, "Saving data") {
     companion object {
         private val LOG = Logger.getInstance(SaveTableModelTask::class.java)
@@ -39,23 +39,17 @@ class SaveTableModelTask(
                 }
             }
             val duration = (System.currentTimeMillis() - start) / 1000
-            NotificationGroupManager.getInstance()
-                .getNotificationGroup("LcaAsCode")
-                .createNotification(
-                    MyBundle.message(
-                        "lca.dialog.export.finished.success",
-                        duration,
-                        path
-                    ), NotificationType.INFORMATION
+            logger.info(
+                "Save Model", MyBundle.message(
+                    "lca.dialog.export.finished.success",
+                    duration,
+                    path
                 )
-                .notify(project)
+            )
             VirtualFileManager.getInstance().refreshAndFindFileByNioPath(path)
         } catch (e: Exception) {
             val title = "Error while saving results to file"
-            NotificationGroupManager.getInstance()
-                .getNotificationGroup("LcaAsCode")
-                .createNotification(title, e.message ?: "unknown error", NotificationType.ERROR)
-                .notify(project)
+            logger.error(title, e.message ?: "unknown error")
             LOG.warn("Unable to process computation", e)
         }
     }
