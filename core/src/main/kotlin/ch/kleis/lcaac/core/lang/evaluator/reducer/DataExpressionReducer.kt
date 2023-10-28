@@ -3,16 +3,13 @@ package ch.kleis.lcaac.core.lang.evaluator.reducer
 import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.*
-import ch.kleis.lcaac.core.lang.resolver.DataResolver
-import ch.kleis.lcaac.core.lang.resolver.PkgResolver
+import ch.kleis.lcaac.core.lang.resolver.Resolver
 import ch.kleis.lcaac.core.math.QuantityOperations
 import kotlin.math.pow
 
 class DataExpressionReducer<Q>(
-    private val pkg: EPackage<Q>,
-    private val pkgResolver: PkgResolver<Q>,
+    private val resolver: Resolver<Q>,
     private val ops: QuantityOperations<Q>,
-    private val dataResolver: DataResolver<Q> = DataResolver(pkg, pkgResolver),
 ) {
     private val infiniteUnitLoopChecker = InfiniteUnitLoopChecker<Q>()
 
@@ -69,7 +66,7 @@ class DataExpressionReducer<Q>(
     }
 
     private fun reduceClosure(closure: EQuantityClosure<Q>): DataExpression<Q> =
-        DataExpressionReducer(closure.pkg, pkgResolver, ops).reduce(closure.expression)
+        DataExpressionReducer(resolver.withRoot(closure.pkg), ops).reduce(closure.expression)
 
     private fun reduceDiv(expression: EQuantityDiv<Q>): DataExpression<Q> {
         with(ops) {
@@ -135,7 +132,7 @@ class DataExpressionReducer<Q>(
 
     // TODO: Verify me
     private fun reduceRef(expression: EDataRef<Q>): DataExpression<Q> {
-        return dataResolver.resolve(expression)?.let { reduce(it) } ?: expression
+        return resolver.resolve(expression)?.let { reduce(it) } ?: expression
     }
 
     private fun reduceScale(expression: EQuantityScale<Q>): DataExpression<Q> {

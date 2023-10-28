@@ -5,8 +5,8 @@ import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.*
 import ch.kleis.lcaac.core.lang.fixture.DimensionFixture
-import ch.kleis.lcaac.core.lang.fixture.PkgResolverFixture
 import ch.kleis.lcaac.core.lang.fixture.QuantityFixture
+import ch.kleis.lcaac.core.lang.fixture.ResolverFixture
 import ch.kleis.lcaac.core.lang.fixture.UnitFixture
 import ch.kleis.lcaac.core.lang.register.DataKey
 import ch.kleis.lcaac.core.lang.register.DataRegister
@@ -30,8 +30,7 @@ class DataExpressionReducerTest {
         val unit = EUnitLiteral<BasicNumber>(UnitSymbol.of("a"), 123.0, Dimension.of("a"))
         val pkg = EPackage.empty<BasicNumber>()
         val reducer = DataExpressionReducer(
-            pkg,
-            PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -49,7 +48,7 @@ class DataExpressionReducerTest {
         val innerQuantity = QuantityFixture.oneKilogram
         val quantity = EQuantityScale(ops.pure(2.0), innerQuantity)
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
 
@@ -65,7 +64,7 @@ class DataExpressionReducerTest {
     fun test_reduce_whenScaleOfScale_shouldReduce() {
         // given
         val quantity = EQuantityScale(ops.pure(1.0), QuantityFixture.twoKilograms)
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
         val expected = EQuantityScale(ops.pure(2.0), UnitFixture.kg)
 
         // when
@@ -81,7 +80,7 @@ class DataExpressionReducerTest {
         val innerQuantity = EDataRef<BasicNumber>("a")
         val quantity = EQuantityScale(ops.pure(2.0), innerQuantity)
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
 
@@ -103,7 +102,7 @@ class DataExpressionReducerTest {
             )
         )
         val quantity = EQuantityScale(ops.pure(1.0), EDataRef("kg"))
-        val reducer = DataExpressionReducer(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = reducer.reduce(quantity)
@@ -119,7 +118,7 @@ class DataExpressionReducerTest {
         val a = EQuantityScale(ops.pure(2.0), UnitFixture.kg)
         val b = EQuantityScale(ops.pure(1000.0), UnitFixture.g)
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
 
@@ -137,7 +136,7 @@ class DataExpressionReducerTest {
         val a = UnitFixture.kg
         val b = UnitFixture.kg
         val expected = EQuantityScale(ops.pure(2.0), UnitFixture.kg)
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(EQuantityAdd(a, b))
@@ -153,7 +152,7 @@ class DataExpressionReducerTest {
         val b = EQuantityScale(ops.pure(1000.0), UnitFixture.m)
         val quantity = EQuantityAdd(a, b)
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
 
@@ -170,7 +169,7 @@ class DataExpressionReducerTest {
         val a = UnitFixture.g
         val b = UnitFixture.kg
         val expected = EQuantityScale(ops.pure(1.001), EUnitLiteral(UnitSymbol.of("kg"), 1.0, DimensionFixture.mass))
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(EQuantityAdd(a, b))
@@ -185,7 +184,7 @@ class DataExpressionReducerTest {
         val a = QuantityFixture.twoKilograms
         val b = UnitFixture.kg
         val expected = EQuantityScale(ops.pure(3.0), EUnitLiteral(UnitSymbol.of("kg"), 1.0, DimensionFixture.mass))
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(EQuantityAdd(a, b))
@@ -200,7 +199,7 @@ class DataExpressionReducerTest {
         val a = UnitFixture.kg
         val b = QuantityFixture.twoKilograms
         val expected = EQuantityScale(ops.pure(3.0), EUnitLiteral(UnitSymbol.of("kg"), 1.0, DimensionFixture.mass))
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(EQuantityAdd(a, b))
@@ -215,7 +214,7 @@ class DataExpressionReducerTest {
         val a = EQuantityScale(ops.pure(2.0), UnitFixture.kg)
         val b = EQuantityScale(ops.pure(1000.0), UnitFixture.g)
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
 
@@ -233,7 +232,7 @@ class DataExpressionReducerTest {
         val a = EQuantityScale(ops.pure(2.0), UnitFixture.kg)
         val b = EQuantityScale(ops.pure(1000.0), UnitFixture.m)
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
         val eQuantitySub = EQuantitySub(a, b)
@@ -251,7 +250,7 @@ class DataExpressionReducerTest {
         val a = UnitFixture.kg
         val b = UnitFixture.kg
         val expected = EQuantityScale(ops.pure(0.0), UnitFixture.kg)
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(EQuantitySub(a, b))
@@ -266,7 +265,7 @@ class DataExpressionReducerTest {
         val a = UnitFixture.kg
         val b = UnitFixture.g
         val expected = EQuantityScale(ops.pure(0.999), EUnitLiteral(UnitSymbol.of("kg"), 1.0, DimensionFixture.mass))
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(EQuantitySub(a, b))
@@ -281,7 +280,7 @@ class DataExpressionReducerTest {
         val a = QuantityFixture.twoKilograms
         val b = UnitFixture.kg
         val expected = EQuantityScale(ops.pure(1.0), EUnitLiteral(UnitSymbol.of("kg"), 1.0, DimensionFixture.mass))
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(EQuantitySub(a, b))
@@ -296,7 +295,7 @@ class DataExpressionReducerTest {
         val a = UnitFixture.kg
         val b = EQuantityScale(ops.pure(0.5), UnitFixture.kg)
         val expected = EQuantityScale(ops.pure(0.5), EUnitLiteral(UnitSymbol.of("kg"), 1.0, DimensionFixture.mass))
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(EQuantitySub(a, b))
@@ -311,7 +310,7 @@ class DataExpressionReducerTest {
         val a = EQuantityScale(ops.pure(2.0), UnitFixture.person)
         val b = EQuantityScale(ops.pure(2.0), UnitFixture.km)
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
 
@@ -336,7 +335,7 @@ class DataExpressionReducerTest {
         val a = UnitFixture.person
         val b = UnitFixture.km
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
 
@@ -368,7 +367,7 @@ class DataExpressionReducerTest {
 
         // when
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
 
@@ -392,7 +391,7 @@ class DataExpressionReducerTest {
 
         // when
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
 
@@ -409,7 +408,7 @@ class DataExpressionReducerTest {
         val a = EQuantityScale(ops.pure(4.0), UnitFixture.km)
         val b = EQuantityScale(ops.pure(2.0), UnitFixture.hour)
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
 
@@ -433,7 +432,7 @@ class DataExpressionReducerTest {
         // given
         val a = UnitFixture.km
         val b = UnitFixture.hour
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(EQuantityDiv(a, b))
@@ -464,7 +463,7 @@ class DataExpressionReducerTest {
             )
         )
 
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(EQuantityDiv(a, b))
@@ -479,7 +478,7 @@ class DataExpressionReducerTest {
         // given
         val a = EQuantityScale(ops.pure(4.0), UnitFixture.km)
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
 
@@ -510,8 +509,7 @@ class DataExpressionReducerTest {
             )
         )
         val reducer = DataExpressionReducer(
-            pkg,
-            PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -534,7 +532,7 @@ class DataExpressionReducerTest {
         val quantityConversion = EQuantityScale(ops.pure(2.2), kg)
         val unitComposition = EUnitAlias("lbs", quantityConversion)
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
         // when
@@ -554,7 +552,7 @@ class DataExpressionReducerTest {
         val quantityConversion = EQuantityScale(ops.pure(2200.0), g)
         val unitComposition = EUnitAlias("lbs", quantityConversion)
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
         // when
@@ -571,7 +569,7 @@ class DataExpressionReducerTest {
     fun reduce_whenUnitCompositionComposition_shouldDeepReduce() {
         // given
         val expr = EUnitAlias("foo", EUnitAlias("bar", UnitFixture.kg))
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(expr)
@@ -596,8 +594,7 @@ class DataExpressionReducerTest {
             )
         )
         val reducer = DataExpressionReducer(
-            pkg2,
-            PkgResolverFixture.alwaysResolveTo(pkg2),
+            ResolverFixture.alwaysResolveTo(pkg2),
             ops,
         )
 
@@ -614,7 +611,7 @@ class DataExpressionReducerTest {
         // given
         val kg = UnitFixture.kg
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
 
@@ -631,7 +628,7 @@ class DataExpressionReducerTest {
         // given
         val expr = EUnitOf(UnitFixture.l)
         val expected = QuantityFixture.oneLitre
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(expr)
@@ -644,7 +641,7 @@ class DataExpressionReducerTest {
     fun reduce_whenUnitOfRef_shouldReturnAsIs() {
         // given
         val expr = EUnitOf(EDataRef<BasicNumber>("beer"))
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(expr)
@@ -666,7 +663,7 @@ class DataExpressionReducerTest {
                     DimensionFixture.mass.multiply(DimensionFixture.volume)
                 )
             )
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(expr)
@@ -688,7 +685,7 @@ class DataExpressionReducerTest {
                     DimensionFixture.mass.multiply(DimensionFixture.volume)
                 )
             )
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(expr)
@@ -701,7 +698,7 @@ class DataExpressionReducerTest {
     fun reduce_whenUnitOfUnitOfRef_shouldMerge() {
         // given
         val expr = EUnitOf(EUnitOf(EDataRef<BasicNumber>("beer")))
-        val reducer = DataExpressionReducer(EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
+        val reducer = DataExpressionReducer(ResolverFixture.alwaysResolveTo(EPackage.empty()), ops)
 
         // when
         val actual = reducer.reduce(expr)
@@ -717,7 +714,7 @@ class DataExpressionReducerTest {
         val kg = UnitFixture.kg
         val l = UnitFixture.l
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
 
@@ -742,7 +739,7 @@ class DataExpressionReducerTest {
         val kg = UnitFixture.kg
         val l = UnitFixture.l
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
 
@@ -766,7 +763,7 @@ class DataExpressionReducerTest {
         // given
         val m = UnitFixture.m
         val reducer = DataExpressionReducer(
-            EPackage.empty(), PkgResolverFixture.alwaysResolveTo(EPackage.empty()),
+            ResolverFixture.alwaysResolveTo(EPackage.empty()),
             ops,
         )
 
@@ -797,8 +794,7 @@ class DataExpressionReducerTest {
             )
         )
         val reducer = DataExpressionReducer(
-            units,
-            PkgResolverFixture.alwaysResolveTo(units),
+            ResolverFixture.alwaysResolveTo(units),
             ops,
         )
 
@@ -821,7 +817,7 @@ class DataExpressionReducerTest {
         val expression = EStringLiteral<BasicNumber>("FR")
         val pkg = EPackage.empty<BasicNumber>()
         val reducer = DataExpressionReducer(
-            pkg, PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -845,8 +841,7 @@ class DataExpressionReducerTest {
             )
         )
         val reducer = DataExpressionReducer(
-            pkg,
-            PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -871,8 +866,7 @@ class DataExpressionReducerTest {
             )
         )
         val reducer = DataExpressionReducer(
-            pkg,
-            PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 

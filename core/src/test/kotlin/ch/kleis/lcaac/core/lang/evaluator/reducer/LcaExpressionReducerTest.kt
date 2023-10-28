@@ -32,8 +32,7 @@ class LcaExpressionReducerTest {
             )
         )
         val reducer = LcaExpressionReducer(
-            pkg,
-            PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -80,8 +79,7 @@ class LcaExpressionReducerTest {
             ),
         )
         val reducer = LcaExpressionReducer(
-            pkg,
-            PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -128,8 +126,7 @@ class LcaExpressionReducerTest {
             ),
         )
         val reducer = LcaExpressionReducer(
-            pkg,
-            PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -159,8 +156,7 @@ class LcaExpressionReducerTest {
             )
         )
         val reducer = LcaExpressionReducer(
-            pkg,
-            PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -190,8 +186,7 @@ class LcaExpressionReducerTest {
             )
         )
         val reducer = LcaExpressionReducer(
-            pkg,
-            PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -221,8 +216,7 @@ class LcaExpressionReducerTest {
             ),
         )
         val reducer = LcaExpressionReducer(
-            pkg,
-            PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -256,8 +250,7 @@ class LcaExpressionReducerTest {
             ),
         )
         val reducer = LcaExpressionReducer(
-            pkg,
-            PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -291,8 +284,7 @@ class LcaExpressionReducerTest {
             ),
         )
         val reducer = LcaExpressionReducer(
-            pkg,
-            PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -322,8 +314,7 @@ class LcaExpressionReducerTest {
             ),
         )
         val reducer = LcaExpressionReducer(
-            pkg,
-            PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -361,8 +352,7 @@ class LcaExpressionReducerTest {
             ),
         )
         val reducer = LcaExpressionReducer(
-            pkg,
-            PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 
@@ -408,8 +398,7 @@ class LcaExpressionReducerTest {
             ),
         )
         val reducer = LcaExpressionReducer(
-            pkg,
-            PkgResolverFixture.alwaysResolveTo(pkg),
+            ResolverFixture.alwaysResolveTo(pkg),
             ops,
         )
 

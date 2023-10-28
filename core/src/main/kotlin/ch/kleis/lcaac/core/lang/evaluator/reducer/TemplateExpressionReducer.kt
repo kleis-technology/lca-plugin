@@ -6,12 +6,11 @@ import ch.kleis.lcaac.core.lang.evaluator.Helper
 import ch.kleis.lcaac.core.lang.expression.*
 import ch.kleis.lcaac.core.lang.register.DataKey
 import ch.kleis.lcaac.core.lang.register.DataRegister
-import ch.kleis.lcaac.core.lang.resolver.PkgResolver
+import ch.kleis.lcaac.core.lang.resolver.Resolver
 import ch.kleis.lcaac.core.math.QuantityOperations
 
 class TemplateExpressionReducer<Q>(
-    private val pkg: EPackage<Q>,
-    private val pkgResolver: PkgResolver<Q>,
+    private val resolver: Resolver<Q>,
     private val ops: QuantityOperations<Q>,
 ) {
     private val helper = Helper<Q>()
@@ -28,15 +27,16 @@ class TemplateExpressionReducer<Q>(
         val actualArguments = template.params
             .plus(expression.arguments)
 
-        val locals = DataRegister(pkg.data)
+        val locals = DataRegister(resolver.rootPkg.data)
             .plus(actualArguments.mapKeys { DataKey(it.key) })
             .plus(template.locals.mapKeys { DataKey(it.key) })
-        val localPkg = pkg.copy(
+        val localPkg = resolver.rootPkg.copy(
             data = locals
         )
 
-        val reducer = LcaExpressionReducer(localPkg, pkgResolver, ops)
-        val dataReducer = DataExpressionReducer(localPkg, pkgResolver, ops)
+        val localResolver = resolver.withRoot(localPkg)
+        val reducer = LcaExpressionReducer(localResolver, ops)
+        val dataReducer = DataExpressionReducer(localResolver, ops)
 
         var result = template.body
         actualArguments.forEach {

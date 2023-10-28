@@ -1,12 +1,12 @@
 package ch.kleis.lcaac.core.lang.resolver
 
-import ch.kleis.lcaac.core.lang.register.ProcessKey
-import ch.kleis.lcaac.core.lang.register.ProcessTemplateRegister
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.*
-import ch.kleis.lcaac.core.lang.fixture.PkgResolverFixture
 import ch.kleis.lcaac.core.lang.fixture.ProductFixture
 import ch.kleis.lcaac.core.lang.fixture.QuantityFixture
+import ch.kleis.lcaac.core.lang.fixture.ResolverFixture
+import ch.kleis.lcaac.core.lang.register.ProcessKey
+import ch.kleis.lcaac.core.lang.register.ProcessTemplateRegister
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -50,7 +50,7 @@ class ProcessResolverTest {
         val rootPkg = EPackage(
             processTemplates = processTemplates,
         )
-        val resolver = ProcessResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
+        val resolver = ResolverFixture.alwaysResolveTo(rootPkg)
 
         // when
         val actual = resolver.resolve(carrotSpec)
@@ -91,7 +91,7 @@ class ProcessResolverTest {
         val rootPkg = EPackage(
             processTemplates = processTemplates,
         )
-        val resolver = ProcessResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
+        val resolver = ResolverFixture.alwaysResolveTo(rootPkg)
 
         // when/then
         val e = assertFailsWith(EvaluatorException::class) {
@@ -143,7 +143,7 @@ class ProcessResolverTest {
         val rootPkg = EPackage(
             processTemplates = processTemplates,
         )
-        val resolver = ProcessResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
+        val resolver = ResolverFixture.alwaysResolveTo(rootPkg)
 
         // when
         val actual = resolver.resolve(carrotSpec)
@@ -193,7 +193,7 @@ class ProcessResolverTest {
         val rootPkg = EPackage(
             processTemplates = processTemplates,
         )
-        val resolver = ProcessResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
+        val resolver = ResolverFixture.alwaysResolveTo(rootPkg)
 
         // when
         val actual = resolver.resolve(carrotSpec)
@@ -252,7 +252,7 @@ class ProcessResolverTest {
         val rootPkg = EPackage(
             processTemplates = processTemplates,
         )
-        val resolver = ProcessResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
+        val resolver = ResolverFixture.alwaysResolveTo(rootPkg)
 
         // {w,t}hen
         val exception = assertFailsWith(EvaluatorException::class) { resolver.resolve(carrotSpec) }

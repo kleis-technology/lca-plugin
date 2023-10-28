@@ -2,7 +2,7 @@ package ch.kleis.lcaac.core.lang.evaluator.reducer
 
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.*
-import ch.kleis.lcaac.core.lang.fixture.PkgResolverFixture
+import ch.kleis.lcaac.core.lang.fixture.ResolverFixture
 import ch.kleis.lcaac.core.lang.fixture.ProductFixture
 import ch.kleis.lcaac.core.lang.fixture.QuantityFixture
 import ch.kleis.lcaac.core.lang.fixture.UnitFixture
@@ -46,7 +46,7 @@ class ProcessTemplateExpressionReducerTest {
         )
         val expression = EProcessTemplateApplication(template, arguments)
         val pkg = EPackage.empty<BasicNumber>()
-        val reducer = TemplateExpressionReducer(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
+        val reducer = TemplateExpressionReducer(ResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = reducer.reduce(expression)
@@ -112,7 +112,7 @@ class ProcessTemplateExpressionReducerTest {
         )
         val expression = EProcessTemplateApplication(template, arguments)
         val pkg = EPackage.empty<BasicNumber>()
-        val reducer = TemplateExpressionReducer(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
+        val reducer = TemplateExpressionReducer(ResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when/then
         val e = assertFailsWith(EvaluatorException::class, null) { reducer.reduce(expression) }

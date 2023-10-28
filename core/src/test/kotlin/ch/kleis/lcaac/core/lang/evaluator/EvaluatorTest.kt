@@ -40,8 +40,8 @@ class EvaluatorTest {
                 )
             )
         )
-        val pkgResolver = PkgResolverFixture.alwaysResolveTo(pkg)
-        val evaluator = Evaluator(pkg, pkgResolver, ops)
+        val resolver = ResolverFixture.alwaysResolveTo(pkg)
+        val evaluator = Evaluator(resolver, ops)
         val expected = ImpactValue(
             QuantityValueFixture.oneKilogram,
             IndicatorValueFixture.climateChange,
@@ -84,7 +84,7 @@ class EvaluatorTest {
                 )
             )
         )
-        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
+        val evaluator = Evaluator(ResolverFixture.alwaysResolveTo(pkg), ops)
         val expected = FullyQualifiedSubstanceValue<BasicNumber>(
             "doesNotExist",
             type = SubstanceType.EMISSION,
@@ -112,7 +112,7 @@ class EvaluatorTest {
                 )
             )
         )
-        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
+        val evaluator = Evaluator(ResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val p1 = evaluator.trace("carrot_production", mapOf("q_water" to QuantityFixture.oneLitre))
@@ -134,7 +134,7 @@ class EvaluatorTest {
         val register = ProcessTemplateRegister(mapOf(ProcessKey("carrot_production") to template))
 
         val pkg = EPackage(processTemplates = register)
-        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), BasicOperations)
+        val evaluator = Evaluator(ResolverFixture.alwaysResolveTo(pkg), BasicOperations)
 
         // when
 
@@ -174,7 +174,7 @@ class EvaluatorTest {
                 )
             ),
         )
-        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
+        val evaluator = Evaluator(ResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = evaluator.trace("salad_production").getSystemValue().processes
@@ -273,7 +273,7 @@ class EvaluatorTest {
         val pkg = EPackage(
             processTemplates = processTemplates,
         )
-        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
+        val evaluator = Evaluator(ResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = evaluator.trace("salad_production").getSystemValue().processes
@@ -371,7 +371,7 @@ class EvaluatorTest {
                 ).mapKeys { ProcessKey(it.key) }
             )
         )
-        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
+        val evaluator = Evaluator(ResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when/then
         val e = assertFailsWith(
@@ -419,7 +419,7 @@ class EvaluatorTest {
                 )
             )
         )
-        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
+        val evaluator = Evaluator(ResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = evaluator.trace("carrot_production").getSystemValue().substanceCharacterizations
@@ -459,7 +459,7 @@ class EvaluatorTest {
                 ).mapKeys { ProcessKey(it.key) }
             )
         )
-        val evaluator = Evaluator(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
+        val evaluator = Evaluator(ResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when/then
         val e = assertFailsWith(

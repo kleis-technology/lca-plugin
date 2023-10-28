@@ -4,7 +4,7 @@ import ch.kleis.lcaac.core.lang.expression.EPackage
 import ch.kleis.lcaac.core.lang.register.SubstanceCharacterizationRegister
 import ch.kleis.lcaac.core.lang.register.SubstanceKey
 import ch.kleis.lcaac.core.lang.expression.SubstanceType
-import ch.kleis.lcaac.core.lang.fixture.PkgResolverFixture
+import ch.kleis.lcaac.core.lang.fixture.ResolverFixture
 import ch.kleis.lcaac.core.lang.fixture.SubstanceCharacterizationFixture
 import ch.kleis.lcaac.core.lang.fixture.SubstanceFixture
 import ch.kleis.lcaac.core.math.basic.BasicNumber
@@ -18,7 +18,7 @@ class SubstanceCharacterizationResolverTest {
     fun resolve_whenEmptyTable_thenNull() {
         // given
         val rootPkg = EPackage.empty<BasicNumber>()
-        val resolver = SubstanceCharacterizationResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
+        val resolver = ResolverFixture.alwaysResolveTo(rootPkg)
         val substance = SubstanceFixture.propanol
 
         // when
@@ -39,7 +39,7 @@ class SubstanceCharacterizationResolverTest {
         val rootPkg = EPackage(
             substanceCharacterizations = substanceCharacterizations,
         )
-        val resolver = SubstanceCharacterizationResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
+        val resolver = ResolverFixture.alwaysResolveTo(rootPkg)
 
         // when
         val actual = resolver.resolve(substance)
@@ -59,7 +59,7 @@ class SubstanceCharacterizationResolverTest {
         val rootPkg = EPackage(
             substanceCharacterizations = substanceCharacterizations,
         )
-        val resolver = SubstanceCharacterizationResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
+        val resolver = ResolverFixture.alwaysResolveTo(rootPkg)
 
         // when
         val actual = resolver.resolve(substance)
@@ -82,7 +82,7 @@ class SubstanceCharacterizationResolverTest {
         val rootPkg = EPackage(
             substanceCharacterizations = substanceCharacterizations,
         )
-        val resolver = SubstanceCharacterizationResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
+        val resolver = ResolverFixture.alwaysResolveTo(rootPkg)
 
         // when
         val actual = resolver.resolve(substance)
@@ -109,7 +109,7 @@ class SubstanceCharacterizationResolverTest {
         val rootPkg = EPackage(
             substanceCharacterizations = substanceCharacterizations,
         )
-        val resolver = SubstanceCharacterizationResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
+        val resolver = ResolverFixture.alwaysResolveTo(rootPkg)
 
         // when
         val actual = resolver.resolve(propanolAir)
@@ -138,7 +138,7 @@ class SubstanceCharacterizationResolverTest {
         val rootPkg = EPackage(
             substanceCharacterizations = substanceCharacterizations,
         )
-        val resolver = SubstanceCharacterizationResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
+        val resolver = ResolverFixture.alwaysResolveTo(rootPkg)
 
         // when
         val actual = resolver.resolve(query)
@@ -167,7 +167,7 @@ class SubstanceCharacterizationResolverTest {
         val rootPkg = EPackage(
             substanceCharacterizations = substanceCharacterizations,
         )
-        val resolver = SubstanceCharacterizationResolver(rootPkg, PkgResolverFixture.alwaysResolveTo(rootPkg))
+        val resolver = ResolverFixture.alwaysResolveTo(rootPkg)
 
         // when
         val actual = resolver.resolve(propanolAirSpaceG)

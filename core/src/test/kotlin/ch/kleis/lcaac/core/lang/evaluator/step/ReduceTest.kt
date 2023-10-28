@@ -35,7 +35,7 @@ class ReduceTest {
         )
         )
         val pkg = EPackage.empty<BasicNumber>()
-        val reduceAndComplete = Reduce(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
+        val reduceAndComplete = Reduce(ResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = with(ToValue(BasicOperations)) { reduceAndComplete.apply(instance).toValue() }
@@ -70,7 +70,7 @@ class ReduceTest {
         // given
         val template = EProcessTemplateApplication(TemplateFixture.carrotProduction, emptyMap())
         val pkg = EPackage.empty<BasicNumber>()
-        val reduceAndComplete = Reduce(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
+        val reduceAndComplete = Reduce(ResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when
         val actual = with(ToValue(BasicOperations)) { reduceAndComplete.apply(template).toValue() }
@@ -105,7 +105,7 @@ class ReduceTest {
         // given
         val template = EProcessTemplateApplication(TemplateFixture.withUnboundedRef, emptyMap())
         val pkg = EPackage.empty<BasicNumber>()
-        val reduceAndComplete = Reduce(pkg, PkgResolverFixture.alwaysResolveTo(pkg), ops)
+        val reduceAndComplete = Reduce(ResolverFixture.alwaysResolveTo(pkg), ops)
 
         // when/then
         assertFailsWith(
