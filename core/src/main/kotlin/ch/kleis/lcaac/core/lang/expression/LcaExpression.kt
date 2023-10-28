@@ -45,7 +45,7 @@ data class ESubstanceSpec<Q>(
     val compartment: String? = null,
     val subCompartment: String? = null,
     val referenceUnit: DataExpression<Q>? = null,
-    val from: PackageExpression<Q>? = null,
+    val from: PackageImportExpression<Q>? = null,
 ) : LcaExpression<Q>, PortExpression<Q> {
     companion object
 }

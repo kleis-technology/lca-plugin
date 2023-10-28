@@ -55,7 +55,7 @@ class Evaluator<Q>(
                     body.name,
                     MatchLabels(body.labels),
                     template.params.plus(arguments),
-                    pkg = pkg,
+                    pkg = EImport(pkg.name), // TODO: Check me
                 )
             )
         }.toSet()

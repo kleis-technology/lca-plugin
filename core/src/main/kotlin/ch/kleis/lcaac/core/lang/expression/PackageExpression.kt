@@ -71,12 +71,14 @@ data class EPackage<Q>(
     }
 }
 
+sealed interface PackageImportExpression<Q> : PackageExpression<Q>
+
 data class EImport<Q>(
     val name: String,
     val arguments: Map<String, DataExpression<Q>> = emptyMap(),
     val with: Map<String, EProductSpec<Q>> = emptyMap(),
-) : PackageExpression<Q>
+) : PackageImportExpression<Q>
 
 data class EImportRef<Q>(
     val name: String,
-) : PackageExpression<Q>
+) : PackageImportExpression<Q>

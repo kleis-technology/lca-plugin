@@ -15,7 +15,7 @@ sealed interface StringExpression
 @optics
 data class EDataRef<Q>(
     val name: String,
-    val from: PackageExpression<Q>? = null,
+    val from: PackageImportExpression<Q>? = null,
 ) : DataExpression<Q> {
     fun name(): String {
         return name
