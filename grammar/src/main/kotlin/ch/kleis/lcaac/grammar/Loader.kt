@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.grammar
 
-import ch.kleis.lcaac.core.lang.*
+import ch.kleis.lcaac.core.lang.expression.EPackage
 import ch.kleis.lcaac.core.lang.register.*
 import ch.kleis.lcaac.core.math.QuantityOperations
 import ch.kleis.lcaac.core.prelude.Prelude
@@ -18,7 +18,7 @@ class Loader<Q>(
     fun load(
         files: Sequence<LcaLangParser.LcaFileContext>,
         options: List<LoaderOption> = emptyList(),
-    ): SymbolTable<Q> {
+    ): EPackage<Q> {
         with(mapper) {
             val unitDefinitions = files.flatMap { it.unitDefinition() }
             val processDefinitions = files.flatMap { it.processDefinition() }
@@ -89,7 +89,7 @@ class Loader<Q>(
             } catch (e: RegisterException) {
                 throw LoaderException("Duplicate process ${e.duplicates} defined")
             }
-            return SymbolTable(
+            return EPackage(
                 data = globals,
                 processTemplates = processTemplates,
                 dimensions = dimensions,

@@ -1,11 +1,10 @@
 package ch.kleis.lcaac.grammar
 
-import ch.kleis.lcaac.core.lang.register.DataKey
-import ch.kleis.lcaac.core.lang.register.DataRegister
-import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
 import ch.kleis.lcaac.core.lang.expression.*
+import ch.kleis.lcaac.core.lang.register.DataKey
+import ch.kleis.lcaac.core.lang.register.DataRegister
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.grammar.LcaLangFixture.Companion.lcaFile
@@ -98,7 +97,7 @@ class LoaderTest {
         val actual = loader.load(sequenceOf(file)).getTemplate("p")!!
             .body
             .inputs[0]
-            .product.fromProcess!!
+            .product.from as FromProcess
 
         // then
         val expected = FromProcess<BasicNumber>("q", MatchLabels(emptyMap()))
@@ -433,7 +432,7 @@ class LoaderTest {
         val actual = loader.load(sequenceOf(file))
 
         // then
-        val oneKgClosed = EUnitOf(EQuantityClosure(SymbolTable.empty(), oneKg))
+        val oneKgClosed = EUnitOf(EQuantityClosure(EPackage.empty(), oneKg))
         val expected = EProcessTemplate(
             body = EProcess(
                 "p",
@@ -472,7 +471,7 @@ class LoaderTest {
 
         // then
         val sum = EQuantityAdd<BasicNumber>(EDataRef("x"), EDataRef("y"))
-        val localTable = SymbolTable(
+        val localTable = EPackage(
             data = DataRegister(
                 mapOf(
                     "x" to oneKg,
@@ -616,7 +615,7 @@ class LoaderTest {
         val actual = loader.load(sequenceOf(file))
 
         // then
-        val localTable = SymbolTable.empty<BasicNumber>()
+        val localTable = EPackage.empty<BasicNumber>()
         val referenceUnit = EUnitOf(EQuantityClosure(localTable, oneKg))
         val expected = EProcessTemplate(
             body = EProcess(
@@ -658,7 +657,7 @@ class LoaderTest {
         val actual = loader.load(sequenceOf(file))
 
         // then
-        val localTable = SymbolTable.empty<BasicNumber>()
+        val localTable = EPackage.empty<BasicNumber>()
         val referenceUnit = EUnitOf(EQuantityClosure(localTable, oneKg))
         val expected = EProcessTemplate(
             body = EProcess(
@@ -700,7 +699,7 @@ class LoaderTest {
         val actual = loader.load(sequenceOf(file))
 
         // then
-        val localTable = SymbolTable.empty<BasicNumber>()
+        val localTable = EPackage.empty<BasicNumber>()
         val referenceUnit = EUnitOf(EQuantityClosure(localTable, oneKg))
         val expected = EProcessTemplate(
             body = EProcess(
@@ -742,7 +741,7 @@ class LoaderTest {
         val actual = loader.load(sequenceOf(file))
 
         // then
-        val localTable = SymbolTable.empty<BasicNumber>()
+        val localTable = EPackage.empty<BasicNumber>()
         val referenceUnit = EUnitOf(EQuantityClosure(localTable, oneKg))
         val expected = EProcessTemplate(
             body = EProcess(
@@ -784,7 +783,7 @@ class LoaderTest {
         val actual = loader.load(sequenceOf(file))
 
         // then
-        val localTable = SymbolTable.empty<BasicNumber>()
+        val localTable = EPackage.empty<BasicNumber>()
         val referenceUnit = EUnitOf(EQuantityClosure(localTable, oneKg))
         val expected = EProcessTemplate(
             body = EProcess(
@@ -826,7 +825,7 @@ class LoaderTest {
         val actual = loader.load(sequenceOf(file))
 
         // then
-        val localTable = SymbolTable.empty<BasicNumber>()
+        val localTable = EPackage.empty<BasicNumber>()
         val referenceUnit = EUnitOf(EQuantityClosure(localTable, oneKg))
         val expected = EProcessTemplate(
             body = EProcess(

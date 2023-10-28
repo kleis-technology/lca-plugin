@@ -54,12 +54,13 @@ class EvaluatorTest {
             """.trimIndent()
         )
         val loader = Loader(BasicOperations)
-        val symbolTable = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
+        val pkg = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "a",
             from = FromProcess("a_proc", MatchLabels(emptyMap())),
         )
-        val evaluator = Evaluator(symbolTable, BasicOperations)
+        val resolver = ResolverFixture.alwaysResolveTo(pkg)
+        val evaluator = Evaluator(resolver, BasicOperations)
 
         // when
         val trace = evaluator.trace(setOf(spec))
@@ -102,12 +103,13 @@ class EvaluatorTest {
             """.trimIndent()
         )
         val loader = Loader(BasicOperations)
-        val symbolTable = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
+        val pkg = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "A",
             from = FromProcess("p1", MatchLabels(emptyMap())),
         )
-        val evaluator = Evaluator(symbolTable, BasicOperations)
+        val resolver = ResolverFixture.alwaysResolveTo(pkg)
+        val evaluator = Evaluator(resolver, BasicOperations)
 
         // when
         val trace = evaluator.trace(setOf(spec))
@@ -140,12 +142,13 @@ class EvaluatorTest {
             """.trimIndent()
         )
         val loader = Loader(BasicOperations)
-        val symbolTable = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
+        val pkg = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "carrot",
             from = FromProcess("p", MatchLabels(emptyMap())),
         )
-        val evaluator = Evaluator(symbolTable, BasicOperations)
+        val resolver = ResolverFixture.alwaysResolveTo(pkg)
+        val evaluator = Evaluator(resolver, BasicOperations)
 
         // when
         val trace = evaluator.trace(setOf(spec))
@@ -193,12 +196,13 @@ class EvaluatorTest {
             """.trimIndent()
         )
         val loader = Loader(BasicOperations)
-        val symbolTable = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
+        val pkg = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "carrot",
             from = FromProcess("p", MatchLabels(emptyMap())),
         )
-        val evaluator = Evaluator(symbolTable, BasicOperations)
+        val resolver = ResolverFixture.alwaysResolveTo(pkg)
+        val evaluator = Evaluator(resolver, BasicOperations)
 
         // when
         val trace = evaluator.trace(setOf(spec))
@@ -237,12 +241,13 @@ class EvaluatorTest {
             """.trimIndent()
         )
         val loader = Loader(BasicOperations)
-        val symbolTable = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
+        val pkg = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "carrot",
             from = FromProcess("p", MatchLabels(emptyMap())),
         )
-        val evaluator = Evaluator(symbolTable, BasicOperations)
+        val resolver = ResolverFixture.alwaysResolveTo(pkg)
+        val evaluator = Evaluator(resolver, BasicOperations)
 
         // when
         val trace = evaluator.trace(setOf(spec))
@@ -282,12 +287,13 @@ class EvaluatorTest {
             """.trimIndent()
         )
         val loader = Loader(BasicOperations)
-        val symbolTable = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
+        val pkg = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "carrot",
             from = FromProcess("p", MatchLabels(emptyMap())),
         )
-        val evaluator = Evaluator(symbolTable, BasicOperations)
+        val resolver = ResolverFixture.alwaysResolveTo(pkg)
+        val evaluator = Evaluator(resolver, BasicOperations)
 
         // when
         val trace = evaluator.trace(setOf(spec))
@@ -337,12 +343,13 @@ class EvaluatorTest {
             """.trimIndent()
         )
         val loader = Loader(BasicOperations)
-        val symbolTable = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
+        val pkg = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "carrot",
             from = FromProcess("p", MatchLabels(emptyMap())),
         )
-        val evaluator = Evaluator(symbolTable, BasicOperations)
+        val resolver = ResolverFixture.alwaysResolveTo(pkg)
+        val evaluator = Evaluator(resolver, BasicOperations)
 
         // when
         val trace = evaluator.trace(setOf(spec))

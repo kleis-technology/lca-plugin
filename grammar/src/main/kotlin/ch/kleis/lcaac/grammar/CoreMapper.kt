@@ -2,7 +2,6 @@
 
 package ch.kleis.lcaac.grammar
 
-import ch.kleis.lcaac.core.lang.*
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
@@ -30,7 +29,7 @@ class CoreMapper<Q>(
         val params = ctx.params()
             .flatMap { it.assignment() }
             .associate { it.dataRef().innerText() to dataExpression(it.dataExpression()) }
-        val symbolTable = SymbolTable(
+        val pkg = EPackage(
             data = try {
                 DataRegister(globals.plus(params.mapKeys { DataKey(it.key) }).plus(locals.mapKeys { DataKey(it.key) }))
             } catch (e: RegisterException) {
@@ -39,19 +38,19 @@ class CoreMapper<Q>(
         )
         val products = ctx.block_products()
             .flatMap { it.technoProductExchange() }
-            .map { technoProductExchange(it, symbolTable) }
+            .map { technoProductExchange(it, pkg) }
         val inputs = ctx.block_inputs()
             .flatMap { it.technoInputExchange() }
             .map { technoInputExchange(it) }
         val emissions = ctx.block_emissions()
             .flatMap { it.bioExchange() }
-            .map { bioExchange(it, symbolTable, SubstanceType.EMISSION) }
+            .map { bioExchange(it, pkg, SubstanceType.EMISSION) }
         val resources = ctx.block_resources()
             .flatMap { it.bioExchange() }
-            .map { bioExchange(it, symbolTable, SubstanceType.RESOURCE) }
+            .map { bioExchange(it, pkg, SubstanceType.RESOURCE) }
         val landUse = ctx.block_land_use()
             .flatMap { it.bioExchange() }
-            .map { bioExchange(it, symbolTable, SubstanceType.LAND_USE) }
+            .map { bioExchange(it, pkg, SubstanceType.LAND_USE) }
         val biosphere = emissions.plus(resources).plus(landUse)
         val impacts = ctx.block_impacts()
             .flatMap { it.impactExchange() }
@@ -86,13 +85,13 @@ class CoreMapper<Q>(
 
     fun bioExchange(
         ctx: LcaLangParser.BioExchangeContext,
-        symbolTable: SymbolTable<Q>,
+        pkg: EPackage<Q>,
         type: SubstanceType
     ): EBioExchange<Q> {
         val quantity = dataExpression(ctx.quantity)
         return EBioExchange(
             quantity,
-            substanceSpec(ctx.substance, type, quantity, symbolTable)
+            substanceSpec(ctx.substance, type, quantity, pkg)
         )
     }
 
@@ -100,14 +99,14 @@ class CoreMapper<Q>(
         ctx: LcaLangParser.SubstanceSpecContext,
         type: SubstanceType,
         quantity: DataExpression<Q>,
-        symbolTable: SymbolTable<Q>
+        pkg: EPackage<Q>
     ): ESubstanceSpec<Q> {
         return ESubstanceSpec(
             name = ctx.substanceRef().innerText(),
             compartment = ctx.compartmentField()?.STRING_LITERAL()?.innerText(),
             subCompartment = ctx.subCompartmentField()?.STRING_LITERAL()?.innerText(),
             type = type,
-            referenceUnit = EUnitOf(EQuantityClosure(symbolTable, quantity)),
+            referenceUnit = EUnitOf(EQuantityClosure(pkg, quantity)),
         )
     }
 
@@ -165,12 +164,12 @@ class CoreMapper<Q>(
 
     fun technoProductExchange(
         ctx: LcaLangParser.TechnoProductExchangeContext,
-        symbolTable: SymbolTable<Q>
+        pkg: EPackage<Q>
     ): ETechnoExchange<Q> {
         val quantity = dataExpression(ctx.quantity)
         return ETechnoExchange(
             quantity = quantity,
-            product = outputProductSpec(ctx.product, quantity, symbolTable),
+            product = outputProductSpec(ctx.product, quantity, pkg),
             allocation = ctx.product.allocateField()?.let { allocation(it) }
         )
     }
@@ -182,11 +181,11 @@ class CoreMapper<Q>(
     fun outputProductSpec(
         ctx: LcaLangParser.OutputProductSpecContext,
         quantity: DataExpression<Q>,
-        symbolTable: SymbolTable<Q>
+        pkg: EPackage<Q>
     ): EProductSpec<Q> {
         return EProductSpec(
             name = ctx.productRef().text,
-            referenceUnit = EUnitOf(EQuantityClosure(symbolTable, quantity))
+            referenceUnit = EUnitOf(EQuantityClosure(pkg, quantity))
         )
     }
 
