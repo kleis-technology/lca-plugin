@@ -15,7 +15,7 @@ class Oracle<Q>(
 ) {
     private val reduceLabelSelectors = ReduceLabelSelectors(resolver, ops)
     private val reduceDataExpressions = Reduce(resolver, ops)
-    private val completeTerminals = CompleteTerminals(ops)
+    private val completeTerminals = CompleteTerminals(resolver, ops)
 
     fun answer(ports: Set<Request<Q>>): Set<Response<Q>> {
         return ports.mapNotNull { answerRequest(it) }.toSet()

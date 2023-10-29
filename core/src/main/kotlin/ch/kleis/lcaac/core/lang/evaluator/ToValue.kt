@@ -19,7 +19,12 @@ class ToValue<Q>(
                 this.with.mapValues { it.value.toValue() },
             )
 
-            is EImport -> TODO("Should throw appropriate exception")
+            is EImport -> PackageValue(
+                this.name,
+                this.arguments.mapValues { it.value.toValue() },
+                this.with.mapValues { it.value.toValue() },
+            )
+
             is EImportRef -> TODO("Should throw appropriate exception")
         }
     }

@@ -3,14 +3,16 @@ package ch.kleis.lcaac.core.lang.evaluator.step
 import arrow.optics.Every
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.*
+import ch.kleis.lcaac.core.lang.resolver.Resolver
 import ch.kleis.lcaac.core.math.QuantityOperations
 
 class CompleteTerminals<Q>(
+    private val resolver: Resolver<Q>,
     private val ops: QuantityOperations<Q>
 ) {
     private val everyInputExchange =
         EProcess.inputs<Q>() compose
-                Every.list()
+            Every.list()
 
     fun apply(expression: EProcess<Q>): EProcess<Q> =
         expression
@@ -40,9 +42,12 @@ class CompleteTerminals<Q>(
 
                 EBioExchange.substance<Q>()
                     .modify(exchange) {
-                        if (it.referenceUnit == null) {
+                        val s = if (it.referenceUnit == null) {
                             it.copy(referenceUnit = referenceUnit)
                         } else it
+                        s.copy(
+                            from = EImport(resolver.rootPkg.name) // TODO: Include arguments, and with statement
+                        )
                     }
             }
     }
@@ -59,7 +64,7 @@ class CompleteTerminals<Q>(
 
     private fun EProcess<Q>.completeProcessIndicators(): EProcess<Q> =
         this.copy(
-                impacts = completeIndicators(this.impacts)
+            impacts = completeIndicators(this.impacts)
         )
 
     private fun ESubstanceCharacterization<Q>.completeSubstanceIndicators(): ESubstanceCharacterization<Q> =
