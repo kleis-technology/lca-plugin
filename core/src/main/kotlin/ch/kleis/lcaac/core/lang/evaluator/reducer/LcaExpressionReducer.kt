@@ -85,6 +85,7 @@ class LcaExpressionReducer<Q>(
             expression.compartment,
             expression.subCompartment,
             expression.referenceUnit?.let { dataExpressionReducer.reduce(it) },
+            from = expression.from, // TODO: Should we reduce from expression? (e.g., when arguments)
         )
     }
 

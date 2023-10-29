@@ -7,6 +7,7 @@ import ch.kleis.lcaac.core.lang.value.BioExchangeValue
 import ch.kleis.lcaac.core.lang.value.ImpactValue
 import ch.kleis.lcaac.core.lang.value.IndicatorValue
 import ch.kleis.lcaac.core.lang.value.SubstanceCharacterizationValue
+import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -25,9 +26,10 @@ class CompleteTerminalsTest {
                     EBioExchange(QuantityFixture.oneKilogram, ESubstanceSpec("co2"))
                 ),
             )
+        val resolver = ResolverFixture.alwaysResolveTo(EPackage.empty<BasicNumber>())
 
         // when
-        val actual = CompleteTerminals(ops).apply(process)
+        val actual = CompleteTerminals(resolver, ops).apply(process)
 
         // then
         val expected =
@@ -38,7 +40,8 @@ class CompleteTerminalsTest {
                         QuantityFixture.oneKilogram,
                         ESubstanceSpec(
                             "co2",
-                            referenceUnit = QuantityFixture.oneKilogram
+                            referenceUnit = QuantityFixture.oneKilogram,
+                            from = EImport("default"),
                         )
                     )
                 ),
@@ -55,9 +58,10 @@ class CompleteTerminalsTest {
                 EImpact(QuantityFixture.oneKilogram, EIndicatorSpec("cc"))
             )
         )
+        val resolver = ResolverFixture.alwaysResolveTo(EPackage.empty<BasicNumber>())
 
         // when
-        val actual = with(ToValue(BasicOperations)) { CompleteTerminals(ops).apply(expression).toValue() }
+        val actual = with(ToValue(BasicOperations)) { CompleteTerminals(resolver, ops).apply(expression).toValue() }
 
         // then
         val expected = SubstanceCharacterizationValue(

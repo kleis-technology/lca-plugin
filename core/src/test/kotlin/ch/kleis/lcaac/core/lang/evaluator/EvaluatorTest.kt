@@ -389,7 +389,9 @@ class EvaluatorTest {
                 products = listOf(
                     ETechnoExchange(
                         QuantityFixture.oneKilogram,
-                        ProductFixture.salad,
+                        ProductFixture.salad.copy(
+                            from = FromProcess("carrot_production", pkg = EImport("default"))
+                        ),
                     )
                 ),
                 biosphere = listOf(
@@ -398,6 +400,7 @@ class EvaluatorTest {
                             "propanol",
                             compartment = "air",
                             type = SubstanceType.RESOURCE,
+                            from = EImport("default")
                         )
                     )
                 ),

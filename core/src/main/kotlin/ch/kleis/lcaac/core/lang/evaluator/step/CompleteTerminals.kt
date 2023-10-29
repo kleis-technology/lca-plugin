@@ -39,7 +39,6 @@ class CompleteTerminals<Q>(
         return (EProcess.biosphere<Q>() compose Every.list())
             .modify(this) { exchange ->
                 val referenceUnit = exchangeReferenceUnit(exchange)
-
                 EBioExchange.substance<Q>()
                     .modify(exchange) {
                         val s = if (it.referenceUnit == null) {

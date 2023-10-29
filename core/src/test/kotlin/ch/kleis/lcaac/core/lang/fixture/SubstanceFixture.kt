@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.core.lang.fixture
 
+import ch.kleis.lcaac.core.lang.expression.EImport
 import ch.kleis.lcaac.core.lang.expression.ESubstanceSpec
 import ch.kleis.lcaac.core.lang.expression.SubstanceType
 
@@ -12,6 +13,7 @@ class SubstanceFixture {
             "air",
             null,
             QuantityFixture.oneKilogram,
+            from = EImport("default"),
         )
     }
 }
