@@ -50,19 +50,21 @@ sealed class EFRecord(val record: CSVRecord) {
     // FIXME - is this correct ?
     fun subCompartment(): String =
         record["FLOW_class2"]
-}
 
-class EF31Record(record: CSVRecord) : EFRecord(record) {
-    override fun characterizationFactor(): Double {
-        val csvValue = record["CF EF3.1"]
+    protected fun getCF(cell: String): Double {
+        val csvValue = record[cell]
         return when {
             csvValue == null || csvValue.isEmpty() -> 0.0
-            csvValue.toDoubleOrNull() == null -> throw Exception("Please please please don't let this happen ><")
+            csvValue.toDoubleOrNull() == null -> throw Exception("Invalid CF value: $csvValue")
             else -> csvValue.toDouble()
         }
     }
 }
 
+class EF31Record(record: CSVRecord) : EFRecord(record) {
+    override fun characterizationFactor(): Double = getCF("CF EF3.1")
+}
+
 class EF30Record(record: CSVRecord) : EFRecord(record) {
-    override fun characterizationFactor(): Double = record["LCIAMethod_meanvalue"].toDouble() // FIXME
+    override fun characterizationFactor(): Double = getCF("LCIAMethod_meanvalue")
 }
