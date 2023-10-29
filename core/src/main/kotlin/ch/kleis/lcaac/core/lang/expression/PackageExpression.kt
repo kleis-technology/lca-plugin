@@ -77,7 +77,11 @@ data class EImport<Q>(
     val name: String,
     val arguments: Map<String, DataExpression<Q>> = emptyMap(),
     val with: Map<String, EProductSpec<Q>> = emptyMap(),
-) : PackageImportExpression<Q>
+) : PackageImportExpression<Q> {
+    override fun toString(): String {
+        return "$name$arguments$with"
+    }
+}
 
 data class EImportRef<Q>(
     val name: String,

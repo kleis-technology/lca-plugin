@@ -4,22 +4,23 @@ import ch.kleis.lcaac.core.lang.expression.EPackage
 import ch.kleis.lcaac.core.lang.register.*
 import ch.kleis.lcaac.core.math.QuantityOperations
 import ch.kleis.lcaac.core.prelude.Prelude
-import ch.kleis.lcaac.grammar.parser.LcaLangParser
 
 enum class LoaderOption {
     WITH_PRELUDE
 }
 
-class Loader<Q>(
-    ops: QuantityOperations<Q>,
+class PkgLoader<Q>(
+    private val sourceSet: SourceSet,
+    private val ops: QuantityOperations<Q>,
+    private val mapper: (String) -> CoreMapper<Q> = { CoreMapper(it, ops) }
 ) {
-    private val mapper = CoreMapper(ops)
 
     fun load(
-        files: Sequence<LcaLangParser.LcaFileContext>,
+        pkgName: String,
         options: List<LoaderOption> = emptyList(),
     ): EPackage<Q> {
-        with(mapper) {
+        with(mapper(pkgName)) {
+            val files = sourceSet.filesOf(pkgName)
             val unitDefinitions = files.flatMap { it.unitDefinition() }
             val processDefinitions = files.flatMap { it.processDefinition() }
             val substanceDefinitions = files.flatMap { it.substanceDefinition() }

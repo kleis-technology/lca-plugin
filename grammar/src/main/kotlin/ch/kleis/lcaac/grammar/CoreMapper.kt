@@ -13,13 +13,16 @@ import org.antlr.v4.runtime.tree.TerminalNode
 import java.lang.Double.parseDouble
 
 class CoreMapper<Q>(
+    rootPkgName: String,
     private val ops: QuantityOperations<Q>,
 ) {
+    private val selfImport = EImport<Q>(rootPkgName)
+
     fun process(
         ctx: LcaLangParser.ProcessDefinitionContext,
         globals: DataRegister<Q> = DataRegister.empty(),
     ): EProcessTemplate<Q> {
-        val name = ctx.name.innerText()
+        val processName = ctx.name.innerText()
         val labels = ctx.labels()
             .flatMap { it.label_assignment() }
             .associate { it.labelRef().innerText() to EStringLiteral<Q>(it.STRING_LITERAL().innerText()) }
@@ -29,7 +32,7 @@ class CoreMapper<Q>(
         val params = ctx.params()
             .flatMap { it.assignment() }
             .associate { it.dataRef().innerText() to dataExpression(it.dataExpression()) }
-        val pkg = EPackage(
+        val localPkg = EPackage(
             data = try {
                 DataRegister(globals.plus(params.mapKeys { DataKey(it.key) }).plus(locals.mapKeys { DataKey(it.key) }))
             } catch (e: RegisterException) {
@@ -38,25 +41,25 @@ class CoreMapper<Q>(
         )
         val products = ctx.block_products()
             .flatMap { it.technoProductExchange() }
-            .map { technoProductExchange(it, pkg) }
+            .map { technoProductExchange(it, localPkg, processName, labels) }
         val inputs = ctx.block_inputs()
             .flatMap { it.technoInputExchange() }
             .map { technoInputExchange(it) }
         val emissions = ctx.block_emissions()
             .flatMap { it.bioExchange() }
-            .map { bioExchange(it, pkg, SubstanceType.EMISSION) }
+            .map { bioExchange(it, localPkg, SubstanceType.EMISSION) }
         val resources = ctx.block_resources()
             .flatMap { it.bioExchange() }
-            .map { bioExchange(it, pkg, SubstanceType.RESOURCE) }
+            .map { bioExchange(it, localPkg, SubstanceType.RESOURCE) }
         val landUse = ctx.block_land_use()
             .flatMap { it.bioExchange() }
-            .map { bioExchange(it, pkg, SubstanceType.LAND_USE) }
+            .map { bioExchange(it, localPkg, SubstanceType.LAND_USE) }
         val biosphere = emissions.plus(resources).plus(landUse)
         val impacts = ctx.block_impacts()
             .flatMap { it.impactExchange() }
             .map { impactExchange(it) }
         val body = EProcess(
-            name = name,
+            name = processName,
             labels = labels,
             products = products,
             inputs = inputs,
@@ -107,10 +110,11 @@ class CoreMapper<Q>(
             subCompartment = ctx.subCompartmentField()?.STRING_LITERAL()?.innerText(),
             type = type,
             referenceUnit = EUnitOf(EQuantityClosure(pkg, quantity)),
+            from = null, // TODO: Should parse substance ref name (assuming fqn)
         )
     }
 
-    fun substanceSpec(
+    fun referenceSubstanceSpec(
         ctx: LcaLangParser.SubstanceDefinitionContext,
     ): ESubstanceSpec<Q> {
         return ESubstanceSpec(
@@ -120,6 +124,7 @@ class CoreMapper<Q>(
             compartment = ctx.compartmentField()?.STRING_LITERAL()?.innerText(),
             subCompartment = ctx.subCompartmentField()?.STRING_LITERAL()?.innerText(),
             referenceUnit = EUnitOf(dataExpression(ctx.referenceUnitField().dataExpression())),
+            from = selfImport,
         )
     }
 
@@ -159,18 +164,21 @@ class CoreMapper<Q>(
             ),
             arguments = arguments
                 .associate { argument -> argument.parameterRef().text to dataExpression(argument.dataExpression()) },
+            pkg = null, // TODO: Assume process name is fully qualified, infer pkg to import
         )
     }
 
     fun technoProductExchange(
         ctx: LcaLangParser.TechnoProductExchangeContext,
-        pkg: EPackage<Q>
+        localPkg: EPackage<Q>,
+        processName: String,
+        labels: Map<String, EStringLiteral<Q>>,
     ): ETechnoExchange<Q> {
         val quantity = dataExpression(ctx.quantity)
         return ETechnoExchange(
             quantity = quantity,
-            product = outputProductSpec(ctx.product, quantity, pkg),
-            allocation = ctx.product.allocateField()?.let { allocation(it) }
+            product = outputProductSpec(ctx.product, quantity, localPkg, processName, labels),
+            allocation = ctx.product.allocateField()?.let { allocation(it) },
         )
     }
 
@@ -181,11 +189,14 @@ class CoreMapper<Q>(
     fun outputProductSpec(
         ctx: LcaLangParser.OutputProductSpecContext,
         quantity: DataExpression<Q>,
-        pkg: EPackage<Q>
+        pkg: EPackage<Q>,
+        processName: String,
+        labels: Map<String, EStringLiteral<Q>>,
     ): EProductSpec<Q> {
         return EProductSpec(
             name = ctx.productRef().text,
-            referenceUnit = EUnitOf(EQuantityClosure(pkg, quantity))
+            referenceUnit = EUnitOf(EQuantityClosure(pkg, quantity)),
+            from = FromProcess(processName, MatchLabels(labels), pkg = selfImport), // TODO: Test me
         )
     }
 
@@ -199,7 +210,7 @@ class CoreMapper<Q>(
     }
 
     fun substanceCharacterization(ctx: LcaLangParser.SubstanceDefinitionContext): ESubstanceCharacterization<Q> {
-        val substanceSpec = substanceSpec(ctx)
+        val substanceSpec = referenceSubstanceSpec(ctx)
         val quantity = dataExpression(ctx.referenceUnitField().dataExpression())
         val referenceExchange = EBioExchange(quantity, substanceSpec)
         val impacts = ctx.block_impacts()

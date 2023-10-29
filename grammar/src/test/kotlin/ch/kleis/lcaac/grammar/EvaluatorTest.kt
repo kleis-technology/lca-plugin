@@ -53,8 +53,9 @@ class EvaluatorTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
-        val pkg = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
+        val pkg = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "a",
             from = FromProcess("a_proc", MatchLabels(emptyMap())),
@@ -102,8 +103,9 @@ class EvaluatorTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
-        val pkg = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
+        val pkg = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "A",
             from = FromProcess("p1", MatchLabels(emptyMap())),
@@ -141,8 +143,9 @@ class EvaluatorTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
-        val pkg = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
+        val pkg = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "carrot",
             from = FromProcess("p", MatchLabels(emptyMap())),
@@ -195,8 +198,9 @@ class EvaluatorTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
-        val pkg = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
+        val pkg = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "carrot",
             from = FromProcess("p", MatchLabels(emptyMap())),
@@ -240,8 +244,9 @@ class EvaluatorTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
-        val pkg = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
+        val pkg = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "carrot",
             from = FromProcess("p", MatchLabels(emptyMap())),
@@ -286,8 +291,9 @@ class EvaluatorTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
-        val pkg = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
+        val pkg = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "carrot",
             from = FromProcess("p", MatchLabels(emptyMap())),
@@ -342,8 +348,9 @@ class EvaluatorTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
-        val pkg = loader.load(sequenceOf(file), listOf(LoaderOption.WITH_PRELUDE))
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
+        val pkg = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
         val spec = EProductSpec<BasicNumber>(
             name = "carrot",
             from = FromProcess("p", MatchLabels(emptyMap())),

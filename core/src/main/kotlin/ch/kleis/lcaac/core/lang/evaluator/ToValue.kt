@@ -117,16 +117,17 @@ class ToValue<Q>(
         val referenceUnit = (this.referenceUnit as QuantityExpression<Q>?)
             ?.toUnitValue()
             ?: throw EvaluatorException("$this has no reference unit")
-        val type = this.type ?: return PartiallyQualifiedSubstanceValue(this.name, referenceUnit, this.from!!.toValue())
+        val from = this.from?.toValue() ?: throw EvaluatorException("missing from field")
+        val type = this.type ?: return PartiallyQualifiedSubstanceValue(this.name, referenceUnit, from)
         val compartment =
-            this.compartment ?: return PartiallyQualifiedSubstanceValue(this.name, referenceUnit, this.from!!.toValue())
+            this.compartment ?: return PartiallyQualifiedSubstanceValue(this.name, referenceUnit, from)
         return FullyQualifiedSubstanceValue(
             this.name,
             type,
             compartment,
             this.subCompartment,
             referenceUnit,
-            this.from?.toValue() ?: PackageValue.default(),
+            from,
         )
     }
 

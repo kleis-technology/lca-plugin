@@ -11,18 +11,22 @@ sealed interface FromExpression<Q> {
 data class FromPackage<Q>(
     val pkg: PackageImportExpression<Q>
 ) : FromExpression<Q> {
-    companion object
+    override fun toString(): String {
+        return "from $pkg"
+    }
+    companion object {}
 }
 
 @optics
 data class FromProcess<Q>(
     val name: String,
-    val matchLabels: MatchLabels<Q>,
+    val matchLabels: MatchLabels<Q> = MatchLabels(emptyMap()),
     val arguments: Map<String, DataExpression<Q>> = emptyMap(),
     val pkg: PackageImportExpression<Q>? = null,
 ) : FromExpression<Q> {
     override fun toString(): String {
-        return "from $name$matchLabels$arguments"
+        return if (pkg != null)  "from $pkg.$name$matchLabels$arguments"
+        else "from $name$matchLabels$arguments"
     }
 
     companion object

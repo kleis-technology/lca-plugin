@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class LoaderTest {
+class PkgLoaderTest {
     @Test
     fun load_whenFileContainsTest_thenNoError() {
         val file = lcaFile(
@@ -36,10 +36,11 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         assertNotNull(actual.getTemplate("p"))
@@ -69,10 +70,11 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         assertNotNull(actual.getTemplate("p", mapOf("id" to "small")))
@@ -91,10 +93,12 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file)).getTemplate("p")!!
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
+            .getTemplate("p")!!
             .body
             .inputs[0]
             .product.from as FromProcess
@@ -115,10 +119,12 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file)).getData("foo") as EUnitLiteral<BasicNumber>
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
+            .getData("foo") as EUnitLiteral<BasicNumber>
 
         // then
         val expected = EUnitLiteral<BasicNumber>(UnitSymbol.of("foo"), 1.0, Dimension.of("foo"))
@@ -136,10 +142,12 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file)).getData("foo") as EUnitAlias<BasicNumber>
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
+            .getData("foo") as EUnitAlias<BasicNumber>
 
         // then
         val expected = EUnitAlias("foo", EQuantityScale(BasicNumber(2.0), EDataRef("bar")))
@@ -174,10 +182,11 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
 
         // then
@@ -213,10 +222,11 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
 
         // then
@@ -253,10 +263,11 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
 
         // then
@@ -282,10 +293,11 @@ class LoaderTest {
             """.trimIndent()
         )
         val oneKg = EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default")
 
         // then
         val compartment = "Emissions to air"
@@ -298,6 +310,7 @@ class LoaderTest {
                     compartment = compartment,
                     subCompartment = null,
                     referenceUnit = EUnitOf(EDataRef("kg")),
+                    from = EImport("default")
                 )
             ),
             impacts = listOf(
@@ -329,10 +342,11 @@ class LoaderTest {
             """.trimIndent()
         )
         val oneKg = EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         val compartment = "Emissions to air"
@@ -346,6 +360,7 @@ class LoaderTest {
                     compartment = compartment,
                     subCompartment = subCompartment,
                     referenceUnit = EUnitOf(EDataRef("kg")),
+                    from = EImport("default"),
                 )
             ),
             impacts = listOf(
@@ -370,10 +385,11 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         val expected = EProcessTemplate<BasicNumber>(
@@ -396,10 +412,11 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         val expected = EProcessTemplate<BasicNumber>(
@@ -426,10 +443,11 @@ class LoaderTest {
         )
         val oneKg = EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
         val fiftyPercent = EQuantityScale(BasicNumber(50.0), EDataRef("percent"))
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default")
 
         // then
         val oneKgClosed = EUnitOf(EQuantityClosure(EPackage.empty(), oneKg))
@@ -437,8 +455,8 @@ class LoaderTest {
             body = EProcess(
                 "p",
                 products = listOf(
-                    ETechnoExchange(oneKg, EProductSpec("out1", oneKgClosed), fiftyPercent),
-                    ETechnoExchange(oneKg, EProductSpec("out2", oneKgClosed), fiftyPercent),
+                    ETechnoExchange(oneKg, EProductSpec("out1", oneKgClosed, from = FromProcess("p", pkg = EImport("default"))), fiftyPercent),
+                    ETechnoExchange(oneKg, EProductSpec("out2", oneKgClosed, from = FromProcess("p", pkg = EImport("default"))), fiftyPercent),
                 )
             )
         )
@@ -464,10 +482,12 @@ class LoaderTest {
             """.trimIndent()
         )
         val oneKg = EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default")
+            .getTemplate("p")
 
         // then
         val sum = EQuantityAdd<BasicNumber>(EDataRef("x"), EDataRef("y"))
@@ -492,11 +512,11 @@ class LoaderTest {
             body = EProcess(
                 "p",
                 products = listOf(
-                    ETechnoExchange(sum, EProductSpec("out", referenceUnit)),
+                    ETechnoExchange(sum, EProductSpec("out", referenceUnit, from = FromProcess("p", pkg = EImport("default")))),
                 )
             )
         )
-        assertEquals(expected, actual.getTemplate("p"))
+        assertEquals(expected, actual)
     }
 
     @Test
@@ -512,10 +532,11 @@ class LoaderTest {
             """.trimIndent()
         )
         val oneKg = EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         val expected = EProcessTemplate(
@@ -540,10 +561,11 @@ class LoaderTest {
             """.trimIndent()
         )
         val oneKg = EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         val expected = EProcessTemplate(
@@ -568,10 +590,11 @@ class LoaderTest {
             """.trimIndent()
         )
         val oneKg = EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         val expected = EProcessTemplate(
@@ -609,10 +632,11 @@ class LoaderTest {
             """.trimIndent()
         )
         val oneKg = EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default")
 
         // then
         val localTable = EPackage.empty<BasicNumber>()
@@ -651,10 +675,11 @@ class LoaderTest {
             """.trimIndent()
         )
         val oneKg = EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default")
 
         // then
         val localTable = EPackage.empty<BasicNumber>()
@@ -693,10 +718,11 @@ class LoaderTest {
             """.trimIndent()
         )
         val oneKg = EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default")
 
         // then
         val localTable = EPackage.empty<BasicNumber>()
@@ -735,10 +761,11 @@ class LoaderTest {
             """.trimIndent()
         )
         val oneKg = EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default")
 
         // then
         val localTable = EPackage.empty<BasicNumber>()
@@ -777,10 +804,11 @@ class LoaderTest {
             """.trimIndent()
         )
         val oneKg = EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default")
 
         // then
         val localTable = EPackage.empty<BasicNumber>()
@@ -819,10 +847,11 @@ class LoaderTest {
             """.trimIndent()
         )
         val oneKg = EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default")
 
         // then
         val localTable = EPackage.empty<BasicNumber>()
@@ -861,10 +890,11 @@ class LoaderTest {
             """.trimIndent()
         )
         val oneKg = EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         val expected = EProcessTemplate(
@@ -897,10 +927,11 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         val sum = EQuantityAdd<BasicNumber>(EDataRef("x"), EDataRef("y"))
@@ -926,10 +957,11 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         val a = EQuantityAdd<BasicNumber>(EQuantityMul(EDataRef("x"), EDataRef("y")), EDataRef("z"))
@@ -949,10 +981,11 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         val a = EQuantityAdd<BasicNumber>(EQuantityDiv(EDataRef("x"), EDataRef("y")), EDataRef("z"))
@@ -972,10 +1005,11 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         val a = EQuantityScale(BasicNumber(3.0), EQuantityMul(EDataRef("x"), EDataRef("y")))
@@ -995,10 +1029,11 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         val a = EQuantityScale(BasicNumber(3.0), EQuantityDiv(EDataRef("x"), EDataRef("y")))
@@ -1018,10 +1053,11 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         val a = EQuantityAdd<BasicNumber>(EDataRef("x"), EQuantityPow(EDataRef("y"), 2.0))
@@ -1040,10 +1076,11 @@ class LoaderTest {
                 }
             """.trimIndent()
         )
-        val loader = Loader(BasicOperations)
+        val sourceSet = SourceSet(sequenceOf(file))
+        val loader = PkgLoader(sourceSet, BasicOperations)
 
         // when
-        val actual = loader.load(sequenceOf(file))
+        val actual = loader.load("default", listOf(LoaderOption.WITH_PRELUDE))
 
         // then
         val a = EQuantityDiv<BasicNumber>(EQuantityDiv(EDataRef("x"), EDataRef("y")), EDataRef("z"))
