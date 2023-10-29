@@ -22,7 +22,9 @@ class LanguageCompletion : CompletionContributor() {
 
     private fun extractKeyWordFromError(elt: PsiErrorElement): List<String> {
         val grp = listOfKeywordPattern.find(elt.errorDescription)?.groupValues
-        return if (grp?.size == 2) {
+        return if (runnableKeywordPattern.matches(elt.errorDescription)) {
+            listOf("assess", "generate")
+        } else if (grp?.size == 2) {
             val errors = grp[1]
             keywordsPattern.findAll(errors)
                 .map { it.groupValues }
@@ -49,6 +51,7 @@ class LanguageCompletion : CompletionContributor() {
             "run", "assess", "generate" // Run blocks
         )
     private val listOfKeywordPattern = Regex("(LcaTokenType.*) expected, got")
+    private val runnableKeywordPattern = Regex("<runnable> .* expected, got.*")
     private val keywordsPattern = Regex("LcaTokenType\\.([^ ,]*)(, | or |)")
 
     private fun CompletionResultSet.addElements(vararg strings: String) {

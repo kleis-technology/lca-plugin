@@ -35,7 +35,7 @@ class LanguageCompletionTest : LcaCompletionTestCase() {
     @Test
     fun lookup_ShouldReturnFilterRootKeyword_WithPrefix() {
         // Given
-        fixture.configureByText("empty_only_filtered.lca", "p<caret>")
+        fixture.configureByText("${{}.javaClass.enclosingMethod.name}.lca", "p<caret>")
         fixture.complete(CompletionType.BASIC)
 
         // When
@@ -50,7 +50,7 @@ class LanguageCompletionTest : LcaCompletionTestCase() {
     fun lookup_ShouldReturnEmpty_ForName() {
         // Given
         fixture.configureByText(
-            "sampleShouldReturnEmpty_ForName.lca", """
+            "${{}.javaClass.enclosingMethod.name}.lca", """
 substance <caret> {
     
 }
@@ -70,7 +70,7 @@ substance <caret> {
     fun lookup_ShouldReturnSubstanceKeyWord_ForUnitBlockAndSymbol() {
         // Given
         fixture.configureByText(
-            "sampleShouldReturnSubstanceKeyWord_ForSubstanceBlock.lca", """
+            "${{}.javaClass.enclosingMethod.name}.lca", """
 unit myUnit {
     <caret>
 }
@@ -90,7 +90,7 @@ unit myUnit {
     fun lookup_ShouldReturnSubstanceKeyWord_ForUnitBlockAndAliasFor() {
         // Given
         fixture.configureByText(
-            "sampleShouldReturnSubstanceKeyWord_ForSubstanceBlock.lca", """
+            "${{}.javaClass.enclosingMethod.name}.lca", """
 unit myUnit {
     symbol = "Symbole"
     <caret>
@@ -111,7 +111,7 @@ unit myUnit {
     fun lookup_ShouldReturnSubstanceKeyWord_ForSubstanceBlock() {
         // Given
         fixture.configureByText(
-            "sampleShouldReturnSubstanceKeyWord_ForSubstanceBlock.lca", """
+            "${{}.javaClass.enclosingMethod.name}.lca", """
 substance mySubstance {
     <caret>
     meta {
@@ -136,7 +136,7 @@ substance mySubstance {
     fun lookup_ShouldReturnEmpty_ForSubstanceBlockAndStringLiteral() {
         // Given
         fixture.configureByText(
-            "sampleShouldReturnSubstanceKeyWord_ForSubstanceBlock.lca", """
+            "${{}.javaClass.enclosingMethod.name}.lca", """
 substance mySubstance {
     name = "<caret>"
     meta {
@@ -161,7 +161,7 @@ substance mySubstance {
     fun lookup_ShouldReturnSubstanceKeyWord_ForSubstanceBlockAnd2ndKeyword() {
         // Given
         fixture.configureByText(
-            "sampleShouldReturnEmpty_ForSubstanceMetaBlock.lca", """
+            "${{}.javaClass.enclosingMethod.name}.lca", """
 substance mySubstance {
     name = "myName"
     <caret>
@@ -187,7 +187,7 @@ substance mySubstance {
     fun lookup_ShouldReturnMetaAndSubstance_ForSubstanceMetaBlock() {
         // Given
         fixture.configureByText(
-            "sampleShouldReturnEmpty_ForSubstanceMetaBlock.lca", """
+            "${{}.javaClass.enclosingMethod.name}.lca", """
 substance mySubstance {
     name = "mySubstanceName"
     type = Emission
@@ -211,7 +211,7 @@ substance mySubstance {
     fun lookup_ShouldReturnEmpty_ForSubstanceMetaBlock() {
         // Given
         fixture.configureByText(
-            "sampleShouldReturnEmpty_ForSubstanceMetaBlock.lca", """
+            "${{}.javaClass.enclosingMethod.name}.lca", """
 substance mySubstance {
     name = "mySubstanceName"
     type = Emission
@@ -236,7 +236,7 @@ substance mySubstance {
     fun lookup_ShouldReturnSubstanceType_ForSubstanceType() {
         // Given
         fixture.configureByText(
-            "sampleShouldReturnEmpty_ForSubstanceMetaBlock.lca", """
+            "${{}.javaClass.enclosingMethod.name}.lca", """
 substance mySubstance {
     name = "myname"
     type =<caret>
@@ -258,7 +258,7 @@ substance mySubstance {
     fun lookup_ShouldReturnSubstanceSubCompartment_ForSubstance() {
         // Given
         fixture.configureByText(
-            "sampleShouldReturnEmpty_ForSubstanceMetaBlock.lca", """
+            "${{}.javaClass.enclosingMethod.name}.lca", """
 substance mySubstance {
     name = "myname"
     type = Emission
@@ -281,7 +281,7 @@ substance mySubstance {
     fun lookup_ShouldReturnEmpty_ForSubstanceImpactBlock() {
         // Given
         fixture.configureByText(
-            "sampleShouldReturnEmpty_ForSubstanceImpactBlock.lca", """
+            "${{}.javaClass.enclosingMethod.name}.lca", """
 substance name {
 
     impacts {
@@ -304,7 +304,7 @@ substance name {
     fun lookup_ShouldReturnProcess_ForProcess() {
         // Given
         fixture.configureByText(
-            "sampleShouldReturnEmpty_ForSubstanceImpactBlock.lca", """
+            "${{}.javaClass.enclosingMethod.name}.lca", """
 process p3 {
 
        <caret>
@@ -405,4 +405,26 @@ test t4 {
             "and"
         )
     }
+
+    @Test
+    fun lookup_ShouldReturnRunableKeyWord_ForRunBlock() {
+        // Given
+        fixture.configureByText(
+            "${{}.javaClass.enclosingMethod.name}.lca", """
+run ci {
+    <caret>
+}
+
+"""
+        )
+        fixture.complete(CompletionType.BASIC)
+
+        // When
+        val lookupElementStrings = fixture.lookupElementStrings
+
+        // Then
+        assertNotNull(lookupElementStrings)
+        assertSameElements(lookupElementStrings!!, "generate", "assess")
+    }
+
 }

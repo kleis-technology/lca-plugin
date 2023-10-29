@@ -22,7 +22,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFileManager
 import kotlin.io.path.Path
 
-typealias Contrib = ContributionAnalysis<BasicNumber, BasicMatrix>
 
 class RunTask(
     private val project: Project,
