@@ -14,7 +14,7 @@ sealed class EFRecord(val record: CSVRecord) {
 
     fun isSubstance(): Boolean = record.isMapped("FLOW_propertyUnit")
 
-    abstract fun characterizationFactor(): String
+    abstract fun characterizationFactor(): Double
     fun unit(): String {
         return when (val raw = if (this.isSubstance()) sanitizeString(record["FLOW_propertyUnit"].trim()) else "u") {
             "Item(s)" -> "piece"
@@ -50,12 +50,21 @@ sealed class EFRecord(val record: CSVRecord) {
     // FIXME - is this correct ?
     fun subCompartment(): String =
         record["FLOW_class2"]
+
+    protected fun getCF(cell: String): Double {
+        val csvValue = record[cell]
+        return when {
+            csvValue == null || csvValue.isEmpty() -> 0.0
+            csvValue.toDoubleOrNull() == null -> throw Exception("Invalid CF value: $csvValue")
+            else -> csvValue.toDouble()
+        }
+    }
 }
 
 class EF31Record(record: CSVRecord) : EFRecord(record) {
-    override fun characterizationFactor(): String = record["CF EF3.1"]
+    override fun characterizationFactor(): Double = getCF("CF EF3.1")
 }
 
 class EF30Record(record: CSVRecord) : EFRecord(record) {
-    override fun characterizationFactor(): String = record["LCIAMethod_meanvalue"]
+    override fun characterizationFactor(): Double = getCF("LCIAMethod_meanvalue")
 }

@@ -2,6 +2,7 @@ package task
 
 import io.mockk.every
 import io.mockk.mockk
+import org.apache.commons.csv.CSVRecord
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFile
 import org.gradle.api.internal.provider.DefaultProvider
@@ -12,6 +13,77 @@ import java.util.concurrent.Callable
 
 class GenerateEmissionFactorsTaskTest {
 
+    @Test
+    fun substance_31_parser_should_succeed_on_double() {
+        // given
+        val record = mockk<CSVRecord>()
+        val expected = 3.7e-5
+        every { record["CF EF3.1"] } returns expected.toString()
+        val sut = EF31Record(record)
+
+        // {w,t}hen
+        Assertions.assertEquals(expected, sut.characterizationFactor())
+    }
+
+    @Test
+    fun substance_30_parser_should_succeed_on_double() {
+        // given
+        val record = mockk<CSVRecord>()
+        val expected = 13.7e-5
+        every { record["LCIAMethod_meanvalue"] } returns expected.toString()
+        val sut = EF30Record(record)
+
+        // {w,t}hen
+        Assertions.assertEquals(expected, sut.characterizationFactor())
+    }
+
+    @Test
+    fun substance_31_parser_should_zero_for_empty() {
+        // given
+        val record = mockk<CSVRecord>()
+        val expected = 0.0
+        every { record["CF EF3.1"] } returns ""
+        val sut = EF31Record(record)
+
+        // {w,t}hen
+        Assertions.assertEquals(expected, sut.characterizationFactor())
+    }
+
+    @Test
+    fun substance_30_parser_should_zero_for_empty() {
+        // given
+        val record = mockk<CSVRecord>()
+        val expected = 0.0
+        every { record["LCIAMethod_meanvalue"] } returns expected.toString()
+        val sut = EF30Record(record)
+
+        // {w,t}hen
+        Assertions.assertEquals(expected, sut.characterizationFactor())
+    }
+
+    @Test
+    fun substance_31_parser_should_fail_when_not_double() {
+        // given
+        val record = mockk<CSVRecord>()
+        every { record["CF EF3.1"] } returns "hello world"
+        val sut = EF31Record(record)
+
+        // {w,t}hen
+        val e = Assertions.assertThrows(Exception::class.java) { sut.characterizationFactor() }
+        Assertions.assertEquals("Invalid CF value: hello world", e.message)
+    }
+
+    @Test
+    fun substance_30_parser_should_fail_when_not_double() {
+        // given
+        val record = mockk<CSVRecord>()
+        every { record["LCIAMethod_meanvalue"] } returns "hello world"
+        val sut = EF30Record(record)
+
+        // {w,t}hen
+        val e = Assertions.assertThrows(Exception::class.java) { sut.characterizationFactor() }
+        Assertions.assertEquals("Invalid CF value: hello world", e.message)
+    }
     @Test
     fun substance31() {
         // given
@@ -38,8 +110,8 @@ class GenerateEmissionFactorsTaskTest {
                     reference_unit = kg
 
                     impacts {
-                        2.0522E-08 CTUh human_toxicity_non_carcinogenic
-                        2.0522E-08 CTUh human_toxicity_non_carcinogenic_organics
+                        2.0522E-8 CTUh human_toxicity_non_carcinogenic
+                        2.0522E-8 CTUh human_toxicity_non_carcinogenic_organics
                     }
 
                     meta {
@@ -59,7 +131,7 @@ class GenerateEmissionFactorsTaskTest {
                     reference_unit = kg
 
                     impacts {
-                        4.02E-08 CTUh human_toxicity_non_carcinogenic_organics
+                        4.02E-8 CTUh human_toxicity_non_carcinogenic_organics
                     }
 
                     meta {
