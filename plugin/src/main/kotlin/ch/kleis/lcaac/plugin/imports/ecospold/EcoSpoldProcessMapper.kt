@@ -124,7 +124,6 @@ class EcoSpoldProcessMapper(
         val name = sanitize(e.name)
         val amount = e.amount.toString()
         val unit = unitManager.findRefBySymbolOrSanitizeSymbol(e.unit)
-        val comments = buildIntermediateExchangeComments(e)
 
         when {
             e.outputGroup != null -> {
@@ -137,7 +136,7 @@ class EcoSpoldProcessMapper(
                     name = name,
                     qty = amount,
                     unit = unit,
-                    comments = comments
+                    comments = buildProductExchangeComments(e)
                 )
             }
 
@@ -157,7 +156,6 @@ class EcoSpoldProcessMapper(
                             qty = amount,
                             unit = unit,
                             fromProcess = "$fromProcessName$fromProcessLabels",
-                            comments = comments,
                         )
                     }
 
@@ -169,11 +167,10 @@ class EcoSpoldProcessMapper(
         }
     }
 
-    private fun buildIntermediateExchangeComments(
+    private fun buildProductExchangeComments(
         e: IntermediateExchange,
     ): List<String> {
-        val initComments = ArrayList<String>()
-        initComments.add(e.name)
+        val initComments = mutableListOf(e.name)
         e.classifications.forEach { initComments.add("${it.system} = ${it.value}") }
         e.uncertainty?.let { uncertaintyToStr(initComments, it) }
         e.synonyms.forEachIndexed { i, it -> initComments.add("synonym_$i = $it") }
@@ -183,12 +180,12 @@ class EcoSpoldProcessMapper(
 
     private fun elementaryExchangeToImportedBioExchange(elementaryExchange: ElementaryExchange): ImportedBioExchange =
         ImportedBioExchange(
-            comments = elementaryExchange.comment?.let { listOf(it) } ?: listOf(),
             qty = elementaryExchange.amount.toString(),
             unit = unitManager.findRefBySymbolOrSanitizeSymbol(elementaryExchange.unit),
             name = sanitize(elementaryExchange.name),
             compartment = elementaryExchange.compartment,
             subCompartment = elementaryExchange.subCompartment,
+            comments = elementaryExchange.comment?.let { listOf(it) } ?: listOf(),
             printAsComment = elementaryExchange.printAsComment,
         )
 
@@ -205,7 +202,7 @@ class EcoSpoldProcessMapper(
             )
         } ?: listOf()
 
-    private fun uncertaintyToStr(comments: ArrayList<String>, it: Uncertainty) {
+    private fun uncertaintyToStr(comments: MutableList<String>, it: Uncertainty) {
         it.logNormal?.let { comments.add("// uncertainty: logNormal mean=${it.meanValue}, variance=${it.variance}, mu=${it.mu}") }
         it.pedigreeMatrix?.let { comments.add("// uncertainty: pedigreeMatrix completeness=${it.completeness}, reliability=${it.reliability}, geoCor=${it.geographicalCorrelation}, tempCor=${it.temporalCorrelation}, techCor=${it.furtherTechnologyCorrelation}, ") }
         it.normal?.let { comments.add("// uncertainty: normal mean=${it.meanValue}, variance=${it.variance}, varianceWithPedigreeUncertainty=${it.varianceWithPedigreeUncertainty}, ") }
