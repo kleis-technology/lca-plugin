@@ -143,7 +143,7 @@ tests ::= 'tests' {
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiTestsMixin"
 }
 
-execute ::= 'execute' executeRef {
+execute ::= 'execute' STRING_LITERAL+ {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiExecute"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiExecuteMixin"
 }
@@ -376,10 +376,6 @@ parameterRef ::= uid {
 testRef ::= uid {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUIDOwner"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiTestRefMixin"
-}
-executeRef ::= uid {
-    implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUIDOwner"]
-    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiExecuteRefMixin"
 }
 
 runRef ::= uid {

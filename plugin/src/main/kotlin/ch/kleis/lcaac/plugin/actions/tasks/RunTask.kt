@@ -21,8 +21,11 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
+import java.io.File
 import kotlin.io.path.Path
 
 private const val greenTick = "\u2705"
@@ -46,11 +49,26 @@ class RunTask(
             element.generate?.let { generate(it, indicator) }
             element.assess?.let { assess(it, indicator) }
             element.tests?.let { tests(indicator) }
+            element.execute?.let { execute(it, indicator) }
 
             indicator.fraction = index.toDouble() / size
+            refreshFSAndWait()
         }
 
 
+    }
+
+    private fun refreshFSAndWait() {
+        ApplicationManager.getApplication().invokeAndWait { ->
+            val vFile = VfsUtil.findFile(
+                Path(project.basePath!!), true
+            )
+            VirtualFileManager.getInstance().syncRefresh()
+            vFile?.refresh(false, false)
+            LOG.info("Now refresh")
+            val dumbSrv = DumbService.getInstance(project)
+            dumbSrv.completeJustSubmittedTasks()
+        }
     }
 
     private fun tests(indicator: ProgressIndicator) {
@@ -99,13 +117,29 @@ class RunTask(
         task?.run(indicator)
     }
 
+    private fun execute(exec: LcaExecute, indicator: ProgressIndicator) {
+        val cmds = exec.getCommands()
+        logger.info("Execute ", cmds.joinToString(" "))
+        val result = ProcessBuilder(cmds)
+            .directory(File(project.basePath!!))
+            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+            .redirectError(ProcessBuilder.Redirect.INHERIT)
+            .start()
+            .waitFor()
+        if (result == 0) {
+            logger.info("Execution", "succeed")
+        } else {
+            logger.error("Execution Failed", "exit code is $result")
+            throw ExecutionFailure("Execution Failed, exit code is $result")
+        }
+    }
+
     private fun assess(assess: LcaAssess, indicator: ProgressIndicator) {
         var task: ContributionAnalysisTask? = null
         ApplicationManager.getApplication().runReadAction {
             val processTemplateSpec = assess.getProcessTemplateSpecRef() as LcaProcessTemplateSpec
             val process = assess.getProcessRef().reference.resolve() as LcaProcess
             val file = process.containingFile as LcaFile?
-//            val containingDirectory = file?.containingDirectory
             val labelList = processTemplateSpec.matchLabels?.labelSelectorList ?: emptyList()
             val mapper = LcaMapper(BasicOperations)
             val labels = labelList.associate { selector ->
@@ -157,17 +191,6 @@ class RunTask(
 
     override fun onSuccess() {
         logger.info("Run ${run.runRef.name}", "Success")
-//        val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("LCA Tests") ?: return
-//        val testResultsContent = TestResultsWindow(results).getContent()
-//        val content = ContentFactory.getInstance().createContent(
-//            testResultsContent,
-//            "All Tests",
-//            false,
-//        )
-//        toolWindow.contentManager.removeAllContents(true)
-//        toolWindow.contentManager.addContent(content)
-//        toolWindow.contentManager.setSelectedContent(content)
-//        toolWindow.show()
         val message = MyBundle.message("lca.task.tests.result", run.runnableList.size)
         NotificationGroupManager.getInstance()
             .getNotificationGroup("LcaAsCode")
