@@ -4,7 +4,6 @@ import ch.kleis.lcaac.core.assessment.ContributionAnalysis
 import ch.kleis.lcaac.core.lang.value.IndicatorValue
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
-import ch.kleis.lcaac.plugin.ui.toolwindow.shared.FloatingPointRepresentation
 import javax.swing.event.TableModelListener
 import javax.swing.table.TableModel
 
@@ -33,7 +32,7 @@ class UnitaryTableModel(private val analysis: ContributionAnalysis<BasicNumber, 
 
     override fun getColumnClass(p0: Int): Class<*> = when (p0) {
         0 -> String::class.java
-        else -> FloatingPointRepresentation::class.java
+        else -> Double::class.java
     }
 
     override fun isCellEditable(p0: Int, p1: Int): Boolean = false
@@ -43,7 +42,7 @@ class UnitaryTableModel(private val analysis: ContributionAnalysis<BasicNumber, 
         else -> {
             val indicator = indicators[colIdx - 1]
             val value = unitaryImpacts[rowIdx][indicator]
-            FloatingPointRepresentation.of(signs[rowIdx] * (value?.amount?.value ?: 0.0))
+            signs[rowIdx] * (value?.amount?.value ?: 0.0)
         }
     }
 
