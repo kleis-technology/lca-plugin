@@ -6,4 +6,7 @@ data class LcaTestResult(
     val name: String,
     val results: List<AssertionResult>,
     val source: LcaTest,
-)
+) {
+    fun isSuccess() = results.all { it.isSuccess() }
+
+}

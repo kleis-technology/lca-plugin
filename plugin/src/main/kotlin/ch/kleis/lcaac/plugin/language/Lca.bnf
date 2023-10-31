@@ -54,6 +54,8 @@
       RUN_KEYWORD = 'run'
       ASSESS_KEYWORD = 'assess'
       GENERATE_KEYWORD = 'generate'
+      TESTS_KEYWORD = 'tests'
+      EXECUTE_KEYWORD = 'execute'
 
       NUMBER = 'number'
       LSQBRACE = ']'
@@ -124,7 +126,7 @@ run ::= 'run' runRef '{'
     stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.run.RunStub"
 }
 
-runnable ::= (assess | generate )
+runnable ::= (assess | generate | tests | execute)
 
 assess ::= 'assess'  processTemplateSpec {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiAssess"]
@@ -134,6 +136,16 @@ assess ::= 'assess'  processTemplateSpec {
 generate ::= 'generate' processTemplateSpec {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiGenerate"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiGenerateMixin"
+}
+
+tests ::= 'tests' {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiTests"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiTestsMixin"
+}
+
+execute ::= 'execute' executeRef {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiExecute"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiExecuteMixin"
 }
 
 
@@ -364,6 +376,10 @@ parameterRef ::= uid {
 testRef ::= uid {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUIDOwner"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiTestRefMixin"
+}
+executeRef ::= uid {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUIDOwner"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiExecuteRefMixin"
 }
 
 runRef ::= uid {

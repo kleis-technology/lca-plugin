@@ -424,7 +424,7 @@ run ci {
 
         // Then
         assertNotNull(lookupElementStrings)
-        assertSameElements(lookupElementStrings!!, "generate", "assess")
+        assertSameElements(lookupElementStrings!!, "generate", "assess", "tests", "execute")
     }
 
 }

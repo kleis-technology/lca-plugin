@@ -101,6 +101,8 @@ CommentContent = .*
 <YYINITIAL> "run"                { return LcaTypes.RUN_KEYWORD; }
 <YYINITIAL> "assess"             { return LcaTypes.ASSESS_KEYWORD; }
 <YYINITIAL> "generate"           { return LcaTypes.GENERATE_KEYWORD; }
+<YYINITIAL> "tests"           { return LcaTypes.TESTS_KEYWORD; }
+<YYINITIAL> "execute"           { return LcaTypes.EXECUTE_KEYWORD; }
 
 
 

@@ -5,6 +5,7 @@ import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
+import ch.kleis.lcaac.plugin.MyBundle
 import ch.kleis.lcaac.plugin.language.loader.LcaMapper
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.psi.*
@@ -13,6 +14,8 @@ import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.ImpactAs
 import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.InventoryTableModel
 import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables.SupplyTableModel
 import ch.kleis.lcaac.plugin.ui.toolwindow.shared.SaveTableModelTask
+import com.intellij.notification.NotificationGroupManager
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
@@ -22,6 +25,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFileManager
 import kotlin.io.path.Path
 
+private const val greenTick = "\u2705"
+private const val redCross = "\u274C"
 
 class RunTask(
     private val project: Project,
@@ -33,18 +38,44 @@ class RunTask(
         private val LOG = Logger.getInstance(RunTask::class.java)
     }
 
-    //    private val logger = TerminalTaskLogger()
+    // TODO : composite ProgressIndicator
     override fun run(indicator: ProgressIndicator) {
         val size = run.runnableList.size
         run.runnableList.forEachIndexed { index, element ->
 
             element.generate?.let { generate(it, indicator) }
             element.assess?.let { assess(it, indicator) }
+            element.tests?.let { tests(indicator) }
 
             indicator.fraction = index.toDouble() / size
         }
 
 
+    }
+
+    private fun tests(indicator: ProgressIndicator) {
+        fun onTestSuccess(task: RunAllTestsTask) {
+            val nbPassed = task.results.filter { it.isSuccess() }.size
+            val nbFailed = task.results.size - nbPassed
+            logger.info("Run All tests", "$nbPassed passed / $nbFailed failed")
+            for (result in task.results) {
+                val tick = if (result.isSuccess()) greenTick else redCross
+                logger.info("  ", "$tick ${result.name}")
+                for (assert in result.results) {
+                    val assessTick = if (assert.isSuccess()) greenTick else redCross
+                    logger.info("    ", "$assessTick ${assert.toString()}")
+                }
+            }
+        }
+
+        val task = RunAllTestsTask(project = project, ::onTestSuccess)
+        task.run(indicator)
+        if (task.results.all { it.isSuccess() }) {
+            task.onSuccess()
+        } else {
+            logger.error("Tests Task ${run.runRef.name} failed", "Some tests failed during execution")
+            throw ExecutionFailure("Tests Task ${run.runRef.name} failed. Some tests failed during execution")
+        }
     }
 
     private fun generate(generate: LcaGenerate, indicator: ProgressIndicator) {
@@ -81,12 +112,8 @@ class RunTask(
                 selector.labelRef.name to mapper.dataExpression(selector.dataExpression).toString()
             }
 
-            fun assesOnSuccess(
-                p: Project,
-                a: ContributionAnalysis<BasicNumber, BasicMatrix>,
-                c: Comparator<MatrixColumnIndex<BasicNumber>>
-            ) {
-                saveInventory(p, a, c, process.name)
+            fun assesOnSuccess(task: ContributionAnalysisTask) {
+                saveInventory(task.project, task.data!!.first, task.data!!.second, process.name)
             }
 
             file?.let {
@@ -97,7 +124,6 @@ class RunTask(
                     matchLabels = labels,
                     success = ::assesOnSuccess
                 )
-//                ProgressManager.getInstance().run(task)
             }
             task?.run(indicator)
             task?.onSuccess()
@@ -142,6 +168,12 @@ class RunTask(
 //        toolWindow.contentManager.addContent(content)
 //        toolWindow.contentManager.setSelectedContent(content)
 //        toolWindow.show()
+        val message = MyBundle.message("lca.task.tests.result", run.runnableList.size)
+        NotificationGroupManager.getInstance()
+            .getNotificationGroup("LcaAsCode")
+            .createNotification(title, message, NotificationType.INFORMATION)
+            .notify(project)
+
     }
 
 
@@ -149,5 +181,9 @@ class RunTask(
         logger.error("Run ${run.runRef.name} finish with Errors", e.message ?: "unknown error")
         LOG.warn("Unable to process computation", e)
     }
+}
+
+class ExecutionFailure(msg: String) : Throwable(msg) {
+
 }
 

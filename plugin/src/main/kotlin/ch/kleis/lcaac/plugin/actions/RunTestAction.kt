@@ -19,7 +19,7 @@ class RunTestAction(
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         val file = e.getData(LangDataKeys.PSI_FILE) as LcaFile? ?: return
-        val task = RunAllTestsTask(project) {
+        val task = RunAllTestsTask(project, RunAllTestsAction::onTestSuccess) {
             runReadAction {
                 file.findTest(testName)
                     ?.let { listOf(it) }

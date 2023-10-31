@@ -15,18 +15,14 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 
-typealias OnSuccess = (
-    project: Project,
-    analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
-    comparator: Comparator<MatrixColumnIndex<BasicNumber>>
-) -> Unit
+typealias OnSuccess<T> = (task: T) -> Unit
 
 class ContributionAnalysisTask(
     project: Project,
     private val processName: String,
     private val file: LcaFile,
     private val matchLabels: Map<String, String>,
-    private val success: OnSuccess
+    private val success: OnSuccess<ContributionAnalysisTask>
 ) : Task.Backgroundable(project, "Run") {
     companion object {
         private val LOG = Logger.getInstance(ContributionAnalysisTask::class.java)
@@ -44,7 +40,7 @@ class ContributionAnalysisTask(
 
     override fun onSuccess() {
         this.data?.let {
-            success(project, it.first, it.second)
+            success(this)
         }
     }
 

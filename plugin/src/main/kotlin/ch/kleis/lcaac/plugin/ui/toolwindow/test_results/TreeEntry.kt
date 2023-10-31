@@ -34,7 +34,7 @@ data class AssertionResultEntry(
     val id: Int,
     val result: AssertionResult,
 ) : TestResultTreeEntry {
-    val isSuccess: Boolean = result is RangeAssertionSuccess
+    val isSuccess: Boolean = result.isSuccess()
     private val tick = if (isSuccess) greenTick else redCross
 
     override fun toString(): String {
