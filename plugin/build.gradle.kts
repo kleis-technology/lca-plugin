@@ -1,4 +1,5 @@
 
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import task.GenerateEmissionFactorsTask30
@@ -59,6 +60,11 @@ dependencies {
 
     testImplementation("io.mockk:mockk:1.13.4")
     testImplementation(kotlin("test-junit"))
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
+
+    val kotestVersion = "5.7.2"
+    testImplementation("io.kotest:kotest-runner-junit5-jvm:$kotestVersion")
+    testImplementation("io.kotest:kotest-property-jvm:$kotestVersion")
 }
 
 
@@ -108,6 +114,13 @@ tasks {
         dependsOn("generateParser")
         dependsOn("generateEmissionFactors30")
         dependsOn("generateEmissionFactors31")
+    }
+
+    test {
+        useJUnitPlatform()
+        testLogging {
+            events = setOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
+        }
     }
 
     patchPluginXml {
@@ -162,7 +175,8 @@ tasks {
         // pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels, like 2.1.7-alpha.3
         // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
         // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
-        channels.set(listOf(pluginVersion.split('-').getOrElse(1) { "default" }.split('.').first()))
+        val channel = listOf(pluginVersion.split('-').getOrElse(1) { "default" }.split('.').first())
+        channels.set(channel)
     }
 
     clean {
