@@ -7,7 +7,6 @@ import ch.kleis.lcaac.core.lang.value.ProductValue
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.plugin.MyBundle
-import ch.kleis.lcaac.plugin.ui.toolwindow.shared.FloatingPointRepresentation
 import javax.swing.event.TableModelListener
 import javax.swing.table.TableModel
 
@@ -46,7 +45,7 @@ class SupplyTableModel(
 
     override fun getColumnClass(columnIndex: Int): Class<*> {
         if (columnIndex <= 4) return String::class.java
-        return FloatingPointRepresentation::class.java
+        return Double::class.java
     }
 
     override fun isCellEditable(rowIndex: Int, columnIndex: Int): Boolean {
@@ -67,12 +66,12 @@ class SupplyTableModel(
             }
             displayTotal && columnIndex == 5 -> {
                 val total = analysis.supplyOf(product)
-                FloatingPointRepresentation.of(total.amount.value)
+                total.amount.value
             }
             else -> {
                 val requestedProduct = requestedProducts[columnIndex - columnPrefix]
                 val quantity = analysis.allocatedSupplyOf(product, requestedProduct)
-                FloatingPointRepresentation.of(quantity.amount.value)
+                quantity.amount.value
             }
         }
     }

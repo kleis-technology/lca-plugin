@@ -1,7 +1,9 @@
 package ch.kleis.lcaac.plugin.actions.csv
 
 import ch.kleis.lcaac.core.lang.value.ProductValue
+import ch.kleis.lcaac.core.lang.value.QuantityValue
 import ch.kleis.lcaac.core.math.basic.BasicNumber
+import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.plugin.fixture.QuantityValueFixture
 import ch.kleis.lcaac.plugin.fixture.UnitValueFixture
 import io.mockk.mockk
@@ -26,7 +28,7 @@ class CsvResultWriterTest {
             request,
             ProductValue("out", UnitValueFixture.kg()),
             mapOf(
-                ProductValue<BasicNumber>("in1", UnitValueFixture.kg()) to QuantityValueFixture.oneKilogram,
+                ProductValue<BasicNumber>("in1", UnitValueFixture.kg()) to QuantityValue(BasicOperations.pure(21234234923.3), UnitValueFixture.kg()),
                 ProductValue<BasicNumber>("in2", UnitValueFixture.l()) to QuantityValueFixture.oneLitre,
             )
         )
@@ -45,7 +47,7 @@ class CsvResultWriterTest {
         // then
         val expected = """
             comment,id,a,b,product,reference unit,in1 [kg],in2 [l]
-            "Comment, with comma, and ""double quotes"" ",s00,1.0,2.0,out,kg,1.0,1.0
+            "Comment, with comma, and ""double quotes"" ",s00,1.0,2.0,out,kg,2.12342349233E10,1.0
             
         """.trimIndent()
         assertEquals(expected, actual)
