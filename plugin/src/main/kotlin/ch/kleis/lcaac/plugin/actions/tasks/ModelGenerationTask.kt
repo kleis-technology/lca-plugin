@@ -9,11 +9,15 @@ import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.psi.LcaProcess
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiDirectory
 import java.io.FileNotFoundException
 import java.nio.file.Path
@@ -54,6 +58,15 @@ class ModelGenerationTask(
             // write
             val fileName = "$processName.generated.models.lca"
             val outputPath = writeModel(indicator, containingDirectory, requests, fileName)
+            ApplicationManager.getApplication().invokeAndWait { ->
+                val vFile = VfsUtil.findFile(
+                    outputPath, true
+                )
+                VirtualFileManager.getInstance().syncRefresh()
+                vFile?.refresh(false, false)
+                val dumbSrv = DumbService.getInstance(project)
+                dumbSrv.completeJustSubmittedTasks()
+            }
 
             // TODO Refactor
             // done
