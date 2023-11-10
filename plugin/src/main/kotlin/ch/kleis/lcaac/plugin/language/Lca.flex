@@ -102,6 +102,7 @@ CommentContent = .*
 <YYINITIAL> "filename"                { return LcaTypes.FILENAME_KEYWORD; }
 <YYINITIAL> "index"                { return LcaTypes.INDEX_KEYWORD; }
 <YYINITIAL> "columns"                { return LcaTypes.COLUMNS_KEYWORD; }
+<YYINITIAL> "in"                { return LcaTypes.IN_KEYWORD; }
 
 
 

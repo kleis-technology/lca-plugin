@@ -55,6 +55,7 @@
       FILENAME_KEYWORD = 'filename'
       INDEX_KEYWORD = 'index'
       COLUMNS_KEYWORD = 'columns'
+      IN_KEYWORD = 'in'
 
       NUMBER = 'number'
       LSQBRACE = ']'

@@ -23,6 +23,8 @@ class LcaFormattingModelBuilder : FormattingModelBuilder {
                 .spacing(0, 0, 0, true, 1)
                 .before(TEST)
                 .spacing(0, 0, 0, true, 1)
+                .before(DATA_SOURCE)
+                .spacing(0, 0, 0, true, 1)
                 // Braces
                 .before(RBRACE)
                 .spacing(0, 0, 0, true, 0)
@@ -84,6 +86,11 @@ class LcaFormattingModelBuilder : FormattingModelBuilder {
                 .beforeInside(GIVEN, TEST)
                 .spacing(0, 0, 0, true, 1)
                 .beforeInside(ASSERT, TEST)
+                .spacing(0, 0, 0, true, 1)
+                // Data source
+                .aroundInside(DATA_SOURCE_REF, DATA_SOURCE)
+                .spaces(1)
+                .beforeInside(COLUMNS, DATA_SOURCE)
                 .spacing(0, 0, 0, true, 1)
                 // Comments
                 .before(COMMENT_CONTENT)

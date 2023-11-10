@@ -31,6 +31,7 @@ class LcaIndentBlock(node: ASTNode, private val spaceBuilder: SpacingBuilder) :
             META_ASSIGNMENT, ALIAS_FOR_FIELD,
             COMMENT_LINE, COMMENT_BLOCK_START, COMMENT_CONTENT, COMMENT_BLOCK_END,
             ASSERT, GIVEN, RANGE_ASSERTION,
+            DATA_SOURCE, COLUMNS, FILENAME, INDEX, COLUMN,
             -> Indent.getNormalIndent(true)
 
             else -> Indent.getNoneIndent()
