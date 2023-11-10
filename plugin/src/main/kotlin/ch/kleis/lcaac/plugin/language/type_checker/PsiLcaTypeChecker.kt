@@ -140,8 +140,10 @@ class PsiLcaTypeChecker {
         return when (element) {
             is PsiDataRef -> checkDataRef(element)
             is LcaStringExpression -> TString
-            is LcaScaleQuantityExpression -> checkDataExpression(element.dataExpression!!)
-            is LcaParenQuantityExpression -> checkDataExpression(element.dataExpression!!)
+            is LcaScaleQuantityExpression -> element.dataExpression?.let { checkDataExpression(it) }
+                ?: throw PsiTypeCheckException("missing expression")
+            is LcaParenQuantityExpression -> element.dataExpression?.let { checkDataExpression(it) }
+                ?: throw PsiTypeCheckException("missing expression")
             is LcaExponentialQuantityExpression -> {
                 val exponent = element.exponent.text.toDouble()
                 val tyBase = checkDataExpression(element.dataExpression, TQuantity::class.java)

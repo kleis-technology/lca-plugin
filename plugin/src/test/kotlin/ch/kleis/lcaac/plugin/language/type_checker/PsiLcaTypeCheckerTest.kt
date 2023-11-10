@@ -22,6 +22,60 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
     }
 
     @Test
+    fun test_whenScaleExpression_missingInnerExpression() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        myFixture.createFile(
+            "$pkgName.lca", """
+                package $pkgName
+                
+                variables {
+                    x = 1 / kg
+                }
+            """.trimIndent()
+        )
+        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(
+            project,
+            "$pkgName.x"
+        ).first()
+            .dataExpressionList[1]
+        val checker = PsiLcaTypeChecker()
+
+        // when
+        val e = assertFailsWith<PsiTypeCheckException> {
+            checker.check(target)
+        }
+        TestCase.assertEquals("missing expression", e.message)
+    }
+
+    @Test
+    fun test_whenParen_missingInnerExpression() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        myFixture.createFile(
+            "$pkgName.lca", """
+                package $pkgName
+                
+                variables {
+                    x = ()
+                }
+            """.trimIndent()
+        )
+        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(
+            project,
+            "$pkgName.x"
+        ).first()
+            .dataExpressionList[1]
+        val checker = PsiLcaTypeChecker()
+
+        // when
+        val e = assertFailsWith<PsiTypeCheckException> {
+            checker.check(target)
+        }
+        TestCase.assertEquals("missing expression", e.message)
+    }
+
+    @Test
     fun test_whenLabelAssignment_shouldTypeCheck() {
         // given
         val pkgName = {}.javaClass.enclosingMethod.name
