@@ -5,13 +5,11 @@ import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.evaluator.ToValue
 import ch.kleis.lcaac.core.lang.expression.EProcessTemplateApplication
 import ch.kleis.lcaac.core.lang.expression.EQuantityAdd
-import ch.kleis.lcaac.core.lang.fixture.ProductValueFixture
-import ch.kleis.lcaac.core.lang.fixture.QuantityFixture
-import ch.kleis.lcaac.core.lang.fixture.QuantityValueFixture
-import ch.kleis.lcaac.core.lang.fixture.TemplateFixture
+import ch.kleis.lcaac.core.lang.fixture.*
 import ch.kleis.lcaac.core.lang.value.FromProcessRefValue
 import ch.kleis.lcaac.core.lang.value.ProcessValue
 import ch.kleis.lcaac.core.lang.value.TechnoExchangeValue
+import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -20,7 +18,8 @@ import kotlin.test.assertFailsWith
 
 class ReduceTest {
     private val ops = BasicOperations
-    
+    private val sourceOps = DataSourceOperationsFixture.sourceOps<BasicNumber>()
+
     @Test
     fun eval_whenInstanceOfProcessTemplate_shouldEvaluateToProcessValue() {
         // given
@@ -35,7 +34,7 @@ class ReduceTest {
             )
         )
         )
-        val reduceAndComplete = Reduce(SymbolTable.empty(), ops)
+        val reduceAndComplete = Reduce(SymbolTable.empty(), ops, sourceOps)
 
         // when
         val actual = with(ToValue(BasicOperations)) { reduceAndComplete.apply(instance).toValue() }
@@ -68,7 +67,7 @@ class ReduceTest {
     fun eval_whenProcessTemplate_shouldAutomaticallyInstantiateWithoutArguments() {
         // given
         val template = EProcessTemplateApplication(TemplateFixture.carrotProduction, emptyMap())
-        val reduceAndComplete = Reduce(SymbolTable.empty(), ops)
+        val reduceAndComplete = Reduce(SymbolTable.empty(), ops, sourceOps)
 
         // when
         val actual = with(ToValue(BasicOperations)) { reduceAndComplete.apply(template).toValue() }
@@ -101,7 +100,7 @@ class ReduceTest {
     fun eval_whenContainsUnboundedReference_shouldThrow() {
         // given
         val template = EProcessTemplateApplication(TemplateFixture.withUnboundedRef, emptyMap())
-        val reduceAndComplete = Reduce(SymbolTable.empty(), ops)
+        val reduceAndComplete = Reduce(SymbolTable.empty(), ops, sourceOps)
 
         // when/then
         assertFailsWith(

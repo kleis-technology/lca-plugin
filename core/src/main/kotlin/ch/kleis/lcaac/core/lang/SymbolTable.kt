@@ -10,16 +10,15 @@ data class SymbolTable<Q>(
     val dimensions: DimensionRegister = DimensionRegister.empty(),
     val processTemplates: ProcessTemplateRegister<Q> = ProcessTemplateRegister.empty(),
     val substanceCharacterizations: SubstanceCharacterizationRegister<Q> = SubstanceCharacterizationRegister.empty(),
+    val dataSources: DataSourceRegister<Q> = DataSourceRegister.empty(),
 ) {
     companion object {
         fun <Q> empty() = SymbolTable<Q>()
     }
 
-
     override fun toString(): String {
         return "[symbolTable]"
     }
-
 
     /*
         Templates

@@ -4,6 +4,7 @@ import ch.kleis.lcaac.core.lang.register.DataKey
 import ch.kleis.lcaac.core.lang.register.DataRegister
 import ch.kleis.lcaac.core.lang.expression.*
 import ch.kleis.lcaac.core.lang.fixture.*
+import ch.kleis.lcaac.core.lang.register.DataSourceRegister
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import org.junit.jupiter.api.Test
@@ -11,6 +12,7 @@ import kotlin.test.assertEquals
 
 class LcaExpressionReducerTest {
     private val ops = BasicOperations
+    private val sourceOps = DataSourceOperationsFixture.sourceOps<BasicNumber>()
 
     @Test
     fun reduce_whenTechnoExchange_shouldReduceLabelSelectors() {
@@ -30,7 +32,9 @@ class LcaExpressionReducerTest {
             DataRegister(
                 mapOf(DataKey("geo") to EStringLiteral("FR"))
             ),
+            DataSourceRegister.empty(),
             ops,
+            sourceOps,
         )
 
         // when
@@ -74,7 +78,9 @@ class LcaExpressionReducerTest {
                     "q_propanol" to QuantityFixture.oneKilogram,
                 ).mapKeys { DataKey(it.key) }
             ),
+            DataSourceRegister.empty(),
             ops,
+            sourceOps,
         )
 
         // when
@@ -118,7 +124,9 @@ class LcaExpressionReducerTest {
                     DataKey("q") to QuantityFixture.oneKilogram,
                 )
             ),
+            DataSourceRegister.empty(),
             ops,
+            sourceOps,
         )
 
         // when
@@ -145,7 +153,9 @@ class LcaExpressionReducerTest {
                     DataKey("q") to QuantityFixture.oneKilogram,
                 )
             ),
+            DataSourceRegister.empty(),
             ops,
+            sourceOps,
         )
 
         // when
@@ -172,7 +182,9 @@ class LcaExpressionReducerTest {
                     DataKey("q") to QuantityFixture.oneKilogram,
                 )
             ),
+            DataSourceRegister.empty(),
             ops,
+            sourceOps,
         )
 
         // when
@@ -199,7 +211,9 @@ class LcaExpressionReducerTest {
                     DataKey("kg") to UnitFixture.kg
                 )
             ),
+            DataSourceRegister.empty(),
             ops,
+            sourceOps,
         )
 
         // when
@@ -230,7 +244,9 @@ class LcaExpressionReducerTest {
                     DataKey("kg") to UnitFixture.kg
                 )
             ),
+            DataSourceRegister.empty(),
             ops,
+            sourceOps,
         )
 
         // when
@@ -261,7 +277,9 @@ class LcaExpressionReducerTest {
                     DataKey("kg") to UnitFixture.kg
                 )
             ),
+            DataSourceRegister.empty(),
             ops,
+            sourceOps,
         )
 
         // when
@@ -288,7 +306,9 @@ class LcaExpressionReducerTest {
                     DataKey("kg") to UnitFixture.kg
                 )
             ),
+            DataSourceRegister.empty(),
             ops,
+            sourceOps,
         )
 
         // when
@@ -323,7 +343,9 @@ class LcaExpressionReducerTest {
                     "kg" to UnitFixture.kg
                 ).mapKeys { DataKey(it.key) }
             ),
+            DataSourceRegister.empty(),
             ops,
+            sourceOps,
         )
 
         // when
@@ -366,7 +388,9 @@ class LcaExpressionReducerTest {
                     "q_cc" to QuantityFixture.oneKilogram,
                 ).mapKeys { DataKey(it.key) }
             ),
+            DataSourceRegister.empty(),
             ops,
+            sourceOps,
         )
 
         // when

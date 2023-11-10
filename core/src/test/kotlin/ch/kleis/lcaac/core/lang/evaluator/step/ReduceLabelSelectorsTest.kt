@@ -4,7 +4,9 @@ import ch.kleis.lcaac.core.lang.register.DataKey
 import ch.kleis.lcaac.core.lang.register.DataRegister
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.expression.*
+import ch.kleis.lcaac.core.lang.fixture.DataSourceOperationsFixture
 import ch.kleis.lcaac.core.lang.fixture.QuantityFixture
+import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -12,6 +14,7 @@ import kotlin.test.assertEquals
 
 class ReduceLabelSelectorsTest {
     private val ops = BasicOperations
+    private val sourceOps = DataSourceOperationsFixture.sourceOps<BasicNumber>()
 
     @Test
     fun reduce_whenPassingByArguments() {
@@ -38,7 +41,7 @@ class ReduceLabelSelectorsTest {
             ),
             mapOf("geo" to EStringLiteral("FR")),
         )
-        val reduceLabelSelectors = ReduceLabelSelectors(SymbolTable(), ops)
+        val reduceLabelSelectors = ReduceLabelSelectors(SymbolTable(), ops, sourceOps)
 
         // when
         val actual = reduceLabelSelectors.apply(instance)
@@ -93,7 +96,7 @@ class ReduceLabelSelectorsTest {
                 )
             ),
         )
-        val reduceLabelSelectors = ReduceLabelSelectors(SymbolTable(), ops)
+        val reduceLabelSelectors = ReduceLabelSelectors(SymbolTable(), ops, sourceOps)
 
         // when
         val actual = reduceLabelSelectors.apply(instance)
@@ -147,7 +150,7 @@ class ReduceLabelSelectorsTest {
                 )
             ),
         )
-        val reduceLabelSelectors = ReduceLabelSelectors(SymbolTable(), ops)
+        val reduceLabelSelectors = ReduceLabelSelectors(SymbolTable(), ops, sourceOps)
 
         // when
         val actual = reduceLabelSelectors.apply(instance)
@@ -206,6 +209,7 @@ class ReduceLabelSelectorsTest {
                 data = DataRegister(mapOf(DataKey("geo") to EStringLiteral("FR")))
             ),
             ops,
+            sourceOps,
         )
 
         // when
@@ -259,7 +263,7 @@ class ReduceLabelSelectorsTest {
                 )
             ),
         )
-        val reduceLabelSelectors = ReduceLabelSelectors(SymbolTable(), ops)
+        val reduceLabelSelectors = ReduceLabelSelectors(SymbolTable(), ops, sourceOps)
 
         // when
         val actual = reduceLabelSelectors.apply(instance)

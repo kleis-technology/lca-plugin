@@ -31,6 +31,24 @@ data class EDataRef<Q>(val name: String) : DataExpression<Q> {
  */
 
 @optics
+data class EQuantityFrom<Q>(
+    val source: String,
+    val row: Int,
+    val column: String,
+) : DataExpression<Q>, QuantityExpression<Q> {
+    companion object
+}
+
+@optics
+data class EQuantityFromIndexed<Q>(
+    val source: String,
+    val row: String,
+    val column: String,
+) : DataExpression<Q>, QuantityExpression<Q> {
+    companion object
+}
+
+@optics
 data class EUnitLiteral<Q>(val symbol: UnitSymbol, val scale: Double, val dimension: Dimension) : DataExpression<Q>,
     QuantityExpression<Q> {
     override fun toString(): String {
@@ -101,5 +119,22 @@ data class EStringLiteral<Q>(val value: String) : DataExpression<Q>, StringExpre
         return value
     }
 
+    companion object
+}
+@optics
+data class EStringFrom<Q>(
+    val source: String,
+    val row: Int,
+    val column: String,
+) : DataExpression<Q>, StringExpression {
+    companion object
+}
+
+@optics
+data class EStringFromIndexed<Q>(
+    val source: String,
+    val row: String,
+    val column: String,
+) : DataExpression<Q>, StringExpression {
     companion object
 }

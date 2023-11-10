@@ -2,6 +2,7 @@ package ch.kleis.lcaac.core.lang.evaluator.reducer
 
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.*
+import ch.kleis.lcaac.core.lang.fixture.DataSourceOperationsFixture
 import ch.kleis.lcaac.core.lang.fixture.ProductFixture
 import ch.kleis.lcaac.core.lang.fixture.QuantityFixture
 import ch.kleis.lcaac.core.lang.fixture.UnitFixture
@@ -13,6 +14,7 @@ import kotlin.test.assertFailsWith
 
 class ProcessTemplateExpressionReducerTest {
     private val ops = BasicOperations
+    private val sourceOps = DataSourceOperationsFixture.sourceOps<BasicNumber>()
 
     @Test
     fun reduce_whenInstance_shouldReduce() {
@@ -44,7 +46,7 @@ class ProcessTemplateExpressionReducerTest {
             Pair("q_carrot", QuantityFixture.twoKilograms),
         )
         val expression = EProcessTemplateApplication(template, arguments)
-        val reducer = TemplateExpressionReducer(ops)
+        val reducer = TemplateExpressionReducer(ops, sourceOps)
 
         // when
         val actual = reducer.reduce(expression)
@@ -109,7 +111,7 @@ class ProcessTemplateExpressionReducerTest {
             Pair("foo", QuantityFixture.twoKilograms),
         )
         val expression = EProcessTemplateApplication(template, arguments)
-        val reducer = TemplateExpressionReducer(ops)
+        val reducer = TemplateExpressionReducer(ops, sourceOps)
 
         // when/then
         val e = assertFailsWith(EvaluatorException::class, null) { reducer.reduce(expression) }

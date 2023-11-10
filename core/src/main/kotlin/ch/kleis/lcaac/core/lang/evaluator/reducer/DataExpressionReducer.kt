@@ -1,18 +1,24 @@
 package ch.kleis.lcaac.core.lang.evaluator.reducer
 
-import ch.kleis.lcaac.core.lang.register.DataKey
-import ch.kleis.lcaac.core.lang.register.DataRegister
+import ch.kleis.lcaac.core.datasource.DataSourceOperations
 import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.*
+import ch.kleis.lcaac.core.lang.register.DataKey
+import ch.kleis.lcaac.core.lang.register.DataRegister
+import ch.kleis.lcaac.core.lang.register.DataSourceKey
+import ch.kleis.lcaac.core.lang.register.DataSourceRegister
 import ch.kleis.lcaac.core.math.QuantityOperations
 import kotlin.math.pow
 
 class DataExpressionReducer<Q>(
     dataRegister: DataRegister<Q>,
+    dataSourceRegister: DataSourceRegister<Q>,
     private val ops: QuantityOperations<Q>,
+    private val sourceOps: DataSourceOperations<Q>,
 ) {
     private val dataRegister = DataRegister(dataRegister)
+    private val dataSourceRegister = DataSourceRegister(dataSourceRegister)
     private val infiniteUnitLoopChecker = InfiniteUnitLoopChecker<Q>()
 
     fun reduce(expression: DataExpression<Q>): DataExpression<Q> {
@@ -30,8 +36,38 @@ class DataExpressionReducer<Q>(
                 is EUnitLiteral -> EQuantityScale(pure(1.0), expression)
                 is EUnitOf -> reduceUnitOf(expression)
                 is EStringLiteral -> expression
+
+                // TODO: Test me
+                is EQuantityFrom -> reduceEQuantityFrom(expression)
+                is EQuantityFromIndexed -> reduceEQuantityFromIndexed(expression)
+                is EStringFrom -> reduceStringFrom(expression)
+                is EStringFromIndexed -> reduceStringFromIndexed(expression)
             }
         }
+    }
+
+    private fun reduceStringFromIndexed(expression: EStringFromIndexed<Q>): DataExpression<Q> {
+        val source = dataSourceRegister[DataSourceKey(expression.source)]
+            ?: throw EvaluatorException("unknown data source ${expression.source}")
+        return sourceOps.readText(source, expression.row, expression.column)
+    }
+
+    private fun reduceStringFrom(expression: EStringFrom<Q>): DataExpression<Q> {
+        val source = dataSourceRegister[DataSourceKey(expression.source)]
+            ?: throw EvaluatorException("unknown data source ${expression.source}")
+        return sourceOps.readText(source, expression.row, expression.column)
+    }
+
+    private fun reduceEQuantityFromIndexed(expression: EQuantityFromIndexed<Q>): DataExpression<Q> {
+        val source = dataSourceRegister[DataSourceKey(expression.source)]
+            ?: throw EvaluatorException("unknown data source ${expression.source}")
+        return sourceOps.readQuantity(source, expression.row, expression.column)
+    }
+
+    private fun reduceEQuantityFrom(expression: EQuantityFrom<Q>): DataExpression<Q> {
+        val source = dataSourceRegister[DataSourceKey(expression.source)]
+            ?: throw EvaluatorException("unknown data source ${expression.source}")
+        return sourceOps.readQuantity(source, expression.row, expression.column)
     }
 
 
@@ -68,7 +104,7 @@ class DataExpressionReducer<Q>(
     }
 
     private fun reduceClosure(closure: EQuantityClosure<Q>): DataExpression<Q> =
-        DataExpressionReducer(closure.symbolTable.data, ops).reduce(closure.expression)
+        DataExpressionReducer(closure.symbolTable.data, closure.symbolTable.dataSources, ops, sourceOps).reduce(closure.expression)
 
     private fun reduceDiv(expression: EQuantityDiv<Q>): DataExpression<Q> {
         with(ops) {
