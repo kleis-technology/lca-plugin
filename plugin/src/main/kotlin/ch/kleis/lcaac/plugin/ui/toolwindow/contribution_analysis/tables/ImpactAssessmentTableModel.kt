@@ -6,7 +6,6 @@ import ch.kleis.lcaac.core.lang.value.ProductValue
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.plugin.MyBundle
-import ch.kleis.lcaac.plugin.ui.toolwindow.shared.FloatingPointRepresentation
 import javax.swing.event.TableModelListener
 import javax.swing.table.TableModel
 
@@ -46,7 +45,7 @@ class ImpactAssessmentTableModel(
         return when (columnIndex) {
             0 -> String::class.java
             1 -> String::class.java
-            else -> FloatingPointRepresentation::class.java
+            else -> Double::class.java
         }
     }
 
@@ -61,12 +60,12 @@ class ImpactAssessmentTableModel(
             columnIndex == 1 -> "${indicator.referenceUnit.symbol}"
             displayTotal && columnIndex == 2 -> {
                 val total = analysis.supplyOf(indicator)
-                FloatingPointRepresentation.of(total.amount.value)
+                total.amount.value
             }
             else -> {
                 val product = requestedProducts[columnIndex - columnPrefix]
                 val contribution = analysis.getPortContribution(product, indicator)
-                FloatingPointRepresentation.of(contribution.amount.value)
+                contribution.amount.value
             }
         }
     }

@@ -11,7 +11,6 @@ import com.intellij.util.ui.JBEmptyBorder
 import java.awt.BorderLayout
 import java.awt.Dimension
 import javax.swing.*
-import javax.swing.table.DefaultTableCellRenderer
 import javax.swing.table.TableModel
 
 
@@ -44,9 +43,9 @@ class CopyPastableTablePane(
         val table = JBTable(model)
         table.transferHandler = WithHeaderTransferableHandler()
         table.autoCreateRowSorter = true
-        val cellRenderer = DefaultTableCellRenderer()
+        val cellRenderer = QuantityRenderer
         cellRenderer.horizontalAlignment = JLabel.RIGHT
-        table.setDefaultRenderer(FloatingPointRepresentation::class.java, cellRenderer)
+        table.setDefaultRenderer(Double::class.java, cellRenderer)
 
         /*
             Content

@@ -63,7 +63,7 @@ class ContributionAnalysisWindowTest : BasePlatformTestCase() {
             |<tr>
             |  <td>gwp</td>
             |  <td>kg</td>
-            |  <td>2</td>
+            |  <td>2.0</td>
             |</tr>
             |</table>
             |</body>
@@ -73,7 +73,7 @@ class ContributionAnalysisWindowTest : BasePlatformTestCase() {
         val text = result.getTransferData(DataFlavor("text/plain;class=java.lang.String")) as String
         val expectedText = """
             |indicator	unit	carrot	
-            |gwp	kg	2
+            |gwp	kg	2.0
             """.trimMargin()
         assertEquals(expectedText, text)
     }
@@ -119,7 +119,7 @@ class ContributionAnalysisWindowTest : BasePlatformTestCase() {
             |  <td>ground</td>
             |  <td>in soil</td>
             |  <td>kg</td>
-            |  <td>1</td>
+            |  <td>1.0</td>
             |</tr>
             |</table>
             |</body>
@@ -129,7 +129,7 @@ class ContributionAnalysisWindowTest : BasePlatformTestCase() {
         val text = result.getTransferData(DataFlavor("text/plain;class=java.lang.String")) as String
         val expectedText = """
             |type	name	compartment	sub_compartment	unit	carrot	
-            |Resource	no2	ground	in soil	kg	1
+            |Resource	no2	ground	in soil	kg	1.0
             """.trimMargin()
         assertEquals(expectedText, text)
     }
@@ -175,7 +175,7 @@ class ContributionAnalysisWindowTest : BasePlatformTestCase() {
             |  <td></td>
             |  <td></td>
             |  <td>kg</td>
-            |  <td>1</td>
+            |  <td>1.0</td>
             |</tr>
             |</table>
             |</body>
@@ -185,7 +185,7 @@ class ContributionAnalysisWindowTest : BasePlatformTestCase() {
         val text = result.getTransferData(DataFlavor("text/plain;class=java.lang.String")) as String
         val expectedText = """
             |name	process	params	labels	unit	carrot	
-            |carrot	p			kg	1
+            |carrot	p			kg	1.0
             """.trimMargin()
         assertEquals(expectedText, text)
     }

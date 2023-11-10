@@ -5,7 +5,6 @@ import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.plugin.MyBundle
-import ch.kleis.lcaac.plugin.ui.toolwindow.shared.FloatingPointRepresentation
 import javax.swing.event.TableModelListener
 import javax.swing.table.TableModel
 
@@ -35,7 +34,7 @@ class DemandTableModel(
     override fun getColumnClass(columnIndex: Int): Class<*> {
         return when(columnIndex) {
             0, 1 -> String::class.java
-            2, 3 -> FloatingPointRepresentation::class.java
+            2, 3 -> Double::class.java
             else -> throw EvaluatorException("invalid column index")
         }
     }
@@ -49,8 +48,8 @@ class DemandTableModel(
         return when(columnIndex) {
             0 -> exchange.product.name
             1 -> "${exchange.quantity.unit.symbol}"
-            2 -> FloatingPointRepresentation.of(exchange.quantity.amount.value)
-            3 -> FloatingPointRepresentation.of(exchange.allocation?.amount?.value ?: 100.0)
+            2 -> exchange.quantity.amount.value
+            3 -> exchange.allocation?.amount?.value ?: 100.0
             else -> throw EvaluatorException("invalid column index")
         }
     }
