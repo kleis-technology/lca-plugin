@@ -98,6 +98,11 @@ CommentContent = .*
 <YYINITIAL> "between"                { return LcaTypes.BETWEEN_KEYWORD; }
 <YYINITIAL> "and"                { return LcaTypes.AND_KEYWORD; }
 
+<YYINITIAL> "datasource"                { return LcaTypes.DATASOURCE_KEYWORD; }
+<YYINITIAL> "filename"                { return LcaTypes.FILENAME_KEYWORD; }
+<YYINITIAL> "index"                { return LcaTypes.INDEX_KEYWORD; }
+<YYINITIAL> "columns"                { return LcaTypes.COLUMNS_KEYWORD; }
+
 
 
 <YYINITIAL> [-]?{Number_Int} ("." {Number_Int}? )? {Number_Exp}? { return LcaTypes.NUMBER; }

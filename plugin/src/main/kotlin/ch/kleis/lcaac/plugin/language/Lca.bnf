@@ -51,6 +51,11 @@
       BETWEEN_KEYWORD = 'between'
       AND_KEYWORD = 'and'
 
+      DATASOURCE_KEYWORD = 'datasource'
+      FILENAME_KEYWORD = 'filename'
+      INDEX_KEYWORD = 'index'
+      COLUMNS_KEYWORD = 'columns'
+
       NUMBER = 'number'
       LSQBRACE = ']'
       RSQBRACE = '['
@@ -80,7 +85,7 @@
     LCA File
  */
 
-lcaFile ::= package? import* (process | test | unitDefinition | substance | globalVariables )*
+lcaFile ::= package? import* (dataSource | process | test | unitDefinition | substance | globalVariables )*
 
 /*
     Package
@@ -95,6 +100,16 @@ import ::= "import" urn {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUrnOwner"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.trait.PsiUrnOwnerMixin"
 }
+
+/*
+    Data sources
+ */
+
+dataSource ::= 'datasource' dataSourceRef '{' (filename | index | columns)* '}'
+filename ::= 'filename' '=' STRING_LITERAL
+index ::= 'index' '=' STRING_LITERAL
+columns ::= 'columns' '{' column* '}'
+column ::= STRING_LITERAL ('in' dataExpression)?
 
 /*
     Global variables
@@ -335,6 +350,11 @@ parameterRef ::= uid {
 testRef ::= uid {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUIDOwner"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiTestRefMixin"
+}
+
+dataSourceRef ::= uid {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUIDOwner"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiDataSourceRefMixin"
 }
 /*
    Spec
