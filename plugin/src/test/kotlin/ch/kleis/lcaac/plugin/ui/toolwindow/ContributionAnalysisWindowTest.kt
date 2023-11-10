@@ -6,6 +6,7 @@ import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
+import ch.kleis.lcaac.plugin.datasources.LcaDataSourceOperations
 import ch.kleis.lcaac.plugin.fixture.UnitFixture
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
@@ -28,6 +29,7 @@ import java.awt.datatransfer.DataFlavor
 @RunWith(JUnit4::class)
 class ContributionAnalysisWindowTest : BasePlatformTestCase() {
     private val ops = BasicOperations
+    private val sourceOps = LcaDataSourceOperations(ops)
 
     @Test
     fun test_impactAssessmentPane_copyPaste() {
@@ -240,7 +242,7 @@ class ContributionAnalysisWindowTest : BasePlatformTestCase() {
         val loader = LcaLoader(sequenceOf(lcaFile, builtinUnitsLcaFile), ops)
         val symbolTable = loader.load()
         val template = symbolTable.getTemplate("p")!!
-        val evaluator = Evaluator(symbolTable, ops)
+        val evaluator = Evaluator(symbolTable, ops, sourceOps)
         val trace = evaluator.trace(template)
         val program = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint())
         return program.run()

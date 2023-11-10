@@ -7,6 +7,7 @@ import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.plugin.MyBundle
 import ch.kleis.lcaac.plugin.actions.traceSystemWithIndicator
+import ch.kleis.lcaac.plugin.datasources.LcaDataSourceOperations
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.SankeyGraphWindow
 import com.intellij.icons.AllIcons
@@ -49,7 +50,9 @@ class SankeyGraphAction(
             private var graph: Graph? = null
 
             override fun run(progress: ProgressIndicator) {
-                val trace = traceSystemWithIndicator(progress, file, processName, matchLabels, BasicOperations)
+                val ops = BasicOperations
+                val sourceOps = LcaDataSourceOperations(ops)
+                val trace = traceSystemWithIndicator(progress, file, processName, matchLabels, ops, sourceOps)
                 val analysisProgram = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint())
                 val analysis = analysisProgram.run()
                 indicatorList = analysis.getControllablePorts().getElements()

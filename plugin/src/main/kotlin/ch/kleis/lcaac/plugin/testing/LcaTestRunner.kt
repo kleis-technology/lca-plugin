@@ -13,6 +13,7 @@ import ch.kleis.lcaac.core.lang.expression.*
 import ch.kleis.lcaac.core.lang.value.QuantityValueOperations
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
+import ch.kleis.lcaac.plugin.datasources.LcaDataSourceOperations
 import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.loader.LcaMapper
@@ -30,10 +31,12 @@ class LcaTestRunner(
 
     fun run(test: LcaTest): LcaTestResult {
         try {
+            val ops = BasicOperations
+            val sourceOps = LcaDataSourceOperations(ops)
             val symbolTable = runReadAction {
                 val file = test.containingFile as LcaFile
                 val collector = LcaFileCollector(project)
-                val parser = LcaLoader(collector.collect(file), BasicOperations)
+                val parser = LcaLoader(collector.collect(file), ops)
                 parser.load()
             }
             val testCase = runReadAction { testCase(test) }
@@ -42,7 +45,7 @@ class LcaTestRunner(
                     processTemplates = Register(symbolTable.processTemplates)
                         .plus(mapOf(ProcessKey(testCase.body.name) to testCase))
                 )
-            val evaluator = Evaluator(updatedSymbolTable, BasicOperations)
+            val evaluator = Evaluator(updatedSymbolTable, ops, sourceOps)
             val trace = evaluator.trace(testCase)
             val program = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint())
             val analysis = program.run()
@@ -50,7 +53,7 @@ class LcaTestRunner(
             val target = trace.getEntryPoint().products.first().port()
             val results = assertions.map { assertion ->
                 val ports = analysis.findAllPortsByShortName(assertion.ref)
-                val impact = with(QuantityValueOperations(BasicOperations)) {
+                val impact = with(QuantityValueOperations(ops)) {
                     ports.map {
                         if (analysis.isControllable(it)) analysis.getPortContribution(target, it)
                         else analysis.supplyOf(it)
@@ -80,15 +83,17 @@ class LcaTestRunner(
                 test.variablesList.flatMap { it.assignmentList }
                     .map { DataKey(it.getDataRef().name) to mapper.dataExpression(it.getValue()) }
             )
-        val reducer = DataExpressionReducer(data, BasicOperations)
+        val ops = BasicOperations
+        val sourceOps = LcaDataSourceOperations(ops)
+        val reducer = DataExpressionReducer(data, symbolTable.dataSources, ops, sourceOps)
         return test.assertList.flatMap { it.rangeAssertionList }
             .map {
                 val loExpression = mapper.dataExpression(it.lo())
                 val loReduced = reducer.reduce(loExpression)
                 val hiExpression = mapper.dataExpression(it.hi())
                 val hiReduced = reducer.reduce(hiExpression)
-                val lo = with(ToValue(BasicOperations)) { loReduced.toValue() }
-                val hi = with(ToValue(BasicOperations)) { hiReduced.toValue() }
+                val lo = with(ToValue(ops)) { loReduced.toValue() }
+                val hi = with(ToValue(ops)) { hiReduced.toValue() }
                 RangeAssertion(it.uid.name, lo, hi)
             }
     }

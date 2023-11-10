@@ -7,6 +7,7 @@ import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
+import ch.kleis.lcaac.plugin.datasources.LcaDataSourceOperations
 import ch.kleis.lcaac.plugin.fixture.UnitFixture
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
@@ -21,6 +22,7 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4::class)
 class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
     private val ops = BasicOperations
+    private val sourceOps = LcaDataSourceOperations(ops)
 
     override fun getTestDataPath(): String {
         return "testdata"
@@ -40,7 +42,7 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
         val parser = LcaLoader(sequenceOf(UnitFixture.getInternalUnitFile(myFixture), file), ops)
         val symbolTable = parser.load()
         val template = symbolTable.getTemplate(process)!!
-        val trace = Evaluator(symbolTable, ops).trace(template)
+        val trace = Evaluator(symbolTable, ops, sourceOps).trace(template)
         val assessment = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint())
         val analysis = assessment.run()
         val sankeyPort = analysis.getControllablePorts().getElements().first()

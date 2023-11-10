@@ -6,6 +6,7 @@ import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
+import ch.kleis.lcaac.plugin.datasources.LcaDataSourceOperations
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.ContributionAnalysisWindow
 import com.intellij.icons.AllIcons
@@ -41,7 +42,9 @@ class AssessProcessAction(
             private var data: Pair<ContributionAnalysis<BasicNumber, BasicMatrix>, Comparator<MatrixColumnIndex<BasicNumber>>>? = null
 
             override fun run(indicator: ProgressIndicator) {
-                val trace = traceSystemWithIndicator(indicator, file, processName, matchLabels, BasicOperations)
+                val ops = BasicOperations
+                val sourceOps = LcaDataSourceOperations(ops)
+                val trace = traceSystemWithIndicator(indicator, file, processName, matchLabels, ops, sourceOps)
                 val comparator = trace.getComparator()
                 val analysis = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint()).run()
                 this.data = Pair(analysis, comparator)

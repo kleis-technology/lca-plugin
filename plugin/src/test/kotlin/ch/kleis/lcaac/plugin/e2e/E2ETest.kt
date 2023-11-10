@@ -20,6 +20,7 @@ import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.actions.csv.CsvProcessor
 import ch.kleis.lcaac.plugin.actions.csv.CsvRequest
+import ch.kleis.lcaac.plugin.datasources.LcaDataSourceOperations
 import ch.kleis.lcaac.plugin.fixture.UnitFixture
 import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
@@ -36,6 +37,7 @@ import kotlin.test.assertFailsWith
 @RunWith(JUnit4::class)
 class E2ETest : BasePlatformTestCase() {
     private val ops = BasicOperations
+    private val sourceOps = LcaDataSourceOperations(ops)
     private val umap = with(ToValue(BasicOperations)) {
         Prelude.unitMap<BasicNumber>().map { it.value.toUnitValue() }
             .associateBy { it.symbol.toString() }
@@ -87,7 +89,7 @@ class E2ETest : BasePlatformTestCase() {
 
         // when
         val template = symbolTable.getTemplate("a_proc")!!
-        val trace = Evaluator(symbolTable, ops).trace(template)
+        val trace = Evaluator(symbolTable, ops, sourceOps).trace(template)
         val system = trace.getSystemValue()
         val assessment = ContributionAnalysisProgram(system, trace.getEntryPoint())
         val result = assessment.run().getImpactFactors()
@@ -181,7 +183,7 @@ class E2ETest : BasePlatformTestCase() {
 
         // when
         val template = symbolTable.getTemplate("p")!!
-        val trace = Evaluator(symbolTable, ops).trace(template)
+        val trace = Evaluator(symbolTable, ops, sourceOps).trace(template)
         val system = trace.getSystemValue()
         val assessment = ContributionAnalysisProgram(system, trace.getEntryPoint())
         val result = assessment.run().getImpactFactors()
@@ -254,7 +256,7 @@ class E2ETest : BasePlatformTestCase() {
 
         // when
         val template = symbolTable.getTemplate("p")!!
-        val trace = Evaluator(symbolTable, ops).trace(template)
+        val trace = Evaluator(symbolTable, ops, sourceOps).trace(template)
         val system = trace.getSystemValue()
         val assessment = ContributionAnalysisProgram(system, trace.getEntryPoint())
         val result = assessment.run().getImpactFactors()
@@ -306,7 +308,7 @@ class E2ETest : BasePlatformTestCase() {
 
         // when/then does not throw
         symbolTable.getTemplate("p")
-            ?.let { Evaluator(symbolTable, ops).trace(it) }!!
+            ?.let { Evaluator(symbolTable, ops, sourceOps).trace(it) }!!
     }
 
     @Test
@@ -340,7 +342,7 @@ class E2ETest : BasePlatformTestCase() {
 
         // when/then does not throw
         symbolTable.getTemplate("p")
-            ?.let { Evaluator(symbolTable, ops).trace(it) }!!
+            ?.let { Evaluator(symbolTable, ops, sourceOps).trace(it) }!!
     }
 
     @Test
@@ -425,7 +427,7 @@ class E2ETest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val symbolTable = createFilesAndSymbols(vf)
-        val reducer = DataExpressionReducer(symbolTable.data, ops)
+        val reducer = DataExpressionReducer(symbolTable.data, symbolTable.dataSources, ops, sourceOps)
         val expr = symbolTable.getTemplate("p")!!.body.inputs.first().quantity
 
         // when
@@ -474,7 +476,7 @@ class E2ETest : BasePlatformTestCase() {
         val symbolTable = createFilesAndSymbols(vf)
 
         val template = symbolTable.getTemplate("p")!!
-        val trace = Evaluator(symbolTable, ops).trace(template)
+        val trace = Evaluator(symbolTable, ops, sourceOps).trace(template)
         val system = trace.getSystemValue()
         val assessment = ContributionAnalysisProgram(system, trace.getEntryPoint())
         val result = assessment.run().getImpactFactors()
@@ -538,7 +540,7 @@ class E2ETest : BasePlatformTestCase() {
         // when
         val symbolTable = createFilesAndSymbols(vf)
         val template = symbolTable.getTemplate("p")!!
-        val trace = Evaluator(symbolTable, ops).trace(template)
+        val trace = Evaluator(symbolTable, ops, sourceOps).trace(template)
         val system = trace.getSystemValue()
         val assessment = ContributionAnalysisProgram(system, trace.getEntryPoint())
         val result = assessment.run().getImpactFactors()
@@ -594,7 +596,7 @@ class E2ETest : BasePlatformTestCase() {
         // when
         val symbolTable = createFilesAndSymbols(vf)
         val template = symbolTable.getTemplate("office")!!
-        val trace = Evaluator(symbolTable, ops).trace(template)
+        val trace = Evaluator(symbolTable, ops, sourceOps).trace(template)
         val system = trace.getSystemValue()
         val assessment = ContributionAnalysisProgram(system, trace.getEntryPoint())
         val result = assessment.run().getImpactFactors()
@@ -647,7 +649,7 @@ class E2ETest : BasePlatformTestCase() {
         // when
         val symbolTable = createFilesAndSymbols(vf)
         val template = symbolTable.getTemplate("office")!!
-        val trace = Evaluator(symbolTable, ops).trace(template)
+        val trace = Evaluator(symbolTable, ops, sourceOps).trace(template)
         val system = trace.getSystemValue()
         val assessment = ContributionAnalysisProgram(system, trace.getEntryPoint())
         val result = assessment.run().getImpactFactors()
@@ -706,7 +708,7 @@ class E2ETest : BasePlatformTestCase() {
         // when
         val symbolTable = createFilesAndSymbols(vf)
         val template = symbolTable.getTemplate("office")!!
-        val trace = Evaluator(symbolTable, ops).trace(template)
+        val trace = Evaluator(symbolTable, ops, sourceOps).trace(template)
         val system = trace.getSystemValue()
         val assessment = ContributionAnalysisProgram(system, trace.getEntryPoint())
         val result = assessment.run().getImpactFactors()
@@ -744,7 +746,7 @@ class E2ETest : BasePlatformTestCase() {
         // when
         val symbolTable = createFilesAndSymbols(vf)
         val template = symbolTable.getTemplate("p")!!
-        val trace = Evaluator(symbolTable, ops).trace(template)
+        val trace = Evaluator(symbolTable, ops, sourceOps).trace(template)
         val system = trace.getSystemValue()
         val assessment = ContributionAnalysisProgram(system, trace.getEntryPoint())
         val result = assessment.run().getImpactFactors()
@@ -830,7 +832,7 @@ class E2ETest : BasePlatformTestCase() {
         // when
         val symbolTable = createFilesAndSymbols(vf)
         val template = symbolTable.getTemplate("p")!!
-        val trace = Evaluator(symbolTable, ops).trace(template)
+        val trace = Evaluator(symbolTable, ops, sourceOps).trace(template)
         val system = trace.getSystemValue()
         val assessment = ContributionAnalysisProgram(system, trace.getEntryPoint())
 
@@ -871,7 +873,7 @@ class E2ETest : BasePlatformTestCase() {
         )
         val symbolTable = createFilesAndSymbols(vf)
         val template = symbolTable.getTemplate("p")!!
-        val evaluator = Evaluator(symbolTable, ops)
+        val evaluator = Evaluator(symbolTable, ops, sourceOps)
 
         // when + then
         val e = assertFailsWith(EvaluatorException::class, null) { evaluator.trace(template) }
@@ -905,7 +907,7 @@ class E2ETest : BasePlatformTestCase() {
         )
         val symbolTable = createFilesAndSymbols(vf)
         val template = symbolTable.getTemplate("p")!!
-        val evaluator = Evaluator(symbolTable, ops)
+        val evaluator = Evaluator(symbolTable, ops, sourceOps)
 
         // when + then
         val e = assertFailsWith(EvaluatorException::class, null) { evaluator.trace(template) }
@@ -939,7 +941,7 @@ class E2ETest : BasePlatformTestCase() {
         )
         val symbolTable = createFilesAndSymbols(vf)
         val template = symbolTable.getTemplate("p")!!
-        val evaluator = Evaluator(symbolTable, ops)
+        val evaluator = Evaluator(symbolTable, ops, sourceOps)
 
         // when, then does not throw
         evaluator.trace(template)
@@ -974,7 +976,7 @@ class E2ETest : BasePlatformTestCase() {
         val template = symbolTable.getTemplate("p")!!
 
         // when/then
-        Evaluator(symbolTable, ops).trace(template)
+        Evaluator(symbolTable, ops, sourceOps).trace(template)
     }
 
     @Test
@@ -998,7 +1000,7 @@ class E2ETest : BasePlatformTestCase() {
         // when
         val symbolTable = createFilesAndSymbols(vf)
         val template = symbolTable.getTemplate("p")!!
-        val trace = Evaluator(symbolTable, ops).trace(template)
+        val trace = Evaluator(symbolTable, ops, sourceOps).trace(template)
         val system = trace.getSystemValue()
         val assessment = ContributionAnalysisProgram(system, trace.getEntryPoint())
 
@@ -1045,7 +1047,7 @@ class E2ETest : BasePlatformTestCase() {
         val e = assertFailsWith(
             EvaluatorException::class,
         ) {
-            Evaluator(symbolTable, ops).trace(template)
+            Evaluator(symbolTable, ops, sourceOps).trace(template)
         }
         assertEquals("incompatible dimensions: length³ vs mass for product in", e.message)
     }

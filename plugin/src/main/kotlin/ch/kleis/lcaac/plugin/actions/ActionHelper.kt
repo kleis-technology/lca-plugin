@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.plugin.actions
 
+import ch.kleis.lcaac.core.datasource.DataSourceOperations
 import ch.kleis.lcaac.core.lang.evaluator.EvaluationTrace
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.math.QuantityOperations
@@ -15,6 +16,7 @@ fun <Q> traceSystemWithIndicator(
     processName: String,
     matchLabels: Map<String, String>,
     ops: QuantityOperations<Q>,
+    sourceOps: DataSourceOperations<Q>,
 ): EvaluationTrace<Q> {
     indicator.isIndeterminate = true
 
@@ -29,5 +31,5 @@ fun <Q> traceSystemWithIndicator(
     // compute
     indicator.text = "Solving system"
     val template = symbolTable.getTemplate(processName, matchLabels)!! // We are called from a process, so it must exist
-    return Evaluator(symbolTable, ops).trace(template)
+    return Evaluator(symbolTable, ops, sourceOps).trace(template)
 }
