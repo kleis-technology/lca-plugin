@@ -18,6 +18,14 @@ class CoreMapper<Q>(
 ) {
     private val selfImport = EImport<Q>(rootPkgName)
 
+    private fun split(fqn: String): Pair<String?, String> {
+        val s = fqn.split(".")
+        val name = s.last()
+        val prefix = if (s.size > 1) s.subList(0, s.size - 1).joinToString(".")
+        else null
+        return prefix to name
+    }
+
     fun process(
         ctx: LcaLangParser.ProcessDefinitionContext,
         globals: DataRegister<Q> = DataRegister.empty(),
@@ -104,13 +112,15 @@ class CoreMapper<Q>(
         quantity: DataExpression<Q>,
         pkg: EPackage<Q>
     ): ESubstanceSpec<Q> {
+        val (prefix, name) = split(ctx.substanceRef().innerText())
+        val from = prefix?.let { EImportRef<Q>(it) }
         return ESubstanceSpec(
-            name = ctx.substanceRef().innerText(),
+            name = name,
             compartment = ctx.compartmentField()?.STRING_LITERAL()?.innerText(),
             subCompartment = ctx.subCompartmentField()?.STRING_LITERAL()?.innerText(),
             type = type,
             referenceUnit = EUnitOf(EQuantityClosure(pkg, quantity)),
-            from = null, // TODO: Should parse substance ref name (assuming fqn)
+            from = from,
         )
     }
 
@@ -303,7 +313,7 @@ class CoreMapper<Q>(
     fun TerminalNode.innerText(): String {
         return this.text.trim('"')
     }
-    
+
     fun LcaLangParser.UrnContext.innerText(): String {
         return this.text.trim('"')
     }
