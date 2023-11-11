@@ -46,7 +46,7 @@ class DataExpressionReducer<Q>(
     private fun reduceDataFrom(expression: EDataFrom<Q>): DataExpression<Q> {
         val source = dataSourceRegister[DataSourceKey(expression.source)]
             ?: throw EvaluatorException("unknown data source ${expression.source}")
-        return sourceOps.read(source, expression.row, expression.column)
+        return reduce(sourceOps.read(source, expression.row, expression.column))
     }
 
     private fun reduceUnitOf(unitOf: EUnitOf<Q>): DataExpression<Q> {
