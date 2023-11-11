@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.language.loader
 
-import ch.kleis.lcaac.core.lang.*
+import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
@@ -17,6 +17,27 @@ import ch.kleis.lcaac.plugin.psi.*
 class LcaMapper<Q>(
     private val ops: QuantityOperations<Q>
 ) {
+    fun dataSource(lcaDataSource: LcaDataSource): DataSourceExpression<Q> {
+        val filename = (lcaDataSource.filenameList.firstOrNull()
+            ?: throw EvaluatorException("data source definition cannot contain more than one filename"))
+        val index = lcaDataSource.indexList.firstOrNull()
+            ?: throw EvaluatorException("data source definition cannot contain more than one index")
+        val columns = lcaDataSource.columnsList
+            .flatMap { it.columnList }
+            .associate { column ->
+                column.getColumnName() to (
+                    column.dataExpression
+                        ?.let { CQuantity(dataExpression(it)) }
+                        ?: CText()
+                    )
+            }
+        return ECsvSource(
+            filename.getValue(),
+            columns,
+            index.getValue(),
+        )
+    }
+
     fun unitLiteral(lcaUnitDefinition: LcaUnitDefinition): DataExpression<Q> {
         return EUnitLiteral(
             UnitSymbol.of(lcaUnitDefinition.symbolField.getValue()),
@@ -42,9 +63,10 @@ class LcaMapper<Q>(
         val params = psiProcess.getParameters().mapValues { dataExpression(it.value) }
         val symbolTable = SymbolTable(
             data = try {
-                Register(globals
-                    .plus(params.mapKeys { DataKey(it.key) })
-                    .plus(locals.mapKeys { DataKey(it.key) })
+                Register(
+                    globals
+                        .plus(params.mapKeys { DataKey(it.key) })
+                        .plus(locals.mapKeys { DataKey(it.key) })
                 )
             } catch (e: RegisterException) {
                 throw EvaluatorException("Conflict between local variable(s) ${e.duplicates} and a global definition.")

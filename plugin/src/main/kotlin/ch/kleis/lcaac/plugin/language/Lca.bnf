@@ -106,11 +106,23 @@ import ::= "import" urn {
     Data sources
  */
 
-dataSource ::= 'datasource' dataSourceRef '{' (filename | index | columns)* '}'
-filename ::= 'filename' '=' STRING_LITERAL
-index ::= 'index' '=' STRING_LITERAL
+dataSource ::= 'datasource' dataSourceRef '{' (filename | index | columns)* '}' {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiDataSource"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiDataSourceMixin"
+}
+filename ::= 'filename' '=' STRING_LITERAL {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.field.PsiStringLiteralField"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.field.PsiStringLiteralFieldMixin"
+}
+index ::= 'index' '=' STRING_LITERAL {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.field.PsiStringLiteralField"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.field.PsiStringLiteralFieldMixin"
+}
 columns ::= 'columns' '{' column* '}'
-column ::= STRING_LITERAL ('in' dataExpression)?
+column ::= STRING_LITERAL ('in' dataExpression)? {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiColumnDefinition"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiColumnDefinitionMixin"
+}
 
 /*
     Global variables

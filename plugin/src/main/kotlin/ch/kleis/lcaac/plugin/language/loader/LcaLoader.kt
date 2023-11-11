@@ -1,9 +1,10 @@
 package ch.kleis.lcaac.plugin.language.loader
 
-import ch.kleis.lcaac.core.lang.*
+import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.DataExpression
+import ch.kleis.lcaac.core.lang.expression.DataSourceExpression
 import ch.kleis.lcaac.core.lang.expression.EProcessTemplate
 import ch.kleis.lcaac.core.lang.expression.ESubstanceCharacterization
 import ch.kleis.lcaac.core.lang.register.*
@@ -22,6 +23,7 @@ class LcaLoader<Q>(
             val unitDefinitions = files.flatMap { it.getUnitDefinitions() }
             val processDefinitions = files.flatMap { it.getProcesses() }
             val substanceDefinitions = files.flatMap { it.getSubstances() }
+            val dataSourceDefinitions = files.flatMap { it.getDataSources() }
 
             val dimensions: DimensionRegister = try {
                 DimensionRegister.empty<DimensionKey, Dimension>()
@@ -48,7 +50,7 @@ class LcaLoader<Q>(
                 throw EvaluatorException("Duplicate substance ${e.duplicates} defined")
             }
 
-            val globals= try {
+            val globals = try {
                 DataRegister.empty<DataKey, DataExpression<Q>>()
                     .plus(
                         unitDefinitions
@@ -83,11 +85,23 @@ class LcaLoader<Q>(
                 throw EvaluatorException("Duplicate process ${e.duplicates} defined")
             }
 
+            val dataSources = try {
+                DataSourceRegister.empty<DataSourceKey, DataSourceExpression<Q>>()
+                    .plus(
+                        dataSourceDefinitions
+                            .map { Pair(it.buildUniqueKey(), dataSource(it)) }
+                            .asIterable()
+                    )
+            } catch (e: RegisterException) {
+                throw EvaluatorException("Duplicate data source ${e.duplicates} defined")
+            }
+
             return SymbolTable(
                 data = globals,
                 processTemplates = processTemplates,
                 dimensions = dimensions,
                 substanceCharacterizations = substanceCharacterizations,
+                dataSources = dataSources,
             )
         }
     }

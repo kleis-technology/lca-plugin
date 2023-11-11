@@ -47,6 +47,10 @@ class LcaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LcaLan
         return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaProcess::class.java)
     }
 
+    fun getDataSources(): Collection<LcaDataSource> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaDataSource::class.java)
+    }
+
     fun getSubstances(): Collection<LcaSubstance> {
         return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaSubstance::class.java)
     }
