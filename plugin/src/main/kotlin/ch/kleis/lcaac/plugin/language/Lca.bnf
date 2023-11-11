@@ -58,8 +58,8 @@
       IN_KEYWORD = 'in'
 
       NUMBER = 'number'
-      LSQBRACE = ']'
-      RSQBRACE = '['
+      LSQBRACE = '['
+      RSQBRACE = ']'
       LPAREN = '('
       RPAREN = ')'
       LBRACE = '{'
@@ -274,6 +274,7 @@ impactExchange ::= dataExpression indicatorRef
 dataExpression ::= addGroup
            | mulGroup
            | exponentialQuantityExpression
+           | sliceExpression
            | baseGroup
 
 private addGroup ::= addQuantityExpression | subQuantityExpression
@@ -293,6 +294,8 @@ subQuantityExpression ::= dataExpression "-" dataExpression { extends=binaryOper
 mulQuantityExpression ::= dataExpression "*" dataExpression { extends=binaryOperatorExpression }
 divQuantityExpression ::= dataExpression "/" dataExpression { extends=binaryOperatorExpression }
 exponentialQuantityExpression ::= dataExpression "^" NUMBER { extends=dataExpression methods=[exponent="NUMBER"] }
+sliceExpression ::= dataSourceRef "[" sliceIndex ("," sliceIndex)? ","? "]" { extends=dataExpression }
+sliceIndex ::= STRING_LITERAL | NUMBER
 parenQuantityExpression ::= "(" dataExpression ")" { extends=dataExpression }
 scaleQuantityExpression ::= NUMBER dataExpression { extends=dataExpression methods=[scale="NUMBER"]}
 stringExpression ::= STRING_LITERAL { extends=dataExpression }
