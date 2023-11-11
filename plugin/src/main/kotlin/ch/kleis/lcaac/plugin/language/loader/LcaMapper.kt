@@ -13,6 +13,7 @@ import ch.kleis.lcaac.core.math.QuantityOperations
 import ch.kleis.lcaac.plugin.language.psi.type.PsiProcess
 import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiIndicatorRef
 import ch.kleis.lcaac.plugin.psi.*
+import com.intellij.psi.util.elementType
 
 class LcaMapper<Q>(
     private val ops: QuantityOperations<Q>
@@ -257,7 +258,37 @@ class LcaMapper<Q>(
             }
 
             is LcaStringExpression -> EStringLiteral(dataExpression.text.trim('"'))
+
+            is LcaSliceExpression -> {
+                val source = dataExpression.dataSourceRef.name
+                if (dataExpression.sliceIndexList.size != 2) {
+                    // TODO: clunky
+                    throw EvaluatorException("Invalid number of indices")
+                }
+                val row = sliceIndex(dataExpression.sliceIndexList[0])
+                val col = sliceIndex(dataExpression.sliceIndexList[1])
+                return EDataFrom(
+                    source,
+                    row,
+                    col,
+                )
+            }
             else -> throw EvaluatorException("Unknown data expression: $dataExpression")
+        }
+    }
+
+    private fun sliceIndex(lcaSliceIndex: LcaSliceIndex): SliceIndex {
+        val child = lcaSliceIndex.firstChild
+        return when {
+            child.elementType == LcaTypes.NUMBER -> {
+                val n =  child.text.toIntOrNull() ?: throw EvaluatorException("invalid index: must be an integer or a string")
+                return NumIndex(n)
+            }
+            child.elementType == LcaTypes.STRING_LITERAL -> {
+                val v = child.text.trim('"')
+                return StrIndex(v)
+            }
+            else -> throw EvaluatorException("invalid index") // TODO: Test me
         }
     }
 }
