@@ -38,38 +38,16 @@ class DataExpressionReducer<Q>(
                 is EStringLiteral -> expression
 
                 // TODO: Test me
-                is EQuantityFrom -> reduceEQuantityFrom(expression)
-                is EQuantityFromIndexed -> reduceEQuantityFromIndexed(expression)
-                is EStringFrom -> reduceStringFrom(expression)
-                is EStringFromIndexed -> reduceStringFromIndexed(expression)
+                is EDataFrom -> reduceDataFrom(expression)
             }
         }
     }
 
-    private fun reduceStringFromIndexed(expression: EStringFromIndexed<Q>): DataExpression<Q> {
+    private fun reduceDataFrom(expression: EDataFrom<Q>): DataExpression<Q> {
         val source = dataSourceRegister[DataSourceKey(expression.source)]
             ?: throw EvaluatorException("unknown data source ${expression.source}")
-        return sourceOps.readText(source, expression.row, expression.column)
+        return sourceOps.read(source, expression.row, expression.column)
     }
-
-    private fun reduceStringFrom(expression: EStringFrom<Q>): DataExpression<Q> {
-        val source = dataSourceRegister[DataSourceKey(expression.source)]
-            ?: throw EvaluatorException("unknown data source ${expression.source}")
-        return sourceOps.readText(source, expression.row, expression.column)
-    }
-
-    private fun reduceEQuantityFromIndexed(expression: EQuantityFromIndexed<Q>): DataExpression<Q> {
-        val source = dataSourceRegister[DataSourceKey(expression.source)]
-            ?: throw EvaluatorException("unknown data source ${expression.source}")
-        return sourceOps.readQuantity(source, expression.row, expression.column)
-    }
-
-    private fun reduceEQuantityFrom(expression: EQuantityFrom<Q>): DataExpression<Q> {
-        val source = dataSourceRegister[DataSourceKey(expression.source)]
-            ?: throw EvaluatorException("unknown data source ${expression.source}")
-        return sourceOps.readQuantity(source, expression.row, expression.column)
-    }
-
 
     private fun reduceUnitOf(unitOf: EUnitOf<Q>): DataExpression<Q> {
         with(ops) {

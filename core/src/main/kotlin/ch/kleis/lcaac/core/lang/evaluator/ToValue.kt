@@ -137,6 +137,9 @@ class ToValue<Q>(
                     is QuantityExpression<*> -> e.toValue()
                     is StringExpression -> e.toValue()
                     is EDataRef -> throw EvaluatorException("$it is not reduced")
+
+                    // TODO: Test me
+                    is EDataFrom -> throw EvaluatorException("$it is not reduced")
                 }
             },
         )

@@ -26,27 +26,22 @@ data class EDataRef<Q>(val name: String) : DataExpression<Q> {
     companion object
 }
 
+sealed interface SliceIndex
+data class NumIndex(val n: Int): SliceIndex
+data class StrIndex(val s: String): SliceIndex
+
+@optics
+data class EDataFrom<Q>(
+    val source: String,
+    val row: SliceIndex,
+    val column: SliceIndex,
+) : DataExpression<Q> {
+    companion object
+}
+
 /*
     Quantities
  */
-
-@optics
-data class EQuantityFrom<Q>(
-    val source: String,
-    val row: Int,
-    val column: String,
-) : DataExpression<Q>, QuantityExpression<Q> {
-    companion object
-}
-
-@optics
-data class EQuantityFromIndexed<Q>(
-    val source: String,
-    val row: String,
-    val column: String,
-) : DataExpression<Q>, QuantityExpression<Q> {
-    companion object
-}
 
 @optics
 data class EUnitLiteral<Q>(val symbol: UnitSymbol, val scale: Double, val dimension: Dimension) : DataExpression<Q>,
@@ -59,7 +54,8 @@ data class EUnitLiteral<Q>(val symbol: UnitSymbol, val scale: Double, val dimens
 }
 
 @optics
-data class EUnitAlias<Q>(val symbol: String, val aliasFor: DataExpression<Q>) : DataExpression<Q>, QuantityExpression<Q> {
+data class EUnitAlias<Q>(val symbol: String, val aliasFor: DataExpression<Q>) : DataExpression<Q>,
+    QuantityExpression<Q> {
     companion object
 }
 
@@ -78,27 +74,32 @@ data class EUnitOf<Q>(val expression: DataExpression<Q>) : DataExpression<Q>, Qu
 }
 
 @optics
-data class EQuantityAdd<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) : DataExpression<Q>, QuantityExpression<Q> {
+data class EQuantityAdd<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) :
+    DataExpression<Q>, QuantityExpression<Q> {
     companion object
 }
 
 @optics
-data class EQuantitySub<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) : DataExpression<Q>, QuantityExpression<Q> {
+data class EQuantitySub<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) :
+    DataExpression<Q>, QuantityExpression<Q> {
     companion object
 }
 
 @optics
-data class EQuantityMul<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) : DataExpression<Q>, QuantityExpression<Q> {
+data class EQuantityMul<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) :
+    DataExpression<Q>, QuantityExpression<Q> {
     companion object
 }
 
 @optics
-data class EQuantityDiv<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) : DataExpression<Q>, QuantityExpression<Q> {
+data class EQuantityDiv<Q>(val leftHandSide: DataExpression<Q>, val rightHandSide: DataExpression<Q>) :
+    DataExpression<Q>, QuantityExpression<Q> {
     companion object
 }
 
 @optics
-data class EQuantityPow<Q>(val quantity: DataExpression<Q>, val exponent: Double) : DataExpression<Q>, QuantityExpression<Q> {
+data class EQuantityPow<Q>(val quantity: DataExpression<Q>, val exponent: Double) : DataExpression<Q>,
+    QuantityExpression<Q> {
     companion object
 }
 
@@ -119,22 +120,5 @@ data class EStringLiteral<Q>(val value: String) : DataExpression<Q>, StringExpre
         return value
     }
 
-    companion object
-}
-@optics
-data class EStringFrom<Q>(
-    val source: String,
-    val row: Int,
-    val column: String,
-) : DataExpression<Q>, StringExpression {
-    companion object
-}
-
-@optics
-data class EStringFromIndexed<Q>(
-    val source: String,
-    val row: String,
-    val column: String,
-) : DataExpression<Q>, StringExpression {
     companion object
 }

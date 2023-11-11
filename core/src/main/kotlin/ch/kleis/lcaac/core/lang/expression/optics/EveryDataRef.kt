@@ -49,10 +49,7 @@ fun <Q> everyDataRefInDataExpression(): PEvery<DataExpression<Q>, DataExpression
                 is EStringLiteral -> M.empty()
 
                 // TODO: Test me
-                is EQuantityFrom -> M.empty()
-                is EQuantityFromIndexed -> M.empty()
-                is EStringFrom -> M.empty()
-                is EStringFromIndexed -> M.empty()
+                is EDataFrom -> M.empty()
             }
         }
 
@@ -110,10 +107,7 @@ fun <Q> everyDataRefInDataExpression(): PEvery<DataExpression<Q>, DataExpression
                 is EStringLiteral -> source
 
                 // TODO: Test me
-                is EQuantityFrom -> source
-                is EQuantityFromIndexed -> source
-                is EStringFrom -> source
-                is EStringFromIndexed -> source
+                is EDataFrom -> source
             }
         }
     }
