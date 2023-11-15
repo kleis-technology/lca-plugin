@@ -6,6 +6,7 @@ import javax.swing.table.DefaultTableCellRenderer
 object QuantityRenderer : DefaultTableCellRenderer() {
     private val formatter = DecimalFormat("0.##E0")
 
+    // `+ 0.0` converts the special double value -0.0 to the expected 0.0, with no other side effects.
     fun formatDouble(value: Double): String =
         formatter.format(value + 0.0).removeSuffix("E0")
 

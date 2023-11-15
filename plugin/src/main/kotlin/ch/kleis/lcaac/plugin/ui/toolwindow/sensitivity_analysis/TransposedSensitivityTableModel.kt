@@ -3,7 +3,6 @@ package ch.kleis.lcaac.plugin.ui.toolwindow.sensitivity_analysis
 import ch.kleis.lcaac.core.assessment.SensitivityAnalysis
 import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaac.core.math.dual.DualNumber
-import ch.kleis.lcaac.plugin.ui.toolwindow.shared.FloatingPointRepresentation
 import javax.swing.event.TableModelListener
 import javax.swing.table.TableModel
 
@@ -37,16 +36,12 @@ class TransposedSensitivityTableModel(
     override fun getColumnClass(columnIndex: Int): Class<*> {
         return when (columnIndex) {
             0, 2 -> String::class.java
-            else -> FloatingPointRepresentation::class.java
+            else -> Double::class.java
         }
     }
 
     override fun isCellEditable(rowIndex: Int, columnIndex: Int): Boolean {
         return false
-    }
-
-    private fun repr(d: Double, suffix: String? = null): FloatingPointRepresentation {
-        return FloatingPointRepresentation.of(d, 3, suffix)
     }
 
     override fun getValueAt(rowIndex: Int, columnIndex: Int): Any {
@@ -55,7 +50,7 @@ class TransposedSensitivityTableModel(
             1 -> {
                 val indicator = sortedControllablePorts[rowIndex]
                 val contribution = analysis.getPortContribution(target, indicator)
-                repr(contribution.amount.zeroth)
+                contribution.amount.zeroth
             }
 
             2 -> {
@@ -65,12 +60,11 @@ class TransposedSensitivityTableModel(
             }
 
             else -> {
-                val relativeSensibility = analysis.getRelativeSensibility(
+                analysis.getRelativeSensibility(
                     target,
                     sortedControllablePorts[rowIndex],
                     analysis.getParameters().getName(columnIndex - 3)
                 )
-                return repr(relativeSensibility)
             }
         }
     }

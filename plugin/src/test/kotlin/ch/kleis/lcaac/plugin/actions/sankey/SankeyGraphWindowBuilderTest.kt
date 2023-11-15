@@ -292,7 +292,7 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
     }
 
     @Test
-    fun test_units() {
+    fun `When processes define different units of the same dimension, normalization is applied when building graph links`() {
         // given
         val pkgName = {}.javaClass.enclosingMethod.name
         val vf = myFixture.createFile(
@@ -327,8 +327,8 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphNode("my_input from input{}{}", "my_input"),
             GraphNode("my_indicator", "my_indicator"),
         ).addLink(
-            GraphLink("my_product from p{}{}", "my_input from input{}{}", 0.5, "0.5 g"),
-            GraphLink("my_input from input{}{}", "my_indicator", 0.5, "0.5 g"),
+            GraphLink("my_product from p{}{}", "my_input from input{}{}", 0.5, "5E-1 g"),
+            GraphLink("my_input from input{}{}", "my_indicator", 0.5, "5E-1 g"),
         )
         assertEquals(expected.nodes.naturalSorted(), graph.nodes.naturalSorted())
         assertEquals(expected.links.naturalSorted(), graph.links.naturalSorted())
@@ -436,7 +436,7 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
     }
 
     @Test
-    fun test_whenComplexGraph_thenSankey() {
+    fun `When provided with a semi-complex graph using allocation, substances and several processes, the graph is as expected`() {
         // given
         val pkgName = {}.javaClass.enclosingMethod.name
         val vf = myFixture.createFile(
@@ -489,10 +489,10 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphNode("[Emission] my_substance(air)", "my_substance")
         ).addLink(
             GraphLink("my_product from p{}{}", "my_input from q{}{}", 1.5, "1.5 u"),
-            GraphLink("my_other_product from p{}{}", "my_input from q{}{}", 0.5, "0.5 u"),
+            GraphLink("my_other_product from p{}{}", "my_input from q{}{}", 0.5, "5E-1 u"),
             GraphLink("my_input from q{}{}", "[Emission] my_substance(air)", 2.0, "2 u"),
-            GraphLink("my_product from p{}{}", "[Emission] my_substance(air)", 0.75, "0.75 u"),
-            GraphLink("my_other_product from p{}{}", "[Emission] my_substance(air)", 0.25, "0.25 u"),
+            GraphLink("my_product from p{}{}", "[Emission] my_substance(air)", 0.75, "7.5E-1 u"),
+            GraphLink("my_other_product from p{}{}", "[Emission] my_substance(air)", 0.25, "2.5E-1 u"),
             GraphLink("[Emission] my_substance(air)", "climate_change", 3.0, "3 u")
         )
         assertEquals(expected.nodes.naturalSorted(), graph.nodes.naturalSorted())
@@ -546,7 +546,7 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
     }
 
     @Test
-    fun test_whenComplexCycles_thenAcyclicSankey() {
+    fun `When provided with a complex cyclic graph of processes, the generated sankey is acyclic`() {
         // given
         val pkgName = {}.javaClass.enclosingMethod.name
         val vf = myFixture.createFile(
@@ -647,9 +647,9 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
             GraphNode("my_emission", "my_emission")
         ).addLink(
             GraphLink("F from pF{}{}", "H from pH{}{}", value = 1.5, "1.5 kg"),
-            GraphLink("C from pC{}{}", "F from pF{}{}", value = 0.5, "0.5 kg"),
+            GraphLink("C from pC{}{}", "F from pF{}{}", value = 0.5, "5E-1 kg"),
             GraphLink("A from pA{}{}", "B from pB{}{}", value = 3.0, "3 kg"),
-            GraphLink("A from pA{}{}", "C from pC{}{}", value = 0.5, "0.5 kg"),
+            GraphLink("A from pA{}{}", "C from pC{}{}", value = 0.5, "5E-1 kg"),
             GraphLink("D from pD{}{}", "F from pF{}{}", value = 1.0, "1 kg"),
             GraphLink("H from pH{}{}", "my_emission", value = 3.5, "3.5 kg"),
             GraphLink("B from pB{}{}", "D from pD{}{}", value = 1.0, "1 kg"),

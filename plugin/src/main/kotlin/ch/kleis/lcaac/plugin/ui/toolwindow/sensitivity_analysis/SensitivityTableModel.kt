@@ -3,7 +3,6 @@ package ch.kleis.lcaac.plugin.ui.toolwindow.sensitivity_analysis
 import ch.kleis.lcaac.core.assessment.SensitivityAnalysis
 import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaac.core.math.dual.DualNumber
-import ch.kleis.lcaac.plugin.ui.toolwindow.shared.FloatingPointRepresentation
 import javax.swing.event.TableModelListener
 import javax.swing.table.TableModel
 
@@ -36,7 +35,7 @@ class SensitivityTableModel(
     override fun getColumnClass(columnIndex: Int): Class<*> {
         return when (columnIndex) {
             0, 2 -> String::class.java
-            else -> FloatingPointRepresentation::class.java
+            else -> Double::class.java
         }
     }
 
@@ -44,16 +43,12 @@ class SensitivityTableModel(
         return false
     }
 
-    private fun repr(d: Double, suffix: String? = null): FloatingPointRepresentation {
-        return FloatingPointRepresentation.of(d, 3, suffix)
-    }
-
     override fun getValueAt(rowIndex: Int, columnIndex: Int): Any {
         return when (columnIndex) {
             0 -> analysis.getParameters().getName(rowIndex).uid
             1 -> {
                 val value = analysis.getParameters().getValue(rowIndex)
-                repr(value.amount.zeroth)
+                value.amount.zeroth
             }
 
             2 -> {
@@ -62,12 +57,11 @@ class SensitivityTableModel(
             }
 
             else -> {
-                val relativeSensibility = analysis.getRelativeSensibility(
+                analysis.getRelativeSensibility(
                     target,
                     sortedControllablePorts[columnIndex - 3],
                     analysis.getParameters().getName(rowIndex),
                 )
-                return repr(relativeSensibility)
             }
         }
     }
