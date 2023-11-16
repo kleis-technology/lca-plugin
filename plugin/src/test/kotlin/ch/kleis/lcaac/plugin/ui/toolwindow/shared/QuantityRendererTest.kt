@@ -6,7 +6,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
 @RunWith(Parameterized::class)
-class DisplayedNumberTest(
+class QuantityRendererTest(
     private val value: Double,
     private val expected: String,
 ) {
@@ -18,37 +18,37 @@ class DisplayedNumberTest(
                 arrayOf(0.0, "0"),
                 arrayOf(0.0001, "1E-4"),
                 arrayOf(0.001, "1E-3"),
-                arrayOf(0.01, "0.01"),
-                arrayOf(0.1, "0.1"),
+                arrayOf(0.01, "1E-2"),
+                arrayOf(0.1, "1E-1"),
                 arrayOf(1.0, "1"),
-                arrayOf(10.0, "10"),
-                arrayOf(100.0, "100"),
+                arrayOf(10.0, "1E1"),
+                arrayOf(100.0, "1E2"),
                 arrayOf(1000.0, "1E3"),
 
-                arrayOf(0.000999, "1E-3"),
-                arrayOf(0.00999, "0.01"),
-                arrayOf(0.0999, "0.1"),
-                arrayOf(0.999, "1"),
-                arrayOf(9.99, "10"),
-                arrayOf(99.9, "100"),
-                arrayOf(999.0, "1E3"),
+                arrayOf(0.000999, "9.99E-4"),
+                arrayOf(0.00999, "9.99E-3"),
+                arrayOf(0.0999, "9.99E-2"),
+                arrayOf(0.999, "9.99E-1"),
+                arrayOf(9.99, "9.99"),
+                arrayOf(99.9, "9.99E1"),
+                arrayOf(999.0, "9.99E2"),
 
                 arrayOf(0.00123, "1.23E-3"),
-                arrayOf(0.0123, "0.0123"),
-                arrayOf(0.123, "0.123"),
+                arrayOf(0.0123, "1.23E-2"),
+                arrayOf(0.123, "1.23E-1"),
                 arrayOf(1.2345, "1.23"),
-                arrayOf(12.345, "12.3"),
-                arrayOf(123.45, "123"),
+                arrayOf(12.345, "1.23E1"),
+                arrayOf(123.45, "1.23E2"),
                 arrayOf(1234.5, "1.23E3"),
                 arrayOf(12345.123, "1.23E4"),
 
                 arrayOf(-0.0, "0"),
                 arrayOf(-0.00123, "-1.23E-3"),
-                arrayOf(-0.0123, "-0.0123"),
-                arrayOf(-0.123, "-0.123"),
+                arrayOf(-0.0123, "-1.23E-2"),
+                arrayOf(-0.123, "-1.23E-1"),
                 arrayOf(-1.2345, "-1.23"),
-                arrayOf(-12.345, "-12.3"),
-                arrayOf(-123.45, "-123"),
+                arrayOf(-12.345, "-1.23E1"),
+                arrayOf(-123.45, "-1.23E2"),
                 arrayOf(-1234.5, "-1.23E3"),
                 arrayOf(-12345.123, "-1.23E4"),
             )
@@ -58,7 +58,7 @@ class DisplayedNumberTest(
     @Test
     fun run() {
         // when
-        val actual = FloatingPointRepresentation.of(value).toString()
+        val actual = QuantityRenderer.formatDouble(value)
 
         // then
         Assert.assertEquals(expected, actual)

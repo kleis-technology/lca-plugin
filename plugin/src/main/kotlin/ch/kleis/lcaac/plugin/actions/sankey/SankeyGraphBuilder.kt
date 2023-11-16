@@ -9,7 +9,7 @@ import ch.kleis.lcaac.core.lang.value.SubstanceValue
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
-import ch.kleis.lcaac.plugin.ui.toolwindow.shared.FloatingPointRepresentation
+import ch.kleis.lcaac.plugin.ui.toolwindow.shared.QuantityRenderer
 
 class SankeyGraphBuilder(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
@@ -96,7 +96,7 @@ class SankeyGraphBuilder(
         return if (source == target || 0 < compareResult) {
             this
         } else {
-            val name = FloatingPointRepresentation.of(value)
+            val name = QuantityRenderer.formatDouble(value)
             this.addLink(GraphLink(source.getUID(), target.getUID(), value, """$name $unit"""))
         }
     }
