@@ -65,9 +65,7 @@ class EcospoldProcessRendererTest {
             |    }
             |
             |    inputs {
-            |        // iName
             |        3.0 kg iname from iname_producing_process_glo match (productName = "iname")
-            |        // iName2
             |        25.0 m3 iname2 from iname2_producing_process_ch match (productName = "iname2")
             |    }
             |

@@ -26,7 +26,7 @@ data class ImportedInputExchange(
     override val qty: String,
     override val unit: String,
     val fromProcess: String? = null,
-    override val comments: List<String>,
+    override val comments: List<String> = emptyList(),
     override val printAsComment: Boolean = false,
 ) : ImportedTechnosphereExchange, ImportedExchange {
     companion object
@@ -38,7 +38,7 @@ data class ImportedProductExchange(
     override val qty: String,
     override val unit: String,
     val allocation: Double = 100.0,
-    override val comments: List<String>,
+    override val comments: List<String> = emptyList(),
     override val printAsComment: Boolean = false,
 ) : ImportedTechnosphereExchange, ImportedExchange {
     companion object
