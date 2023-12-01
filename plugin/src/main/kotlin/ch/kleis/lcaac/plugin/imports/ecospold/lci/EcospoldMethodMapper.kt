@@ -4,6 +4,7 @@ import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
 import java.io.Reader
+import kotlin.reflect.full.memberProperties
 import kotlin.streams.asSequence
 
 typealias ID = String
@@ -43,6 +44,48 @@ data class FoundMappingExchange(
     override val comment: String = "",
 ) : MappingExchange
 
+data class MethodMappingHeaders(
+    val flowIdHeader: String,
+    val flowNameHeader: String,
+    val flowUnitNameHeader: String,
+    val flowFlowStatusHeader: String,
+    val methodNameHeader: String,
+    val methodUnitHeader: String,
+    val methodCompartmentHeader: String,
+    val methodSubCompartmentHeader: String,
+    val conversionFactorHeader: String,
+    val compartmentStatusHeader: String,
+) {
+    companion object Versions {
+        val ecoInvent39 = MethodMappingHeaders(
+            flowIdHeader = "id",
+            flowNameHeader = "name",
+            flowUnitNameHeader = "unitName",
+            flowFlowStatusHeader = "flow_status",
+            methodNameHeader = "method_name",
+            methodUnitHeader = "method_unit",
+            methodCompartmentHeader = "method_compartment",
+            methodSubCompartmentHeader = "method_subcompartment",
+            conversionFactorHeader = "conversion_factor",
+            compartmentStatusHeader = "compartment_status",
+        )
+
+        val ecoInvent310 = MethodMappingHeaders(
+            flowIdHeader = "elementary_flow_id",
+            flowNameHeader = "elementary_flow_name",
+            flowUnitNameHeader = "unit_name",
+            flowFlowStatusHeader = "flow_status",
+            methodNameHeader = "method_elementary_flow_name",
+            methodUnitHeader = "method_unit",
+            methodCompartmentHeader = "method_compartment",
+            methodSubCompartmentHeader = "method_subcompartment",
+            conversionFactorHeader = "conversion_factor",
+            compartmentStatusHeader = "compartment_status",
+        )
+    }
+}
+
+
 object EcospoldMethodMapper {
     private val csvFormat: CSVFormat = CSVFormat.Builder.create().setHeader().build()
 
@@ -64,52 +107,47 @@ object EcospoldMethodMapper {
 
     fun buildMapping(mapData: Reader): Map<ID, MappingExchange> =
         CSVParser.parse(mapData, csvFormat).use { parser ->
-            validateHeaders(parser.headerMap)
+            val mappingHeaders = validateHeaders(parser.headerMap)
             parser.stream().asSequence().mapNotNull { record ->
                 when {
-                    record["flow_status"] == "ecoinvent orphan" -> {
-                        record["id"] to OrphanMappingExchange(record["id"])
+                    record[mappingHeaders.flowFlowStatusHeader] == "ecoinvent orphan" -> {
+                        record[mappingHeaders.flowIdHeader] to OrphanMappingExchange(record[mappingHeaders.flowIdHeader])
                     }
 
-                    record["compartment_status"].isEmpty() -> {
-                        record["id"] to UnknownMappingExchange(record["id"])
+                    record[mappingHeaders.compartmentStatusHeader].isEmpty() -> {
+                        record[mappingHeaders.flowIdHeader] to UnknownMappingExchange(record[mappingHeaders.flowIdHeader])
                     }
 
-                    else -> mappedElement(record)
+                    else -> mappedElement(mappingHeaders, record)
                 }
             }.toMap()
         }
 
-    private fun validateHeaders(headers: Map<String, Int>) =
-        sequenceOf(
-            "compartment_status",
-            "conversion_factor",
-            "flow_status",
-            "id",
-            "method_compartment",
-            "method_name",
-            "method_subcompartment",
-            "method_unit",
-            "name",
-            "unitName"
-        )
-            .forEach { header ->
-                if (!headers.containsKey(header)) {
-                    throw IllegalArgumentException("could not find $header in file headers. Is it a valid mapping file ?")
-                }
-            }
+    fun validateHeaders(headers: Map<String, Int>): MethodMappingHeaders =
+        when {
+            MethodMappingHeaders.ecoInvent39::class.memberProperties.map {
+                it.getter.call(MethodMappingHeaders.ecoInvent39).toString()
+            }.all { header -> headers.containsKey(header) } -> MethodMappingHeaders.ecoInvent39
 
-    private fun mappedElement(record: CSVRecord): Pair<ID, FoundMappingExchange>? =
+            MethodMappingHeaders.ecoInvent310::class.memberProperties.map {
+                it.getter.call(MethodMappingHeaders.ecoInvent310).toString()
+            }.all { header -> headers.containsKey(header) } -> MethodMappingHeaders.ecoInvent310
+
+            else -> throw IllegalArgumentException("Method mapping file could not be matched to the EcoInvent 3.9.1 or 3.10 header schema. Is it a valid mapping file ?")
+
+        }
+
+    private fun mappedElement(headers: MethodMappingHeaders, record: CSVRecord): Pair<ID, FoundMappingExchange>? =
         try {
-            val id = record["id"]
+            val id = record[headers.flowIdHeader]
             id to FoundMappingExchange(
                 id,
-                getConversionFactor(record["conversion_factor"]),
-                record["method_name"].nullIfEmpty(),
-                record["method_unit"].nullIfEmpty()?.let { pefUnitException(it, record["unitName"]) },
-                record["method_compartment"].nullIfEmpty(),
-                record["method_subcompartment"].nullIfEmpty(),
-                "Ecoinvent ID: $id. Flow, compartment status: ${record["flow_status"]}, ${record["compartment_status"]}",
+                getConversionFactor(record[headers.conversionFactorHeader]),
+                record[headers.methodNameHeader].nullIfEmpty(),
+                record[headers.methodUnitHeader].nullIfEmpty()?.let { pefUnitException(it, record[headers.flowUnitNameHeader]) },
+                record[headers.methodCompartmentHeader].nullIfEmpty(),
+                record[headers.methodSubCompartmentHeader].nullIfEmpty(),
+                "Ecoinvent ID: $id. Flow, compartment status: ${record[headers.flowFlowStatusHeader]}, ${record[headers.compartmentStatusHeader]}",
             )
         } catch (_: IllegalArgumentException) {
             null

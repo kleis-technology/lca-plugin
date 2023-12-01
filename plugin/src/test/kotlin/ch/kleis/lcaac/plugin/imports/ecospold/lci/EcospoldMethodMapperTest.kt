@@ -218,4 +218,64 @@ class EcospoldMethodMapperTest {
             result.first().value
         )
     }
+
+    @Test
+    fun `validateHeaders recognizes valid EcoInvent 391 mapping file header`() {
+        // given
+        val headerStrings = listOf(
+            "id",
+            "name",
+            "unitName",
+            "flow_status",
+            "method_name",
+            "method_unit",
+            "method_compartment",
+            "method_subcompartment",
+            "conversion_factor",
+            "compartment_status"
+        )
+        val headers = headerStrings.zip(headerStrings.indices).toMap()
+
+
+        // when
+        val result = EcospoldMethodMapper.validateHeaders(headers)
+
+        // then
+        assertEquals(MethodMappingHeaders.Versions.ecoInvent39, result)
+    }
+
+    @Test
+    fun `validateHeaders recognizes valid EcoInvent 310 mapping file header`() {
+        // given
+        val headerStrings = listOf(
+                "elementary_flow_id",
+                "elementary_flow_name",
+                "unit_name",
+                "flow_status",
+                "method_elementary_flow_name",
+                "method_unit",
+                "method_compartment",
+                "method_subcompartment",
+                "conversion_factor",
+                "compartment_status",
+        )
+        val headers = headerStrings.zip(headerStrings.indices).toMap()
+
+        // when
+        val result = EcospoldMethodMapper.validateHeaders(headers)
+
+        // then
+        assertEquals(MethodMappingHeaders.Versions.ecoInvent310, result)
+    }
+
+    @Test
+    fun `validateHeaders throws an error on an illegal mapping file`() {
+        // given
+        val headerStrings = listOf("alpha", "bravo", "charlie", "delta")
+        val headers = headerStrings.zip(headerStrings.indices).toMap()
+
+        // {w,t}hen
+        val e = assertFailsWith<IllegalArgumentException>{ EcospoldMethodMapper.validateHeaders(headers) }
+        assertEquals("Method mapping file could not be matched to the EcoInvent 3.9.1 or 3.10 header schema. Is it a valid mapping file ?", e.message)
+    }
 }
