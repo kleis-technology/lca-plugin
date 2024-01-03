@@ -19,7 +19,7 @@ class SubstanceWithImpactAccumulator {
         get() = substanceRecord?.run { substanceContent } ?: ""
 
     val lcaFileName: String
-        get() = sanitizeString(substanceRecord?.lcaFileName() ?: factorRecords.first().lcaFileName())
+        get() = sanitize(substanceRecord?.lcaFileName() ?: factorRecords.first().lcaFileName())
 
     val substanceName: String
         get() = substanceRecord?.substanceName() ?: ""

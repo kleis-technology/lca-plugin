@@ -31,6 +31,19 @@ class PreludeTest {
     }
 
     @Test
+    fun `sanitize complex substance name is coherent with efxx libraries`() {
+        // given
+        val chemistryIsFun = "(+/-) 2-(2,4-dichlorophenyl)-3-(1h-1,2,4-triazole-1-yl)propyl-1,1,2,2-tetrafluoroethylether"
+        val expected = "_p_sl_2_2_4_dichlorophenyl_3_1h_1_2_4_triazole_1_yl_propyl_1_1_2_2_tetrafluoroethylether"
+
+        // when
+        val result = Prelude.sanitize(chemistryIsFun)
+
+        // then
+        assertEquals(expected, result)
+    }
+
+    @Test
     fun energyAndPower() {
         // given
         val wattHour = with(ToValue(ops)) { Prelude.unitMap<BasicNumber>()["Wh"]!!.toUnitValue() }

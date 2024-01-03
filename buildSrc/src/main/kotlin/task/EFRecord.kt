@@ -16,17 +16,17 @@ sealed class EFRecord(val record: CSVRecord) {
 
     abstract fun characterizationFactor(): Double
     fun unit(): String {
-        return when (val raw = if (this.isSubstance()) sanitizeString(record["FLOW_propertyUnit"].trim()) else "u") {
-            "Item(s)" -> "piece"
-            "kg_a" -> "kga"
-            "m2_a" -> "m2a"
-            "m3_a" -> "m3a"
+        return when (val raw = if (this.isSubstance()) sanitize(record["FLOW_propertyUnit"].trim(), toLowerCase = false) else "u") {
+            "Item_s" -> "piece"
+            "kg_m_a" -> "kga"
+            "m2_m_a" -> "m2a"
+            "m3_m_a" -> "m3a"
             else -> raw
         }
     }
 
     fun sanitizedSubstanceName(): String {
-        return sanitizeString(this.substanceDisplayName()).lowercase()
+        return sanitize(this.substanceDisplayName()).lowercase()
     }
 
     fun fullyQualifiedDisplayName(): String {
@@ -37,7 +37,7 @@ sealed class EFRecord(val record: CSVRecord) {
         .replace("/", "|").replace("\\", "|")
 
     fun substanceDisplayName(): String = record["FLOW_name"].replace("\"", "\\\"")
-    fun substanceName(): String = sanitizeString(record["FLOW_name"].replace("\"", "\\\""))
+    fun substanceName(): String = sanitize(record["FLOW_name"].replace("\"", "\\\""))
     fun casNumber(): String = record["FLOW_casnumber"].trim()
     fun ecNumber(): String = record["FLOW_ecnumber"].trim()
     fun methodName(): String = record["LCIAMethod_name"].trim()
