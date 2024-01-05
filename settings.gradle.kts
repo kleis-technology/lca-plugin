@@ -1,7 +1,5 @@
 rootProject.name = "ch.kleis.lcaac"
-include("core")
 include("plugin")
-include("grammar")
 
 pluginManagement {
     val grammarKitPluginVersion = "2021.2.2"

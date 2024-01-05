@@ -28,7 +28,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/kotlin" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/stdlib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/gen" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/ksp/main/kotlin" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/kotlin" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
@@ -81,7 +80,7 @@
     <orderEntry type="library" name="kotlin-reflect" level="project" />
     <orderEntry type="library" name="jetbrains.kotlinx.multik.core.jvm" level="project" />
     <orderEntry type="library" name="jetbrains.kotlinx.serialization.json" level="project" />
-    <orderEntry type="module" module-name="ch.kleis.lcaac.core" />
+    <orderEntry type="library" module-name="ch.kleis.lcaac.core" level="project"/>
     <orderEntry type="library" name="jaxb-api" level="project" />
   </component>
 </module>
