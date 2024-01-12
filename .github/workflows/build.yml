@@ -72,6 +72,8 @@ jobs:
 
       # Run tests
       - name: Run Tests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew test
 
       # Collect Tests Result of failed tests
