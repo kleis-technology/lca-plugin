@@ -1,6 +1,6 @@
 package ch.kleis.lcaac.plugin.language.loader
 
-import ch.kleis.lcaac.core.lang.*
+import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
@@ -42,9 +42,10 @@ class LcaMapper<Q>(
         val params = psiProcess.getParameters().mapValues { dataExpression(it.value) }
         val symbolTable = SymbolTable(
             data = try {
-                Register(globals
-                    .plus(params.mapKeys { DataKey(it.key) })
-                    .plus(locals.mapKeys { DataKey(it.key) })
+                Register(
+                    globals
+                        .plus(params.mapKeys { DataKey(it.key) })
+                        .plus(locals.mapKeys { DataKey(it.key) })
                 )
             } catch (e: RegisterException) {
                 throw EvaluatorException("Conflict between local variable(s) ${e.duplicates} and a global definition.")
@@ -116,10 +117,12 @@ class LcaMapper<Q>(
         )
 
 
-    private fun impact(exchange: LcaImpactExchange): EImpact<Q> {
-        return EImpact(
-            dataExpression(exchange.dataExpression),
-            indicatorSpec(exchange.indicatorRef),
+    private fun impact(exchange: LcaImpactExchange): ImpactBlock<Q> {
+        return EImpactBlockEntry(
+            EImpact(
+                dataExpression(exchange.dataExpression),
+                indicatorSpec(exchange.indicatorRef),
+            )
         )
     }
 
@@ -129,10 +132,12 @@ class LcaMapper<Q>(
         )
     }
 
-    fun technoInputExchange(psiExchange: LcaTechnoInputExchange): ETechnoExchange<Q> {
-        return ETechnoExchange(
-            dataExpression(psiExchange.dataExpression),
-            inputProductSpec(psiExchange.inputProductSpec),
+    fun technoInputExchange(psiExchange: LcaTechnoInputExchange): TechnoBlock<Q> {
+        return ETechnoBlockEntry(
+            ETechnoExchange(
+                dataExpression(psiExchange.dataExpression),
+                inputProductSpec(psiExchange.inputProductSpec),
+            )
         )
     }
 
@@ -189,11 +194,13 @@ class LcaMapper<Q>(
         return dataExpression(element.dataExpression)
     }
 
-    private fun bioExchange(psiExchange: LcaBioExchange, symbolTable: SymbolTable<Q>): EBioExchange<Q> {
+    private fun bioExchange(psiExchange: LcaBioExchange, symbolTable: SymbolTable<Q>): BioBlock<Q> {
         val quantity = dataExpression(psiExchange.dataExpression)
-        return EBioExchange(
-            quantity,
-            substanceSpec(psiExchange.substanceSpec, quantity, symbolTable)
+        return EBioBlockEntry(
+            EBioExchange(
+                quantity,
+                substanceSpec(psiExchange.substanceSpec, quantity, symbolTable)
+            )
         )
     }
 

@@ -4,6 +4,8 @@ import arrow.core.filterIsInstance
 import ch.kleis.lcaac.core.ParameterName
 import ch.kleis.lcaac.core.assessment.SensitivityAnalysis
 import ch.kleis.lcaac.core.assessment.SensitivityAnalysisProgram
+import ch.kleis.lcaac.core.datasource.CsvSourceOperations
+import ch.kleis.lcaac.core.datasource.DataSourceOperations
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.evaluator.ToValue
@@ -30,6 +32,7 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.ContentFactory
+import java.io.File
 
 class SensitivityAnalysisTask(
     project: Project,
@@ -85,8 +88,10 @@ class SensitivityAnalysisTask(
                 processName,
                 matchLabels
             )!! // We are called from a process, so it must exist
-        val (arguments, parameters) = prepareArguments(ops, symbolTable, template.params)
-        val trace = Evaluator(symbolTable, ops).trace(template, arguments)
+        val sourceOps = CsvSourceOperations(File(project.basePath!!), ops)
+        val (arguments, parameters) =
+            prepareArguments(ops, sourceOps, symbolTable, template.params)
+        val trace = Evaluator(symbolTable, ops, sourceOps).trace(template, arguments)
         this.analysis = SensitivityAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint(), parameters).run()
     }
 
@@ -123,10 +128,11 @@ class SensitivityAnalysisTask(
 
     private fun prepareArguments(
         ops: DualOperations,
+        sourceOps: DataSourceOperations<DualNumber>,
         symbolTable: SymbolTable<DualNumber>,
         params: Map<String, DataExpression<DualNumber>>
     ): Pair<Map<String, DataExpression<DualNumber>>, ParameterVector<DualNumber>> {
-        val dataReducer = DataExpressionReducer(symbolTable.data, ops)
+        val dataReducer = DataExpressionReducer(symbolTable.data, symbolTable.dataSources, ops, sourceOps)
         val reduced = params.mapValues { dataReducer.reduce(it.value) }
         val quantitativeArgumentList = reduced.filterIsInstance<String, EQuantityScale<DualNumber>>()
             .toList()

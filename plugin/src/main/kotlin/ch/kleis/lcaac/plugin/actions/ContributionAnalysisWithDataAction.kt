@@ -20,6 +20,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.vfs.VirtualFileManager
+import java.io.File
 import java.io.FileNotFoundException
 import kotlin.io.path.Path
 
@@ -39,6 +40,7 @@ class ContributionAnalysisWithDataAction(
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
+        val projectPath = project.basePath?.let { File(it) } ?: return
         val file = e.getData(LangDataKeys.PSI_FILE) as LcaFile? ?: return
         val containingDirectory = file.containingDirectory ?: return
 
@@ -60,7 +62,7 @@ class ContributionAnalysisWithDataAction(
                         val parser = LcaLoader(collector.collect(file), BasicOperations)
                         parser.load()
                     }
-                    val csvProcessor = CsvProcessor(symbolTable)
+                    val csvProcessor = CsvProcessor(projectPath, symbolTable)
                     val results = requests.flatMap { request ->
                         ProgressManager.checkCanceled()
                         indicator.text = "Processing using ${request.arguments()}"
