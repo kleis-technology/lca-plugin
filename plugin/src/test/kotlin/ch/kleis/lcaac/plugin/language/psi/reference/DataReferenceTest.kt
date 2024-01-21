@@ -6,6 +6,7 @@ import ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex
 import ch.kleis.lcaac.plugin.psi.LcaDataRef
 import ch.kleis.lcaac.plugin.psi.LcaScaleQuantityExpression
+import ch.kleis.lcaac.plugin.psi.LcaTerminalTechnoInputExchange
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
@@ -68,8 +69,9 @@ class DataReferenceTest : BasePlatformTestCase() {
         val pkgName = "language.psi.reference.quantity.test_resolve_whenFromProcessParameter"
         val fqn = "$pkgName.caller"
         val process = ProcessStubKeyIndex.findProcesses(project, fqn).first()
-        val ref = process
-            .getInputs().first()
+        val element = process
+            .getInputs().first() as LcaTerminalTechnoInputExchange
+        val ref = element
             .inputProductSpec
             .getProcessTemplateSpec()!!
             .argumentList.first()

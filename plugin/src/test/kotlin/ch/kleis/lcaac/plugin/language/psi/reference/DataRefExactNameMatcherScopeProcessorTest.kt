@@ -3,6 +3,7 @@ package ch.kleis.lcaac.plugin.language.psi.reference
 import ch.kleis.lcaac.plugin.language.loader.LcaParserDefinition
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import ch.kleis.lcaac.plugin.psi.LcaDataRef
+import ch.kleis.lcaac.plugin.psi.LcaTerminalTechnoInputExchange
 import com.intellij.testFramework.ParsingTestCase
 import junit.framework.TestCase
 import org.junit.Test
@@ -64,7 +65,8 @@ class DataRefExactNameMatcherScopeProcessorTest : ParsingTestCase("", "lca", Lca
         ) as LcaFile
         val process = file.getProcesses().first()
         val assignment = process.getLabelsList().first().labelAssignmentList.first()
-        val dataRef = process.getInputs().first()
+        val element = process.getInputs().first() as LcaTerminalTechnoInputExchange
+        val dataRef = element
             .inputProductSpec
             .getProcessTemplateSpec()!!
             .getMatchLabels()!!

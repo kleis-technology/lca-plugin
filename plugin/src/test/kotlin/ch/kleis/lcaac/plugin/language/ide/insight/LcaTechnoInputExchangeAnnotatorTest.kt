@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.language.ide.insight
 
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
+import ch.kleis.lcaac.plugin.psi.LcaTerminalTechnoInputExchange
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -33,7 +34,7 @@ class LcaTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
         """.trimIndent()
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+            .getInputs().first() as LcaTerminalTechnoInputExchange
         val mock = AnnotationHolderMock()
         val annotator = LcaTechnoInputExchangeAnnotator()
 
@@ -76,7 +77,7 @@ class LcaTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
         """.trimIndent()
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+            .getInputs().first() as LcaTerminalTechnoInputExchange
         val mock = AnnotationHolderMock()
         val annotator = LcaTechnoInputExchangeAnnotator()
 

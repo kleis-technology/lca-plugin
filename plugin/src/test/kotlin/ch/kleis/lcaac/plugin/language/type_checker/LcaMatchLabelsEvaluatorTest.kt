@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.language.type_checker
 
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
+import ch.kleis.lcaac.plugin.psi.LcaTerminalTechnoInputExchange
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.Test
 import kotlin.test.assertFailsWith
@@ -25,8 +26,9 @@ class LcaMatchLabelsEvaluatorTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val labels = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+        val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
+            .getInputs().first() as LcaTerminalTechnoInputExchange
+        val labels = element
             .inputProductSpec
             .getProcessTemplateSpec()!!
             .getMatchLabels()!!
@@ -58,8 +60,9 @@ class LcaMatchLabelsEvaluatorTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val labels = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+        val first = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
+            .getInputs().first() as LcaTerminalTechnoInputExchange
+        val labels = first
             .inputProductSpec
             .getProcessTemplateSpec()!!
             .getMatchLabels()!!
@@ -91,8 +94,9 @@ class LcaMatchLabelsEvaluatorTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val labels = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+        val first = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
+            .getInputs().first() as LcaTerminalTechnoInputExchange
+        val labels = first
             .inputProductSpec
             .getProcessTemplateSpec()!!
             .getMatchLabels()!!
@@ -124,12 +128,13 @@ class LcaMatchLabelsEvaluatorTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val labels = ProcessStubKeyIndex.findProcesses(
+        val first = ProcessStubKeyIndex.findProcesses(
             project,
             "$pkgName.p",
             mapOf("country" to "FR")
         ).first()
-            .getInputs().first()
+            .getInputs().first() as LcaTerminalTechnoInputExchange
+        val labels = first
             .inputProductSpec
             .getProcessTemplateSpec()!!
             .getMatchLabels()!!
@@ -162,11 +167,12 @@ class LcaMatchLabelsEvaluatorTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val labels = ProcessStubKeyIndex.findProcesses(
+        val first = ProcessStubKeyIndex.findProcesses(
             project,
             "$pkgName.p"
         ).first()
-            .getInputs().first()
+            .getInputs().first() as LcaTerminalTechnoInputExchange
+        val labels = first
             .inputProductSpec
             .getProcessTemplateSpec()!!
             .getMatchLabels()!!
@@ -201,11 +207,12 @@ class LcaMatchLabelsEvaluatorTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val labels = ProcessStubKeyIndex.findProcesses(
+        val first = ProcessStubKeyIndex.findProcesses(
             project,
             "$pkgName.p"
         ).first()
-            .getInputs().first()
+            .getInputs().first() as LcaTerminalTechnoInputExchange
+        val labels = first
             .inputProductSpec
             .getProcessTemplateSpec()!!
             .getMatchLabels()!!
@@ -235,11 +242,12 @@ class LcaMatchLabelsEvaluatorTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val labels = ProcessStubKeyIndex.findProcesses(
+        val first = ProcessStubKeyIndex.findProcesses(
             project,
             "$pkgName.p"
         ).first()
-            .getInputs().first()
+            .getInputs().first() as LcaTerminalTechnoInputExchange
+        val labels = first
             .inputProductSpec
             .getProcessTemplateSpec()!!
             .getMatchLabels()!!
@@ -265,11 +273,12 @@ class LcaMatchLabelsEvaluatorTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val labels = ProcessStubKeyIndex.findProcesses(
+        val first = ProcessStubKeyIndex.findProcesses(
             project,
             "$pkgName.p"
         ).first()
-            .getInputs().first()
+            .getInputs().first() as LcaTerminalTechnoInputExchange
+        val labels = first
             .inputProductSpec
             .getProcessTemplateSpec()!!
             .getMatchLabels()!!
