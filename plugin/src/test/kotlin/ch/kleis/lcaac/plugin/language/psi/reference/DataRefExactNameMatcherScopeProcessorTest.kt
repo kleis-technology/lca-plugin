@@ -65,7 +65,7 @@ class DataRefExactNameMatcherScopeProcessorTest : ParsingTestCase("", "lca", Lca
         ) as LcaFile
         val process = file.getProcesses().first()
         val assignment = process.getLabelsList().first().labelAssignmentList.first()
-        val element = process.getInputs().first() as LcaTerminalTechnoInputExchange
+        val element = process.getInputs().first().terminalTechnoInputExchange!!
         val dataRef = element
             .inputProductSpec
             .getProcessTemplateSpec()!!

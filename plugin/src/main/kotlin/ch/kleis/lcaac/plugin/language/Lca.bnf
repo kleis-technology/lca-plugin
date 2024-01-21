@@ -59,8 +59,8 @@
       SUM_KEYWORD = 'sum'
 
       NUMBER = 'number'
-      LSQBRACE = ']'
-      RSQBRACE = '['
+      LSQBRACE = '['
+      RSQBRACE = ']'
       LPAREN = '('
       RPAREN = ')'
       LBRACE = '{'
@@ -281,12 +281,10 @@ dataExpression ::= addGroup
            | mulGroup
            | exponentialQuantityExpression
            | baseGroup
-           | colGroup
 
 private addGroup ::= addQuantityExpression | subQuantityExpression
 private mulGroup ::= scaleQuantityExpression | mulQuantityExpression | divQuantityExpression
-private baseGroup ::=  parenQuantityExpression | stringExpression | sliceExpression
-private colGroup ::= colExpression
+private baseGroup ::=  parenQuantityExpression | stringExpression | colExpression | sliceExpression | dataRef
 
 fake binaryOperatorExpression ::= dataExpression dataExpression {
     extends=dataExpression
@@ -304,8 +302,8 @@ exponentialQuantityExpression ::= dataExpression "^" NUMBER { extends=dataExpres
 parenQuantityExpression ::= "(" dataExpression ")" { extends=dataExpression }
 scaleQuantityExpression ::= NUMBER dataExpression { extends=dataExpression methods=[scale="NUMBER"]}
 stringExpression ::= STRING_LITERAL { extends=dataExpression }
-sliceExpression ::= dataRef ('[' columnRef ']')? { extends=dataExpression }
 columnRef ::= STRING_LITERAL
+sliceExpression ::= dataRef  '[' columnRef ']' { extends=dataExpression }
 colExpression ::= 'sum' '(' dataSourceRef ',' columnRef ('*' columnRef)* ')' { extends=dataExpression }
 
 

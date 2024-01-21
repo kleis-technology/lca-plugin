@@ -60,7 +60,7 @@ class ProcessReferenceFromPsiProcessRefTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first() as LcaTerminalTechnoInputExchange
+            .getInputs().first().terminalTechnoInputExchange!!
         val ref = element
             .inputProductSpec
             .getProcessTemplateSpec()!!
@@ -138,7 +138,7 @@ class ProcessReferenceFromPsiProcessRefTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val first = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first() as LcaTerminalTechnoInputExchange
+            .getInputs().first().terminalTechnoInputExchange!!
         val ref = first
             .inputProductSpec
             .getProcessTemplateSpec()!!

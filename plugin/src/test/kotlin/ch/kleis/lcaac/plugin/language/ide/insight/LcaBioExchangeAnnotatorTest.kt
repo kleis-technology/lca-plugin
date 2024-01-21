@@ -36,7 +36,7 @@ class LcaBioExchangeAnnotatorTest : BasePlatformTestCase() {
         """.trimIndent()
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getEmissions().first() as LcaTerminalBioExchange
+            .getEmissions().first().terminalBioExchange!!
         val mock = AnnotationHolderMock()
         val annotator = LcaBioExchangeAnnotator()
 

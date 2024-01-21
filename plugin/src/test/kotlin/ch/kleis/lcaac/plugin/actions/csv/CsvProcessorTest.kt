@@ -104,7 +104,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
                         1 kg out
                     }
                     inputs {
-                        a + b + c in
+                        a + b + c in_prod
                     }
                 }
             """.trimIndent()
@@ -141,7 +141,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
             out, actual.output
         )
         val key = ProductValue(
-            "in", kg,
+            "in_prod", kg,
         )
         assertEquals(
             QuantityValue(ops.pure(3.0), kg), actual.impacts[key]
@@ -169,7 +169,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
                         1 kg out
                     }
                     inputs {
-                        a + b + c in
+                        a + b + c in_prod
                     }
                 }
             """.trimIndent()
@@ -207,7 +207,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
             out, actual.output
         )
         val key = ProductValue(
-            "in", kg,
+            "in_prod", kg,
         )
         assertEquals(
             QuantityValue(ops.pure(3.0), kg), actual.impacts[key]

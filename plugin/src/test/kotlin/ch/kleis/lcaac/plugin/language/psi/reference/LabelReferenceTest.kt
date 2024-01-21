@@ -68,7 +68,7 @@ class LabelReferenceTest : BasePlatformTestCase() {
         )
         val element = ProcessStubKeyIndex.findProcesses(
             project, "$pkgName.p",
-        ).first().getInputs().first() as LcaTerminalTechnoInputExchange
+        ).first().getInputs().first().terminalTechnoInputExchange!!
         val ref = element
             .inputProductSpec.getProcessTemplateSpec()!!
             .getMatchLabels()!!.labelSelectorList.first()

@@ -33,7 +33,7 @@ class DefaultRefFileResolverTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first() as LcaTerminalTechnoInputExchange
+            .getInputs().first().terminalTechnoInputExchange!!
         val target = element
             .inputProductSpec
             .getProcessTemplateSpec()!!

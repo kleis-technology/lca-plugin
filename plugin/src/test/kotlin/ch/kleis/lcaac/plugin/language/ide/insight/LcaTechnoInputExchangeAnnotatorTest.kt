@@ -34,7 +34,7 @@ class LcaTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
         """.trimIndent()
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first() as LcaTerminalTechnoInputExchange
+            .getInputs().first().terminalTechnoInputExchange!!
         val mock = AnnotationHolderMock()
         val annotator = LcaTechnoInputExchangeAnnotator()
 
@@ -77,7 +77,7 @@ class LcaTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
         """.trimIndent()
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first() as LcaTerminalTechnoInputExchange
+            .getInputs().first().terminalTechnoInputExchange!!
         val mock = AnnotationHolderMock()
         val annotator = LcaTechnoInputExchangeAnnotator()
 
@@ -114,7 +114,7 @@ class LcaTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
         """.trimIndent()
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+            .getInputs().first().terminalTechnoInputExchange!!
         val mock = AnnotationHolderMock()
         val annotator = LcaTechnoInputExchangeAnnotator()
 
@@ -154,7 +154,7 @@ class LcaTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
         """.trimIndent()
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+            .getInputs().first().terminalTechnoInputExchange!!
         val mock = AnnotationHolderMock()
         val annotator = LcaTechnoInputExchangeAnnotator()
 
@@ -199,7 +199,7 @@ class LcaTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
         """.trimIndent()
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+            .getInputs().first().terminalTechnoInputExchange!!
         val mock = AnnotationHolderMock()
         val annotator = LcaTechnoInputExchangeAnnotator()
 

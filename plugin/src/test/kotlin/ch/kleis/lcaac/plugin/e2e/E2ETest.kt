@@ -363,7 +363,7 @@ class E2ETest : BasePlatformTestCase() {
                         1 kg out
                     }
                     inputs {
-                        a + b + c in
+                        a + b + c in_prod
                     }
                 }
             """.trimIndent()
@@ -399,7 +399,7 @@ class E2ETest : BasePlatformTestCase() {
             out, actual[0].output
         )
         val key = ProductValue(
-            "in", kg,
+            "in_prod", kg,
         )
         assertEquals(QuantityValue(BasicNumber(3.0), kg), actual[0].impacts[key])
     }
@@ -533,7 +533,7 @@ class E2ETest : BasePlatformTestCase() {
                     1 kg out
                 }
                 inputs {
-                    3 kg * q in
+                    3 kg * q in_prod
                 }
             }
         """.trimIndent()
@@ -738,7 +738,7 @@ class E2ETest : BasePlatformTestCase() {
                     1 kg out2 allocate 10 percent
                 }
                 inputs {
-                    1 kg in
+                    1 kg in_prod
                 }
             }
         """.trimIndent()
@@ -1031,12 +1031,12 @@ class E2ETest : BasePlatformTestCase() {
                     1 kg out
                 }
                 inputs {
-                    1 l in
+                    1 l in_prod
                 }
             }
             process p2 {
                 products {
-                    1 kg in
+                    1 kg in_prod
                 }
             }
         """.trimIndent()
@@ -1050,7 +1050,7 @@ class E2ETest : BasePlatformTestCase() {
         ) {
             Evaluator(symbolTable, ops, mockk()).trace(template)
         }
-        assertEquals("incompatible dimensions: length³ vs mass for product in", e.message)
+        assertEquals("incompatible dimensions: length³ vs mass for product in_prod", e.message)
     }
 
     private fun createFilesAndSymbols(vf: VirtualFile): SymbolTable<BasicNumber> {

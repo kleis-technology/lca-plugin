@@ -70,7 +70,7 @@ class DataReferenceTest : BasePlatformTestCase() {
         val fqn = "$pkgName.caller"
         val process = ProcessStubKeyIndex.findProcesses(project, fqn).first()
         val element = process
-            .getInputs().first() as LcaTerminalTechnoInputExchange
+            .getInputs().first().terminalTechnoInputExchange!!
         val ref = element
             .inputProductSpec
             .getProcessTemplateSpec()!!

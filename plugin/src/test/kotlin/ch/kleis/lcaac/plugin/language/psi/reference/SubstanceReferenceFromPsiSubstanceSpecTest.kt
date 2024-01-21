@@ -59,7 +59,7 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getEmissions().first() as LcaTerminalBioExchange
+            .getEmissions().first().terminalBioExchange!!
         val substanceSpec = element
             .getSubstanceSpec()
 
@@ -117,7 +117,7 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getResources().first() as LcaTerminalBioExchange
+            .getResources().first().terminalBioExchange!!
         val substanceSpec = element
             .getSubstanceSpec()
 
@@ -169,7 +169,7 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getEmissions().first() as LcaTerminalBioExchange
+            .getEmissions().first().terminalBioExchange!!
         val substanceSpec = element
             .getSubstanceSpec()
 
@@ -227,7 +227,7 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getEmissions().first() as LcaTerminalBioExchange
+            .getEmissions().first().terminalBioExchange!!
         val spec = element
             .getSubstanceSpec()
 

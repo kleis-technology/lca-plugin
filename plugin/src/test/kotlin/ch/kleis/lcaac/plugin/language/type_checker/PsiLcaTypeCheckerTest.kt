@@ -95,7 +95,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
         )
         val first = ProcessStubKeyIndex
             .findProcesses(project, "$pkgName.p", mapOf("geo" to "FR")).first()
-            .getInputs().first() as LcaTerminalTechnoInputExchange
+            .getInputs().first().terminalTechnoInputExchange!!
         val target = first
             .inputProductSpec
             .getProcessTemplateSpec()!!
@@ -142,7 +142,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val target = ProcessStubKeyIndex.findProcesses(project, "$pkgName.testProcess").first()
-            .getEmissions().first()
+            .getEmissions().first().terminalBioExchange!!
         val checker = PsiLcaTypeChecker()
         val expected = TBioExchange(TSubstance("testSubstance", DimensionFixture.mass, "air", null))
 
@@ -184,7 +184,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val target = ProcessStubKeyIndex.findProcesses(project, "$pkgName.testProcess").first()
-            .getEmissions().first()
+            .getEmissions().first().terminalBioExchange!!
         val checker = PsiLcaTypeChecker()
         val expected =
             "Incompatible dimensions: expecting mass, found length³"
@@ -881,7 +881,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val target = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+            .getInputs().first().terminalTechnoInputExchange!!
         val checker = PsiLcaTypeChecker()
 
         // when
@@ -967,7 +967,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val target = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+            .getInputs().first().terminalTechnoInputExchange!!
         val checker = PsiLcaTypeChecker()
 
         // when/then
@@ -1038,7 +1038,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val target = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+            .getInputs().first().terminalTechnoInputExchange!!
         val checker = PsiLcaTypeChecker()
 
         // when

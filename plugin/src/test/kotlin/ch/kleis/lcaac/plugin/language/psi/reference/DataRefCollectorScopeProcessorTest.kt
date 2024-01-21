@@ -57,7 +57,7 @@ class DataRefCollectorScopeProcessorTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val process = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p", mapOf("d" to "LABEL")).first()
-        val element = process.getInputs().first() as LcaTerminalTechnoInputExchange
+        val element = process.getInputs().first().terminalTechnoInputExchange!!
         val target = element
             .dataExpression as LcaDataRef
 
