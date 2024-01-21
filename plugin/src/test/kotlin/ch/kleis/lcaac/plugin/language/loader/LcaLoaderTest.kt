@@ -6,9 +6,9 @@ import arrow.optics.typeclasses.Index
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.*
+import ch.kleis.lcaac.core.lang.expression.optics.everyEntry
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
-import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.fixture.UnitFixture
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.testFramework.ParsingTestCase
@@ -214,7 +214,8 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val template = symbolTable.getTemplate("a") as ProcessTemplateExpression<BasicNumber>
         val actual =
             (ProcessTemplateExpression.eProcessTemplate<BasicNumber>().body().biosphere() compose
-                    Every.list() compose EBioExchange.substance()).firstOrNull(template)
+                Every.list() compose BlockExpression.everyEntry() compose
+                EBioExchange.substance()).firstOrNull(template)
 
         // then
         assertEquals("lu", actual?.name)
@@ -517,10 +518,12 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                     ),
                 ),
                 inputs = listOf(
-                    ETechnoExchange(
-                        EQuantityScale(ops.pure(10.0), EDataRef("l")),
-                        EProductSpec("water"),
-                    ),
+                    ETechnoBlockEntry(
+                        ETechnoExchange(
+                            EQuantityScale(ops.pure(10.0), EDataRef("l")),
+                            EProductSpec("water"),
+                        ),
+                    )
                 ),
             )
         )
@@ -628,9 +631,10 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val symbolTable = parser.load()
         val template = symbolTable.getTemplate("a")!!
         val actual = (
-                ProcessTemplateExpression.eProcessTemplate<BasicNumber>().body().inputs().index(Index.list(), 0) compose
-                        ETechnoExchange.quantity()
-                ).getOrNull(template)!!
+            ProcessTemplateExpression.eProcessTemplate<BasicNumber>().body().inputs().index(Index.list(), 0) compose
+                BlockExpression.everyEntry() compose
+                ETechnoExchange.quantity()
+            ).getAll(template).first()
 
         // then
         val expected = EQuantityDiv(
@@ -661,9 +665,10 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val symbolTable = parser.load()
         val template = symbolTable.getTemplate("a")!!
         val actual = (
-                ProcessTemplateExpression.eProcessTemplate<BasicNumber>().body().inputs().index(Index.list(), 0) compose
-                        ETechnoExchange.quantity()
-                ).getOrNull(template)!!
+            ProcessTemplateExpression.eProcessTemplate<BasicNumber>().body().inputs().index(Index.list(), 0) compose
+                BlockExpression.everyEntry() compose
+                ETechnoExchange.quantity()
+            ).getAll(template).first()
 
         // then
         val expected = EQuantityMul(
@@ -701,17 +706,19 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
 
         // then
         val expected = listOf(
-            ETechnoExchange(
-                EQuantityScale(ops.pure(10.0), EDataRef("l")),
-                EProductSpec(
-                    "water",
-                    fromProcess = FromProcess(
-                        "water_proc",
-                        MatchLabels(emptyMap()),
-                        mapOf("x" to EQuantityScale(ops.pure(3.0), EDataRef("l"))),
-                    ),
-                )
-            ),
+            ETechnoBlockEntry(
+                ETechnoExchange(
+                    EQuantityScale(ops.pure(10.0), EDataRef("l")),
+                    EProductSpec(
+                        "water",
+                        fromProcess = FromProcess(
+                            "water_proc",
+                            MatchLabels(emptyMap()),
+                            mapOf("x" to EQuantityScale(ops.pure(3.0), EDataRef("l"))),
+                        ),
+                    )
+                ),
+            )
         )
         assertEquals(expected, actual)
     }
@@ -765,9 +772,11 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                 ),
             ),
             impacts = listOf(
-                EImpact(
-                    EQuantityScale(ops.pure(1.0), EDataRef("kg")),
-                    EIndicatorSpec("climate_change"),
+                EImpactBlockEntry(
+                    EImpact(
+                        EQuantityScale(ops.pure(1.0), EDataRef("kg")),
+                        EIndicatorSpec("climate_change"),
+                    )
                 )
             )
         )
@@ -1016,7 +1025,9 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val template = symbolTable.getTemplate("a") as ProcessTemplateExpression<BasicNumber>
         val actual =
             (ProcessTemplateExpression.eProcessTemplate<BasicNumber>().body().impacts() compose
-                    Every.list() compose EImpact.indicator()).firstOrNull(template)
+                Every.list() compose
+                BlockExpression.everyEntry() compose
+                EImpact.indicator()).firstOrNull(template)
 
         // then
         assertEquals("cc", actual?.name)
