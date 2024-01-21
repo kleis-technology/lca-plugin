@@ -51,6 +51,13 @@
       BETWEEN_KEYWORD = 'between'
       AND_KEYWORD = 'and'
 
+      DATASOURCE_KEYWORD = 'datasource'
+      LOCATION_KEYWORD = 'location'
+      SCHEMA_KEYWORD = 'schema'
+      FOR_EACH_KEYWORD = 'for_each'
+      IN_KEYWORD = 'in'
+      SUM_KEYWORD = 'sum'
+
       NUMBER = 'number'
       LSQBRACE = ']'
       RSQBRACE = '['
@@ -80,7 +87,7 @@
     LCA File
  */
 
-lcaFile ::= package? import* (process | test | unitDefinition | substance | globalVariables )*
+lcaFile ::= package? import* (process | test | dataSourceDefinition | unitDefinition | substance | globalVariables )*
 
 /*
     Package
@@ -95,6 +102,15 @@ import ::= "import" urn {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUrnOwner"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.trait.PsiUrnOwnerMixin"
 }
+
+/*
+    Data source
+ */
+
+dataSourceDefinition ::= 'datasource' dataSourceRef '{' (locationField | schemaDefinition)* '}'
+locationField ::= 'location' '=' STRING_LITERAL
+schemaDefinition ::= 'schema' '{' columnDefinition* '}'
+columnDefinition ::= STRING_LITERAL '=' dataExpression
 
 /*
     Global variables
@@ -220,7 +236,7 @@ params ::= "params" "{" assignment* "}"
 
 variables ::= "variables" "{" assignment* "}"
 
-assignment ::= dataRef "=" dataExpression {
+assignment ::= dataRef (('=' dataExpression) | ('from' dataSourceRef)){
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiAssignment"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiAssignmentMixin"
 }
@@ -245,10 +261,16 @@ block_impacts ::= "impacts" "{" impactExchange* "}"
     Exchanges
  */
 
-technoInputExchange ::= dataExpression inputProductSpec
 technoProductExchange ::= dataExpression outputProductSpec
-bioExchange ::= dataExpression substanceSpec
-impactExchange ::= dataExpression indicatorRef
+technoInputExchange ::= terminalTechnoInputExchange
+        | 'for_each' dataRef 'in' dataSourceRef '{' (variables | technoInputExchange)* '}'
+terminalTechnoInputExchange ::= dataExpression inputProductSpec
+bioExchange ::= terminalBioExchange
+        | 'for_each' dataRef 'in' dataSourceRef '{' (variables | bioExchange)* '}'
+terminalBioExchange ::= dataExpression substanceSpec
+impactExchange ::= terminalImpactExchange
+        | 'for_each' dataRef 'in' dataSourceRef '{' (variables | impactExchange)* '}'
+terminalImpactExchange ::= dataExpression indicatorRef
 
 /*
     Quantity
@@ -259,10 +281,12 @@ dataExpression ::= addGroup
            | mulGroup
            | exponentialQuantityExpression
            | baseGroup
+           | colGroup
 
 private addGroup ::= addQuantityExpression | subQuantityExpression
 private mulGroup ::= scaleQuantityExpression | mulQuantityExpression | divQuantityExpression
-private baseGroup ::=  parenQuantityExpression | stringExpression | dataRef
+private baseGroup ::=  parenQuantityExpression | stringExpression | sliceExpression
+private colGroup ::= colExpression
 
 fake binaryOperatorExpression ::= dataExpression dataExpression {
     extends=dataExpression
@@ -280,6 +304,9 @@ exponentialQuantityExpression ::= dataExpression "^" NUMBER { extends=dataExpres
 parenQuantityExpression ::= "(" dataExpression ")" { extends=dataExpression }
 scaleQuantityExpression ::= NUMBER dataExpression { extends=dataExpression methods=[scale="NUMBER"]}
 stringExpression ::= STRING_LITERAL { extends=dataExpression }
+sliceExpression ::= dataRef ('[' columnRef ']')? { extends=dataExpression }
+columnRef ::= STRING_LITERAL
+colExpression ::= 'sum' '(' dataSourceRef ',' columnRef ('*' columnRef)* ')' { extends=dataExpression }
 
 
 /*
@@ -336,6 +363,9 @@ testRef ::= uid {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUIDOwner"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiTestRefMixin"
 }
+
+dataSourceRef ::= uid
+
 /*
    Spec
  */

@@ -98,7 +98,12 @@ CommentContent = .*
 <YYINITIAL> "between"                { return LcaTypes.BETWEEN_KEYWORD; }
 <YYINITIAL> "and"                { return LcaTypes.AND_KEYWORD; }
 
-
+<YYINITIAL> "datasource"                { return LcaTypes.DATASOURCE_KEYWORD; }
+<YYINITIAL> "location"                { return LcaTypes.LOCATION_KEYWORD; }
+<YYINITIAL> "schema"                { return LcaTypes.SCHEMA_KEYWORD; }
+<YYINITIAL> "for_each"                { return LcaTypes.FOR_EACH_KEYWORD; }
+<YYINITIAL> "in"                { return LcaTypes.IN_KEYWORD; }
+<YYINITIAL> "sum"                { return LcaTypes.SUM_KEYWORD; }
 
 <YYINITIAL> [-]?{Number_Int} ("." {Number_Int}? )? {Number_Exp}? { return LcaTypes.NUMBER; }
 <YYINITIAL> {Identifier}             { return LcaTypes.IDENTIFIER; }

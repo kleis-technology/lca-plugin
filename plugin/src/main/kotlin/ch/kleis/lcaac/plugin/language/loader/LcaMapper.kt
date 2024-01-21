@@ -118,12 +118,14 @@ class LcaMapper<Q>(
 
 
     private fun impact(exchange: LcaImpactExchange): ImpactBlock<Q> {
-        return EImpactBlockEntry(
-            EImpact(
-                dataExpression(exchange.dataExpression),
-                indicatorSpec(exchange.indicatorRef),
+        return exchange.terminalImpactExchange?.let {
+            EImpactBlockEntry(
+                EImpact(
+                    dataExpression(it.dataExpression),
+                    indicatorSpec(it.indicatorRef),
+                )
             )
-        )
+        } ?: EImpactBlockForEach<Q>("", "", emptyMap(), emptyList())
     }
 
     private fun indicatorSpec(variable: PsiIndicatorRef): EIndicatorSpec<Q> {
@@ -133,12 +135,14 @@ class LcaMapper<Q>(
     }
 
     fun technoInputExchange(psiExchange: LcaTechnoInputExchange): TechnoBlock<Q> {
-        return ETechnoBlockEntry(
-            ETechnoExchange(
-                dataExpression(psiExchange.dataExpression),
-                inputProductSpec(psiExchange.inputProductSpec),
+        return psiExchange.terminalTechnoInputExchange?.let {
+            ETechnoBlockEntry(
+                ETechnoExchange(
+                    dataExpression(it.dataExpression),
+                    inputProductSpec(it.inputProductSpec),
+                )
             )
-        )
+        } ?: ETechnoBlockForEach("", "", emptyMap(), emptyList())
     }
 
     private fun outputProductSpec(
@@ -195,13 +199,15 @@ class LcaMapper<Q>(
     }
 
     private fun bioExchange(psiExchange: LcaBioExchange, symbolTable: SymbolTable<Q>): BioBlock<Q> {
-        val quantity = dataExpression(psiExchange.dataExpression)
-        return EBioBlockEntry(
-            EBioExchange(
-                quantity,
-                substanceSpec(psiExchange.substanceSpec, quantity, symbolTable)
+        return psiExchange.terminalBioExchange?.let {
+            val quantity = dataExpression(it.dataExpression)
+            EBioBlockEntry(
+                EBioExchange(
+                    quantity,
+                    substanceSpec(it.substanceSpec, quantity, symbolTable)
+                )
             )
-        )
+        } ?: EBioBlockForEach("", "", emptyMap(), emptyList())
     }
 
     fun dataExpression(dataExpression: LcaDataExpression): DataExpression<Q> {

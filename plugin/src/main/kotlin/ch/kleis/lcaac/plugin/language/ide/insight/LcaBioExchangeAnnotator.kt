@@ -5,15 +5,15 @@ import ch.kleis.lcaac.plugin.language.ide.insight.AnnotatorHelper.annotateWarnWi
 import ch.kleis.lcaac.plugin.language.psi.type.PsiSubstance
 import ch.kleis.lcaac.plugin.language.type_checker.PsiLcaTypeChecker
 import ch.kleis.lcaac.plugin.language.type_checker.PsiTypeCheckException
-import ch.kleis.lcaac.plugin.psi.LcaBioExchange
 import ch.kleis.lcaac.plugin.psi.LcaSubstanceSpec
+import ch.kleis.lcaac.plugin.psi.LcaTerminalBioExchange
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.psi.PsiElement
 
 class LcaBioExchangeAnnotator : Annotator {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-        if (element !is LcaBioExchange) {
+        if (element !is LcaTerminalBioExchange) {
             return
         }
 
@@ -21,7 +21,7 @@ class LcaBioExchangeAnnotator : Annotator {
         checkType(element, holder)
     }
 
-    private fun checkReferenceResolution(element: LcaBioExchange, holder: AnnotationHolder) {
+    private fun checkReferenceResolution(element: LcaTerminalBioExchange, holder: AnnotationHolder) {
         val target = element.substanceSpec.reference?.resolve()
         if (target == null || target !is PsiSubstance) {
             val spec = element.substanceSpec
@@ -29,7 +29,7 @@ class LcaBioExchangeAnnotator : Annotator {
         }
     }
 
-    private fun checkType(element: LcaBioExchange, holder: AnnotationHolder) {
+    private fun checkType(element: LcaTerminalBioExchange, holder: AnnotationHolder) {
         val checker = PsiLcaTypeChecker()
         try {
             checker.check(element)

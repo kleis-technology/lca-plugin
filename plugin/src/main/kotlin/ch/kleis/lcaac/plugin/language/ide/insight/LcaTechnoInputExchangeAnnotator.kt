@@ -8,14 +8,14 @@ import ch.kleis.lcaac.plugin.language.type_checker.PsiLcaTypeChecker
 import ch.kleis.lcaac.plugin.language.type_checker.PsiTypeCheckException
 import ch.kleis.lcaac.plugin.psi.LcaInputProductSpec
 import ch.kleis.lcaac.plugin.psi.LcaOutputProductSpec
-import ch.kleis.lcaac.plugin.psi.LcaTechnoInputExchange
+import ch.kleis.lcaac.plugin.psi.LcaTerminalTechnoInputExchange
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.psi.PsiElement
 
 class LcaTechnoInputExchangeAnnotator : Annotator {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-        if (element !is LcaTechnoInputExchange) {
+        if (element !is LcaTerminalTechnoInputExchange) {
             return
         }
         val targets =

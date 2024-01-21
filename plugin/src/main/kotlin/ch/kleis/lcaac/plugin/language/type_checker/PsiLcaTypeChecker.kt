@@ -2,12 +2,8 @@ package ch.kleis.lcaac.plugin.language.type_checker
 
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.type.*
-import ch.kleis.lcaac.plugin.language.psi.type.PsiAssignment
-import ch.kleis.lcaac.plugin.language.psi.type.PsiGlobalAssignment
 import ch.kleis.lcaac.plugin.language.psi.type.PsiProcess
-import ch.kleis.lcaac.plugin.language.psi.type.PsiSubstance
 import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataRef
-import ch.kleis.lcaac.plugin.language.psi.type.unit.PsiUnitDefinition
 import ch.kleis.lcaac.plugin.language.psi.type.unit.UnitDefinitionType
 import ch.kleis.lcaac.plugin.psi.*
 import com.intellij.psi.PsiElement
@@ -22,15 +18,15 @@ class PsiLcaTypeChecker {
             is LcaGlobalAssignment -> checkDataExpression(element.getValue())
             is LcaAssignment -> checkDataExpression(element.getValue())
             is LcaLabelAssignment -> TString
-            is LcaTechnoInputExchange -> checkTechnoInputExchange(element)
+            is LcaTerminalTechnoInputExchange -> checkTerminalTechnoInputExchange(element)
             is LcaTechnoProductExchange -> checkTechnoProductExchange(element)
-            is LcaBioExchange -> checkBioExchange(element)
+            is LcaTerminalBioExchange -> checkTerminalBioExchange(element)
             else -> throw PsiTypeCheckException("Uncheckable type: $element")
         }
     }
 
-    private fun checkBioExchange(lcaBioExchange: LcaBioExchange): TBioExchange {
-        return rec.guard { el: LcaBioExchange ->
+    private fun checkTerminalBioExchange(lcaBioExchange: LcaTerminalBioExchange): TBioExchange {
+        return rec.guard { el: LcaTerminalBioExchange ->
             val tyQuantity = checkDataExpression(el.dataExpression, TQuantity::class.java)
             val name = el.substanceSpec.name
             val comp = el.substanceSpec.getCompartmentField()?.getValue() ?: ""
@@ -58,8 +54,8 @@ class PsiLcaTypeChecker {
         }(element)
     }
 
-    private fun checkTechnoInputExchange(element: LcaTechnoInputExchange): TTechnoExchange {
-        return rec.guard { el: LcaTechnoInputExchange ->
+    private fun checkTerminalTechnoInputExchange(element: LcaTerminalTechnoInputExchange): TTechnoExchange {
+        return rec.guard { el: LcaTerminalTechnoInputExchange ->
             val tyQuantity = checkDataExpression(el.dataExpression, TQuantity::class.java)
             val productName = el.inputProductSpec.name
             el.inputProductSpec.reference?.resolve()?.let {
