@@ -115,7 +115,7 @@ dataSourceDefinition ::= 'datasource' dataSourceRef '{' (locationField | schemaD
 }
 locationField ::= 'location' '=' STRING_LITERAL
 schemaDefinition ::= 'schema' '{' columnDefinition* '}'
-columnDefinition ::= STRING_LITERAL '=' dataExpression
+columnDefinition ::= columnRef '=' dataExpression
 
 /*
     Global variables
