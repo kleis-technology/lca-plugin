@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.language.psi.manipulators
 
 import ch.kleis.lcaac.plugin.language.psi.type.PsiAssignment
+import ch.kleis.lcaac.plugin.language.psi.type.PsiDataSourceDefinition
 import ch.kleis.lcaac.plugin.language.psi.type.PsiGlobalAssignment
 import ch.kleis.lcaac.plugin.language.psi.type.PsiLabelAssignment
 import ch.kleis.lcaac.plugin.language.psi.type.ref.*
@@ -27,6 +28,7 @@ class PsiProcessTemplateRefManipulator : PsiUIDOwnerManipulator<PsiProcessRef>()
 class PsiLabelRefManipulator : PsiUIDOwnerManipulator<PsiLabelRef>()
 class PsiParameterRefManipulator : PsiUIDOwnerManipulator<PsiParameterRef>()
 class PsiProductRefManipulator : PsiUIDOwnerManipulator<PsiProductRef>()
+class PsiDataSourceRefManipulator : PsiUIDOwnerManipulator<PsiDataSourceRef>()
 
 sealed class PsiDelegateManipulator<E : PsiElement>(
     private val getter: (E) -> PsiUIDOwner
@@ -63,4 +65,7 @@ class PsiGlobalAssignmentManipulator : PsiDelegateManipulator<PsiGlobalAssignmen
 
 class PsiAssignmentManipulator : PsiDelegateManipulator<PsiAssignment>(
     { it.getDataRef() }
+)
+class PsiDataSourceManipulator : PsiDelegateManipulator<PsiDataSourceDefinition>(
+    { it.getDataSourceRef() }
 )

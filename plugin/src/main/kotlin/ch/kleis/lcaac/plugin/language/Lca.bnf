@@ -107,7 +107,12 @@ import ::= "import" urn {
     Data source
  */
 
-dataSourceDefinition ::= 'datasource' dataSourceRef '{' (locationField | schemaDefinition)* '}'
+dataSourceDefinition ::= 'datasource' dataSourceRef '{' (locationField | schemaDefinition)* '}' {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiDataSourceDefinition"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiDataSourceMixin"
+    elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.datasource.DataSourceStubElementType"
+    stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.datasource.DataSourceStub"
+}
 locationField ::= 'location' '=' STRING_LITERAL
 schemaDefinition ::= 'schema' '{' columnDefinition* '}'
 columnDefinition ::= STRING_LITERAL '=' dataExpression
@@ -362,7 +367,10 @@ testRef ::= uid {
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiTestRefMixin"
 }
 
-dataSourceRef ::= uid
+dataSourceRef ::= uid {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataSourceRef"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiDataSourceRefMixin"
+}
 
 /*
    Spec
