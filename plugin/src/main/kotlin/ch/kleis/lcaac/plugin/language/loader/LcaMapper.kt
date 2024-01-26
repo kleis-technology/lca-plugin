@@ -125,7 +125,7 @@ class LcaMapper<Q>(
                     indicatorSpec(it.indicatorRef),
                 )
             )
-        } ?: EImpactBlockForEach<Q>("", "", emptyMap(), emptyList())
+        } ?: EImpactBlockForEach("", EDataSourceRef(""), emptyMap(), emptyList())
     }
 
     private fun indicatorSpec(variable: PsiIndicatorRef): EIndicatorSpec<Q> {
@@ -142,7 +142,7 @@ class LcaMapper<Q>(
                     inputProductSpec(it.inputProductSpec),
                 )
             )
-        } ?: ETechnoBlockForEach("", "", emptyMap(), emptyList())
+        } ?: ETechnoBlockForEach("", EDataSourceRef(""), emptyMap(), emptyList())
     }
 
     private fun outputProductSpec(
@@ -207,7 +207,7 @@ class LcaMapper<Q>(
                     substanceSpec(it.substanceSpec, quantity, symbolTable)
                 )
             )
-        } ?: EBioBlockForEach("", "", emptyMap(), emptyList())
+        } ?: EBioBlockForEach("", EDataSourceRef(""), emptyMap(), emptyList())
     }
 
     fun dataExpression(dataExpression: LcaDataExpression): DataExpression<Q> {
