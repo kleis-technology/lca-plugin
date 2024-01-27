@@ -55,8 +55,8 @@
       LOCATION_KEYWORD = 'location'
       SCHEMA_KEYWORD = 'schema'
       FOR_EACH_KEYWORD = 'for_each'
-      IN_KEYWORD = 'in'
       SUM_KEYWORD = 'sum'
+      LOOKUP_KEYWORD = 'lookup'
 
       NUMBER = 'number'
       LSQBRACE = '['
@@ -268,7 +268,7 @@ block_impacts ::= "impacts" "{" impactExchange* "}"
 
 technoProductExchange ::= dataExpression outputProductSpec
 technoInputExchange ::= terminalTechnoInputExchange
-        | 'for_each' dataRef 'in' dataSourceRef '{' (variables | technoInputExchange)* '}'
+        | 'for_each' dataRef 'from' dataSourceRef '{' (variables | technoInputExchange)* '}'
 terminalTechnoInputExchange ::= dataExpression inputProductSpec
 bioExchange ::= terminalBioExchange
         | 'for_each' dataRef 'in' dataSourceRef '{' (variables | bioExchange)* '}'
@@ -282,10 +282,12 @@ terminalImpactExchange ::= dataExpression indicatorRef
     Use GrammarKit's expression-related syntax and rules to generate a Pratt parser.
  */
 
-dataExpression ::= addGroup
-           | mulGroup
-           | exponentialQuantityExpression
-           | baseGroup
+dataExpression ::= exponentialQuantityExpression
+    | mulGroup
+    | addGroup
+    | baseGroup
+    | recordExpression
+    | colExpression
 
 private addGroup ::= addQuantityExpression | subQuantityExpression
 private mulGroup ::= scaleQuantityExpression | mulQuantityExpression | divQuantityExpression
@@ -307,9 +309,18 @@ exponentialQuantityExpression ::= dataExpression "^" NUMBER { extends=dataExpres
 parenQuantityExpression ::= "(" dataExpression ")" { extends=dataExpression }
 scaleQuantityExpression ::= NUMBER dataExpression { extends=dataExpression methods=[scale="NUMBER"]}
 stringExpression ::= STRING_LITERAL { extends=dataExpression }
-columnRef ::= STRING_LITERAL
-sliceExpression ::= dataRef  '[' columnRef ']' { extends=dataExpression }
-colExpression ::= 'sum' '(' dataSourceRef ',' columnRef ('*' columnRef)* ')' { extends=dataExpression }
+sliceExpression ::= dataRef  '.' columnRef  { extends=dataExpression }
+recordExpression ::= 'lookup' dataSourceExpression { extends=dataExpression }
+colExpression ::= 'sum' '(' dataSourceExpression ',' columnRef ('*' columnRef)* ')' { extends=dataExpression }
+
+/*
+    Data source expression
+ */
+
+dataSourceExpression ::= dataSourceRef rowFilter?
+rowFilter ::= MATCH_KEYWORD rowSelector
+        | MATCH_KEYWORD LPAREN ( rowSelector (COMMA rowSelector)* COMMA? ) RPAREN
+rowSelector ::= columnRef EQUAL dataExpression
 
 
 /*
@@ -371,6 +382,8 @@ dataSourceRef ::= uid {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataSourceRef"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiDataSourceRefMixin"
 }
+
+columnRef ::= uid
 
 /*
    Spec
