@@ -104,6 +104,7 @@ CommentContent = .*
 <YYINITIAL> "for_each"                { return LcaTypes.FOR_EACH_KEYWORD; }
 <YYINITIAL> "sum"                { return LcaTypes.SUM_KEYWORD; }
 <YYINITIAL> "lookup"                { return LcaTypes.LOOKUP_KEYWORD; }
+<YYINITIAL> "default_record"                { return LcaTypes.DEFAULT_RECORD_KEYWORD; }
 
 <YYINITIAL> [-]?{Number_Int} ("." {Number_Int}? )? {Number_Exp}? { return LcaTypes.NUMBER; }
 <YYINITIAL> {Identifier}             { return LcaTypes.IDENTIFIER; }

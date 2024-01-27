@@ -22,6 +22,160 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
     }
 
     @Test
+    fun test_sliceExpression() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        myFixture.createFile(
+            "$pkgName.lca", """
+                package $pkgName
+                
+                datasource source {
+                    location = "source.csv"
+                    schema {
+                        mass = 1 km
+                        dt = 1 hour
+                    }
+                }
+                
+                variables {
+                    row = default_record from source
+                    x = row.mass
+                }
+            """.trimIndent()
+        )
+        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(
+            project,
+            "$pkgName.x"
+        ).first()
+            .dataExpressionList[1]
+        val checker = PsiLcaTypeChecker()
+
+        // when
+        val actual = checker.check(target)
+
+        // then
+        val expected = TQuantity(DimensionFixture.length)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun test_defaultRecordFrom() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        myFixture.createFile(
+            "$pkgName.lca", """
+                package $pkgName
+                
+                datasource source {
+                    location = "source.csv"
+                    schema {
+                        geo = "GLO"
+                        mass = 1 kg
+                    }
+                }
+                
+                process p {
+                    params {
+                        x = default_record from source
+                    }
+                }
+            """.trimIndent()
+        )
+        val target = ProcessStubKeyIndex.findProcesses(
+            project,
+            "$pkgName.p"
+        ).first()
+            .paramsList.first()
+            .assignmentList.first()
+        val checker = PsiLcaTypeChecker()
+
+        // when
+        val actual = checker.check(target)
+
+        // then
+        val expected = TRecord(mapOf(
+            "geo" to TString,
+            "mass" to TQuantity(DimensionFixture.mass)
+        ))
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun test_whenLookup() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        myFixture.createFile(
+            "$pkgName.lca", """
+                package $pkgName
+                
+                datasource source {
+                    location = "source.csv"
+                    schema {
+                        geo = "GLO"
+                        mass = 1 kg
+                    }
+                }
+                
+                variables {
+                    x = lookup source
+                }
+            """.trimIndent()
+        )
+        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(
+            project,
+            "$pkgName.x"
+        ).first()
+            .dataExpressionList[1]
+        val checker = PsiLcaTypeChecker()
+
+        // when
+        val actual = checker.check(target)
+
+        // then
+        val expected = TRecord(mapOf(
+            "geo" to TString,
+            "mass" to TQuantity(DimensionFixture.mass)
+        ))
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun test_whenSum() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        myFixture.createFile(
+            "$pkgName.lca", """
+                package $pkgName
+                
+                datasource source {
+                    location = "source.csv"
+                    schema {
+                        mass = 1 km
+                        dt = 1 hour
+                    }
+                }
+                
+                variables {
+                    x = sum(source, mass * dt)
+                }
+            """.trimIndent()
+        )
+        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(
+            project,
+            "$pkgName.x"
+        ).first()
+            .dataExpressionList[1]
+        val checker = PsiLcaTypeChecker()
+
+        // when
+        val actual = checker.check(target)
+
+        // then
+        val expected = TQuantity(DimensionFixture.length.multiply(DimensionFixture.time))
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun test_whenScaleExpression_missingInnerExpression() {
         // given
         val pkgName = {}.javaClass.enclosingMethod.name

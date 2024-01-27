@@ -14,7 +14,7 @@ abstract class PsiColumnDefinitionMixin(node: ASTNode) : ASTWrapperPsiElement(no
     }
 
     override fun getValue(): LcaDataExpression {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaDataExpression::class.java).elementAt(1)
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaDataExpression::class.java).elementAt(0)
     }
 
     override fun getName(): String {

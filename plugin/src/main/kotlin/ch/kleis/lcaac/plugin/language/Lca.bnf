@@ -57,6 +57,7 @@
       FOR_EACH_KEYWORD = 'for_each'
       SUM_KEYWORD = 'sum'
       LOOKUP_KEYWORD = 'lookup'
+      DEFAULT_RECORD_KEYWORD = 'default_record'
 
       NUMBER = 'number'
       LSQBRACE = '['
@@ -244,7 +245,7 @@ params ::= "params" "{" assignment* "}"
 
 variables ::= "variables" "{" assignment* "}"
 
-assignment ::= dataRef (('=' dataExpression) | ('from' dataSourceRef)){
+assignment ::= dataRef '=' dataExpression{
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiAssignment"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiAssignmentMixin"
 }
@@ -328,7 +329,7 @@ parenQuantityExpression ::= "(" dataExpression ")" { extends=dataExpression }
 scaleQuantityExpression ::= NUMBER dataExpression { extends=dataExpression methods=[scale="NUMBER"]}
 stringExpression ::= STRING_LITERAL { extends=dataExpression }
 sliceExpression ::= dataRef  '.' columnRef  { extends=dataExpression }
-recordExpression ::= 'lookup' dataSourceExpression { extends=dataExpression }
+recordExpression ::= ('default_record' 'from' | 'lookup') dataSourceExpression { extends=dataExpression }
 colExpression ::= 'sum' '(' dataSourceExpression ',' columnRef ('*' columnRef)* ')' { extends=dataExpression }
 
 /*

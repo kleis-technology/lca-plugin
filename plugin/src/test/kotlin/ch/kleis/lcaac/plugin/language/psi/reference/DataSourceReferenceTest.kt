@@ -2,6 +2,7 @@ package ch.kleis.lcaac.plugin.language.psi.reference
 
 import ch.kleis.lcaac.plugin.language.psi.stub.datasource.DataSourceStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
+import ch.kleis.lcaac.plugin.psi.LcaRecordExpression
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,19 +30,20 @@ class DataSourceReferenceTest: BasePlatformTestCase() {
             
             process p {
                 params {
-                    row from inventory
+                    row = default_record from inventory
                 }
             }
         """.trimIndent())
         val dataSource = DataSourceStubKeyIndex.findDataSources(
             project, "$pkgName.inventory"
         ).first()
-        val ref = ProcessStubKeyIndex.findProcesses(
+        val recordExpression = ProcessStubKeyIndex.findProcesses(
             project, "$pkgName.p"
         ).first()
             .paramsList.first()
             .assignmentList.first()
-            .dataSourceRef!!
+            .dataExpressionList.first() as LcaRecordExpression
+        val ref = recordExpression.dataSourceExpression.dataSourceRef
 
         // when
         val actual = ref.reference.resolve()

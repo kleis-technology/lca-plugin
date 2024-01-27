@@ -138,8 +138,10 @@ class PsiLcaTypeChecker {
             is LcaStringExpression -> TString
             is LcaScaleQuantityExpression -> element.dataExpression?.let { checkDataExpression(it) }
                 ?: throw PsiTypeCheckException("missing expression")
+
             is LcaParenQuantityExpression -> element.dataExpression?.let { checkDataExpression(it) }
                 ?: throw PsiTypeCheckException("missing expression")
+
             is LcaExponentialQuantityExpression -> {
                 val exponent = element.exponent.text.toDouble()
                 val tyBase = checkDataExpression(element.dataExpression, TQuantity::class.java)
@@ -164,8 +166,40 @@ class PsiLcaTypeChecker {
                 }
             }
 
+            is LcaColExpression -> {
+                val columns = columnsOf(element.dataSourceExpression.dataSourceRef)
+                val requestedColumns = element.columnRefList
+                val unknownColumns = requestedColumns
+                    .filter { !columns.containsKey(it.name) }
+                if (unknownColumns.isNotEmpty())
+                    throw PsiTypeCheckException("columns $unknownColumns not found in schema of '${element.dataSourceExpression.dataSourceRef.name}'")
+                return columns.values
+                    .map { checkDataExpression(it, TQuantity::class.java) }
+                    .reduce { acc, e -> TQuantity(acc.dimension.multiply(e.dimension)) }
+            }
+
+            is LcaRecordExpression -> {
+                val columns = columnsOf(element.dataSourceExpression.dataSourceRef)
+                return TRecord(columns.mapValues { checkDataExpression(it.value) })
+            }
+
+            is LcaSliceExpression -> {
+                val columnDefinition = element.columnRef.reference.resolve() as LcaColumnDefinition?
+                    ?: throw PsiTypeCheckException("unknown column '${element.columnRef.name}'")
+                checkDataExpression(columnDefinition.getValue())
+            }
             else -> throw PsiTypeCheckException("Unknown expression $element")
         }
+    }
+
+    private fun columnsOf(e: LcaDataSourceRef): Map<String, LcaDataExpression> {
+        val ds = e.reference.resolve() as LcaDataSourceDefinition?
+            ?: throw PsiTypeCheckException("unknown data source '${e.name}'")
+        val schema = ds.schemaDefinitionList
+            .firstOrNull()
+            ?: throw PsiTypeCheckException("missing schema in '${ds.name}'")
+        return schema.columnDefinitionList
+            .associate { it.name to it.dataExpression }
     }
 
     private fun checkDataRef(element: PsiDataRef): TypeDataExpression {

@@ -28,14 +28,15 @@ kotlin {
 // Configure project's dependencies
 repositories {
     mavenCentral()
-    maven {
-        name = "github"
-        url = uri("https://maven.pkg.github.com/kleis-technology/lcaac")
-        credentials {
-            username = System.getenv("GITHUB_ACTOR")
-            password = System.getenv("GITHUB_TOKEN")
-        }
-    }
+//    maven {
+//        name = "github"
+//        url = uri("https://maven.pkg.github.com/kleis-technology/lcaac")
+//        credentials {
+//            username = System.getenv("GITHUB_ACTOR")
+//            password = System.getenv("GITHUB_TOKEN")
+//        }
+//    }
+    mavenLocal()
 }
 
 sourceSets {
@@ -47,7 +48,7 @@ sourceSets {
 }
 
 dependencies {
-    implementation("ch.kleis.lcaac:core:1.5.0")
+    implementation("ch.kleis.lcaac:core:1.6.0")
 
     implementation(files(layout.buildDirectory.dir("stdlib/ef3.1")) {
         builtBy("generateEmissionFactors31")

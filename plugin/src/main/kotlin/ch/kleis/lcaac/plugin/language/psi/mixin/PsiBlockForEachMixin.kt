@@ -15,7 +15,7 @@ abstract class PsiBlockForEachMixin(node: ASTNode) : ASTWrapperPsiElement(node),
     }
 
     override fun getValue(): LcaDataSourceExpression {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaDataSourceExpression::class.java).elementAt(1)
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaDataSourceExpression::class.java).elementAt(0)
     }
 
     override fun getName(): String {
