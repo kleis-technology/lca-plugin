@@ -13,7 +13,7 @@ import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.psi.PsiElement
 
-class LcaTechnoInputExchangeAnnotator : Annotator {
+class LcaTerminalTechnoInputExchangeAnnotator : Annotator {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         if (element !is LcaTerminalTechnoInputExchange) {
             return

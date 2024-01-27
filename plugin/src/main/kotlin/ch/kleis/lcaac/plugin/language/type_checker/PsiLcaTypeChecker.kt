@@ -2,6 +2,7 @@ package ch.kleis.lcaac.plugin.language.type_checker
 
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.type.*
+import ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach
 import ch.kleis.lcaac.plugin.language.psi.type.PsiProcess
 import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataRef
 import ch.kleis.lcaac.plugin.language.psi.type.unit.UnitDefinitionType
@@ -21,6 +22,13 @@ class PsiLcaTypeChecker {
             is LcaTerminalTechnoInputExchange -> checkTerminalTechnoInputExchange(element)
             is LcaTechnoProductExchange -> checkTechnoProductExchange(element)
             is LcaTerminalBioExchange -> checkTerminalBioExchange(element)
+
+            // the following checks the type of the data source expression in the block for each
+            is PsiBlockForEach -> {
+                val columns = columnsOf(element.getValue().dataSourceRef)
+                return TRecord(columns.mapValues { checkDataExpression(it.value) })
+            }
+
             else -> throw PsiTypeCheckException("Uncheckable type: $element")
         }
     }
@@ -210,7 +218,8 @@ class PsiLcaTypeChecker {
                         is TQuantity -> ty
                         is TUnit -> TQuantity(ty.dimension)
                         is TString -> ty
-                        else -> throw PsiTypeCheckException("expected TQuantity, TUnit or TString, found $ty")
+                        is TRecord -> ty
+                        else -> throw PsiTypeCheckException("expected TQuantity, TUnit, TString or TRecord, found $ty")
                     }
                 }
                 ?: throw PsiTypeCheckException("unbound reference ${el.name}")

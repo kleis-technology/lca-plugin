@@ -1,7 +1,6 @@
 package ch.kleis.lcaac.plugin.language.ide.insight
 
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
-import ch.kleis.lcaac.plugin.psi.LcaTerminalTechnoInputExchange
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -12,7 +11,7 @@ import org.junit.runners.JUnit4
 
 @Suppress("DialogTitleCapitalization")
 @RunWith(JUnit4::class)
-class LcaTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
+class LcaTerminalTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
 
     override fun getTestDataPath(): String {
         return "testdata"
@@ -36,7 +35,7 @@ class LcaTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
             .getInputs().first().terminalTechnoInputExchange!!
         val mock = AnnotationHolderMock()
-        val annotator = LcaTechnoInputExchangeAnnotator()
+        val annotator = LcaTerminalTechnoInputExchangeAnnotator()
 
 
         // when
@@ -79,7 +78,7 @@ class LcaTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
             .getInputs().first().terminalTechnoInputExchange!!
         val mock = AnnotationHolderMock()
-        val annotator = LcaTechnoInputExchangeAnnotator()
+        val annotator = LcaTerminalTechnoInputExchangeAnnotator()
 
 
         // when
@@ -116,7 +115,7 @@ class LcaTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
             .getInputs().first().terminalTechnoInputExchange!!
         val mock = AnnotationHolderMock()
-        val annotator = LcaTechnoInputExchangeAnnotator()
+        val annotator = LcaTerminalTechnoInputExchangeAnnotator()
 
 
         // when
@@ -156,7 +155,7 @@ class LcaTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
             .getInputs().first().terminalTechnoInputExchange!!
         val mock = AnnotationHolderMock()
-        val annotator = LcaTechnoInputExchangeAnnotator()
+        val annotator = LcaTerminalTechnoInputExchangeAnnotator()
 
 
         // when
@@ -201,7 +200,7 @@ class LcaTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
             .getInputs().first().terminalTechnoInputExchange!!
         val mock = AnnotationHolderMock()
-        val annotator = LcaTechnoInputExchangeAnnotator()
+        val annotator = LcaTerminalTechnoInputExchangeAnnotator()
 
 
         // when
@@ -237,7 +236,7 @@ class LcaTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
             .getInputs().first()
         val mock = AnnotationHolderMock()
-        val annotator = LcaTechnoInputExchangeAnnotator()
+        val annotator = LcaTerminalTechnoInputExchangeAnnotator()
 
         // when
         annotator.annotate(element, mock.holder)

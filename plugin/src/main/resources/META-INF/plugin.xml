@@ -44,7 +44,7 @@
 
         <annotator
                 language="LCA"
-                implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.LcaTechnoInputExchangeAnnotator"/>
+                implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.LcaTerminalTechnoInputExchangeAnnotator"/>
         <annotator
                 language="LCA"
                 implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.LcaProcessAnnotator"/>
