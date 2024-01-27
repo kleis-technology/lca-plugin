@@ -115,7 +115,10 @@ dataSourceDefinition ::= 'datasource' dataSourceRef '{' (locationField | schemaD
 }
 locationField ::= 'location' '=' STRING_LITERAL
 schemaDefinition ::= 'schema' '{' columnDefinition* '}'
-columnDefinition ::= columnRef '=' dataExpression
+columnDefinition ::= columnRef '=' dataExpression {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiColumnDefinition"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiColumnDefinitionMixin"
+}
 
 /*
     Global variables
@@ -267,15 +270,30 @@ block_impacts ::= "impacts" "{" impactExchange* "}"
  */
 
 technoProductExchange ::= dataExpression outputProductSpec
+
 technoInputExchange ::= terminalTechnoInputExchange
-        | 'for_each' dataRef 'from' dataSourceRef '{' (variables | technoInputExchange)* '}'
+        | technoBlockForEach
 terminalTechnoInputExchange ::= dataExpression inputProductSpec
+technoBlockForEach ::= 'for_each' dataRef 'from' dataSourceRef '{' (variables | technoInputExchange)* '}' {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiBlockForEachMixin"
+}
+
 bioExchange ::= terminalBioExchange
-        | 'for_each' dataRef 'in' dataSourceRef '{' (variables | bioExchange)* '}'
+        | bioBlockForEach
 terminalBioExchange ::= dataExpression substanceSpec
+bioBlockForEach ::= 'for_each' dataRef 'from' dataSourceRef '{' (variables | bioExchange)* '}' {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiBlockForEachMixin"
+}
+
 impactExchange ::= terminalImpactExchange
-        | 'for_each' dataRef 'in' dataSourceRef '{' (variables | impactExchange)* '}'
+        | impactBlockForEach
 terminalImpactExchange ::= dataExpression indicatorRef
+impactBlockForEach ::= 'for_each' dataRef 'from' dataSourceRef '{' (variables | impactExchange)* '}' {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiBlockForEachMixin"
+}
 
 /*
     Quantity
@@ -383,7 +401,10 @@ dataSourceRef ::= uid {
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiDataSourceRefMixin"
 }
 
-columnRef ::= uid
+columnRef ::= uid {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.ref.PsiColumnRef"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiColumnRefMixin"
+}
 
 /*
    Spec

@@ -12,7 +12,7 @@ import com.intellij.psi.util.PsiTreeUtil
 
 class DataReference(
     element: PsiDataRef
-) : PsiReferenceBase<PsiDataRef>(element), PsiPolyVariantReference {
+) : PsiPolyVariantReferenceBase<PsiDataRef>(element) {
     private val globalAssignmentRef = GlobalUIDOwnerReference(
         element,
         { project, fqn ->
@@ -31,11 +31,6 @@ class DataReference(
             StubIndex.getInstance().getAllKeys(LcaStubIndexKeys.UNITS, project)
         }
     )
-
-    override fun resolve(): PsiElement? {
-        val results = multiResolve(false).mapNotNull { it.element }
-        return if (results.size == 1) results.first() else null
-    }
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         val localMatches = resolveElementLocally(
