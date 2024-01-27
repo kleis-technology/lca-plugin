@@ -275,7 +275,7 @@ technoProductExchange ::= dataExpression outputProductSpec
 technoInputExchange ::= terminalTechnoInputExchange
         | technoBlockForEach
 terminalTechnoInputExchange ::= dataExpression inputProductSpec
-technoBlockForEach ::= 'for_each' dataRef 'from' dataSourceRef '{' (variables | technoInputExchange)* '}' {
+technoBlockForEach ::= 'for_each' dataRef 'from' dataSourceExpression '{' (variables | technoInputExchange)* '}' {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiBlockForEachMixin"
 }
@@ -283,7 +283,7 @@ technoBlockForEach ::= 'for_each' dataRef 'from' dataSourceRef '{' (variables | 
 bioExchange ::= terminalBioExchange
         | bioBlockForEach
 terminalBioExchange ::= dataExpression substanceSpec
-bioBlockForEach ::= 'for_each' dataRef 'from' dataSourceRef '{' (variables | bioExchange)* '}' {
+bioBlockForEach ::= 'for_each' dataRef 'from' dataSourceExpression '{' (variables | bioExchange)* '}' {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiBlockForEachMixin"
 }
@@ -291,7 +291,7 @@ bioBlockForEach ::= 'for_each' dataRef 'from' dataSourceRef '{' (variables | bio
 impactExchange ::= terminalImpactExchange
         | impactBlockForEach
 terminalImpactExchange ::= dataExpression indicatorRef
-impactBlockForEach ::= 'for_each' dataRef 'from' dataSourceRef '{' (variables | impactExchange)* '}' {
+impactBlockForEach ::= 'for_each' dataRef 'from' dataSourceExpression '{' (variables | impactExchange)* '}' {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiBlockForEachMixin"
 }
@@ -301,16 +301,19 @@ impactBlockForEach ::= 'for_each' dataRef 'from' dataSourceRef '{' (variables | 
     Use GrammarKit's expression-related syntax and rules to generate a Pratt parser.
  */
 
-dataExpression ::= exponentialQuantityExpression
-    | mulGroup
+dataExpression ::= mulGroup
     | addGroup
+    | exponentialQuantityExpression
     | baseGroup
-    | recordExpression
-    | colExpression
 
 private addGroup ::= addQuantityExpression | subQuantityExpression
 private mulGroup ::= scaleQuantityExpression | mulQuantityExpression | divQuantityExpression
-private baseGroup ::=  parenQuantityExpression | stringExpression | colExpression | sliceExpression | dataRef
+private baseGroup ::=  parenQuantityExpression
+    | stringExpression
+    | recordExpression
+    | colExpression
+    | sliceExpression
+    | dataRef
 
 fake binaryOperatorExpression ::= dataExpression dataExpression {
     extends=dataExpression

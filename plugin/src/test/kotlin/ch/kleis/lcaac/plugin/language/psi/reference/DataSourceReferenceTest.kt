@@ -24,7 +24,7 @@ class DataSourceReferenceTest: BasePlatformTestCase() {
             datasource inventory {
                 location = "inventory.csv"
                 schema {
-                    "mass" = 1 kg
+                    mass = 1 kg
                 }
             }
             
@@ -42,7 +42,7 @@ class DataSourceReferenceTest: BasePlatformTestCase() {
         ).first()
             .paramsList.first()
             .assignmentList.first()
-            .dataExpressionList.first() as LcaRecordExpression
+            .getValue() as LcaRecordExpression
         val ref = recordExpression.dataSourceExpression.dataSourceRef
 
         // when
