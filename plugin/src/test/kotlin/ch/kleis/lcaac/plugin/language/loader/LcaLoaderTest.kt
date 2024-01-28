@@ -31,6 +31,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                     b = lookup source match geo = "GLO"
                     c = default_record from source
                     d = a.quantity
+                    e = sum( source match geo = "GLO", n_items * mass )
                 }
             """.trimIndent()
         ) as LcaFile
@@ -41,7 +42,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
 
         // when
         val symbolTable = parser.load()
-        val actual = listOf("a", "b", "c", "d")
+        val actual = listOf("a", "b", "c", "d", "e")
             .associateWith { symbolTable.getData(it)!! }
 
         // then
@@ -50,6 +51,10 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
             "b" to EFirstRecordOf(EFilter(EDataSourceRef("source"), mapOf("geo" to EStringLiteral("GLO")))),
             "c" to EDefaultRecordOf(EDataSourceRef("source")),
             "d" to ERecordEntry(EDataRef("a"), "quantity"),
+            "e" to ESumProduct(
+                EFilter(EDataSourceRef("source"), mapOf("geo" to EStringLiteral("GLO"))),
+                listOf("n_items", "mass")
+            )
         )
         assertEquals(expected, actual)
     }
@@ -87,7 +92,8 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                         "row",
                         EFilter(
                             EDataSourceRef("source"),
-                            mapOf("id" to EStringLiteral("abc"))),
+                            mapOf("id" to EStringLiteral("abc"))
+                        ),
                         emptyMap(),
                         listOf(
                             EImpactBlockEntry(
@@ -140,7 +146,8 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                         "row",
                         EFilter(
                             EDataSourceRef("source"),
-                            mapOf("id" to EStringLiteral("abc"))),
+                            mapOf("id" to EStringLiteral("abc"))
+                        ),
                         emptyMap(),
                         listOf(
                             EBioBlockEntry(
@@ -202,7 +209,8 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                         "row",
                         EFilter(
                             EDataSourceRef("source"),
-                            mapOf("id" to EStringLiteral("abc"))),
+                            mapOf("id" to EStringLiteral("abc"))
+                        ),
                         emptyMap(),
                         listOf(
                             ETechnoBlockEntry(

@@ -14,7 +14,7 @@ class LcaIndentBlockTest : FormatterTestCase() {
                 variables {
         a         =    sum   (       source     ,           mass * n_items)
                             b =    default_record       from source
-            c    =       lookup   source     match    geo  = "GLO"
+            c    =       lookup source     match    geo  = "GLO"
                     d              =       c.mass *        b.n_items
                 }
             """.trimIndent(),
@@ -28,6 +28,7 @@ class LcaIndentBlockTest : FormatterTestCase() {
             """.trimIndent(),
             )
     }
+
     @Test
     fun test_formattingBlockForEach() {
         doTextTest(

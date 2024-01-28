@@ -325,6 +325,14 @@ class LcaMapper<Q>(
                     ?: dataExpression.opLookup?.let { EFirstRecordOf(dataSource) }
                     ?: throw EvaluatorException("Unknown record expression: $dataExpression ")
             }
+
+            is LcaColExpression -> {
+                val dataSource = dataSourceExpression(dataExpression.dataSourceExpression)
+                val columns = dataExpression.columnRefList
+                    .map { it.name }
+                ESumProduct(dataSource, columns)
+            }
+
             else -> throw EvaluatorException("Unknown data expression: $dataExpression")
         }
     }
