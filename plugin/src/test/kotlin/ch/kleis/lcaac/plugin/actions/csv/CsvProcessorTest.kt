@@ -10,6 +10,7 @@ import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -46,7 +47,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
         val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
         val parser = LcaLoader(sequenceOf(file, UnitFixture.getInternalUnitFile(myFixture)), ops)
         val symbolTable = parser.load()
-        val processor = CsvProcessor(symbolTable)
+        val processor = CsvProcessor(mockk(), symbolTable)
         val cc = IndicatorValue(
             "cc", umap["kg"]!!,
         )
@@ -103,7 +104,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
                         1 kg out
                     }
                     inputs {
-                        a + b + c in
+                        a + b + c in_prod
                     }
                 }
             """.trimIndent()
@@ -112,7 +113,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
         val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
         val parser = LcaLoader(sequenceOf(file, UnitFixture.getInternalUnitFile(myFixture)), ops)
         val symbolTable = parser.load()
-        val csvProcessor = CsvProcessor(symbolTable)
+        val csvProcessor = CsvProcessor(mockk(), symbolTable)
         val request = CsvRequest(
             "p",
             emptyMap(),
@@ -140,7 +141,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
             out, actual.output
         )
         val key = ProductValue(
-            "in", kg,
+            "in_prod", kg,
         )
         assertEquals(
             QuantityValue(ops.pure(3.0), kg), actual.impacts[key]
@@ -168,7 +169,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
                         1 kg out
                     }
                     inputs {
-                        a + b + c in
+                        a + b + c in_prod
                     }
                 }
             """.trimIndent()
@@ -177,7 +178,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
         val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
         val parser = LcaLoader(sequenceOf(file, UnitFixture.getInternalUnitFile(myFixture)), ops)
         val symbolTable = parser.load()
-        val csvProcessor = CsvProcessor(symbolTable)
+        val csvProcessor = CsvProcessor(mockk(), symbolTable)
         val request = CsvRequest(
             "p",
             mapOf("foo" to "bar"),
@@ -206,7 +207,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
             out, actual.output
         )
         val key = ProductValue(
-            "in", kg,
+            "in_prod", kg,
         )
         assertEquals(
             QuantityValue(ops.pure(3.0), kg), actual.impacts[key]

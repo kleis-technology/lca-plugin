@@ -2,11 +2,11 @@ package ch.kleis.lcaac.plugin.language.type_checker
 
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.type.*
-import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.fixture.DimensionFixture
 import ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssigmentStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex
+import ch.kleis.lcaac.plugin.psi.LcaTerminalTechnoInputExchange
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
 import org.junit.Test
@@ -19,6 +19,162 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
     override
     fun getTestDataPath(): String {
         return ""
+    }
+
+    @Test
+    fun test_sliceExpression() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        myFixture.createFile(
+            "$pkgName.lca", """
+                package $pkgName
+                
+                datasource source {
+                    location = "source.csv"
+                    schema {
+                        mass = 1 km
+                        dt = 1 hour
+                    }
+                }
+                
+                variables {
+                    row = default_record from source
+                    x = row.mass
+                }
+            """.trimIndent()
+        )
+        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(
+            project,
+            "$pkgName.x"
+        ).first()
+            .dataExpressionList[1]
+        val checker = PsiLcaTypeChecker()
+
+        // when
+        val actual = checker.check(target)
+
+        // then
+        val expected = TQuantity(DimensionFixture.length)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun test_defaultRecordFrom() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        myFixture.createFile(
+            "$pkgName.lca", """
+                package $pkgName
+                
+                datasource source {
+                    location = "source.csv"
+                    schema {
+                        geo = "GLO"
+                        mass = 1 kg
+                    }
+                }
+                
+                process p {
+                    params {
+                        x = default_record from source
+                    }
+                }
+            """.trimIndent()
+        )
+        val target = ProcessStubKeyIndex.findProcesses(
+            project,
+            "$pkgName.p"
+        ).first()
+            .paramsList.first()
+            .assignmentList.first()
+        val checker = PsiLcaTypeChecker()
+
+        // when
+        val actual = checker.check(target)
+
+        // then
+        val expected = TRecord(mapOf(
+            "geo" to TString,
+            "mass" to TQuantity(DimensionFixture.mass)
+        ))
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun test_whenLookup() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        myFixture.createFile(
+            "$pkgName.lca", """
+                package $pkgName
+                
+                datasource source {
+                    location = "source.csv"
+                    schema {
+                        geo = "GLO"
+                        mass = 1 kg
+                    }
+                }
+                
+                variables {
+                    x = lookup source
+                }
+            """.trimIndent()
+        )
+        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(
+            project,
+            "$pkgName.x"
+        ).first()
+            .dataExpressionList[1]
+        val checker = PsiLcaTypeChecker()
+
+        // when
+        val actual = checker.check(target)
+
+        // then
+        val expected = TRecord(mapOf(
+            "geo" to TString,
+            "mass" to TQuantity(DimensionFixture.mass)
+        ))
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun test_whenSum() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        myFixture.createFile(
+            "$pkgName.lca", """
+                package $pkgName
+                
+                datasource source {
+                    location = "source.csv"
+                    schema {
+                        mass = 1 km
+                        dt = 1 hour
+                        geo = "GLO"
+                        n_items = 1 p
+                    }
+                }
+                
+                variables {
+                    x = sum(source, mass * dt)
+                }
+            """.trimIndent()
+        )
+        val target = GlobalAssigmentStubKeyIndex.findGlobalAssignments(
+            project,
+            "$pkgName.x"
+        ).first()
+            .dataExpressionList[1]
+        val checker = PsiLcaTypeChecker()
+
+        // when
+        val actual = checker.check(target)
+
+        // then
+        val expected = TQuantity(DimensionFixture.length.multiply(DimensionFixture.time))
+        assertEquals(expected, actual)
     }
 
     @Test
@@ -93,9 +249,10 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val target = ProcessStubKeyIndex
+        val first = ProcessStubKeyIndex
             .findProcesses(project, "$pkgName.p", mapOf("geo" to "FR")).first()
-            .getInputs().first()
+            .getInputs().first().terminalTechnoInputExchange!!
+        val target = first
             .inputProductSpec
             .getProcessTemplateSpec()!!
             .getMatchLabels()!!
@@ -141,7 +298,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val target = ProcessStubKeyIndex.findProcesses(project, "$pkgName.testProcess").first()
-            .getEmissions().first()
+            .getEmissions().first().terminalBioExchange!!
         val checker = PsiLcaTypeChecker()
         val expected = TBioExchange(TSubstance("testSubstance", DimensionFixture.mass, "air", null))
 
@@ -183,7 +340,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val target = ProcessStubKeyIndex.findProcesses(project, "$pkgName.testProcess").first()
-            .getEmissions().first()
+            .getEmissions().first().terminalBioExchange!!
         val checker = PsiLcaTypeChecker()
         val expected =
             "Incompatible dimensions: expecting mass, found length³"
@@ -880,7 +1037,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val target = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+            .getInputs().first().terminalTechnoInputExchange!!
         val checker = PsiLcaTypeChecker()
 
         // when
@@ -966,7 +1123,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val target = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+            .getInputs().first().terminalTechnoInputExchange!!
         val checker = PsiLcaTypeChecker()
 
         // when/then
@@ -1037,7 +1194,7 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val target = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+            .getInputs().first().terminalTechnoInputExchange!!
         val checker = PsiLcaTypeChecker()
 
         // when

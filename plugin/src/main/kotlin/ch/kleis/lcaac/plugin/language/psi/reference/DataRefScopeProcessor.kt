@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.plugin.language.psi.reference
 
+import ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach
 import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataRef
 import ch.kleis.lcaac.plugin.psi.LcaLabels
 import ch.kleis.lcaac.plugin.psi.LcaParams
@@ -53,6 +54,9 @@ class DataRefExactNameMatcherScopeProcessor(
             return checkDecl(element.labelAssignmentList)
         }
 
+        if (element is PsiBlockForEach) {
+            return checkDecl(listOf(element))
+        }
         return true
     }
 

@@ -51,9 +51,17 @@
       BETWEEN_KEYWORD = 'between'
       AND_KEYWORD = 'and'
 
+      DATASOURCE_KEYWORD = 'datasource'
+      LOCATION_KEYWORD = 'location'
+      SCHEMA_KEYWORD = 'schema'
+      FOR_EACH_KEYWORD = 'for_each'
+      SUM_KEYWORD = 'sum'
+      LOOKUP_KEYWORD = 'lookup'
+      DEFAULT_RECORD_KEYWORD = 'default_record'
+
       NUMBER = 'number'
-      LSQBRACE = ']'
-      RSQBRACE = '['
+      LSQBRACE = '['
+      RSQBRACE = ']'
       LPAREN = '('
       RPAREN = ')'
       LBRACE = '{'
@@ -80,7 +88,7 @@
     LCA File
  */
 
-lcaFile ::= package? import* (process | test | unitDefinition | substance | globalVariables )*
+lcaFile ::= package? import* (process | test | dataSourceDefinition | unitDefinition | substance | globalVariables )*
 
 /*
     Package
@@ -94,6 +102,23 @@ package ::= "package" urn {
 import ::= "import" urn {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUrnOwner"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.trait.PsiUrnOwnerMixin"
+}
+
+/*
+    Data source
+ */
+
+dataSourceDefinition ::= 'datasource' dataSourceRef '{' (locationField | schemaDefinition)* '}' {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiDataSourceDefinition"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiDataSourceMixin"
+    elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.datasource.DataSourceStubElementType"
+    stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.datasource.DataSourceStub"
+}
+locationField ::= 'location' '=' STRING_LITERAL { methods=[value="STRING_LITERAL"] }
+schemaDefinition ::= 'schema' '{' columnDefinition* '}'
+columnDefinition ::= columnRef '=' dataExpression {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiColumnDefinition"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiColumnDefinitionMixin"
 }
 
 /*
@@ -220,7 +245,7 @@ params ::= "params" "{" assignment* "}"
 
 variables ::= "variables" "{" assignment* "}"
 
-assignment ::= dataRef "=" dataExpression {
+assignment ::= dataRef '=' dataExpression{
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiAssignment"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiAssignmentMixin"
 }
@@ -245,24 +270,50 @@ block_impacts ::= "impacts" "{" impactExchange* "}"
     Exchanges
  */
 
-technoInputExchange ::= dataExpression inputProductSpec
 technoProductExchange ::= dataExpression outputProductSpec
-bioExchange ::= dataExpression substanceSpec
-impactExchange ::= dataExpression indicatorRef
+
+technoInputExchange ::= terminalTechnoInputExchange
+        | technoBlockForEach
+terminalTechnoInputExchange ::= dataExpression inputProductSpec
+technoBlockForEach ::= 'for_each' dataRef 'from' dataSourceExpression '{' (variables | technoInputExchange)* '}' {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiBlockForEachMixin"
+}
+
+bioExchange ::= terminalBioExchange
+        | bioBlockForEach
+terminalBioExchange ::= dataExpression substanceSpec
+bioBlockForEach ::= 'for_each' dataRef 'from' dataSourceExpression '{' (variables | bioExchange)* '}' {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiBlockForEachMixin"
+}
+
+impactExchange ::= terminalImpactExchange
+        | impactBlockForEach
+terminalImpactExchange ::= dataExpression indicatorRef
+impactBlockForEach ::= 'for_each' dataRef 'from' dataSourceExpression '{' (variables | impactExchange)* '}' {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiBlockForEachMixin"
+}
 
 /*
     Quantity
     Use GrammarKit's expression-related syntax and rules to generate a Pratt parser.
  */
 
-dataExpression ::= addGroup
-           | mulGroup
-           | exponentialQuantityExpression
-           | baseGroup
+dataExpression ::= mulGroup
+    | addGroup
+    | exponentialQuantityExpression
+    | baseGroup
 
 private addGroup ::= addQuantityExpression | subQuantityExpression
 private mulGroup ::= scaleQuantityExpression | mulQuantityExpression | divQuantityExpression
-private baseGroup ::=  parenQuantityExpression | stringExpression | dataRef
+private baseGroup ::=  parenQuantityExpression
+    | stringExpression
+    | recordExpression
+    | colExpression
+    | sliceExpression
+    | dataRef
 
 fake binaryOperatorExpression ::= dataExpression dataExpression {
     extends=dataExpression
@@ -280,6 +331,20 @@ exponentialQuantityExpression ::= dataExpression "^" NUMBER { extends=dataExpres
 parenQuantityExpression ::= "(" dataExpression ")" { extends=dataExpression }
 scaleQuantityExpression ::= NUMBER dataExpression { extends=dataExpression methods=[scale="NUMBER"]}
 stringExpression ::= STRING_LITERAL { extends=dataExpression }
+sliceExpression ::= dataRef  '.' columnRef  { extends=dataExpression }
+recordExpression ::= (opDefaultRecord | opLookup) dataSourceExpression { extends=dataExpression }
+opDefaultRecord ::= 'default_record' 'from'
+opLookup ::= 'lookup'
+colExpression ::= 'sum' '(' dataSourceExpression ',' columnRef ('*' columnRef)* ')' { extends=dataExpression }
+
+/*
+    Data source expression
+ */
+
+dataSourceExpression ::= dataSourceRef rowFilter?
+rowFilter ::= MATCH_KEYWORD rowSelector
+        | MATCH_KEYWORD LPAREN ( rowSelector (COMMA rowSelector)* COMMA? ) RPAREN
+rowSelector ::= columnRef EQUAL dataExpression
 
 
 /*
@@ -336,6 +401,17 @@ testRef ::= uid {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUIDOwner"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiTestRefMixin"
 }
+
+dataSourceRef ::= uid {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataSourceRef"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiDataSourceRefMixin"
+}
+
+columnRef ::= uid {
+    implements=["ch.kleis.lcaac.plugin.language.psi.type.ref.PsiColumnRef"]
+    mixin="ch.kleis.lcaac.plugin.language.psi.mixin.ref.PsiColumnRefMixin"
+}
+
 /*
    Spec
  */

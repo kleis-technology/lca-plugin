@@ -2,6 +2,7 @@ package ch.kleis.lcaac.plugin.language.psi.reference
 
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
 import ch.kleis.lcaac.plugin.psi.LcaDataRef
+import ch.kleis.lcaac.plugin.psi.LcaTerminalTechnoInputExchange
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.ui.naturalSorted
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -56,7 +57,8 @@ class DataRefCollectorScopeProcessorTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val process = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p", mapOf("d" to "LABEL")).first()
-        val target = process.getInputs().first()
+        val element = process.getInputs().first().terminalTechnoInputExchange!!
+        val target = element
             .dataExpression as LcaDataRef
 
         // when

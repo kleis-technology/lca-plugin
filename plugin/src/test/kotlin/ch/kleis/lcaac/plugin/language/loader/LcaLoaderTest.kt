@@ -6,9 +6,9 @@ import arrow.optics.typeclasses.Index
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.*
+import ch.kleis.lcaac.core.lang.expression.optics.everyEntry
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
-import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.fixture.UnitFixture
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.testFramework.ParsingTestCase
@@ -20,6 +20,248 @@ import kotlin.test.assertFailsWith
 @RunWith(JUnit4::class)
 class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     private val ops = BasicOperations
+
+    @Test
+    fun test_dataSourceRelatedDataExpressions() {
+        // given
+        val file = parseFile(
+            "hello", """
+                variables {
+                    a = lookup source
+                    b = lookup source match geo = "GLO"
+                    c = default_record from source
+                    d = a.quantity
+                    e = sum( source match geo = "GLO", n_items * mass )
+                }
+            """.trimIndent()
+        ) as LcaFile
+        val parser = LcaLoader(
+            sequenceOf(file),
+            ops,
+        )
+
+        // when
+        val symbolTable = parser.load()
+        val actual = listOf("a", "b", "c", "d", "e")
+            .associateWith { symbolTable.getData(it)!! }
+
+        // then
+        val expected: Map<String, DataExpression<BasicNumber>> = mapOf(
+            "a" to EFirstRecordOf(EDataSourceRef("source")),
+            "b" to EFirstRecordOf(EFilter(EDataSourceRef("source"), mapOf("geo" to EStringLiteral("GLO")))),
+            "c" to EDefaultRecordOf(EDataSourceRef("source")),
+            "d" to ERecordEntry(EDataRef("a"), "quantity"),
+            "e" to ESumProduct(
+                EFilter(EDataSourceRef("source"), mapOf("geo" to EStringLiteral("GLO"))),
+                listOf("n_items", "mass")
+            )
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun test_impactBlockForEach() {
+        // given
+        val file = parseFile(
+            "hello", """
+                process p {
+                    impacts {
+                        for_each row from source match id = "abc" {
+                            row.quantity wheat
+                        }
+                    }
+                }
+            """.trimIndent()
+        ) as LcaFile
+        val parser = LcaLoader(
+            sequenceOf(file),
+            ops,
+        )
+
+        // when
+        val actual = parser.load().getTemplate("p")
+
+        // then
+        val expected = EProcessTemplate<BasicNumber>(
+            emptyMap(),
+            emptyMap(),
+            EProcess(
+                "p",
+                impacts = listOf(
+                    EImpactBlockForEach(
+                        "row",
+                        EFilter(
+                            EDataSourceRef("source"),
+                            mapOf("id" to EStringLiteral("abc"))
+                        ),
+                        emptyMap(),
+                        listOf(
+                            EImpactBlockEntry(
+                                EImpact(
+                                    ERecordEntry(
+                                        EDataRef("row"),
+                                        "quantity",
+                                    ),
+                                    EIndicatorSpec("wheat")
+                                )
+                            )
+                        ),
+                    )
+                )
+            )
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun test_bioBlockForEach() {
+        // given
+        val file = parseFile(
+            "hello", """
+                process p {
+                    emissions {
+                        for_each row from source match id = "abc" {
+                            row.quantity wheat
+                        }
+                    }
+                }
+            """.trimIndent()
+        ) as LcaFile
+        val parser = LcaLoader(
+            sequenceOf(file),
+            ops,
+        )
+
+        // when
+        val actual = parser.load().getTemplate("p")
+
+        // then
+        val expected = EProcessTemplate<BasicNumber>(
+            emptyMap(),
+            emptyMap(),
+            EProcess(
+                "p",
+                biosphere = listOf(
+                    EBioBlockForEach(
+                        "row",
+                        EFilter(
+                            EDataSourceRef("source"),
+                            mapOf("id" to EStringLiteral("abc"))
+                        ),
+                        emptyMap(),
+                        listOf(
+                            EBioBlockEntry(
+                                EBioExchange(
+                                    ERecordEntry(
+                                        EDataRef("row"),
+                                        "quantity",
+                                    ),
+                                    ESubstanceSpec(
+                                        "wheat",
+                                        type = SubstanceType.EMISSION,
+                                        referenceUnit = EUnitOf(
+                                            EQuantityClosure(
+                                                SymbolTable.empty(),
+                                                ERecordEntry(EDataRef("row"), "quantity")
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        ),
+                    )
+                )
+            )
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun test_technoBlockForEach() {
+        // given
+        val file = parseFile(
+            "hello", """
+                process p {
+                    inputs {
+                        for_each row from source match id = "abc" {
+                            row.quantity wheat
+                        }
+                    }
+                }
+            """.trimIndent()
+        ) as LcaFile
+        val parser = LcaLoader(
+            sequenceOf(file),
+            ops,
+        )
+
+        // when
+        val actual = parser.load().getTemplate("p")
+
+        // then
+        val expected = EProcessTemplate<BasicNumber>(
+            emptyMap(),
+            emptyMap(),
+            EProcess(
+                "p",
+                inputs = listOf(
+                    ETechnoBlockForEach(
+                        "row",
+                        EFilter(
+                            EDataSourceRef("source"),
+                            mapOf("id" to EStringLiteral("abc"))
+                        ),
+                        emptyMap(),
+                        listOf(
+                            ETechnoBlockEntry(
+                                ETechnoExchange(
+                                    ERecordEntry(
+                                        EDataRef("row"),
+                                        "quantity",
+                                    ),
+                                    EProductSpec("wheat")
+                                )
+                            )
+                        ),
+                    )
+                )
+            )
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun test_dataSourceDefinition() {
+        // given
+        val file = parseFile(
+            "hello", """
+                datasource source {
+                    location = "source.csv"
+                    schema {
+                        geo = "GLO"
+                        mass = 1 kg
+                    }
+                }
+            """.trimIndent()
+        ) as LcaFile
+        val parser = LcaLoader(
+            sequenceOf(file),
+            ops,
+        )
+
+        // when
+        val actual = parser.load().getDataSource("source")
+
+        // then
+        val expected = EDataSource(
+            "source.csv",
+            mapOf(
+                "geo" to EStringLiteral("GLO"),
+                "mass" to EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
+            )
+        )
+        assertEquals(expected, actual)
+    }
 
     @Test
     fun test_stringVariables() {
@@ -214,7 +456,8 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val template = symbolTable.getTemplate("a") as ProcessTemplateExpression<BasicNumber>
         val actual =
             (ProcessTemplateExpression.eProcessTemplate<BasicNumber>().body().biosphere() compose
-                    Every.list() compose EBioExchange.substance()).firstOrNull(template)
+                Every.list() compose BlockExpression.everyEntry() compose
+                EBioExchange.substance()).firstOrNull(template)
 
         // then
         assertEquals("lu", actual?.name)
@@ -517,10 +760,12 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                     ),
                 ),
                 inputs = listOf(
-                    ETechnoExchange(
-                        EQuantityScale(ops.pure(10.0), EDataRef("l")),
-                        EProductSpec("water"),
-                    ),
+                    ETechnoBlockEntry(
+                        ETechnoExchange(
+                            EQuantityScale(ops.pure(10.0), EDataRef("l")),
+                            EProductSpec("water"),
+                        ),
+                    )
                 ),
             )
         )
@@ -628,9 +873,10 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val symbolTable = parser.load()
         val template = symbolTable.getTemplate("a")!!
         val actual = (
-                ProcessTemplateExpression.eProcessTemplate<BasicNumber>().body().inputs().index(Index.list(), 0) compose
-                        ETechnoExchange.quantity()
-                ).getOrNull(template)!!
+            ProcessTemplateExpression.eProcessTemplate<BasicNumber>().body().inputs().index(Index.list(), 0) compose
+                BlockExpression.everyEntry() compose
+                ETechnoExchange.quantity()
+            ).getAll(template).first()
 
         // then
         val expected = EQuantityDiv(
@@ -661,9 +907,10 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val symbolTable = parser.load()
         val template = symbolTable.getTemplate("a")!!
         val actual = (
-                ProcessTemplateExpression.eProcessTemplate<BasicNumber>().body().inputs().index(Index.list(), 0) compose
-                        ETechnoExchange.quantity()
-                ).getOrNull(template)!!
+            ProcessTemplateExpression.eProcessTemplate<BasicNumber>().body().inputs().index(Index.list(), 0) compose
+                BlockExpression.everyEntry() compose
+                ETechnoExchange.quantity()
+            ).getAll(template).first()
 
         // then
         val expected = EQuantityMul(
@@ -701,17 +948,19 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
 
         // then
         val expected = listOf(
-            ETechnoExchange(
-                EQuantityScale(ops.pure(10.0), EDataRef("l")),
-                EProductSpec(
-                    "water",
-                    fromProcess = FromProcess(
-                        "water_proc",
-                        MatchLabels(emptyMap()),
-                        mapOf("x" to EQuantityScale(ops.pure(3.0), EDataRef("l"))),
-                    ),
-                )
-            ),
+            ETechnoBlockEntry(
+                ETechnoExchange(
+                    EQuantityScale(ops.pure(10.0), EDataRef("l")),
+                    EProductSpec(
+                        "water",
+                        fromProcess = FromProcess(
+                            "water_proc",
+                            MatchLabels(emptyMap()),
+                            mapOf("x" to EQuantityScale(ops.pure(3.0), EDataRef("l"))),
+                        ),
+                    )
+                ),
+            )
         )
         assertEquals(expected, actual)
     }
@@ -765,9 +1014,11 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
                 ),
             ),
             impacts = listOf(
-                EImpact(
-                    EQuantityScale(ops.pure(1.0), EDataRef("kg")),
-                    EIndicatorSpec("climate_change"),
+                EImpactBlockEntry(
+                    EImpact(
+                        EQuantityScale(ops.pure(1.0), EDataRef("kg")),
+                        EIndicatorSpec("climate_change"),
+                    )
                 )
             )
         )
@@ -1016,7 +1267,9 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val template = symbolTable.getTemplate("a") as ProcessTemplateExpression<BasicNumber>
         val actual =
             (ProcessTemplateExpression.eProcessTemplate<BasicNumber>().body().impacts() compose
-                    Every.list() compose EImpact.indicator()).firstOrNull(template)
+                Every.list() compose
+                BlockExpression.everyEntry() compose
+                EImpact.indicator()).firstOrNull(template)
 
         // then
         assertEquals("cc", actual?.name)

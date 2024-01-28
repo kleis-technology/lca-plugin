@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.language.psi.reference
 
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
+import ch.kleis.lcaac.plugin.psi.LcaTerminalTechnoInputExchange
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
@@ -58,8 +59,9 @@ class ProcessReferenceFromPsiProcessRefTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val ref = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+        val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
+            .getInputs().first().terminalTechnoInputExchange!!
+        val ref = element
             .inputProductSpec
             .getProcessTemplateSpec()!!
             .getProcessRef()
@@ -135,8 +137,9 @@ class ProcessReferenceFromPsiProcessRefTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val ref = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+        val first = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
+            .getInputs().first().terminalTechnoInputExchange!!
+        val ref = first
             .inputProductSpec
             .getProcessTemplateSpec()!!
             .getProcessRef()

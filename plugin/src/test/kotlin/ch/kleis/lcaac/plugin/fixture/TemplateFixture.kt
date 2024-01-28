@@ -1,9 +1,6 @@
 package ch.kleis.lcaac.plugin.fixture
 
-import ch.kleis.lcaac.core.lang.expression.EDataRef
-import ch.kleis.lcaac.core.lang.expression.EProcess
-import ch.kleis.lcaac.core.lang.expression.EProcessTemplate
-import ch.kleis.lcaac.core.lang.expression.ETechnoExchange
+import ch.kleis.lcaac.core.lang.expression.*
 
 class TemplateFixture {
     companion object {
@@ -20,7 +17,9 @@ class TemplateFixture {
                     ETechnoExchange(EDataRef("q_carrot"), ProductFixture.carrot),
                 ),
                 inputs = listOf(
-                    ETechnoExchange(EDataRef("q_water"), ProductFixture.water),
+                    ETechnoBlockEntry(
+                        ETechnoExchange(EDataRef("q_water"), ProductFixture.water),
+                    )
                 ),
             )
         )
@@ -34,7 +33,9 @@ class TemplateFixture {
                     ETechnoExchange(QuantityFixture.twoKilograms, ProductFixture.carrot),
                 ),
                 inputs = listOf(
-                    ETechnoExchange(QuantityFixture.oneGram, ProductFixture.carrot),
+                    ETechnoBlockEntry(
+                        ETechnoExchange(QuantityFixture.oneGram, ProductFixture.carrot),
+                    )
                 ),
             )
         )
@@ -45,7 +46,9 @@ class TemplateFixture {
                     ETechnoExchange(EDataRef("q_carrot"), ProductFixture.carrot),
                 ),
                 inputs = listOf(
-                    ETechnoExchange(EDataRef("q_water"), ProductFixture.water),
+                    ETechnoBlockEntry(
+                        ETechnoExchange(EDataRef("q_water"), ProductFixture.water),
+                    )
                 ),
             )
         )

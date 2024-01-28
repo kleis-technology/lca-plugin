@@ -45,7 +45,10 @@ class LanguageCompletion : CompletionContributor() {
             "reference_unit", "symbol", "dimension", "alias_for", // Unit block
             "variables", "params", "labels", // Process Block
             "products", "inputs", "resources", "emissions", "land_use", "impacts", // Process SubBlocks
-            "test", "given", "assert", "between", "and" // Test blocks
+            "test", "given", "assert", "between", "and", // Test blocks
+            "datasource", "schema", "location", // Data source blocks
+            "for_each", // For each
+            "sum", "lookup", "default_record" // Primitives
         )
     private val listOfKeywordPattern = Regex("(LcaTokenType.*) expected, got")
     private val keywordsPattern = Regex("LcaTokenType\\.([^ ,]*)(, | or |)")

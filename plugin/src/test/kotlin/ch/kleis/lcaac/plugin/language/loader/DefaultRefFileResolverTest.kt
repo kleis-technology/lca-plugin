@@ -1,7 +1,7 @@
 package ch.kleis.lcaac.plugin.language.loader
 
-import ch.kleis.lcaac.plugin.language.loader.DefaultRefFileResolver
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
+import ch.kleis.lcaac.plugin.psi.LcaTerminalTechnoInputExchange
 import com.intellij.openapi.ui.naturalSorted
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.Test
@@ -32,8 +32,9 @@ class DefaultRefFileResolverTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val target = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getInputs().first()
+        val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
+            .getInputs().first().terminalTechnoInputExchange!!
+        val target = element
             .inputProductSpec
             .getProcessTemplateSpec()!!
         myFixture.createFile(

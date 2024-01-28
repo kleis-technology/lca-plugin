@@ -2,6 +2,7 @@ package ch.kleis.lcaac.plugin.language.psi.reference
 
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceKeyIndex
+import ch.kleis.lcaac.plugin.psi.LcaTerminalBioExchange
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
@@ -57,8 +58,9 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val substanceSpec = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getEmissions().first()
+        val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
+            .getEmissions().first().terminalBioExchange!!
+        val substanceSpec = element
             .getSubstanceSpec()
 
         // when
@@ -114,8 +116,9 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val substanceSpec = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getResources().first()
+        val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
+            .getResources().first().terminalBioExchange!!
+        val substanceSpec = element
             .getSubstanceSpec()
 
         // when
@@ -165,8 +168,9 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val substanceSpec = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getEmissions().first()
+        val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
+            .getEmissions().first().terminalBioExchange!!
+        val substanceSpec = element
             .getSubstanceSpec()
 
         // when
@@ -222,8 +226,9 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val spec = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
-            .getEmissions().first()
+        val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
+            .getEmissions().first().terminalBioExchange!!
+        val spec = element
             .getSubstanceSpec()
 
         // when

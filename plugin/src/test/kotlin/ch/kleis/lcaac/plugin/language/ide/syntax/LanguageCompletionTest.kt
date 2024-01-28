@@ -27,7 +27,8 @@ class LanguageCompletionTest : LcaCompletionTestCase() {
             "substance",
             "unit",
             "variables",
-            "test"
+            "test",
+            "datasource"
         )
     }
 

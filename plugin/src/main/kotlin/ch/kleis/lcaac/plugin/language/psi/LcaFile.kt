@@ -67,6 +67,10 @@ class LcaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, LcaLan
         return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaGlobalVariables::class.java)
     }
 
+    fun getDataSourceDefinitions(): Collection<LcaDataSourceDefinition> {
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, LcaDataSourceDefinition::class.java)
+    }
+
     override fun processDeclarations(
         processor: PsiScopeProcessor,
         state: ResolveState,

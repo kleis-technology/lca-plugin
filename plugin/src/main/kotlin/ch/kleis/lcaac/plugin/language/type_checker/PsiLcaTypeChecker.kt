@@ -2,12 +2,9 @@ package ch.kleis.lcaac.plugin.language.type_checker
 
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.type.*
-import ch.kleis.lcaac.plugin.language.psi.type.PsiAssignment
-import ch.kleis.lcaac.plugin.language.psi.type.PsiGlobalAssignment
+import ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach
 import ch.kleis.lcaac.plugin.language.psi.type.PsiProcess
-import ch.kleis.lcaac.plugin.language.psi.type.PsiSubstance
 import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataRef
-import ch.kleis.lcaac.plugin.language.psi.type.unit.PsiUnitDefinition
 import ch.kleis.lcaac.plugin.language.psi.type.unit.UnitDefinitionType
 import ch.kleis.lcaac.plugin.psi.*
 import com.intellij.psi.PsiElement
@@ -22,15 +19,22 @@ class PsiLcaTypeChecker {
             is LcaGlobalAssignment -> checkDataExpression(element.getValue())
             is LcaAssignment -> checkDataExpression(element.getValue())
             is LcaLabelAssignment -> TString
-            is LcaTechnoInputExchange -> checkTechnoInputExchange(element)
+            is LcaTerminalTechnoInputExchange -> checkTerminalTechnoInputExchange(element)
             is LcaTechnoProductExchange -> checkTechnoProductExchange(element)
-            is LcaBioExchange -> checkBioExchange(element)
+            is LcaTerminalBioExchange -> checkTerminalBioExchange(element)
+
+            // the following checks the type of the data source expression in the block for each
+            is PsiBlockForEach -> {
+                val columns = columnsOf(element.getValue().dataSourceRef)
+                return TRecord(columns.mapValues { checkDataExpression(it.value) })
+            }
+
             else -> throw PsiTypeCheckException("Uncheckable type: $element")
         }
     }
 
-    private fun checkBioExchange(lcaBioExchange: LcaBioExchange): TBioExchange {
-        return rec.guard { el: LcaBioExchange ->
+    private fun checkTerminalBioExchange(lcaBioExchange: LcaTerminalBioExchange): TBioExchange {
+        return rec.guard { el: LcaTerminalBioExchange ->
             val tyQuantity = checkDataExpression(el.dataExpression, TQuantity::class.java)
             val name = el.substanceSpec.name
             val comp = el.substanceSpec.getCompartmentField()?.getValue() ?: ""
@@ -58,8 +62,8 @@ class PsiLcaTypeChecker {
         }(element)
     }
 
-    private fun checkTechnoInputExchange(element: LcaTechnoInputExchange): TTechnoExchange {
-        return rec.guard { el: LcaTechnoInputExchange ->
+    private fun checkTerminalTechnoInputExchange(element: LcaTerminalTechnoInputExchange): TTechnoExchange {
+        return rec.guard { el: LcaTerminalTechnoInputExchange ->
             val tyQuantity = checkDataExpression(el.dataExpression, TQuantity::class.java)
             val productName = el.inputProductSpec.name
             el.inputProductSpec.reference?.resolve()?.let {
@@ -142,8 +146,10 @@ class PsiLcaTypeChecker {
             is LcaStringExpression -> TString
             is LcaScaleQuantityExpression -> element.dataExpression?.let { checkDataExpression(it) }
                 ?: throw PsiTypeCheckException("missing expression")
+
             is LcaParenQuantityExpression -> element.dataExpression?.let { checkDataExpression(it) }
                 ?: throw PsiTypeCheckException("missing expression")
+
             is LcaExponentialQuantityExpression -> {
                 val exponent = element.exponent.text.toDouble()
                 val tyBase = checkDataExpression(element.dataExpression, TQuantity::class.java)
@@ -168,8 +174,43 @@ class PsiLcaTypeChecker {
                 }
             }
 
+            is LcaColExpression -> {
+                val columns = columnsOf(element.dataSourceExpression.dataSourceRef)
+                val requestedColumns = element.columnRefList
+                    .map { it.name }
+                val unknownColumns = requestedColumns
+                    .filter { !columns.containsKey(it) }
+                if (unknownColumns.isNotEmpty())
+                    throw PsiTypeCheckException("columns $unknownColumns not found in schema of '${element.dataSourceExpression.dataSourceRef.name}'")
+                return columns
+                    .filterKeys { requestedColumns.contains(it) }
+                    .values
+                    .map { checkDataExpression(it, TQuantity::class.java) }
+                    .reduce { acc, e -> TQuantity(acc.dimension.multiply(e.dimension)) }
+            }
+
+            is LcaRecordExpression -> {
+                val columns = columnsOf(element.dataSourceExpression.dataSourceRef)
+                return TRecord(columns.mapValues { checkDataExpression(it.value) })
+            }
+
+            is LcaSliceExpression -> {
+                val columnDefinition = element.columnRef.reference.resolve() as LcaColumnDefinition?
+                    ?: throw PsiTypeCheckException("unknown column '${element.columnRef.name}'")
+                checkDataExpression(columnDefinition.getValue())
+            }
             else -> throw PsiTypeCheckException("Unknown expression $element")
         }
+    }
+
+    private fun columnsOf(e: LcaDataSourceRef): Map<String, LcaDataExpression> {
+        val ds = e.reference.resolve() as LcaDataSourceDefinition?
+            ?: throw PsiTypeCheckException("unknown data source '${e.name}'")
+        val schema = ds.schemaDefinitionList
+            .firstOrNull()
+            ?: throw PsiTypeCheckException("missing schema in '${ds.name}'")
+        return schema.columnDefinitionList
+            .associate { it.name to it.dataExpression }
     }
 
     private fun checkDataRef(element: PsiDataRef): TypeDataExpression {
@@ -180,7 +221,8 @@ class PsiLcaTypeChecker {
                         is TQuantity -> ty
                         is TUnit -> TQuantity(ty.dimension)
                         is TString -> ty
-                        else -> throw PsiTypeCheckException("expected TQuantity, TUnit or TString, found $ty")
+                        is TRecord -> ty
+                        else -> throw PsiTypeCheckException("expected TQuantity, TUnit, TString or TRecord, found $ty")
                     }
                 }
                 ?: throw PsiTypeCheckException("unbound reference ${el.name}")

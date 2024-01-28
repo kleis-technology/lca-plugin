@@ -44,7 +44,7 @@
 
         <annotator
                 language="LCA"
-                implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.LcaTechnoInputExchangeAnnotator"/>
+                implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.LcaTerminalTechnoInputExchangeAnnotator"/>
         <annotator
                 language="LCA"
                 implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.LcaProcessAnnotator"/>
@@ -59,7 +59,7 @@
                 implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.LcaAssignmentAnnotator"/>
 
         <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataRef"
-                                 implementationClass="ch.kleis.lcaac.plugin.language.psi.manipulators.PsiQuantityRefManipulator"/>
+                                 implementationClass="ch.kleis.lcaac.plugin.language.psi.manipulators.PsiDataRefManipulator"/>
         <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.ref.PsiSubstanceRef"
                                  implementationClass="ch.kleis.lcaac.plugin.language.psi.manipulators.PsiSubstanceRefManipulator"/>
         <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.ref.PsiProcessRef"
@@ -76,10 +76,20 @@
                                  implementationClass="ch.kleis.lcaac.plugin.language.psi.manipulators.PsiGlobalAssignmentManipulator"/>
         <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.PsiAssignment"
                                  implementationClass="ch.kleis.lcaac.plugin.language.psi.manipulators.PsiAssignmentManipulator"/>
+        <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.PsiColumnDefinition"
+                                 implementationClass="ch.kleis.lcaac.plugin.language.psi.manipulators.PsiColumnDefinitionManipulator"/>
+        <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach"
+                                 implementationClass="ch.kleis.lcaac.plugin.language.psi.manipulators.PsiBlockForEachManipulator"/>
+        <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.PsiDataSourceDefinition"
+                                 implementationClass="ch.kleis.lcaac.plugin.language.psi.manipulators.PsiDataSourceManipulator"/>
         <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.ref.PsiLabelRef"
                                  implementationClass="ch.kleis.lcaac.plugin.language.psi.manipulators.PsiLabelRefManipulator"/>
         <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.ref.PsiProductRef"
                                  implementationClass="ch.kleis.lcaac.plugin.language.psi.manipulators.PsiProductRefManipulator"/>
+        <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataSourceRef"
+                                 implementationClass="ch.kleis.lcaac.plugin.language.psi.manipulators.PsiDataSourceRefManipulator"/>
+        <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.ref.PsiColumnRef"
+                                 implementationClass="ch.kleis.lcaac.plugin.language.psi.manipulators.PsiColumnDefinitionManipulator"/>
         <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.ref.PsiParameterRef"
                                  implementationClass="ch.kleis.lcaac.plugin.language.psi.manipulators.PsiParameterRefManipulator"/>
         <lang.elementManipulator forClass="ch.kleis.lcaac.plugin.language.psi.type.spec.PsiInputProductSpec"
@@ -97,6 +107,7 @@
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex"/>
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssigmentStubKeyIndex"/>
         <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.test.TestStubKeyIndex"/>
+        <stubIndex implementation="ch.kleis.lcaac.plugin.language.psi.stub.datasource.DataSourceStubKeyIndex"/>
         <stubElementTypeHolder class="ch.kleis.lcaac.plugin.psi.LcaTypes" externalIdPrefix="lca."/>
 
         <fileBasedIndex implementation="ch.kleis.lcaac.plugin.language.psi.index.LcaProcessFileIndexExtension"/>

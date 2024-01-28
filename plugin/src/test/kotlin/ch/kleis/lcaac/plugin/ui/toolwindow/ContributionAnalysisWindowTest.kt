@@ -19,6 +19,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBViewport
 import com.intellij.ui.table.JBTable
+import io.mockk.mockk
 import org.jdesktop.swingx.plaf.basic.core.BasicTransferable
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -240,7 +241,7 @@ class ContributionAnalysisWindowTest : BasePlatformTestCase() {
         val loader = LcaLoader(sequenceOf(lcaFile, builtinUnitsLcaFile), ops)
         val symbolTable = loader.load()
         val template = symbolTable.getTemplate("p")!!
-        val evaluator = Evaluator(symbolTable, ops)
+        val evaluator = Evaluator(symbolTable, ops, mockk())
         val trace = evaluator.trace(template)
         val program = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint())
         return program.run()

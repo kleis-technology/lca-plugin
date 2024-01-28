@@ -65,10 +65,10 @@ class LabelReferenceTest : BasePlatformTestCase() {
                 }
             """.trimIndent()
         )
-        val ref = ProcessStubKeyIndex.findProcesses(
+        val element = ProcessStubKeyIndex.findProcesses(
             project, "$pkgName.p",
-        ).first().getInputs()
-            .first()
+        ).first().getInputs().first().terminalTechnoInputExchange!!
+        val ref = element
             .inputProductSpec.getProcessTemplateSpec()!!
             .getMatchLabels()!!.labelSelectorList.first()
             .labelRef

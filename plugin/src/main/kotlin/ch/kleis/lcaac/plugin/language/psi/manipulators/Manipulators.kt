@@ -1,15 +1,12 @@
 package ch.kleis.lcaac.plugin.language.psi.manipulators
 
-import ch.kleis.lcaac.plugin.language.psi.type.PsiAssignment
-import ch.kleis.lcaac.plugin.language.psi.type.PsiGlobalAssignment
-import ch.kleis.lcaac.plugin.language.psi.type.PsiLabelAssignment
+import ch.kleis.lcaac.plugin.language.psi.type.*
 import ch.kleis.lcaac.plugin.language.psi.type.ref.*
-import ch.kleis.lcaac.plugin.language.psi.type.spec.PsiInputProductSpec
-import ch.kleis.lcaac.plugin.language.psi.type.spec.PsiOutputProductSpec
-import ch.kleis.lcaac.plugin.language.psi.type.spec.PsiProcessTemplateSpec
-import ch.kleis.lcaac.plugin.language.psi.type.spec.PsiSubstanceSpec
 import ch.kleis.lcaac.plugin.language.psi.type.trait.PsiUIDOwner
-import ch.kleis.lcaac.plugin.psi.*
+import ch.kleis.lcaac.plugin.psi.LcaInputProductSpec
+import ch.kleis.lcaac.plugin.psi.LcaOutputProductSpec
+import ch.kleis.lcaac.plugin.psi.LcaProcessTemplateSpec
+import ch.kleis.lcaac.plugin.psi.LcaSubstanceSpec
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.AbstractElementManipulator
 import com.intellij.psi.PsiElement
@@ -21,12 +18,14 @@ sealed class PsiUIDOwnerManipulator<E : PsiUIDOwner> : AbstractElementManipulato
     }
 }
 
-class PsiQuantityRefManipulator : PsiUIDOwnerManipulator<PsiDataRef>()
+class PsiDataRefManipulator : PsiUIDOwnerManipulator<PsiDataRef>()
 class PsiSubstanceRefManipulator : PsiUIDOwnerManipulator<PsiSubstanceRef>()
 class PsiProcessTemplateRefManipulator : PsiUIDOwnerManipulator<PsiProcessRef>()
 class PsiLabelRefManipulator : PsiUIDOwnerManipulator<PsiLabelRef>()
 class PsiParameterRefManipulator : PsiUIDOwnerManipulator<PsiParameterRef>()
 class PsiProductRefManipulator : PsiUIDOwnerManipulator<PsiProductRef>()
+class PsiDataSourceRefManipulator : PsiUIDOwnerManipulator<PsiDataSourceRef>()
+class PsiColumnRefManipulator : PsiUIDOwnerManipulator<PsiColumnRef>()
 
 sealed class PsiDelegateManipulator<E : PsiElement>(
     private val getter: (E) -> PsiUIDOwner
@@ -62,5 +61,14 @@ class PsiGlobalAssignmentManipulator : PsiDelegateManipulator<PsiGlobalAssignmen
 )
 
 class PsiAssignmentManipulator : PsiDelegateManipulator<PsiAssignment>(
+    { it.getDataRef() }
+)
+class PsiDataSourceManipulator : PsiDelegateManipulator<PsiDataSourceDefinition>(
+    { it.getDataSourceRef() }
+)
+class PsiColumnDefinitionManipulator : PsiDelegateManipulator<PsiColumnDefinition>(
+    { it.getColumnRef() }
+)
+class PsiBlockForEachManipulator : PsiDelegateManipulator<PsiBlockForEach>(
     { it.getDataRef() }
 )

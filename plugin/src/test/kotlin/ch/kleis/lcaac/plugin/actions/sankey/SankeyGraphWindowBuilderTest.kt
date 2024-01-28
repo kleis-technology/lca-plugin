@@ -14,6 +14,7 @@ import com.intellij.openapi.ui.naturalSorted
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -40,7 +41,7 @@ class SankeyGraphWindowBuilderTest : BasePlatformTestCase() {
         val parser = LcaLoader(sequenceOf(UnitFixture.getInternalUnitFile(myFixture), file), ops)
         val symbolTable = parser.load()
         val template = symbolTable.getTemplate(process)!!
-        val trace = Evaluator(symbolTable, ops).trace(template)
+        val trace = Evaluator(symbolTable, ops, mockk()).trace(template)
         val assessment = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint())
         val analysis = assessment.run()
         val sankeyPort = analysis.getControllablePorts().getElements().first()
