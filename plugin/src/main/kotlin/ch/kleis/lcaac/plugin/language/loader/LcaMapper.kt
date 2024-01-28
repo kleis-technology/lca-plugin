@@ -13,6 +13,7 @@ import ch.kleis.lcaac.core.math.QuantityOperations
 import ch.kleis.lcaac.plugin.language.psi.type.PsiProcess
 import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiIndicatorRef
 import ch.kleis.lcaac.plugin.psi.*
+import com.intellij.psi.util.PsiTreeUtil
 
 class LcaMapper<Q>(
     private val ops: QuantityOperations<Q>
@@ -117,15 +118,28 @@ class LcaMapper<Q>(
         )
 
 
-    private fun impact(exchange: LcaImpactExchange): ImpactBlock<Q> {
-        return exchange.terminalImpactExchange?.let {
-            EImpactBlockEntry(
-                EImpact(
-                    dataExpression(it.dataExpression),
-                    indicatorSpec(it.indicatorRef),
+    private fun impact(ctx: LcaImpactExchange): ImpactBlock<Q> {
+        return when {
+            ctx.terminalImpactExchange != null -> {
+                EImpactBlockEntry(
+                    EImpact(
+                        dataExpression(ctx.terminalImpactExchange!!.dataExpression),
+                        indicatorSpec(ctx.terminalImpactExchange!!.indicatorRef),
+                    )
                 )
-            )
-        } ?: EImpactBlockForEach("", EDataSourceRef(""), emptyMap(), emptyList())
+            }
+            ctx.impactBlockForEach != null -> {
+                val rowRef = ctx.impactBlockForEach!!.getDataRef().name
+                val dataSourceExpression = dataSourceExpression(ctx.impactBlockForEach!!.getValue())
+                val locals = ctx.impactBlockForEach!!.getVariablesList()
+                    .flatMap { it.assignmentList }
+                    .associate { it.getDataRef().name to dataExpression(it.getValue()) }
+                val entries = ctx.impactBlockForEach!!.impactExchangeList
+                    .map { impact(it) }
+                EImpactBlockForEach(rowRef, dataSourceExpression, locals, entries)
+            }
+            else -> throw EvaluatorException("invalid impact exchange")
+        }
     }
 
     private fun indicatorSpec(variable: PsiIndicatorRef): EIndicatorSpec<Q> {
@@ -134,15 +148,40 @@ class LcaMapper<Q>(
         )
     }
 
-    fun technoInputExchange(psiExchange: LcaTechnoInputExchange): TechnoBlock<Q> {
-        return psiExchange.terminalTechnoInputExchange?.let {
-            ETechnoBlockEntry(
-                ETechnoExchange(
-                    dataExpression(it.dataExpression),
-                    inputProductSpec(it.inputProductSpec),
+    fun technoInputExchange(ctx: LcaTechnoInputExchange): TechnoBlock<Q> {
+        return when {
+            ctx.terminalTechnoInputExchange != null ->
+                ETechnoBlockEntry(
+                    ETechnoExchange(
+                        dataExpression(ctx.terminalTechnoInputExchange!!.dataExpression),
+                        inputProductSpec(ctx.terminalTechnoInputExchange!!.inputProductSpec),
+                    )
                 )
-            )
-        } ?: ETechnoBlockForEach("", EDataSourceRef(""), emptyMap(), emptyList())
+
+            ctx.technoBlockForEach != null -> {
+                val rowRef = ctx.technoBlockForEach!!.getDataRef().name
+                val dataSourceExpression = dataSourceExpression(ctx.technoBlockForEach!!.getValue())
+                val locals = ctx.technoBlockForEach!!.getVariablesList()
+                    .flatMap { it.assignmentList }
+                    .associate { it.getDataRef().name to dataExpression(it.getValue()) }
+                val entries = ctx.technoBlockForEach!!.technoInputExchangeList
+                    .map { technoInputExchange(it) }
+                ETechnoBlockForEach(rowRef, dataSourceExpression, locals, entries)
+            }
+
+            else -> throw EvaluatorException("invalid techno input exchange")
+        }
+    }
+
+    private fun dataSourceExpression(ctx: LcaDataSourceExpression): DataSourceExpression<Q> {
+        val ref = ctx.dataSourceRef.name
+        val rowSelectors = ctx.rowFilter
+            ?.rowSelectorList
+            ?: emptyList()
+        val filter = rowSelectors
+            .associate { it.columnRef.name to dataExpression(it.dataExpression) }
+        return if (filter.isEmpty()) EDataSourceRef(ref)
+        else EFilter(EDataSourceRef(ref), filter)
     }
 
     private fun outputProductSpec(
@@ -198,16 +237,41 @@ class LcaMapper<Q>(
         return dataExpression(element.dataExpression)
     }
 
-    private fun bioExchange(psiExchange: LcaBioExchange, symbolTable: SymbolTable<Q>): BioBlock<Q> {
-        return psiExchange.terminalBioExchange?.let {
-            val quantity = dataExpression(it.dataExpression)
-            EBioBlockEntry(
-                EBioExchange(
-                    quantity,
-                    substanceSpec(it.substanceSpec, quantity, symbolTable)
+    private fun bioExchange(ctx: LcaBioExchange, symbolTable: SymbolTable<Q>): BioBlock<Q> {
+        return when {
+            ctx.terminalBioExchange != null -> {
+                val quantity = dataExpression(ctx.terminalBioExchange!!.dataExpression)
+                EBioBlockEntry(
+                    EBioExchange(
+                        quantity,
+                        substanceSpec(ctx.terminalBioExchange!!.substanceSpec, quantity, symbolTable)
+                    )
                 )
-            )
-        } ?: EBioBlockForEach("", EDataSourceRef(""), emptyMap(), emptyList())
+            }
+            ctx.bioBlockForEach != null -> {
+                val rowRef = ctx.bioBlockForEach!!.getDataRef().name
+                val dataSourceExpression = dataSourceExpression(ctx.bioBlockForEach!!.getValue())
+                val locals = ctx.bioBlockForEach!!.getVariablesList()
+                    .flatMap { it.assignmentList }
+                    .associate { it.getDataRef().name to dataExpression(it.getValue()) }
+                val entries = ctx.bioBlockForEach!!.bioExchangeList
+                    .map { bioExchange(it, symbolTable) }
+                EBioBlockForEach(rowRef, dataSourceExpression, locals, entries)
+            }
+            else -> throw EvaluatorException("invalid bio exchange")
+        }
+    }
+
+    fun dataSourceDefinition(ctx: LcaDataSourceDefinition): EDataSource<Q> {
+        val location = ctx.locationFieldList.firstOrNull()?.value?.text?.trim('"')
+            ?: throw EvaluatorException("missing location field")
+        val schema = ctx.schemaDefinitionList.firstOrNull()
+            ?.columnDefinitionList?.associate { it.getColumnRef().name to dataExpression(it.getValue()) }
+            ?: throw EvaluatorException("missing schema")
+        return EDataSource(
+            location,
+            schema,
+        )
     }
 
     fun dataExpression(dataExpression: LcaDataExpression): DataExpression<Q> {
@@ -248,6 +312,19 @@ class LcaMapper<Q>(
             }
 
             is LcaStringExpression -> EStringLiteral(dataExpression.text.trim('"'))
+
+            is LcaSliceExpression -> {
+                val record = dataExpression(dataExpression.dataRef)
+                val index = dataExpression.columnRef.name
+                ERecordEntry(record, index)
+            }
+
+            is LcaRecordExpression -> {
+                val dataSource = dataSourceExpression(dataExpression.dataSourceExpression)
+                return dataExpression.opDefaultRecord?.let { EDefaultRecordOf(dataSource) }
+                    ?: dataExpression.opLookup?.let { EFirstRecordOf(dataSource) }
+                    ?: throw EvaluatorException("Unknown record expression: $dataExpression ")
+            }
             else -> throw EvaluatorException("Unknown data expression: $dataExpression")
         }
     }

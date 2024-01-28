@@ -22,6 +22,240 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     private val ops = BasicOperations
 
     @Test
+    fun test_dataSourceRelatedDataExpressions() {
+        // given
+        val file = parseFile(
+            "hello", """
+                variables {
+                    a = lookup source
+                    b = lookup source match geo = "GLO"
+                    c = default_record from source
+                    d = a.quantity
+                }
+            """.trimIndent()
+        ) as LcaFile
+        val parser = LcaLoader(
+            sequenceOf(file),
+            ops,
+        )
+
+        // when
+        val symbolTable = parser.load()
+        val actual = listOf("a", "b", "c", "d")
+            .associateWith { symbolTable.getData(it)!! }
+
+        // then
+        val expected: Map<String, DataExpression<BasicNumber>> = mapOf(
+            "a" to EFirstRecordOf(EDataSourceRef("source")),
+            "b" to EFirstRecordOf(EFilter(EDataSourceRef("source"), mapOf("geo" to EStringLiteral("GLO")))),
+            "c" to EDefaultRecordOf(EDataSourceRef("source")),
+            "d" to ERecordEntry(EDataRef("a"), "quantity"),
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun test_impactBlockForEach() {
+        // given
+        val file = parseFile(
+            "hello", """
+                process p {
+                    impacts {
+                        for_each row from source match id = "abc" {
+                            row.quantity wheat
+                        }
+                    }
+                }
+            """.trimIndent()
+        ) as LcaFile
+        val parser = LcaLoader(
+            sequenceOf(file),
+            ops,
+        )
+
+        // when
+        val actual = parser.load().getTemplate("p")
+
+        // then
+        val expected = EProcessTemplate<BasicNumber>(
+            emptyMap(),
+            emptyMap(),
+            EProcess(
+                "p",
+                impacts = listOf(
+                    EImpactBlockForEach(
+                        "row",
+                        EFilter(
+                            EDataSourceRef("source"),
+                            mapOf("id" to EStringLiteral("abc"))),
+                        emptyMap(),
+                        listOf(
+                            EImpactBlockEntry(
+                                EImpact(
+                                    ERecordEntry(
+                                        EDataRef("row"),
+                                        "quantity",
+                                    ),
+                                    EIndicatorSpec("wheat")
+                                )
+                            )
+                        ),
+                    )
+                )
+            )
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun test_bioBlockForEach() {
+        // given
+        val file = parseFile(
+            "hello", """
+                process p {
+                    emissions {
+                        for_each row from source match id = "abc" {
+                            row.quantity wheat
+                        }
+                    }
+                }
+            """.trimIndent()
+        ) as LcaFile
+        val parser = LcaLoader(
+            sequenceOf(file),
+            ops,
+        )
+
+        // when
+        val actual = parser.load().getTemplate("p")
+
+        // then
+        val expected = EProcessTemplate<BasicNumber>(
+            emptyMap(),
+            emptyMap(),
+            EProcess(
+                "p",
+                biosphere = listOf(
+                    EBioBlockForEach(
+                        "row",
+                        EFilter(
+                            EDataSourceRef("source"),
+                            mapOf("id" to EStringLiteral("abc"))),
+                        emptyMap(),
+                        listOf(
+                            EBioBlockEntry(
+                                EBioExchange(
+                                    ERecordEntry(
+                                        EDataRef("row"),
+                                        "quantity",
+                                    ),
+                                    ESubstanceSpec(
+                                        "wheat",
+                                        type = SubstanceType.EMISSION,
+                                        referenceUnit = EUnitOf(
+                                            EQuantityClosure(
+                                                SymbolTable.empty(),
+                                                ERecordEntry(EDataRef("row"), "quantity")
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        ),
+                    )
+                )
+            )
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun test_technoBlockForEach() {
+        // given
+        val file = parseFile(
+            "hello", """
+                process p {
+                    inputs {
+                        for_each row from source match id = "abc" {
+                            row.quantity wheat
+                        }
+                    }
+                }
+            """.trimIndent()
+        ) as LcaFile
+        val parser = LcaLoader(
+            sequenceOf(file),
+            ops,
+        )
+
+        // when
+        val actual = parser.load().getTemplate("p")
+
+        // then
+        val expected = EProcessTemplate<BasicNumber>(
+            emptyMap(),
+            emptyMap(),
+            EProcess(
+                "p",
+                inputs = listOf(
+                    ETechnoBlockForEach(
+                        "row",
+                        EFilter(
+                            EDataSourceRef("source"),
+                            mapOf("id" to EStringLiteral("abc"))),
+                        emptyMap(),
+                        listOf(
+                            ETechnoBlockEntry(
+                                ETechnoExchange(
+                                    ERecordEntry(
+                                        EDataRef("row"),
+                                        "quantity",
+                                    ),
+                                    EProductSpec("wheat")
+                                )
+                            )
+                        ),
+                    )
+                )
+            )
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun test_dataSourceDefinition() {
+        // given
+        val file = parseFile(
+            "hello", """
+                datasource source {
+                    location = "source.csv"
+                    schema {
+                        geo = "GLO"
+                        mass = 1 kg
+                    }
+                }
+            """.trimIndent()
+        ) as LcaFile
+        val parser = LcaLoader(
+            sequenceOf(file),
+            ops,
+        )
+
+        // when
+        val actual = parser.load().getDataSource("source")
+
+        // then
+        val expected = EDataSource(
+            "source.csv",
+            mapOf(
+                "geo" to EStringLiteral("GLO"),
+                "mass" to EQuantityScale(BasicNumber(1.0), EDataRef("kg"))
+            )
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun test_stringVariables() {
         // given
         val file = parseFile(

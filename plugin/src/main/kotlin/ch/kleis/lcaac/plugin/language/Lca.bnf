@@ -114,7 +114,7 @@ dataSourceDefinition ::= 'datasource' dataSourceRef '{' (locationField | schemaD
     elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.datasource.DataSourceStubElementType"
     stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.datasource.DataSourceStub"
 }
-locationField ::= 'location' '=' STRING_LITERAL
+locationField ::= 'location' '=' STRING_LITERAL { methods=[value="STRING_LITERAL"] }
 schemaDefinition ::= 'schema' '{' columnDefinition* '}'
 columnDefinition ::= columnRef '=' dataExpression {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiColumnDefinition"]
@@ -332,7 +332,9 @@ parenQuantityExpression ::= "(" dataExpression ")" { extends=dataExpression }
 scaleQuantityExpression ::= NUMBER dataExpression { extends=dataExpression methods=[scale="NUMBER"]}
 stringExpression ::= STRING_LITERAL { extends=dataExpression }
 sliceExpression ::= dataRef  '.' columnRef  { extends=dataExpression }
-recordExpression ::= ('default_record' 'from' | 'lookup') dataSourceExpression { extends=dataExpression }
+recordExpression ::= (opDefaultRecord | opLookup) dataSourceExpression { extends=dataExpression }
+opDefaultRecord ::= 'default_record' 'from'
+opLookup ::= 'lookup'
 colExpression ::= 'sum' '(' dataSourceExpression ',' columnRef ('*' columnRef)* ')' { extends=dataExpression }
 
 /*
