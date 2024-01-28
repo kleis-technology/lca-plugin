@@ -8,6 +8,92 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4::class)
 class LcaIndentBlockTest : FormatterTestCase() {
     @Test
+    fun test_columnAndRecordExpressions() {
+        doTextTest(
+            """
+                variables {
+        a         =    sum   (       source     ,           mass * n_items)
+                            b =    default_record       from source
+            c    =       lookup   source     match    geo  = "GLO"
+                    d              =       c.mass *        b.n_items
+                }
+            """.trimIndent(),
+            """
+                variables {
+                    a = sum( source, mass * n_items )
+                    b = default_record from source
+                    c = lookup source match geo = "GLO"
+                    d = c.mass * b.n_items
+                }
+            """.trimIndent(),
+            )
+    }
+    @Test
+    fun test_formattingBlockForEach() {
+        doTextTest(
+            """
+                process p {
+       inputs {
+                        for_each      row              from  source           {
+                                            1     kg      wheat
+              }
+                                           }
+                    emissions                           {
+    for_each   row from      source match geo = "GLO" {
+                              2 kg       wheat
+                               }
+                    }
+                    impacts        {
+                               for_each    row     from     source    match    (id = "abc-01", geo = "GLO") {
+                3    kg      wheat
+            }
+                                }
+                                }
+            """.trimIndent(),
+            """
+                process p {
+                    inputs {
+                        for_each row from source {
+                            1 kg wheat
+                        }
+                    }
+                    emissions {
+                        for_each row from source match geo = "GLO" {
+                            2 kg wheat
+                        }
+                    }
+                    impacts {
+                        for_each row from source match ( id = "abc-01", geo = "GLO" ) {
+                            3 kg wheat
+                        }
+                    }
+                }
+            """.trimIndent()
+        )
+    }
+    @Test
+    fun test_formattingDataSource() {
+        doTextTest(
+            """
+                datasource      source       {
+        location =   "source.csv"
+                         schema      {
+                mass    =          1 kg
+                   }
+                     }
+            """.trimIndent(),
+            """
+                datasource source {
+                    location = "source.csv"
+                    schema {
+                        mass = 1 kg
+                    }
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun test_formattingTest() {
         doTextTest(
             """

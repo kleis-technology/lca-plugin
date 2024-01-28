@@ -85,6 +85,11 @@ class LcaFormattingModelBuilder : FormattingModelBuilder {
                 .spacing(0, 0, 0, true, 1)
                 .beforeInside(ASSERT, TEST)
                 .spacing(0, 0, 0, true, 1)
+                // Datasource
+                .around(DATA_SOURCE_REF).spaces(1)
+                // Block for each
+                .around(MATCH_KEYWORD).spaces(1)
+                .around(FOR_EACH_KEYWORD).spaces(1)
                 // Comments
                 .before(COMMENT_CONTENT)
                 .spaces(0)
@@ -109,6 +114,12 @@ class LcaFormattingModelBuilder : FormattingModelBuilder {
                 .spaces(1)
                 .before(SUBSTANCE_SPEC)
                 .spaces(1)
+                .before(SUM_KEYWORD).spaces(1)
+                .after(SUM_KEYWORD).spaces(0)
+                .around(LOOKUP_KEYWORD).spaces(1)
+                .around(DEFAULT_RECORD_KEYWORD).spaces(1)
+                .before(COMMA).spaces(0)
+                .after(COMMA).spaces(1)
                 // Substances
                 .before(INDICATOR_REF)
                 .spaces(1)
