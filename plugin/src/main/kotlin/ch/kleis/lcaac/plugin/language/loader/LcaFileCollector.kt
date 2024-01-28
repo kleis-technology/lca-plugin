@@ -1,7 +1,9 @@
 package ch.kleis.lcaac.plugin.language.loader
 
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
+import ch.kleis.lcaac.plugin.psi.LcaColumnRef
 import ch.kleis.lcaac.plugin.psi.LcaDataRef
+import ch.kleis.lcaac.plugin.psi.LcaDataSourceRef
 import ch.kleis.lcaac.plugin.psi.LcaInputProductSpec
 import ch.kleis.lcaac.plugin.psi.LcaProcessTemplateSpec
 import ch.kleis.lcaac.plugin.psi.LcaSubstanceSpec
@@ -63,6 +65,8 @@ class LcaFileCollector(
             file,
             LcaSubstanceSpec::class.java,
             LcaDataRef::class.java,
+            LcaDataSourceRef::class.java,
+            LcaColumnRef::class.java,
             LcaInputProductSpec::class.java,
             LcaProcessTemplateSpec::class.java,
         ).asSequence()
