@@ -152,6 +152,8 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
                     schema {
                         mass = 1 km
                         dt = 1 hour
+                        geo = "GLO"
+                        n_items = 1 p
                     }
                 }
                 

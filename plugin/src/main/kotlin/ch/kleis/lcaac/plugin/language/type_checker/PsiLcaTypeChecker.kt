@@ -177,11 +177,14 @@ class PsiLcaTypeChecker {
             is LcaColExpression -> {
                 val columns = columnsOf(element.dataSourceExpression.dataSourceRef)
                 val requestedColumns = element.columnRefList
+                    .map { it.name }
                 val unknownColumns = requestedColumns
-                    .filter { !columns.containsKey(it.name) }
+                    .filter { !columns.containsKey(it) }
                 if (unknownColumns.isNotEmpty())
                     throw PsiTypeCheckException("columns $unknownColumns not found in schema of '${element.dataSourceExpression.dataSourceRef.name}'")
-                return columns.values
+                return columns
+                    .filterKeys { requestedColumns.contains(it) }
+                    .values
                     .map { checkDataExpression(it, TQuantity::class.java) }
                     .reduce { acc, e -> TQuantity(acc.dimension.multiply(e.dimension)) }
             }
