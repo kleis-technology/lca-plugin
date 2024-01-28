@@ -5,10 +5,7 @@ import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.*
-import ch.kleis.lcaac.core.lang.register.DataKey
-import ch.kleis.lcaac.core.lang.register.DataRegister
-import ch.kleis.lcaac.core.lang.register.Register
-import ch.kleis.lcaac.core.lang.register.RegisterException
+import ch.kleis.lcaac.core.lang.register.*
 import ch.kleis.lcaac.core.math.QuantityOperations
 import ch.kleis.lcaac.plugin.language.psi.type.PsiProcess
 import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiIndicatorRef
@@ -36,6 +33,7 @@ class LcaMapper<Q>(
     fun process(
         psiProcess: LcaProcess,
         globals: DataRegister<Q>,
+        dataSources: DataSourceRegister<Q>,
     ): EProcessTemplate<Q> {
         val name = psiProcess.name
         val labels = psiProcess.getLabels().mapValues { EStringLiteral<Q>(it.value) }
@@ -51,6 +49,7 @@ class LcaMapper<Q>(
             } catch (e: RegisterException) {
                 throw EvaluatorException("Conflict between local variable(s) ${e.duplicates} and a global definition.")
             },
+            dataSources = dataSources
         )
         val products = generateTechnoProductExchanges(psiProcess, symbolTable)
         val inputs = psiProcess.getInputs().map { technoInputExchange(it) }
