@@ -13,6 +13,7 @@
   tokenTypeClass="ch.kleis.lcaac.plugin.psi.LcaTokenType"
 
   tokens=[
+
       PACKAGE_KEYWORD = 'package'
       PROCESS_KEYWORD = 'process'
       SYMBOL_KEYWORD = 'symbol'
@@ -73,6 +74,7 @@
       COMMENT_BLOCK_END = 'comment-block-end'
       COMMENT_CONTENT = 'comment-content'
       COMMENT_LINE = 'comment-line'
+      IDENTIFIER =  'regexp:[a-zA-Z_]\w*'
       PLUS = "+"
       MINUS = "-"
       DOT = "."
@@ -274,7 +276,7 @@ technoProductExchange ::= dataExpression outputProductSpec
 
 technoInputExchange ::= terminalTechnoInputExchange
         | technoBlockForEach
-terminalTechnoInputExchange ::= dataExpression inputProductSpec
+terminalTechnoInputExchange ::= dataExpression inputProductSpec { pin=1 }
 technoBlockForEach ::= 'for_each' dataRef 'from' dataSourceExpression '{' (variables | technoInputExchange)* '}' {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiBlockForEachMixin"
@@ -282,7 +284,7 @@ technoBlockForEach ::= 'for_each' dataRef 'from' dataSourceExpression '{' (varia
 
 bioExchange ::= terminalBioExchange
         | bioBlockForEach
-terminalBioExchange ::= dataExpression substanceSpec
+terminalBioExchange ::= dataExpression substanceSpec { pin=1 }
 bioBlockForEach ::= 'for_each' dataRef 'from' dataSourceExpression '{' (variables | bioExchange)* '}' {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiBlockForEachMixin"
@@ -290,7 +292,7 @@ bioBlockForEach ::= 'for_each' dataRef 'from' dataSourceExpression '{' (variable
 
 impactExchange ::= terminalImpactExchange
         | impactBlockForEach
-terminalImpactExchange ::= dataExpression indicatorRef
+terminalImpactExchange ::= dataExpression indicatorRef { pin=1 }
 impactBlockForEach ::= 'for_each' dataRef 'from' dataSourceExpression '{' (variables | impactExchange)* '}' {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiBlockForEachMixin"

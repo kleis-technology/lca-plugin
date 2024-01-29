@@ -10,7 +10,6 @@ import ch.kleis.lcaac.core.math.QuantityOperations
 import ch.kleis.lcaac.plugin.language.psi.type.PsiProcess
 import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiIndicatorRef
 import ch.kleis.lcaac.plugin.psi.*
-import com.intellij.psi.util.PsiTreeUtil
 
 class LcaMapper<Q>(
     private val ops: QuantityOperations<Q>
@@ -120,10 +119,12 @@ class LcaMapper<Q>(
     private fun impact(ctx: LcaImpactExchange): ImpactBlock<Q> {
         return when {
             ctx.terminalImpactExchange != null -> {
+                val indicatorRef = ctx.terminalImpactExchange!!.indicatorRef
+                    ?: throw EvaluatorException("missing indicator")
                 EImpactBlockEntry(
                     EImpact(
                         dataExpression(ctx.terminalImpactExchange!!.dataExpression),
-                        indicatorSpec(ctx.terminalImpactExchange!!.indicatorRef),
+                        indicatorSpec(indicatorRef),
                     )
                 )
             }
@@ -149,13 +150,16 @@ class LcaMapper<Q>(
 
     fun technoInputExchange(ctx: LcaTechnoInputExchange): TechnoBlock<Q> {
         return when {
-            ctx.terminalTechnoInputExchange != null ->
+            ctx.terminalTechnoInputExchange != null -> {
+                val inputProductSpec = ctx.terminalTechnoInputExchange!!.inputProductSpec
+                    ?: throw EvaluatorException("missing substance spec")
                 ETechnoBlockEntry(
                     ETechnoExchange(
                         dataExpression(ctx.terminalTechnoInputExchange!!.dataExpression),
-                        inputProductSpec(ctx.terminalTechnoInputExchange!!.inputProductSpec),
+                        inputProductSpec(inputProductSpec),
                     )
                 )
+            }
 
             ctx.technoBlockForEach != null -> {
                 val rowRef = ctx.technoBlockForEach!!.getDataRef().name
@@ -240,10 +244,12 @@ class LcaMapper<Q>(
         return when {
             ctx.terminalBioExchange != null -> {
                 val quantity = dataExpression(ctx.terminalBioExchange!!.dataExpression)
+                val substanceSpec = ctx.terminalBioExchange!!.substanceSpec
+                    ?: throw EvaluatorException("missing substance spec")
                 EBioBlockEntry(
                     EBioExchange(
                         quantity,
-                        substanceSpec(ctx.terminalBioExchange!!.substanceSpec, quantity, symbolTable)
+                        substanceSpec(substanceSpec, quantity, symbolTable)
                     )
                 )
             }

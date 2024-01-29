@@ -18,15 +18,20 @@ class LcaTerminalTechnoInputExchangeAnnotator : Annotator {
         if (element !is LcaTerminalTechnoInputExchange) {
             return
         }
+        val inputProductSpec = element.inputProductSpec
+        if (inputProductSpec == null) {
+            annotateErrWithMessage(element, holder, "missing input product")
+            return
+        }
         val targets =
-            (element.inputProductSpec.reference as OutputProductReferenceFromPsiInputProductSpec)
+            (inputProductSpec.reference as OutputProductReferenceFromPsiInputProductSpec)
                 .multiResolve(false)
                 .filter { it.element is LcaOutputProductSpec }
 
         when (targets.size) {
             0 -> {
-                val specString = specToStr(element.inputProductSpec)
-                annotateWarnWithMessage(element.inputProductSpec, holder, "Could not resolve $specString")
+                val specString = specToStr(inputProductSpec)
+                annotateWarnWithMessage(inputProductSpec, holder, "Could not resolve $specString")
             }
             1 -> {
                 val checker = PsiLcaTypeChecker()
@@ -37,8 +42,8 @@ class LcaTerminalTechnoInputExchangeAnnotator : Annotator {
                 }
             }
             else -> {
-                val specString = specToStr(element.inputProductSpec)
-                annotateWarnWithMessage(element.inputProductSpec, holder, "Multiple candidates found for $specString")
+                val specString = specToStr(inputProductSpec)
+                annotateWarnWithMessage(inputProductSpec, holder, "Multiple candidates found for $specString")
             }
         }
     }

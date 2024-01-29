@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.language.type_checker
 
 import ch.kleis.lcaac.core.lang.dimension.Dimension
+import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.type.*
 import ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach
 import ch.kleis.lcaac.plugin.language.psi.type.PsiProcess
@@ -36,10 +37,12 @@ class PsiLcaTypeChecker {
     private fun checkTerminalBioExchange(lcaBioExchange: LcaTerminalBioExchange): TBioExchange {
         return rec.guard { el: LcaTerminalBioExchange ->
             val tyQuantity = checkDataExpression(el.dataExpression, TQuantity::class.java)
-            val name = el.substanceSpec.name
-            val comp = el.substanceSpec.getCompartmentField()?.getValue() ?: ""
-            val subComp = el.substanceSpec.getSubCompartmentField()?.getValue()
-            el.substanceSpec.reference?.resolve()?.let {
+            val substanceSpec = el.substanceSpec
+                ?: throw EvaluatorException("missing substance spec")
+            val name = substanceSpec.name
+            val comp = substanceSpec.getCompartmentField()?.getValue() ?: ""
+            val subComp = substanceSpec.getSubCompartmentField()?.getValue()
+            substanceSpec.reference?.resolve()?.let {
                 if (it is LcaSubstance) {
                     val tyRefQuantity =
                         checkDataExpression(it.getReferenceUnitField().dataExpression, TQuantity::class.java)
@@ -65,8 +68,10 @@ class PsiLcaTypeChecker {
     private fun checkTerminalTechnoInputExchange(element: LcaTerminalTechnoInputExchange): TTechnoExchange {
         return rec.guard { el: LcaTerminalTechnoInputExchange ->
             val tyQuantity = checkDataExpression(el.dataExpression, TQuantity::class.java)
-            val productName = el.inputProductSpec.name
-            el.inputProductSpec.reference?.resolve()?.let {
+            val inputProductSpec = el.inputProductSpec
+                ?: throw EvaluatorException("missing input product spec")
+            val productName = inputProductSpec.name
+            inputProductSpec.reference?.resolve()?.let {
                 val outputProductSpec = it as LcaOutputProductSpec
                 val tyOutputExchange = check(outputProductSpec.getContainingTechnoExchange())
                 if (tyOutputExchange !is TTechnoExchange) {
@@ -78,7 +83,7 @@ class PsiLcaTypeChecker {
 
                 val psiProcess = outputProductSpec.getContainingProcess()
                 val tyArguments = checkProcessArguments(psiProcess)
-                el.inputProductSpec.getProcessTemplateSpec()
+                inputProductSpec.getProcessTemplateSpec()
                     ?.argumentList
                     ?.forEach { arg ->
                         val key = arg.parameterRef.name
@@ -90,7 +95,7 @@ class PsiLcaTypeChecker {
                         }
                     }
             }
-            el.inputProductSpec.getProcessTemplateSpec()
+            inputProductSpec.getProcessTemplateSpec()
                 ?.getMatchLabels()
                 ?.labelSelectorList
                 ?.forEach { label ->
