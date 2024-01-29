@@ -338,7 +338,7 @@ sliceExpression ::= dataRef  '.' columnRef  { pin=2 extends=dataExpression }
 recordExpression ::= (opDefaultRecord | opLookup) dataSourceExpression { extends=dataExpression }
 opDefaultRecord ::= 'default_record' 'from' { pin=1 }
 opLookup ::= 'lookup'
-colExpression ::= 'sum' '(' dataSourceExpression ',' columnRef ('*' columnRef)* ')' { pin=1 extends=dataExpression }
+colExpression ::= 'sum' '(' dataSourceExpression ',' columnRef ('*' columnRef)* ','? ')' { pin=1 extends=dataExpression }
 
 /*
     Data source expression
