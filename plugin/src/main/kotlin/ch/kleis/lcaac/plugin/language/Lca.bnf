@@ -67,7 +67,7 @@
       LBRACE = '{'
       RBRACE = '}'
       COMMA = ','
-      STRING_LITERAL = 'string-literal'
+      STRING_LITERAL = 'regexp:\"[^\"]*\"'
       SPACE = "regexp:\s+"
       COMMENT_BLOCK_START = 'comment-block-start'
       COMMENT_BLOCK_END = 'comment-block-end'

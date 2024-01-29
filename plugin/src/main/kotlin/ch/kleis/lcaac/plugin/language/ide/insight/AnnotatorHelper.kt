@@ -1,7 +1,9 @@
 package ch.kleis.lcaac.plugin.language.ide.insight
 
 import ch.kleis.lcaac.plugin.language.psi.type.PsiAssignment
+import ch.kleis.lcaac.plugin.language.psi.type.PsiColumnDefinition
 import ch.kleis.lcaac.plugin.language.psi.type.PsiGlobalAssignment
+import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiColumnRef
 import ch.kleis.lcaac.plugin.language.psi.type.ref.PsiDataRef
 import ch.kleis.lcaac.plugin.language.psi.type.unit.PsiUnitDefinition
 import com.intellij.codeInspection.ProblemHighlightType
@@ -23,14 +25,20 @@ object AnnotatorHelper {
             .create()
 
     fun isAssignmentReceiver(element: PsiDataRef) =
-        isUnitDefName(element) || isLeftHandSideOfGlobalAssignement(element) || isLeftHandSideOfLocalAssignement(element)
+        isUnitDefName(element) || isLeftHandSideOfGlobalAssignment(element) || isLeftHandSideOfLocalAssignment(element)
+
+    fun isColumnDefinitionReceiver(element: PsiColumnRef) =
+        isLeftHandSideOfColumnDefinition(element)
 
     private fun isUnitDefName(element: PsiDataRef): Boolean =
         element.parent is PsiUnitDefinition
 
-    private fun isLeftHandSideOfGlobalAssignement(element: PsiDataRef): Boolean =
+    private fun isLeftHandSideOfGlobalAssignment(element: PsiDataRef): Boolean =
         element.parent is PsiGlobalAssignment && element.nextSibling != null
 
-    private fun isLeftHandSideOfLocalAssignement(element: PsiDataRef): Boolean =
+    private fun isLeftHandSideOfLocalAssignment(element: PsiDataRef): Boolean =
         element.parent is PsiAssignment && element.nextSibling != null
+
+    private fun isLeftHandSideOfColumnDefinition(element: PsiColumnRef): Boolean =
+        element.parent is PsiColumnDefinition && element.nextSibling != null
 }
