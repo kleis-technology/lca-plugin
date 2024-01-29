@@ -111,9 +111,10 @@ class LcaTestRunner(
             val name = test.testRef.name
             return EProcessTemplate(
                 params = emptyMap(),
-                locals = emptyMap(),
+                locals = test.variablesList.flatMap { it.assignmentList }
+                    .associate { it.getDataRef().name to dataExpression(it.getValue()) },
                 body = EProcess(
-                    name = "__${test.testRef.name}__", // TODO: This is a hack.
+                    name = "__test__${test.testRef.name}__",
                     products = listOf(
                         ETechnoExchange(
                             EQuantityScale(BasicNumber(1.0), EDataRef("u")),
