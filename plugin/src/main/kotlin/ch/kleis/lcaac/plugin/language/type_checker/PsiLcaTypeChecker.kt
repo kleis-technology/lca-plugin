@@ -118,7 +118,9 @@ class PsiLcaTypeChecker {
     private fun checkTechnoProductExchange(element: LcaTechnoProductExchange): TTechnoExchange {
         return rec.guard { el: LcaTechnoProductExchange ->
             val tyQuantity = checkDataExpression(el.dataExpression, TQuantity::class.java)
-            val productName = el.outputProductSpec.name
+            val outputProductSpec = el.outputProductSpec
+                ?: throw PsiTypeCheckException("missing output product")
+            val productName = outputProductSpec.name
             TTechnoExchange(TProduct(productName, tyQuantity.dimension))
         }(element)
     }

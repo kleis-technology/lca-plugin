@@ -237,10 +237,12 @@ class LcaMapper<Q>(
     private fun technoProductExchange(
         psiExchange: LcaTechnoProductExchange,
         symbolTable: SymbolTable<Q>,
-    ): ETechnoExchange<Q> =
-        ETechnoExchange(
+    ): ETechnoExchange<Q> {
+        val outputProductSpec = psiExchange.outputProductSpec
+            ?: throw EvaluatorException("missing output product")
+        return ETechnoExchange(
             dataExpression(psiExchange.dataExpression),
-            outputProductSpec(psiExchange.outputProductSpec)
+            outputProductSpec(outputProductSpec)
                 .copy(
                     referenceUnit = EUnitOf(
                         EQuantityClosure(
@@ -249,8 +251,9 @@ class LcaMapper<Q>(
                         )
                     )
                 ),
-            psiExchange.outputProductSpec.allocateField?.let { allocation(it) }
+            outputProductSpec.allocateField?.let { allocation(it) }
         )
+    }
 
     private fun allocation(element: LcaAllocateField): DataExpression<Q> {
         return dataExpression(element.dataExpression)

@@ -272,7 +272,7 @@ block_impacts ::= "impacts" "{" impactExchange* "}"
     Exchanges
  */
 
-technoProductExchange ::= dataExpression outputProductSpec
+technoProductExchange ::= dataExpression outputProductSpec { pin=1 }
 
 technoInputExchange ::= terminalTechnoInputExchange
         | technoBlockForEach
