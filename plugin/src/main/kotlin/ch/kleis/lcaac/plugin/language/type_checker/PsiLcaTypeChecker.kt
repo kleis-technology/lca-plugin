@@ -26,7 +26,9 @@ class PsiLcaTypeChecker {
 
             // the following checks the type of the data source expression in the block for each
             is PsiBlockForEach -> {
-                val columns = columnsOf(element.getValue().dataSourceRef)
+                val ref = element.getValue()?.dataSourceRef
+                    ?: throw EvaluatorException("missing data source")
+                val columns = columnsOf(ref)
                 return TRecord(columns.mapValues { checkDataExpression(it.value) })
             }
 
@@ -88,6 +90,7 @@ class PsiLcaTypeChecker {
                     ?.forEach { arg ->
                         val key = arg.parameterRef.name
                         val value = arg.dataExpression
+                            ?: throw PsiTypeCheckException("missing right-hand side")
                         val tyActual = checkDataExpression(value)
                         val tyExpected = tyArguments[key] ?: throw PsiTypeCheckException("unknown parameter $key")
                         if (tyExpected != tyActual) {
@@ -99,7 +102,9 @@ class PsiLcaTypeChecker {
                 ?.getMatchLabels()
                 ?.labelSelectorList
                 ?.forEach { label ->
-                    val tyActual = checkDataExpression(label.dataExpression)
+                    val dataExpression = label.dataExpression
+                        ?: throw PsiTypeCheckException("missing right-hand side")
+                    val tyActual = checkDataExpression(dataExpression)
                     val tyExpected = TString
                     if (tyExpected != tyActual) {
                         throw PsiTypeCheckException("incompatible types: expecting $tyExpected, found $tyActual")
@@ -180,13 +185,15 @@ class PsiLcaTypeChecker {
             }
 
             is LcaColExpression -> {
-                val columns = columnsOf(element.dataSourceExpression.dataSourceRef)
+                val dataSourceExpression = element.dataSourceExpression
+                    ?: throw PsiTypeCheckException("missing data source reference")
+                val columns = columnsOf(dataSourceExpression.dataSourceRef)
                 val requestedColumns = element.columnRefList
                     .map { it.name }
                 val unknownColumns = requestedColumns
                     .filter { !columns.containsKey(it) }
                 if (unknownColumns.isNotEmpty())
-                    throw PsiTypeCheckException("columns $unknownColumns not found in schema of '${element.dataSourceExpression.dataSourceRef.name}'")
+                    throw PsiTypeCheckException("columns $unknownColumns not found in schema of '${dataSourceExpression.dataSourceRef.name}'")
                 return columns
                     .filterKeys { requestedColumns.contains(it) }
                     .values
@@ -200,8 +207,10 @@ class PsiLcaTypeChecker {
             }
 
             is LcaSliceExpression -> {
-                val columnDefinition = element.columnRef.reference.resolve() as LcaColumnDefinition?
-                    ?: throw PsiTypeCheckException("unknown column '${element.columnRef.name}'")
+                val columnRef = element.columnRef
+                    ?: throw PsiTypeCheckException("missing column reference")
+                val columnDefinition = columnRef.reference.resolve() as LcaColumnDefinition?
+                    ?: throw PsiTypeCheckException("unknown column '${columnRef.name}'")
                 checkDataExpression(columnDefinition.getValue())
             }
             else -> throw PsiTypeCheckException("Unknown expression $element")

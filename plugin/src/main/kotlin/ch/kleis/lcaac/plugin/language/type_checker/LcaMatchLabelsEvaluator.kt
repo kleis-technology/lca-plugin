@@ -16,7 +16,11 @@ class LcaMatchLabelsEvaluator {
 
     fun eval(labels: LcaMatchLabels): Map<String, String> {
         return labels.labelSelectorList
-            .associate { it.labelRef.name to evalDataExpression(it.dataExpression) }
+            .associate { selector ->
+                selector.dataExpression?.let {
+                    selector.labelRef.name to evalDataExpression(it)
+                } ?: return emptyMap()
+            }
     }
 
     private fun evalDataExpression(element: PsiElement): String {

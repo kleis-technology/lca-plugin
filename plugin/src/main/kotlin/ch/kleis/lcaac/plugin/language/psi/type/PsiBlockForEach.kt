@@ -10,7 +10,7 @@ interface PsiBlockForEach : PsiNameIdentifierOwner {
 
     fun getDataRef(): PsiDataRef
 
-    fun getValue(): LcaDataSourceExpression
+    fun getValue(): LcaDataSourceExpression?
 
     fun getVariablesList(): Collection<LcaVariables>
 }

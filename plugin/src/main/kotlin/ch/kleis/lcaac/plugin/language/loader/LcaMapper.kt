@@ -128,9 +128,12 @@ class LcaMapper<Q>(
                     )
                 )
             }
+
             ctx.impactBlockForEach != null -> {
                 val rowRef = ctx.impactBlockForEach!!.getDataRef().name
-                val dataSourceExpression = dataSourceExpression(ctx.impactBlockForEach!!.getValue())
+                val ctxDataSource = ctx.impactBlockForEach!!.getValue()
+                    ?: throw EvaluatorException("missing data source")
+                val dataSourceExpression = dataSourceExpression(ctxDataSource)
                 val locals = ctx.impactBlockForEach!!.getVariablesList()
                     .flatMap { it.assignmentList }
                     .associate { it.getDataRef().name to dataExpression(it.getValue()) }
@@ -138,6 +141,7 @@ class LcaMapper<Q>(
                     .map { impact(it) }
                 EImpactBlockForEach(rowRef, dataSourceExpression, locals, entries)
             }
+
             else -> throw EvaluatorException("invalid impact exchange")
         }
     }
@@ -163,7 +167,9 @@ class LcaMapper<Q>(
 
             ctx.technoBlockForEach != null -> {
                 val rowRef = ctx.technoBlockForEach!!.getDataRef().name
-                val dataSourceExpression = dataSourceExpression(ctx.technoBlockForEach!!.getValue())
+                val ctxDataSource = ctx.technoBlockForEach!!.getValue()
+                    ?: throw EvaluatorException("missing data source")
+                val dataSourceExpression = dataSourceExpression(ctxDataSource)
                 val locals = ctx.technoBlockForEach!!.getVariablesList()
                     .flatMap { it.assignmentList }
                     .associate { it.getDataRef().name to dataExpression(it.getValue()) }
@@ -182,7 +188,10 @@ class LcaMapper<Q>(
             ?.rowSelectorList
             ?: emptyList()
         val filter = rowSelectors
-            .associate { it.columnRef.name to dataExpression(it.dataExpression) }
+            .associate {
+                val dataExpression = it.dataExpression
+                    ?: throw EvaluatorException("missing right-hand side")
+                it.columnRef.name to dataExpression(dataExpression) }
         return if (filter.isEmpty()) EDataSourceRef(ref)
         else EFilter(EDataSourceRef(ref), filter)
     }
@@ -211,10 +220,17 @@ class LcaMapper<Q>(
             name = spec.name,
             matchLabels = MatchLabels(
                 labelSelectors
-                    .associate { selector -> selector.labelRef.name to dataExpression(selector.dataExpression) }
+                    .associate { selector ->
+                        val dataExpression = selector.dataExpression
+                            ?: throw EvaluatorException("missing right-hand side")
+                        selector.labelRef.name to dataExpression(dataExpression) }
             ),
             arguments = arguments
-                .associate { arg -> arg.parameterRef.name to dataExpression(arg.dataExpression) }
+                .associate { arg ->
+                    val dataExpression = arg.dataExpression
+                        ?: throw EvaluatorException("missing right-hand side")
+                    arg.parameterRef.name to dataExpression(dataExpression)
+                }
         )
     }
 
@@ -253,9 +269,12 @@ class LcaMapper<Q>(
                     )
                 )
             }
+
             ctx.bioBlockForEach != null -> {
                 val rowRef = ctx.bioBlockForEach!!.getDataRef().name
-                val dataSourceExpression = dataSourceExpression(ctx.bioBlockForEach!!.getValue())
+                val ctxDataSource = ctx.bioBlockForEach!!.getValue()
+                    ?: throw EvaluatorException("missing data source")
+                val dataSourceExpression = dataSourceExpression(ctxDataSource)
                 val locals = ctx.bioBlockForEach!!.getVariablesList()
                     .flatMap { it.assignmentList }
                     .associate { it.getDataRef().name to dataExpression(it.getValue()) }
@@ -263,6 +282,7 @@ class LcaMapper<Q>(
                     .map { bioExchange(it, symbolTable) }
                 EBioBlockForEach(rowRef, dataSourceExpression, locals, entries)
             }
+
             else -> throw EvaluatorException("invalid bio exchange")
         }
     }
@@ -320,7 +340,8 @@ class LcaMapper<Q>(
 
             is LcaSliceExpression -> {
                 val record = dataExpression(dataExpression.dataRef)
-                val index = dataExpression.columnRef.name
+                val index = dataExpression.columnRef?.name
+                    ?: throw EvaluatorException("missing column reference")
                 ERecordEntry(record, index)
             }
 
@@ -332,7 +353,9 @@ class LcaMapper<Q>(
             }
 
             is LcaColExpression -> {
-                val dataSource = dataSourceExpression(dataExpression.dataSourceExpression)
+                val dataSourceExpression = dataExpression.dataSourceExpression
+                    ?: throw EvaluatorException("missing data source reference")
+                val dataSource = dataSourceExpression(dataSourceExpression)
                 val columns = dataExpression.columnRefList
                     .map { it.name }
                 ESumProduct(dataSource, columns)

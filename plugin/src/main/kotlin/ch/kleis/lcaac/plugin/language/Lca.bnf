@@ -60,7 +60,6 @@
       LOOKUP_KEYWORD = 'lookup'
       DEFAULT_RECORD_KEYWORD = 'default_record'
 
-      NUMBER = 'number'
       LSQBRACE = '['
       RSQBRACE = ']'
       LPAREN = '('
@@ -74,6 +73,7 @@
       COMMENT_BLOCK_END = 'comment-block-end'
       COMMENT_CONTENT = 'comment-content'
       COMMENT_LINE = 'comment-line'
+      NUMBER = 'regexp:-?[0-9]+(\.[0-9]+)?([eE][+-][0-9]+)?'
       IDENTIFIER =  'regexp:[a-zA-Z_]\w*'
       PLUS = "+"
       MINUS = "-"
@@ -278,6 +278,7 @@ technoInputExchange ::= terminalTechnoInputExchange
         | technoBlockForEach
 terminalTechnoInputExchange ::= dataExpression inputProductSpec { pin=1 }
 technoBlockForEach ::= 'for_each' dataRef 'from' dataSourceExpression '{' (variables | technoInputExchange)* '}' {
+    pin=1
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiBlockForEachMixin"
 }
@@ -333,11 +334,11 @@ exponentialQuantityExpression ::= dataExpression "^" NUMBER { extends=dataExpres
 parenQuantityExpression ::= "(" dataExpression ")" { extends=dataExpression }
 scaleQuantityExpression ::= NUMBER dataExpression { extends=dataExpression methods=[scale="NUMBER"]}
 stringExpression ::= STRING_LITERAL { extends=dataExpression }
-sliceExpression ::= dataRef  '.' columnRef  { extends=dataExpression }
+sliceExpression ::= dataRef  '.' columnRef  { pin=2 extends=dataExpression }
 recordExpression ::= (opDefaultRecord | opLookup) dataSourceExpression { extends=dataExpression }
-opDefaultRecord ::= 'default_record' 'from'
+opDefaultRecord ::= 'default_record' 'from' { pin=1 }
 opLookup ::= 'lookup'
-colExpression ::= 'sum' '(' dataSourceExpression ',' columnRef ('*' columnRef)* ')' { extends=dataExpression }
+colExpression ::= 'sum' '(' dataSourceExpression ',' columnRef ('*' columnRef)* ')' { pin=1 extends=dataExpression }
 
 /*
     Data source expression
@@ -346,7 +347,7 @@ colExpression ::= 'sum' '(' dataSourceExpression ',' columnRef ('*' columnRef)* 
 dataSourceExpression ::= dataSourceRef rowFilter?
 rowFilter ::= MATCH_KEYWORD rowSelector
         | MATCH_KEYWORD LPAREN ( rowSelector (COMMA rowSelector)* COMMA? ) RPAREN
-rowSelector ::= columnRef EQUAL dataExpression
+rowSelector ::= columnRef EQUAL dataExpression { pin=1 }
 
 
 /*
@@ -435,13 +436,13 @@ processTemplateSpec ::= "from" processRef ("(" comma_sep_arguments? ")")? matchL
     implements=["ch.kleis.lcaac.plugin.language.psi.type.spec.PsiProcessTemplateSpec"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.spec.PsiProcessTemplateSpecMixin"
 }
-matchLabels ::= "match" "(" comma_sep_label_selectors? ")"
+matchLabels ::= "match" ( labelSelector | "(" comma_sep_label_selectors? ")")
 
 private comma_sep_label_selectors ::= labelSelector ("," labelSelector)* ","?
-labelSelector ::= labelRef "=" dataExpression
+labelSelector ::= labelRef "=" dataExpression { pin=1 }
 
 private comma_sep_arguments ::= argument ("," argument)* ","?
-argument ::= parameterRef "=" dataExpression
+argument ::= parameterRef "=" dataExpression { pin=1 }
 
 substanceSpec ::= substanceRef ("(" compartmentField ("," subCompartmentField )? ")")? {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.spec.PsiSubstanceSpec"]
