@@ -36,7 +36,7 @@ class DefaultRefFileResolverTest : BasePlatformTestCase() {
             .getInputs().first().terminalTechnoInputExchange!!
         val target = element
             .inputProductSpec
-            .getProcessTemplateSpec()!!
+            ?.getProcessTemplateSpec()!!
         myFixture.createFile(
             "$pkgName.left.lca", """
                 package $pkgName.left

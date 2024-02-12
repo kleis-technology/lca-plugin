@@ -140,7 +140,7 @@ class DataRefExactNameMatcherScopeProcessorTest : ParsingTestCase("", "lca", Lca
         val assignment = process.getLabelsList().first().labelAssignmentList.first()
         val element = process.getInputs().first().terminalTechnoInputExchange!!
         val dataRef = element
-            .inputProductSpec
+            .inputProductSpec!!
             .getProcessTemplateSpec()!!
             .getMatchLabels()!!
             .labelSelectorList.first()

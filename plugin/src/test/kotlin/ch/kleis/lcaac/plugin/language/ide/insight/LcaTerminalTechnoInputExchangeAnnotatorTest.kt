@@ -43,7 +43,7 @@ class LcaTerminalTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
 
         // then
         verify { mock.holder.newAnnotation(HighlightSeverity.WARNING, "Could not resolve carrot") }
-        verify { mock.builder.range(element.inputProductSpec) }
+        verify { mock.builder.range(element.inputProductSpec!!) }
         verify { mock.builder.highlightType(ProblemHighlightType.WARNING) }
         verify { mock.builder.create() }
     }
@@ -86,7 +86,7 @@ class LcaTerminalTechnoInputExchangeAnnotatorTest : BasePlatformTestCase() {
 
         // then
         verify { mock.holder.newAnnotation(HighlightSeverity.WARNING, "Multiple candidates found for carrot") }
-        verify { mock.builder.range(element.inputProductSpec) }
+        verify { mock.builder.range(element.inputProductSpec!!) }
         verify { mock.builder.highlightType(ProblemHighlightType.WARNING) }
         verify { mock.builder.create() }
     }

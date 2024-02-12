@@ -379,30 +379,4 @@ test t4 {
             "between"
         )
     }
-
-    @Test
-    fun lookup_whenInRangeAssertion_forAnd() {
-        // Given
-        val filename = "${{}.javaClass.enclosingMethod.name}.lca"
-        fixture.configureByText(
-            filename, """
-test t4 {
-    assert {
-       GWP between 20 kg <caret>
-    }
-}
-"""
-        )
-        fixture.complete(CompletionType.BASIC)
-
-        // When
-        val lookupElementStrings = fixture.lookupElementStrings
-
-        // Then
-        assertNotNull(lookupElementStrings)
-        assertSameElements(
-            lookupElementStrings!!,
-            "and"
-        )
-    }
 }

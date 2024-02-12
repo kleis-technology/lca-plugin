@@ -148,7 +148,7 @@ test ::= 'test' testRef '{'
 }
 given ::= 'given' '{' technoInputExchange *'}'
 assert ::= 'assert' '{' rangeAssertion* '}'
-rangeAssertion ::= uid 'between'  dataExpression 'and' dataExpression { pin=1 }
+rangeAssertion ::= uid 'between'  dataExpression 'and' dataExpression { pin=2 }
 
 /*
     Substance

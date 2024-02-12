@@ -3,7 +3,6 @@ package ch.kleis.lcaac.plugin.language.psi.reference
 import ch.kleis.lcaac.core.lang.expression.SubstanceType
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceKeyIndex
-import ch.kleis.lcaac.plugin.psi.LcaTerminalBioExchange
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -68,7 +67,7 @@ class SubstanceReferenceFromPsiSubstanceRefTest : BasePlatformTestCase() {
         val element = ProcessStubKeyIndex.findProcesses(project, "$pkgName.p").first()
             .getEmissions().first().terminalBioExchange!!
         val ref = element
-            .substanceSpec
+            .substanceSpec!!
             .getSubstanceRef()
 
         // when

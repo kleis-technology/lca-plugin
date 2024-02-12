@@ -2,7 +2,6 @@ package ch.kleis.lcaac.plugin.language.psi.reference
 
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.substance.SubstanceKeyIndex
-import ch.kleis.lcaac.plugin.psi.LcaTerminalBioExchange
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
@@ -64,7 +63,7 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
             .getSubstanceSpec()
 
         // when
-        val actual = substanceSpec.reference?.resolve()
+        val actual = substanceSpec?.reference?.resolve()
 
         // then
         val expected = SubstanceKeyIndex.Util.findSubstances(
@@ -122,7 +121,7 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
             .getSubstanceSpec()
 
         // when
-        val actual = substanceSpec.reference?.resolve()
+        val actual = substanceSpec?.reference?.resolve()
 
         // then
         assertNull(actual)
@@ -174,7 +173,7 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
             .getSubstanceSpec()
 
         // when
-        val actual = substanceSpec.reference?.resolve()
+        val actual = substanceSpec?.reference?.resolve()
 
         // then
         val expected = SubstanceKeyIndex.Util.findSubstances(
@@ -232,7 +231,7 @@ class SubstanceReferenceFromPsiSubstanceSpecTest : BasePlatformTestCase() {
             .getSubstanceSpec()
 
         // when
-        val actual = spec.reference
+        val actual = spec?.reference
             ?.variants?.map { (it as LookupElementBuilder).lookupString }
             ?.sorted() ?: emptyList()
 

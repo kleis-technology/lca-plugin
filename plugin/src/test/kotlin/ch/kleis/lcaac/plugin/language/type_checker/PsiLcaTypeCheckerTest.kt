@@ -6,7 +6,6 @@ import ch.kleis.lcaac.plugin.fixture.DimensionFixture
 import ch.kleis.lcaac.plugin.language.psi.stub.global_assignment.GlobalAssigmentStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
 import ch.kleis.lcaac.plugin.language.psi.stub.unit.UnitStubKeyIndex
-import ch.kleis.lcaac.plugin.psi.LcaTerminalTechnoInputExchange
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
 import org.junit.Test
@@ -253,11 +252,11 @@ class PsiLcaTypeCheckerTest : BasePlatformTestCase() {
             .findProcesses(project, "$pkgName.p", mapOf("geo" to "FR")).first()
             .getInputs().first().terminalTechnoInputExchange!!
         val target = first
-            .inputProductSpec
+            .inputProductSpec!!
             .getProcessTemplateSpec()!!
             .getMatchLabels()!!
             .labelSelectorList.first()
-            .dataExpression
+            .dataExpression!!
         val checker = PsiLcaTypeChecker()
 
         // when
