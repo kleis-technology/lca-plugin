@@ -62,6 +62,9 @@
                 implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.LcaColumnDefinitionAnnotator"/>
         <annotator
                 language="LCA"
+                implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.LcaDataColumnRefAnnotator"/>
+        <annotator
+                language="LCA"
                 implementationClass="ch.kleis.lcaac.plugin.language.ide.insight.LcaSliceExpressionAnnotator"/>
         <annotator
                 language="LCA"
