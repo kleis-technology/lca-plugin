@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.language.type_checker
 
 import ch.kleis.lcaac.core.lang.dimension.Dimension
+import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.type.*
 import ch.kleis.lcaac.plugin.language.psi.type.PsiBlockForEach
 import ch.kleis.lcaac.plugin.language.psi.type.PsiProcess
@@ -25,7 +26,9 @@ class PsiLcaTypeChecker {
 
             // the following checks the type of the data source expression in the block for each
             is PsiBlockForEach -> {
-                val columns = columnsOf(element.getValue().dataSourceRef)
+                val ref = element.getValue()?.dataSourceRef
+                    ?: throw EvaluatorException("missing data source")
+                val columns = columnsOf(ref)
                 return TRecord(columns.mapValues { checkDataExpression(it.value) })
             }
 
@@ -36,10 +39,12 @@ class PsiLcaTypeChecker {
     private fun checkTerminalBioExchange(lcaBioExchange: LcaTerminalBioExchange): TBioExchange {
         return rec.guard { el: LcaTerminalBioExchange ->
             val tyQuantity = checkDataExpression(el.dataExpression, TQuantity::class.java)
-            val name = el.substanceSpec.name
-            val comp = el.substanceSpec.getCompartmentField()?.getValue() ?: ""
-            val subComp = el.substanceSpec.getSubCompartmentField()?.getValue()
-            el.substanceSpec.reference?.resolve()?.let {
+            val substanceSpec = el.substanceSpec
+                ?: throw EvaluatorException("missing substance spec")
+            val name = substanceSpec.name
+            val comp = substanceSpec.getCompartmentField()?.getValue() ?: ""
+            val subComp = substanceSpec.getSubCompartmentField()?.getValue()
+            substanceSpec.reference?.resolve()?.let {
                 if (it is LcaSubstance) {
                     val tyRefQuantity =
                         checkDataExpression(it.getReferenceUnitField().dataExpression, TQuantity::class.java)
@@ -65,8 +70,10 @@ class PsiLcaTypeChecker {
     private fun checkTerminalTechnoInputExchange(element: LcaTerminalTechnoInputExchange): TTechnoExchange {
         return rec.guard { el: LcaTerminalTechnoInputExchange ->
             val tyQuantity = checkDataExpression(el.dataExpression, TQuantity::class.java)
-            val productName = el.inputProductSpec.name
-            el.inputProductSpec.reference?.resolve()?.let {
+            val inputProductSpec = el.inputProductSpec
+                ?: throw EvaluatorException("missing input product spec")
+            val productName = inputProductSpec.name
+            inputProductSpec.reference?.resolve()?.let {
                 val outputProductSpec = it as LcaOutputProductSpec
                 val tyOutputExchange = check(outputProductSpec.getContainingTechnoExchange())
                 if (tyOutputExchange !is TTechnoExchange) {
@@ -78,11 +85,12 @@ class PsiLcaTypeChecker {
 
                 val psiProcess = outputProductSpec.getContainingProcess()
                 val tyArguments = checkProcessArguments(psiProcess)
-                el.inputProductSpec.getProcessTemplateSpec()
+                inputProductSpec.getProcessTemplateSpec()
                     ?.argumentList
                     ?.forEach { arg ->
                         val key = arg.parameterRef.name
                         val value = arg.dataExpression
+                            ?: throw PsiTypeCheckException("missing right-hand side")
                         val tyActual = checkDataExpression(value)
                         val tyExpected = tyArguments[key] ?: throw PsiTypeCheckException("unknown parameter $key")
                         if (tyExpected != tyActual) {
@@ -90,11 +98,13 @@ class PsiLcaTypeChecker {
                         }
                     }
             }
-            el.inputProductSpec.getProcessTemplateSpec()
+            inputProductSpec.getProcessTemplateSpec()
                 ?.getMatchLabels()
                 ?.labelSelectorList
                 ?.forEach { label ->
-                    val tyActual = checkDataExpression(label.dataExpression)
+                    val dataExpression = label.dataExpression
+                        ?: throw PsiTypeCheckException("missing right-hand side")
+                    val tyActual = checkDataExpression(dataExpression)
                     val tyExpected = TString
                     if (tyExpected != tyActual) {
                         throw PsiTypeCheckException("incompatible types: expecting $tyExpected, found $tyActual")
@@ -108,7 +118,9 @@ class PsiLcaTypeChecker {
     private fun checkTechnoProductExchange(element: LcaTechnoProductExchange): TTechnoExchange {
         return rec.guard { el: LcaTechnoProductExchange ->
             val tyQuantity = checkDataExpression(el.dataExpression, TQuantity::class.java)
-            val productName = el.outputProductSpec.name
+            val outputProductSpec = el.outputProductSpec
+                ?: throw PsiTypeCheckException("missing output product")
+            val productName = outputProductSpec.name
             TTechnoExchange(TProduct(productName, tyQuantity.dimension))
         }(element)
     }
@@ -175,13 +187,15 @@ class PsiLcaTypeChecker {
             }
 
             is LcaColExpression -> {
-                val columns = columnsOf(element.dataSourceExpression.dataSourceRef)
+                val dataSourceExpression = element.dataSourceExpression
+                    ?: throw PsiTypeCheckException("missing data source reference")
+                val columns = columnsOf(dataSourceExpression.dataSourceRef)
                 val requestedColumns = element.columnRefList
                     .map { it.name }
                 val unknownColumns = requestedColumns
                     .filter { !columns.containsKey(it) }
                 if (unknownColumns.isNotEmpty())
-                    throw PsiTypeCheckException("columns $unknownColumns not found in schema of '${element.dataSourceExpression.dataSourceRef.name}'")
+                    throw PsiTypeCheckException("columns $unknownColumns not found in schema of '${dataSourceExpression.dataSourceRef.name}'")
                 return columns
                     .filterKeys { requestedColumns.contains(it) }
                     .values
@@ -195,8 +209,10 @@ class PsiLcaTypeChecker {
             }
 
             is LcaSliceExpression -> {
-                val columnDefinition = element.columnRef.reference.resolve() as LcaColumnDefinition?
-                    ?: throw PsiTypeCheckException("unknown column '${element.columnRef.name}'")
+                val columnRef = element.columnRef
+                    ?: throw PsiTypeCheckException("missing column reference")
+                val columnDefinition = columnRef.reference.resolve() as LcaColumnDefinition?
+                    ?: throw PsiTypeCheckException("unknown column '${columnRef.name}'")
                 checkDataExpression(columnDefinition.getValue())
             }
             else -> throw PsiTypeCheckException("Unknown expression $element")

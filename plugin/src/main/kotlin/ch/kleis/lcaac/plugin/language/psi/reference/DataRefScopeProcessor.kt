@@ -28,6 +28,11 @@ class DataRefCollectorScopeProcessor : DataRefScopeProcessor {
         if (element is LcaLabels) {
             results.addAll(element.labelAssignmentList)
         }
+
+        if (element is PsiBlockForEach) {
+            results.add(element)
+        }
+
         return true
     }
 

@@ -409,7 +409,7 @@ class LcaDocumentGeneratorTest : BasePlatformTestCase() {
         val ref = file
             .getProcesses().first()
             .getProducts().first()
-            .outputProductSpec
+            .outputProductSpec!!
         // When
         val actual = generateProduct(ref)
         // Then

@@ -151,7 +151,7 @@ class DataReferenceTest : BasePlatformTestCase() {
         val element = process
             .getInputs().first().terminalTechnoInputExchange!!
         val ref = element
-            .inputProductSpec
+            .inputProductSpec!!
             .getProcessTemplateSpec()!!
             .argumentList.first()
             .parameterRef

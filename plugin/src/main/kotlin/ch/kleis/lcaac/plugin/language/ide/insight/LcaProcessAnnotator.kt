@@ -17,9 +17,18 @@ class LcaProcessAnnotator : Annotator {
             return
         }
 
-        val productNames = products.map { it.outputProductSpec.name }
+        val productNames = products.map {
+            val outputProductSpec = it.outputProductSpec
+            if (outputProductSpec == null) {
+                annotateErrWithMessage(it, holder, "missing product")
+                return
+            }
+            outputProductSpec.name
+        }
         val productsWithoutAllocationFactors = products
-            .filter { it.outputProductSpec.allocateField == null }
+            .filter {
+                it.outputProductSpec?.allocateField == null
+            }
         if (productsWithoutAllocationFactors.isNotEmpty()) {
             annotateErrWithMessage(
                 element.blockProductsList.first(),

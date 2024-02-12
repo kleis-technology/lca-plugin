@@ -51,7 +51,7 @@ class ParameterReferenceTest : BasePlatformTestCase() {
         val process = ProcessStubKeyIndex.findProcesses(project, fqn).first()
         val element = process.getInputs().first().terminalTechnoInputExchange!!
         val ref = element
-            .inputProductSpec
+            .inputProductSpec!!
             .getProcessTemplateSpec()!!
             .argumentList.first()
             .parameterRef
@@ -100,7 +100,7 @@ class ParameterReferenceTest : BasePlatformTestCase() {
         val process = ProcessStubKeyIndex.findProcesses(project, fqn).first()
         val first = process.getInputs().first().terminalTechnoInputExchange!!
         val ref = first
-            .inputProductSpec
+            .inputProductSpec!!
             .getProcessTemplateSpec()!!
             .argumentList.first()
             .parameterRef

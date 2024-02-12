@@ -69,7 +69,7 @@ class LabelReferenceTest : BasePlatformTestCase() {
             project, "$pkgName.p",
         ).first().getInputs().first().terminalTechnoInputExchange!!
         val ref = element
-            .inputProductSpec.getProcessTemplateSpec()!!
+            .inputProductSpec!!.getProcessTemplateSpec()!!
             .getMatchLabels()!!.labelSelectorList.first()
             .labelRef
 

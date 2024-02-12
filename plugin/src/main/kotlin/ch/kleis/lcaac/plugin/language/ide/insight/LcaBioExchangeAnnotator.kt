@@ -22,10 +22,14 @@ class LcaBioExchangeAnnotator : Annotator {
     }
 
     private fun checkReferenceResolution(element: LcaTerminalBioExchange, holder: AnnotationHolder) {
-        val target = element.substanceSpec.reference?.resolve()
+        val substanceSpec = element.substanceSpec
+        if (substanceSpec == null) {
+            annotateErrWithMessage(element, holder, "missing substance")
+            return
+        }
+        val target = substanceSpec.reference?.resolve()
         if (target == null || target !is PsiSubstance) {
-            val spec = element.substanceSpec
-            annotateWarnWithMessage(spec, holder, "unresolved substance ${render(spec)}")
+            annotateWarnWithMessage(substanceSpec, holder, "unresolved substance ${render(substanceSpec)}")
         }
     }
 

@@ -1,9 +1,6 @@
 package ch.kleis.lcaac.plugin.language.ide.insight
 
-import ch.kleis.lcaac.core.lang.expression.EBioBlockEntry
-import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubKeyIndex
-import ch.kleis.lcaac.plugin.psi.LcaTerminalBioExchange
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -50,7 +47,7 @@ class LcaBioExchangeAnnotatorTest : BasePlatformTestCase() {
                 """unresolved substance co2(compartment="air")"""
             )
         }
-        verify { mock.builder.range(element.substanceSpec) }
+        verify { mock.builder.range(element.substanceSpec!!) }
         verify { mock.builder.highlightType(ProblemHighlightType.WARNING) }
         verify { mock.builder.create() }
     }

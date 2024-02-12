@@ -39,7 +39,11 @@ class ColumnReference(
                     ?: emptySet()
             }
 
-            is LcaColExpression -> checkDataSourceExpression(parent.dataSourceExpression, predicate)
+            is LcaColExpression -> {
+                parent.dataSourceExpression?.let {
+                    checkDataSourceExpression(it, predicate)
+                } ?: emptySet()
+            }
             is LcaRowSelector -> {
                 val dataSourceExpression = PsiTreeUtil.getParentOfType(parent, LcaDataSourceExpression::class.java)
                     ?: return emptySet()
