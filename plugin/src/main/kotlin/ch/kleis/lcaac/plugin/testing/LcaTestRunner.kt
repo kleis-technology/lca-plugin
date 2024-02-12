@@ -2,15 +2,15 @@ package ch.kleis.lcaac.plugin.testing
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
 import ch.kleis.lcaac.core.datasource.CsvSourceOperations
-import ch.kleis.lcaac.core.lang.register.DataKey
-import ch.kleis.lcaac.core.lang.register.ProcessKey
-import ch.kleis.lcaac.core.lang.register.Register
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.evaluator.ToValue
 import ch.kleis.lcaac.core.lang.evaluator.reducer.DataExpressionReducer
 import ch.kleis.lcaac.core.lang.expression.*
+import ch.kleis.lcaac.core.lang.register.DataKey
+import ch.kleis.lcaac.core.lang.register.ProcessKey
+import ch.kleis.lcaac.core.lang.register.Register
 import ch.kleis.lcaac.core.lang.value.QuantityValueOperations
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
@@ -80,22 +80,27 @@ class LcaTestRunner(
     }
 
     private fun assertions(symbolTable: SymbolTable<BasicNumber>, test: LcaTest): List<RangeAssertion> {
-        val data = Register(symbolTable.data)
-            .plus(
-                test.variablesList.flatMap { it.assignmentList }
-                    .map { DataKey(it.getDataRef().name) to mapper.dataExpression(it.getValue()) }
-            )
+        // mapper reads from psi, so we need runReadAction
+        val data = runReadAction {
+            Register(symbolTable.data)
+                .plus(
+                    test.variablesList.flatMap { it.assignmentList }
+                        .map { DataKey(it.getDataRef().name) to mapper.dataExpression(it.getValue()) }
+                )
+        }
         val reducer = DataExpressionReducer(data, symbolTable.dataSources, ops, sourceOps)
-        return test.assertList.flatMap { it.rangeAssertionList }
-            .map {
-                val loExpression = mapper.dataExpression(it.lo())
-                val loReduced = reducer.reduce(loExpression)
-                val hiExpression = mapper.dataExpression(it.hi())
-                val hiReduced = reducer.reduce(hiExpression)
-                val lo = with(ToValue(ops)) { loReduced.toValue() }
-                val hi = with(ToValue(ops)) { hiReduced.toValue() }
-                RangeAssertion(it.uid.name, lo, hi)
-            }
+        return runReadAction {
+            test.assertList.flatMap { it.rangeAssertionList }
+                .map {
+                    val loExpression = mapper.dataExpression(it.lo())
+                    val loReduced = reducer.reduce(loExpression)
+                    val hiExpression = mapper.dataExpression(it.hi())
+                    val hiReduced = reducer.reduce(hiExpression)
+                    val lo = with(ToValue(ops)) { loReduced.toValue() }
+                    val hi = with(ToValue(ops)) { hiReduced.toValue() }
+                    RangeAssertion(it.uid.name, lo, hi)
+                }
+        }
     }
 
     private fun LcaRangeAssertion.lo(): LcaDataExpression {
