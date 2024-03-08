@@ -304,8 +304,8 @@ impactBlockForEach ::= 'for_each' dataRef 'from' dataSourceExpression '{' (varia
     Use GrammarKit's expression-related syntax and rules to generate a Pratt parser.
  */
 
-dataExpression ::= mulGroup
-    | addGroup
+dataExpression ::= addGroup
+    | mulGroup
     | exponentialQuantityExpression
     | baseGroup
 
