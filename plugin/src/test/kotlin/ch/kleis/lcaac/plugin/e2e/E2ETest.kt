@@ -560,6 +560,42 @@ class E2ETest : BasePlatformTestCase() {
     }
 
     @Test
+    fun test_operationPriority_addVsMul() {
+        // given
+        val pkgName = {}.javaClass.enclosingMethod.name
+        val vf = myFixture.createFile(
+            "$pkgName.lca", """
+            package $pkgName
+            
+            variables {
+                q_hi = 12 kg / km
+                q_lo = 5 kg / km
+                d = 10 km
+                payload_hi = 1000 kg
+                payload_lo = 100 kg
+                coefficient = ( q_hi - q_lo ) / ( payload_hi - payload_lo )
+                payload = 500 kg
+                q = d * ( coefficient * ( payload - payload_lo ) + q_lo )
+            }
+        """.trimIndent()
+        )
+
+        // when
+        val symbolTable = createFilesAndSymbols(vf)
+        val target = symbolTable.getData("q")!!
+        val reducer = DataExpressionReducer(symbolTable.data, symbolTable.dataSources, ops, mockk())
+        val actual = with(ToValue(ops)) {
+            reducer.reduce(target).toValue()
+        } as QuantityValue<BasicNumber>
+
+        // then
+        assertEquals(
+            actual.unit.dimension,
+            Dimension.of("mass"),
+        )
+    }
+
+    @Test
     fun test_twoInstancesSameTemplate_whenOneImplicit() {
         // given
         val pkgName = {}.javaClass.enclosingMethod.name
