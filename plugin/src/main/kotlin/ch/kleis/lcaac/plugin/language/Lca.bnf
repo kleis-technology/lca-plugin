@@ -110,7 +110,7 @@ import ::= "import" urn {
     Data source
  */
 
-dataSourceDefinition ::= 'datasource' dataSourceRef '{' (locationField | schemaDefinition)* '}' {
+dataSourceDefinition ::= 'datasource' dataSourceRef '{' (locationField | schemaDefinition | block_meta)* '}' {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiDataSourceDefinition"]
     mixin="ch.kleis.lcaac.plugin.language.psi.mixin.PsiDataSourceMixin"
     elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.datasource.DataSourceStubElementType"
