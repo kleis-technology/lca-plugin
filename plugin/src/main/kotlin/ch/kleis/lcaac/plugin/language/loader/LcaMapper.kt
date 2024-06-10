@@ -294,7 +294,6 @@ class LcaMapper<Q>(
     fun dataSourceDefinition(ctx: LcaDataSourceDefinition): EDataSource<Q> {
         val name = ctx.name
         val location = ctx.locationFieldList.firstOrNull()?.value?.text?.trim('"')
-            ?: throw EvaluatorException("missing location field")
         val schema = ctx.schemaDefinitionList.firstOrNull()
             ?.columnDefinitionList?.associate { it.getColumnRef().name to dataExpression(it.getValue()) }
             ?: throw EvaluatorException("missing schema")
