@@ -3,6 +3,7 @@ package ch.kleis.lcaac.plugin.language.loader
 import arrow.optics.Every
 import arrow.optics.dsl.index
 import arrow.optics.typeclasses.Index
+import ch.kleis.lcaac.core.config.DataSourceConfig
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.*
@@ -12,6 +13,7 @@ import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.plugin.fixture.UnitFixture
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.testFramework.ParsingTestCase
+import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -254,7 +256,11 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
 
         // then
         val expected = EDataSource(
-            "source.csv",
+            DataSourceConfig(
+                name = "source",
+                connector = "csv",
+                location = "source.csv",
+            ),
             mapOf(
                 "geo" to EStringLiteral("GLO"),
                 "mass" to EQuantityScale(BasicNumber(1.0), EDataRef("kg"))

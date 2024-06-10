@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.plugin.actions.csv
 
+import ch.kleis.lcaac.core.config.LcaacConfig
 import ch.kleis.lcaac.core.lang.evaluator.ToValue
 import ch.kleis.lcaac.core.lang.value.*
 import ch.kleis.lcaac.core.math.basic.BasicNumber
@@ -8,8 +9,10 @@ import ch.kleis.lcaac.core.prelude.Prelude
 import ch.kleis.lcaac.plugin.fixture.UnitFixture
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import io.mockk.every
 import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,7 +50,9 @@ class CsvProcessorTest : BasePlatformTestCase() {
         val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
         val parser = LcaLoader(sequenceOf(file, UnitFixture.getInternalUnitFile(myFixture)), ops)
         val symbolTable = parser.load()
-        val processor = CsvProcessor(mockk(), symbolTable)
+        val project = mockk<Project>()
+        every { project.basePath } returns "working_directory"
+        val processor = CsvProcessor(project, symbolTable) { LcaacConfig() }
         val cc = IndicatorValue(
             "cc", umap["kg"]!!,
         )
@@ -113,7 +118,9 @@ class CsvProcessorTest : BasePlatformTestCase() {
         val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
         val parser = LcaLoader(sequenceOf(file, UnitFixture.getInternalUnitFile(myFixture)), ops)
         val symbolTable = parser.load()
-        val csvProcessor = CsvProcessor(mockk(), symbolTable)
+        val project = mockk<Project>()
+        every { project.basePath } returns "working_directory"
+        val processor = CsvProcessor(project, symbolTable) { LcaacConfig() }
         val request = CsvRequest(
             "p",
             emptyMap(),
@@ -122,7 +129,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
         )
 
         // when
-        val actual = csvProcessor.process(request)[0]
+        val actual = processor.process(request)[0]
 
         // then
         assertEquals(request, actual.request)
@@ -178,7 +185,9 @@ class CsvProcessorTest : BasePlatformTestCase() {
         val file = PsiManager.getInstance(project).findFile(vf) as LcaFile
         val parser = LcaLoader(sequenceOf(file, UnitFixture.getInternalUnitFile(myFixture)), ops)
         val symbolTable = parser.load()
-        val csvProcessor = CsvProcessor(mockk(), symbolTable)
+        val project = mockk<Project>()
+        every { project.basePath } returns "working_directory"
+        val processor = CsvProcessor(project, symbolTable) { LcaacConfig() }
         val request = CsvRequest(
             "p",
             mapOf("foo" to "bar"),
@@ -187,7 +196,7 @@ class CsvProcessorTest : BasePlatformTestCase() {
         )
 
         // when
-        val actual = csvProcessor.process(request)[0]
+        val actual = processor.process(request)[0]
 
         // then
         assertEquals(request, actual.request)

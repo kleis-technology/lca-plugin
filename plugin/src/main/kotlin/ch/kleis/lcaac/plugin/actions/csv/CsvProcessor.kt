@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.actions.csv
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
+import ch.kleis.lcaac.core.config.LcaacConfig
 import ch.kleis.lcaac.core.datasource.DefaultDataSourceOperations
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
@@ -15,13 +16,13 @@ import java.lang.Double.parseDouble
 class CsvProcessor(
     private val project: Project,
     private val symbolTable: SymbolTable<BasicNumber>,
+    lcaacConfigLoader: () -> LcaacConfig = { with(LcaacConfigExtensions()) { project.lcaacConfig() } },
 ) {
-    private val workingDirectory: String = project.basePath ?: ""
     private val ops = BasicOperations
     private val sourceOps = DefaultDataSourceOperations(
-        with(LcaacConfigExtensions()) { project.lcaacConfig() },
+        lcaacConfigLoader(),
         ops,
-        workingDirectory,
+        project.basePath ?: "",
     )
     private val evaluator = Evaluator(symbolTable, ops, sourceOps)
 
