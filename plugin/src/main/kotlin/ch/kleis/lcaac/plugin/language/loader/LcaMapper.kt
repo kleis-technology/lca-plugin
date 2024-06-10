@@ -1,5 +1,6 @@
 package ch.kleis.lcaac.plugin.language.loader
 
+import ch.kleis.lcaac.core.config.DataSourceConfig
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
@@ -291,13 +292,28 @@ class LcaMapper<Q>(
     }
 
     fun dataSourceDefinition(ctx: LcaDataSourceDefinition): EDataSource<Q> {
+        val name = ctx.name
         val location = ctx.locationFieldList.firstOrNull()?.value?.text?.trim('"')
             ?: throw EvaluatorException("missing location field")
         val schema = ctx.schemaDefinitionList.firstOrNull()
             ?.columnDefinitionList?.associate { it.getColumnRef().name to dataExpression(it.getValue()) }
             ?: throw EvaluatorException("missing schema")
+        val options = ctx.blockMetaList
+            .flatMap { it.metaAssignmentList }
+            .associate {
+                val key = it.getKey()
+                val value = it.getValue()
+                key to value
+            }
+        val config = DataSourceConfig.completeWithDefaults(
+            DataSourceConfig(
+                name = name,
+                location = location,
+                options = options,
+            )
+        )
         return EDataSource(
-            location,
+            config,
             schema,
         )
     }

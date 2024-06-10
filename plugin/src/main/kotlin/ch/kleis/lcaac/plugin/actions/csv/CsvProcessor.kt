@@ -1,7 +1,8 @@
 package ch.kleis.lcaac.plugin.actions.csv
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
-import ch.kleis.lcaac.core.datasource.CsvSourceOperations
+import ch.kleis.lcaac.core.config.LcaacConfig
+import ch.kleis.lcaac.core.datasource.DefaultDataSourceOperations
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
@@ -16,7 +17,11 @@ class CsvProcessor(
     private val symbolTable: SymbolTable<BasicNumber>,
 ) {
     private val ops = BasicOperations
-    private val sourceOps = CsvSourceOperations(rootPath, ops)
+    private val sourceOps = DefaultDataSourceOperations(
+        LcaacConfig(),
+        ops,
+        rootPath.path,
+    )
     private val evaluator = Evaluator(symbolTable, ops, sourceOps)
 
     fun process(request: CsvRequest): List<CsvResult> {
