@@ -73,6 +73,8 @@ dependencies {
     val kotestVersion = "5.7.2"
     testImplementation("io.kotest:kotest-runner-junit5-jvm:$kotestVersion")
     testImplementation("io.kotest:kotest-property-jvm:$kotestVersion")
+
+    implementation("com.charleskorn.kaml:kaml:0.59.0")
 }
 
 

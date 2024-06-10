@@ -1,10 +1,10 @@
 package ch.kleis.lcaac.plugin.actions
 
-import ch.kleis.lcaac.core.config.LcaacConfig
 import ch.kleis.lcaac.core.datasource.DefaultDataSourceOperations
 import ch.kleis.lcaac.core.lang.evaluator.EvaluationTrace
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.math.QuantityOperations
+import ch.kleis.lcaac.plugin.ide.config.LcaacConfigExtensions
 import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
@@ -31,11 +31,9 @@ fun <Q> traceSystemWithIndicator(
     // compute
     indicator.text = "Solving system"
     val template = symbolTable.getTemplate(processName, matchLabels)!! // We are called from a process, so it must exist
-//    val projectFile = Path(file.project.basePath!!).toFile()
-//    val sourceOps = CsvSourceOperations(projectFile, ops)
-
+    val config = with(LcaacConfigExtensions()) { file.project.lcaacConfig() }
     val sourceOps = DefaultDataSourceOperations(
-        LcaacConfig(),
+        config,
         ops,
         file.project.basePath!!,
     )

@@ -1,7 +1,6 @@
 package ch.kleis.lcaac.plugin.testing
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
-import ch.kleis.lcaac.core.config.LcaacConfig
 import ch.kleis.lcaac.core.datasource.DefaultDataSourceOperations
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
@@ -15,6 +14,7 @@ import ch.kleis.lcaac.core.lang.register.Register
 import ch.kleis.lcaac.core.lang.value.QuantityValueOperations
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
+import ch.kleis.lcaac.plugin.ide.config.LcaacConfigExtensions
 import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.loader.LcaMapper
@@ -31,7 +31,7 @@ class LcaTestRunner(
     private val ops = BasicOperations
     private val mapper = LcaMapper(ops)
     private val sourceOps = DefaultDataSourceOperations(
-        LcaacConfig(),
+        with(LcaacConfigExtensions()) { project.lcaacConfig() },
         ops,
         project.basePath!!,
     )

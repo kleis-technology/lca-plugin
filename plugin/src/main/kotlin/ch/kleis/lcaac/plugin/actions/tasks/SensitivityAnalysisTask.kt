@@ -4,7 +4,6 @@ import arrow.core.filterIsInstance
 import ch.kleis.lcaac.core.ParameterName
 import ch.kleis.lcaac.core.assessment.SensitivityAnalysis
 import ch.kleis.lcaac.core.assessment.SensitivityAnalysisProgram
-import ch.kleis.lcaac.core.config.LcaacConfig
 import ch.kleis.lcaac.core.datasource.DataSourceOperations
 import ch.kleis.lcaac.core.datasource.DefaultDataSourceOperations
 import ch.kleis.lcaac.core.lang.SymbolTable
@@ -18,6 +17,7 @@ import ch.kleis.lcaac.core.math.dual.DualNumber
 import ch.kleis.lcaac.core.math.dual.DualOperations
 import ch.kleis.lcaac.core.matrix.IndexedCollection
 import ch.kleis.lcaac.core.matrix.ParameterVector
+import ch.kleis.lcaac.plugin.ide.config.LcaacConfigExtensions
 import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
@@ -89,7 +89,7 @@ class SensitivityAnalysisTask(
                 matchLabels
             )!! // We are called from a process, so it must exist
         val sourceOps = DefaultDataSourceOperations(
-            LcaacConfig(),
+            with(LcaacConfigExtensions()) { project.lcaacConfig() },
             ops,
             project.basePath!!,
         )
