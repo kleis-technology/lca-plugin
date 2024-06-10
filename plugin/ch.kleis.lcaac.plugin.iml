@@ -82,7 +82,8 @@
     <orderEntry type="library" name="kotlin-reflect" level="project" />
     <orderEntry type="library" name="jetbrains.kotlinx.multik.core.jvm" level="project" />
     <orderEntry type="library" name="jetbrains.kotlinx.serialization.json" level="project" />
-    <orderEntry type="library" name="ch.kleis.lcaac.core" level="project"/>
+    <orderEntry type="library" name="ch.kleis.lcaac.core" level="project" />
     <orderEntry type="library" name="jaxb-api" level="project" />
+    <orderEntry type="library" name="com.charleskorn.kaml" level="project" />
   </component>
 </module>
