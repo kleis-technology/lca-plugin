@@ -10,7 +10,7 @@ import java.nio.file.Path
 
 class LcaacConfigExtensions {
     fun Project.lcaacConfig(): LcaacConfig {
-        val workingDirectory = this.basePath ?: TODO()
+        val workingDirectory = this.basePath ?: throw IllegalStateException("Current project misses a base path")
         val candidates = listOf("lcaac.yaml", "lcaac.yml")
         return runReadAction {
             candidates.firstNotNullOfOrNull { filename ->

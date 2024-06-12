@@ -87,11 +87,11 @@ class SensitivityAnalysisTask(
             symbolTable.getTemplate(
                 processName,
                 matchLabels
-            )!! // We are called from a process, so it must exist
+            ) ?: throw IllegalStateException("Symbol table: cannot find process '$processName$matchLabels'")
         val sourceOps = DefaultDataSourceOperations(
             with(LcaacConfigExtensions()) { project.lcaacConfig() },
             ops,
-            project.basePath!!,
+            project.basePath ?: throw IllegalStateException("Current project misses a base path"),
         )
         val (arguments, parameters) =
             prepareArguments(ops, sourceOps, symbolTable, template.params)
