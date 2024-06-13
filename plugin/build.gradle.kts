@@ -47,7 +47,7 @@ sourceSets {
 }
 
 dependencies {
-    implementation("ch.kleis.lcaac:core:1.6.5")
+    implementation("ch.kleis.lcaac:core:1.6.6")
 
     implementation(files(layout.buildDirectory.dir("stdlib/ef3.1")) {
         builtBy("generateEmissionFactors31")
