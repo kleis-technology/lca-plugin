@@ -1,22 +1,29 @@
 package ch.kleis.lcaac.plugin.actions.csv
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
-import ch.kleis.lcaac.core.datasource.CsvSourceOperations
+import ch.kleis.lcaac.core.config.LcaacConfig
+import ch.kleis.lcaac.core.datasource.DefaultDataSourceOperations
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
 import ch.kleis.lcaac.core.lang.expression.*
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
-import java.io.File
+import ch.kleis.lcaac.plugin.ide.config.LcaacConfigExtensions
+import com.intellij.openapi.project.Project
 import java.lang.Double.parseDouble
 
 class CsvProcessor(
-    private val rootPath: File,
+    private val project: Project,
     private val symbolTable: SymbolTable<BasicNumber>,
+    lcaacConfigLoader: () -> LcaacConfig = { with(LcaacConfigExtensions()) { project.lcaacConfig() } },
 ) {
     private val ops = BasicOperations
-    private val sourceOps = CsvSourceOperations(rootPath, ops)
+    private val sourceOps = DefaultDataSourceOperations(
+        lcaacConfigLoader(),
+        ops,
+        project.basePath ?: "",
+    )
     private val evaluator = Evaluator(symbolTable, ops, sourceOps)
 
     fun process(request: CsvRequest): List<CsvResult> {

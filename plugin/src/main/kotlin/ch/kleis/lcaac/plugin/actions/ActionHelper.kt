@@ -1,15 +1,15 @@
 package ch.kleis.lcaac.plugin.actions
 
-import ch.kleis.lcaac.core.datasource.CsvSourceOperations
+import ch.kleis.lcaac.core.datasource.DefaultDataSourceOperations
 import ch.kleis.lcaac.core.lang.evaluator.EvaluationTrace
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.math.QuantityOperations
+import ch.kleis.lcaac.plugin.ide.config.LcaacConfigExtensions
 import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressIndicator
-import kotlin.io.path.Path
 
 fun <Q> traceSystemWithIndicator(
     indicator: ProgressIndicator,
@@ -31,7 +31,12 @@ fun <Q> traceSystemWithIndicator(
     // compute
     indicator.text = "Solving system"
     val template = symbolTable.getTemplate(processName, matchLabels)!! // We are called from a process, so it must exist
-    val projectFile = Path(file.project.basePath!!).toFile()
-    val sourceOps = CsvSourceOperations(projectFile, ops)
+    val config = with(LcaacConfigExtensions()) { file.project.lcaacConfig() }
+    val sourceOps = DefaultDataSourceOperations(
+        config,
+        ops,
+        file.project.basePath!!,
+    )
+
     return Evaluator(symbolTable, ops, sourceOps).trace(template)
 }

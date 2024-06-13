@@ -4,8 +4,8 @@ import arrow.core.filterIsInstance
 import ch.kleis.lcaac.core.ParameterName
 import ch.kleis.lcaac.core.assessment.SensitivityAnalysis
 import ch.kleis.lcaac.core.assessment.SensitivityAnalysisProgram
-import ch.kleis.lcaac.core.datasource.CsvSourceOperations
 import ch.kleis.lcaac.core.datasource.DataSourceOperations
+import ch.kleis.lcaac.core.datasource.DefaultDataSourceOperations
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.evaluator.ToValue
@@ -17,6 +17,7 @@ import ch.kleis.lcaac.core.math.dual.DualNumber
 import ch.kleis.lcaac.core.math.dual.DualOperations
 import ch.kleis.lcaac.core.matrix.IndexedCollection
 import ch.kleis.lcaac.core.matrix.ParameterVector
+import ch.kleis.lcaac.plugin.ide.config.LcaacConfigExtensions
 import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
@@ -32,7 +33,6 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.content.ContentFactory
-import java.io.File
 
 class SensitivityAnalysisTask(
     project: Project,
@@ -87,8 +87,12 @@ class SensitivityAnalysisTask(
             symbolTable.getTemplate(
                 processName,
                 matchLabels
-            )!! // We are called from a process, so it must exist
-        val sourceOps = CsvSourceOperations(File(project.basePath!!), ops)
+            ) ?: throw IllegalStateException("Symbol table: cannot find process '$processName$matchLabels'")
+        val sourceOps = DefaultDataSourceOperations(
+            with(LcaacConfigExtensions()) { project.lcaacConfig() },
+            ops,
+            project.basePath ?: throw IllegalStateException("Current project misses a base path"),
+        )
         val (arguments, parameters) =
             prepareArguments(ops, sourceOps, symbolTable, template.params)
         val trace = Evaluator(symbolTable, ops, sourceOps).trace(template, arguments)

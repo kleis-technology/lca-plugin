@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.e2e
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
+import ch.kleis.lcaac.core.config.LcaacConfig
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.dimension.Dimension
 import ch.kleis.lcaac.core.lang.dimension.UnitSymbol
@@ -25,9 +26,11 @@ import ch.kleis.lcaac.plugin.fixture.UnitFixture
 import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import io.mockk.every
 import io.mockk.mockk
 import junit.framework.TestCase
 import org.junit.runner.RunWith
@@ -370,7 +373,9 @@ class E2ETest : BasePlatformTestCase() {
         )
         val kg = UnitValue<BasicNumber>(UnitSymbol.of("kg"), 1.0, Dimension.of("mass"))
         val symbolTable = createFilesAndSymbols(vf)
-        val csvProcessor = CsvProcessor(mockk(), symbolTable)
+        val project = mockk<Project>()
+        every { project.basePath } returns "working_directory"
+        val processor = CsvProcessor(project, symbolTable) { LcaacConfig() }
         val request = CsvRequest(
             "p",
             emptyMap(),
@@ -379,7 +384,7 @@ class E2ETest : BasePlatformTestCase() {
         )
 
         // when
-        val actual = csvProcessor.process(request)
+        val actual = processor.process(request)
 
         // then
         TestCase.assertEquals(1, actual.size)
