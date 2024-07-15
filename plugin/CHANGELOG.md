@@ -4,19 +4,5 @@
 
 ## [Unreleased]
 
-## [0.0.7-alpha]
-
-- Global parameters
-
-## [0.0.3-alpha]
-
-### Added
-- Process with local parameters
-- Package
-- Go to declaration
-- EF 3.1 elementary flows and characterization factors
-
-## [0.0.1-alpha]
-### Added
-- Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
-
+## [1.6.8]
+First official release.
