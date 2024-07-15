@@ -2,10 +2,9 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
     <id>ch.kleis.lcaac.plugin</id>
     <name>Life Cycle Analysis as Code</name>
-    <!--    <name>ch.kleis.lcaac.plugin</name>-->
     <vendor url="https://kleis.ch" email="contact@kleis.ch">Kleis</vendor>
-    <xi:include href="/META-INF/tips-kleis-1.xml"/>
-
+    <include href="/META-INF/tips-kleis-1.xml"/>
+    <depends>com.intellij.modules.platform</depends>
     <extensions defaultExtensionNs="com.intellij">
 
         <completion.contributor
