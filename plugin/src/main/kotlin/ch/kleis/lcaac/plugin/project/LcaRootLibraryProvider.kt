@@ -118,8 +118,10 @@ class LcaRootLibraryProvider : AdditionalLibraryRootsProvider() {
     }
 
     private fun cacheFolder(): Path {
-        val targetFolder =
-            Path.of(PathManager.getDefaultPluginPathFor("CacheLcaAsCode1.x") + File.separatorChar + "lca-as-code")
+        val userHome = System.getProperty("user.home")
+        val lcaacHome = userHome + File.separatorChar + ".lcaac"
+        val lcaacCache = lcaacHome + File.separatorChar + "plugin" + File.separatorChar + "cache"
+        val targetFolder = Path.of(lcaacCache)
         if (targetFolder.notExists()) targetFolder.createDirectories()
         return targetFolder
     }
