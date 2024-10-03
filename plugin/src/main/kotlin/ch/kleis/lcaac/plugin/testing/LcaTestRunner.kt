@@ -1,7 +1,10 @@
 package ch.kleis.lcaac.plugin.testing
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
+import ch.kleis.lcaac.core.datasource.ConnectorFactory
 import ch.kleis.lcaac.core.datasource.DefaultDataSourceOperations
+import ch.kleis.lcaac.core.datasource.csv.CsvConnectorBuilder
+import ch.kleis.lcaac.core.datasource.resilio_db.ResilioDbConnectorBuilder
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
@@ -30,11 +33,22 @@ class LcaTestRunner(
 ) {
     private val ops = BasicOperations
     private val mapper = LcaMapper(ops)
-    private val sourceOps = DefaultDataSourceOperations(
-        with(LcaacConfigExtensions()) { project.lcaacConfig() },
-        ops,
-        project.basePath!!,
-    )
+    private val config = with(LcaacConfigExtensions()) { project.lcaacConfig() }
+//    private val factory = ConnectorFactory(
+//        project.basePath!!,
+//        config,
+//        ops,
+//        symbolTable,
+//        listOf(
+//            CsvConnectorBuilder(),
+//            ResilioDbConnectorBuilder(),
+//        )
+//    )
+//    private val sourceOps = DefaultDataSourceOperations(
+//        ,
+//        ops,
+//        project.basePath!!,
+//    )
 
     // TODO: Use testing objects from core package
     fun run(test: LcaTest): LcaTestResult {
@@ -45,6 +59,17 @@ class LcaTestRunner(
                 val parser = LcaLoader(collector.collect(file), ops)
                 parser.load()
             }
+            val factory = ConnectorFactory(
+                project.basePath!!,
+                config,
+                ops,
+                symbolTable,
+                listOf(
+                    CsvConnectorBuilder(),
+                    ResilioDbConnectorBuilder(),
+                )
+            )
+            val sourceOps = DefaultDataSourceOperations(ops, config, factory.buildConnectors())
             val testCase = runReadAction { testCase(test) }
             val updatedSymbolTable = symbolTable
                 .copy(
@@ -55,7 +80,7 @@ class LcaTestRunner(
             val trace = evaluator.trace(testCase)
             val program = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint())
             val analysis = program.run()
-            val assertions = assertions(symbolTable, test)
+            val assertions = assertions(symbolTable, sourceOps, test)
             val target = trace.getEntryPoint().products.first().port()
             val results = assertions.map { assertion ->
                 val ports = analysis.findAllPortsByShortName(assertion.ref)
@@ -83,7 +108,11 @@ class LcaTestRunner(
         }
     }
 
-    private fun assertions(symbolTable: SymbolTable<BasicNumber>, test: LcaTest): List<RangeAssertion> {
+    private fun assertions(
+        symbolTable: SymbolTable<BasicNumber>,
+        sourceOps: DefaultDataSourceOperations<BasicNumber>,
+        test: LcaTest
+    ): List<RangeAssertion> {
         // mapper reads from psi, so we need runReadAction
         val data = runReadAction {
             Register(symbolTable.data)

@@ -4,8 +4,11 @@ import arrow.core.filterIsInstance
 import ch.kleis.lcaac.core.ParameterName
 import ch.kleis.lcaac.core.assessment.SensitivityAnalysis
 import ch.kleis.lcaac.core.assessment.SensitivityAnalysisProgram
+import ch.kleis.lcaac.core.datasource.ConnectorFactory
 import ch.kleis.lcaac.core.datasource.DataSourceOperations
 import ch.kleis.lcaac.core.datasource.DefaultDataSourceOperations
+import ch.kleis.lcaac.core.datasource.csv.CsvConnectorBuilder
+import ch.kleis.lcaac.core.datasource.resilio_db.ResilioDbConnectorBuilder
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.evaluator.ToValue
@@ -88,11 +91,18 @@ class SensitivityAnalysisTask(
                 processName,
                 matchLabels
             ) ?: throw IllegalStateException("Symbol table: cannot find process '$processName$matchLabels'")
-        val sourceOps = DefaultDataSourceOperations(
-            with(LcaacConfigExtensions()) { project.lcaacConfig() },
+        val config = with(LcaacConfigExtensions()) { project.lcaacConfig() }
+        val factory = ConnectorFactory(
+            file.project.basePath!!,
+            config,
             ops,
-            project.basePath ?: throw IllegalStateException("Current project misses a base path"),
+            symbolTable,
+            listOf(
+                CsvConnectorBuilder(),
+                ResilioDbConnectorBuilder(),
+            )
         )
+        val sourceOps = DefaultDataSourceOperations(ops, config, factory.buildConnectors())
         val (arguments, parameters) =
             prepareArguments(ops, sourceOps, symbolTable, template.params)
         val trace = Evaluator(symbolTable, ops, sourceOps).trace(template, arguments)
