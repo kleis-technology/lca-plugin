@@ -2,7 +2,10 @@ package ch.kleis.lcaac.plugin.actions.csv
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
 import ch.kleis.lcaac.core.config.LcaacConfig
+import ch.kleis.lcaac.core.datasource.ConnectorFactory
 import ch.kleis.lcaac.core.datasource.DefaultDataSourceOperations
+import ch.kleis.lcaac.core.datasource.csv.CsvConnectorBuilder
+import ch.kleis.lcaac.core.datasource.resilio_db.ResilioDbConnectorBuilder
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
@@ -19,11 +22,18 @@ class CsvProcessor(
     lcaacConfigLoader: () -> LcaacConfig = { with(LcaacConfigExtensions()) { project.lcaacConfig() } },
 ) {
     private val ops = BasicOperations
-    private val sourceOps = DefaultDataSourceOperations(
-        lcaacConfigLoader(),
-        ops,
+    private val config = lcaacConfigLoader()
+    private val factory = ConnectorFactory(
         project.basePath ?: "",
+        config,
+        ops,
+        symbolTable,
+        listOf(
+            CsvConnectorBuilder(),
+            ResilioDbConnectorBuilder(),
+        )
     )
+    private val sourceOps = DefaultDataSourceOperations(ops, config, factory.buildConnectors())
     private val evaluator = Evaluator(symbolTable, ops, sourceOps)
 
     fun process(request: CsvRequest): List<CsvResult> {
