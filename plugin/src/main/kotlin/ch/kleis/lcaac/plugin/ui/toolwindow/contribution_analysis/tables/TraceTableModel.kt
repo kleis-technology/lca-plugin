@@ -37,9 +37,9 @@ class TraceTableModel(
         return when {
             columnIndex == 0 -> MyBundle.message("lca.results.tables.columns.depth")
             columnIndex == 1 -> MyBundle.message("lca.results.tables.columns.name")
-            columnIndex == 2 -> MyBundle.message("lca.results.tables.columns.process")
-            columnIndex == 3 -> MyBundle.message("lca.results.tables.columns.params")
-            columnIndex == 4 -> MyBundle.message("lca.results.tables.columns.labels")
+            columnIndex == 2 -> MyBundle.message("lca.results.tables.columns.process_or_type")
+            columnIndex == 3 -> MyBundle.message("lca.results.tables.columns.params_or_compartment")
+            columnIndex == 4 -> MyBundle.message("lca.results.tables.columns.labels_or_subcompartment")
             columnIndex == 5 -> MyBundle.message("lca.results.tables.columns.unit")
             displayTotal && columnIndex == 6 -> MyBundle.message("lca.results.tables.columns.total")
             else -> {
