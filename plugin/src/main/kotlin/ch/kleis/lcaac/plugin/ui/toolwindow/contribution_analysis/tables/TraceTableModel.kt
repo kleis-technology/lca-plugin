@@ -2,9 +2,7 @@ package ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis.tables
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysis
 import ch.kleis.lcaac.core.lang.evaluator.EvaluationTrace
-import ch.kleis.lcaac.core.lang.value.FromProcessRefValue
-import ch.kleis.lcaac.core.lang.value.IndicatorValue
-import ch.kleis.lcaac.core.lang.value.ProductValue
+import ch.kleis.lcaac.core.lang.value.*
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.plugin.MyBundle
@@ -14,18 +12,18 @@ import javax.swing.table.TableModel
 class TraceTableModel(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
     private val trace: EvaluationTrace<BasicNumber>,
-    products: List<ProductValue<BasicNumber>> = analysis.getProducts(),
+    products: List<MatrixColumnIndex<BasicNumber>> = analysis.getObservablePorts().getElements(),
     private val requestedProducts: List<ProductValue<BasicNumber>> = analysis.entryPoint
         .products
         .map { it.product },
 ) : TableModel {
-    private val products: List<ProductValue<BasicNumber>> = products.sortedWith(trace.getComparator())
+    private val products: List<MatrixColumnIndex<BasicNumber>> = products.sortedWith(trace.getComparator())
     private val displayTotal = requestedProducts.size > 1
 
     // 6 columns + 1 if more than one product: name, process, params, labels, unit, [total]
     private val columnPrefix = if (displayTotal) 7 else 6
-    private val indicators: List<IndicatorValue<BasicNumber>> = analysis.getIndicators()
-        .sortedBy { it.name }
+    private val indicators: List<MatrixColumnIndex<BasicNumber>> = analysis.getControllablePorts().getElements()
+        .sortedBy { it.getShortName() }
 
     override fun getRowCount(): Int {
         return products.size
@@ -48,7 +46,7 @@ class TraceTableModel(
                 val offset = columnIndex - columnPrefix
                 when {
                     offset < requestedProducts.size -> requestedProducts[offset].name
-                    else -> indicators[offset - requestedProducts.size].name
+                    else -> indicators[offset - requestedProducts.size].getShortName()
                 }
             }
         }
@@ -71,10 +69,34 @@ class TraceTableModel(
         val product = products[rowIndex]
         return when {
             columnIndex == 0 -> trace.getDepthOf(product) ?: -1
-            columnIndex == 1 -> product.name
-            columnIndex == 2 -> product.fromProcessRef?.name ?: ""
-            columnIndex == 3 -> product.fromProcessRef?.renderArguments() ?: ""
-            columnIndex == 4 -> product.fromProcessRef?.renderLabels() ?: ""
+            columnIndex == 1 -> when (product) {
+                is IndicatorValue -> product.getShortName()
+                is ProductValue -> product.getShortName()
+                is FullyQualifiedSubstanceValue -> product.getShortName()
+                is PartiallyQualifiedSubstanceValue -> TODO()
+            }
+
+            columnIndex == 2 -> return when (product) {
+                is IndicatorValue -> ""
+                is ProductValue -> product.fromProcessRef?.name ?: ""
+                is FullyQualifiedSubstanceValue -> product.type.value
+                is PartiallyQualifiedSubstanceValue -> ""
+            }
+
+            columnIndex == 3 -> return when (product) {
+                is IndicatorValue -> ""
+                is ProductValue -> product.fromProcessRef?.renderArguments() ?: ""
+                is FullyQualifiedSubstanceValue -> product.compartment
+                is PartiallyQualifiedSubstanceValue -> ""
+            }
+
+            columnIndex == 4 -> return when (product) {
+                is IndicatorValue -> ""
+                is ProductValue -> product.fromProcessRef?.renderLabels() ?: ""
+                is FullyQualifiedSubstanceValue -> product.subcompartment ?: ""
+                is PartiallyQualifiedSubstanceValue -> ""
+            }
+
             columnIndex == 5 -> {
                 val total = analysis.supplyOf(product)
                 "${total.unit.symbol}"
