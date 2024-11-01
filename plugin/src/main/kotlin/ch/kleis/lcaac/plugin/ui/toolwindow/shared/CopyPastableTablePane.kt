@@ -46,7 +46,7 @@ class CopyPastableTablePane(
         val cellRenderer = QuantityRenderer
         cellRenderer.horizontalAlignment = JLabel.RIGHT
         table.setDefaultRenderer(Double::class.java, cellRenderer)
-        table.autoResizeMode = if (model.columnCount > 8) JTable.AUTO_RESIZE_OFF
+        table.autoResizeMode = if (model.columnCount > 24) JTable.AUTO_RESIZE_OFF
         else JTable.AUTO_RESIZE_ALL_COLUMNS
 
         /*
