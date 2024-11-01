@@ -7,23 +7,24 @@ import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.plugin.MyBundle
 import javax.swing.event.TableModelListener
-import javax.swing.table.TableModel
+import javax.swing.table.AbstractTableModel
 
 class TraceTableModel(
     private val analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
     private val trace: EvaluationTrace<BasicNumber>,
+    private val indicators: List<MatrixColumnIndex<BasicNumber>> = analysis.getControllablePorts().getElements()
+        .sortedBy { it.getShortName() },
     products: List<MatrixColumnIndex<BasicNumber>> = analysis.getObservablePorts().getElements(),
     private val requestedProducts: List<ProductValue<BasicNumber>> = analysis.entryPoint
         .products
         .map { it.product },
-) : TableModel {
+) : AbstractTableModel() {
     private val products: List<MatrixColumnIndex<BasicNumber>> = products.sortedWith(trace.getComparator())
     private val displayTotal = requestedProducts.size > 1
 
     // 6 columns + 1 if more than one product: name, process, params, labels, unit, [total]
     private val columnPrefix = if (displayTotal) 7 else 6
-    private val indicators: List<MatrixColumnIndex<BasicNumber>> = analysis.getControllablePorts().getElements()
-        .sortedBy { it.getShortName() }
+
 
     override fun getRowCount(): Int {
         return products.size
