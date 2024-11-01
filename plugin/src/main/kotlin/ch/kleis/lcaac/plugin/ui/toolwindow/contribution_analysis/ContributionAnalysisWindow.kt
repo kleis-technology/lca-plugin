@@ -1,6 +1,7 @@
 package ch.kleis.lcaac.plugin.ui.toolwindow.contribution_analysis
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysis
+import ch.kleis.lcaac.core.lang.evaluator.EvaluationTrace
 import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
@@ -18,13 +19,15 @@ import javax.swing.JPanel
 
 class ContributionAnalysisWindow(
     analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
-    comparator: Comparator<MatrixColumnIndex<BasicNumber>>,
+    trace: EvaluationTrace<BasicNumber>,
     val project: Project,
     val name: String,
 ) : LcaToolWindowContent {
     private val content: JPanel
 
     init {
+        val comparator = trace.getComparator()
+
         /*
             Tab Panes
          */
@@ -32,7 +35,7 @@ class ContributionAnalysisWindow(
         val impactAssessmentPane = CopyPastableTablePane(ImpactAssessmentTableModel(analysis), project, "impact_assessment.csv")
         val inventoryPane = CopyPastableTablePane(InventoryTableModel(analysis, comparator), project, "inventory.csv")
         val supplyPane = CopyPastableTablePane(SupplyTableModel(analysis, comparator), project, "supply.csv")
-        val tracePane = CopyPastableTablePane(TraceTableModel(analysis, comparator), project, "trace.csv")
+        val tracePane = CopyPastableTablePane(TraceTableModel(analysis, trace), project, "trace.csv")
         val issuePane = IssuePane(analysis, comparator, project)
 
         val tabbed = JBTabbedPane()
