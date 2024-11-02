@@ -65,6 +65,10 @@ class TraceTableModel(
         return false
     }
 
+    fun getIndicators(): List<MatrixColumnIndex<BasicNumber>> {
+        return indicators
+    }
+
     @Suppress("DuplicatedCode")
     override fun getValueAt(rowIndex: Int, columnIndex: Int): Any {
         val product = products[rowIndex]

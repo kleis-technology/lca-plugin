@@ -14,16 +14,16 @@ import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.ComboBox
-import com.intellij.ui.components.JBBox
-import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBEmptyBorder
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.EventQueue
+import java.awt.Frame
 import javax.swing.*
+
 
 class TracePane(
     analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
@@ -36,8 +36,11 @@ class TracePane(
         /*
             Button
          */
-        val button = JButton(AllIcons.Actions.MenuSaveall)
-        button.preferredSize = Dimension(40, 40)
+        val selectColumnsButton = JButton(AllIcons.General.Filter)
+        selectColumnsButton.preferredSize = Dimension(40, 40)
+
+        val saveButton = JButton(AllIcons.Actions.MenuSaveall)
+        saveButton.preferredSize = Dimension(40, 40)
 
         /*
             Toolbar
@@ -46,7 +49,8 @@ class TracePane(
         toolbar.border = JBEmptyBorder(0)
         toolbar.layout = BoxLayout(toolbar, BoxLayout.Y_AXIS)
         toolbar.isFloatable = false
-        toolbar.add(button)
+        toolbar.add(selectColumnsButton)
+        toolbar.add(saveButton)
 
         /*
             Table
@@ -57,31 +61,8 @@ class TracePane(
         val cellRenderer = QuantityRenderer
         cellRenderer.horizontalAlignment = JLabel.RIGHT
         table.setDefaultRenderer(Double::class.java, cellRenderer)
-        table.autoResizeMode = if (table.columnCount > 24) JTable.AUTO_RESIZE_OFF
+        table.autoResizeMode = if (table.model.columnCount > 24) JTable.AUTO_RESIZE_OFF
         else JTable.AUTO_RESIZE_ALL_COLUMNS
-
-        /*
-            Menu bar
-         */
-        val comboBox = ComboBox<MatrixColumnIndex<BasicNumber>>()
-        analysis.getControllablePorts().getElements().forEach(comboBox::addItem)
-        comboBox.addActionListener {
-            if (it.actionCommand == "comboBoxChanged") {
-                EventQueue.invokeLater {
-                    @Suppress("UNCHECKED_CAST")
-                    val indicator = comboBox.selectedItem as MatrixColumnIndex<BasicNumber>
-                    table.model = TraceTableModel(analysis, trace, listOf(indicator))
-                    table.autoResizeMode = if (table.columnCount > 24) JTable.AUTO_RESIZE_OFF
-                    else JTable.AUTO_RESIZE_ALL_COLUMNS
-                }
-            }
-        }
-
-        val menuBar = JMenuBar()
-        menuBar.add(JBLabel("Indicator"))
-        menuBar.add(JBBox.createHorizontalGlue())
-        menuBar.add(comboBox)
-        menuBar.add(JBBox.createHorizontalGlue(), BorderLayout.LINE_END)
 
         /*
             Content
@@ -89,20 +70,76 @@ class TracePane(
         val scrollPane =
             JBScrollPane(table, JBScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JBScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED)
         content = JPanel(BorderLayout())
-        content.add(menuBar, BorderLayout.NORTH)
         content.add(scrollPane, BorderLayout.CENTER)
         content.add(toolbar, BorderLayout.LINE_END)
         content.border = JBEmptyBorder(0)
 
         /*
+            Select columns action
+         */
+        selectColumnsButton.addActionListener {
+            EventQueue.invokeLater {
+                val dialog = SelectColumnsDialog(
+                    availableColumns = analysis.getControllablePorts().getElements(),
+                    selectedColumns = (table.model as TraceTableModel).getIndicators(),
+                )
+                dialog.isVisible = true
+
+                val selectedColumns = dialog.getSelectedColumns()
+                table.model = TraceTableModel(analysis, trace, selectedColumns)
+                table.autoResizeMode = if (table.model.columnCount > 24) JTable.AUTO_RESIZE_OFF
+                else JTable.AUTO_RESIZE_ALL_COLUMNS
+            }
+        }
+
+        /*
             Save action
          */
-        button.addActionListener {
+        saveButton.addActionListener {
             val descriptor = FileSaverDescriptor("Save as CSV", "Save data as CSV file")
             val saveFileDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, project)
             val vf = saveFileDialog.save(project.projectFile, "trace.csv") ?: return@addActionListener
             val task = SaveTableModelTask(project, table.model, vf.file)
             ProgressManager.getInstance().run(task)
+        }
+    }
+
+    private class SelectColumnsDialog(
+        availableColumns: List<MatrixColumnIndex<BasicNumber>>,
+        private var selectedColumns: List<MatrixColumnIndex<BasicNumber>> = emptyList()
+    ) : JDialog(null as Frame?, "Select columns", true) {
+
+        init {
+            val itemList = JBList(
+                availableColumns.sortedBy { it.getShortName() }
+            )
+            itemList.selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
+            val listScrollPane = JScrollPane(itemList)
+            val okButton = JButton("OK")
+            val cancelButton = JButton("Cancel")
+
+            okButton.addActionListener {
+                selectedColumns = itemList.selectedValuesList
+                dispose()
+            }
+
+            cancelButton.addActionListener {
+                dispose()
+            }
+
+            val buttonPanel = JPanel()
+            buttonPanel.add(okButton)
+            buttonPanel.add(cancelButton)
+
+            add(listScrollPane, BorderLayout.CENTER)
+            add(buttonPanel, BorderLayout.SOUTH)
+
+            setSize(300, 300)
+            setLocationRelativeTo(parent)
+        }
+
+        fun getSelectedColumns(): List<MatrixColumnIndex<BasicNumber>> {
+            return selectedColumns
         }
     }
 }
