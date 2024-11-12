@@ -2,7 +2,7 @@ package ch.kleis.lcaac.plugin.actions
 
 import ch.kleis.lcaac.core.assessment.ContributionAnalysis
 import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
-import ch.kleis.lcaac.core.lang.value.MatrixColumnIndex
+import ch.kleis.lcaac.core.lang.evaluator.EvaluationTrace
 import ch.kleis.lcaac.core.math.basic.BasicMatrix
 import ch.kleis.lcaac.core.math.basic.BasicNumber
 import ch.kleis.lcaac.core.math.basic.BasicOperations
@@ -38,13 +38,12 @@ class AssessProcessAction(
         val project = e.project ?: return
         val file = e.getData(LangDataKeys.PSI_FILE) as LcaFile? ?: return
         ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Run") {
-            private var data: Pair<ContributionAnalysis<BasicNumber, BasicMatrix>, Comparator<MatrixColumnIndex<BasicNumber>>>? = null
+            private var data: Pair<ContributionAnalysis<BasicNumber, BasicMatrix>, EvaluationTrace<BasicNumber>>? = null
 
             override fun run(indicator: ProgressIndicator) {
                 val trace = traceSystemWithIndicator(indicator, file, processName, matchLabels, BasicOperations)
-                val comparator = trace.getComparator()
                 val analysis = ContributionAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint()).run()
-                this.data = Pair(analysis, comparator)
+                this.data = Pair(analysis, trace)
             }
 
             override fun onSuccess() {
@@ -65,10 +64,10 @@ class AssessProcessAction(
             private fun displayInventory(
                 project: Project,
                 analysis: ContributionAnalysis<BasicNumber, BasicMatrix>,
-                comparator: Comparator<MatrixColumnIndex<BasicNumber>>
+                trace: EvaluationTrace<BasicNumber>,
             ) {
                 val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("LCA Output") ?: return
-                val assessResultContent = ContributionAnalysisWindow(analysis, comparator, project, processName).getContent()
+                val assessResultContent = ContributionAnalysisWindow(analysis, trace, project, processName).getContent()
                 val content = ContentFactory.getInstance().createContent(
                     assessResultContent,
                     "Contribution analysis of $processName",

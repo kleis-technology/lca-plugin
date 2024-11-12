@@ -46,11 +46,14 @@ class CopyPastableTablePane(
         val cellRenderer = QuantityRenderer
         cellRenderer.horizontalAlignment = JLabel.RIGHT
         table.setDefaultRenderer(Double::class.java, cellRenderer)
+        table.autoResizeMode = if (model.columnCount > 24) JTable.AUTO_RESIZE_OFF
+        else JTable.AUTO_RESIZE_ALL_COLUMNS
 
         /*
             Content
          */
-        val scrollPane = JBScrollPane(table)
+        val scrollPane =
+            JBScrollPane(table, JBScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JBScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED)
         content = JPanel(BorderLayout())
         content.add(scrollPane, BorderLayout.CENTER)
         content.add(toolbar, BorderLayout.LINE_END)
@@ -62,7 +65,7 @@ class CopyPastableTablePane(
         button.addActionListener {
             val descriptor = FileSaverDescriptor("Save as CSV", "Save data as CSV file")
             val saveFileDialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, project)
-            val vf  = saveFileDialog.save(project.projectFile, defaultFilename) ?: return@addActionListener
+            val vf = saveFileDialog.save(project.projectFile, defaultFilename) ?: return@addActionListener
             val task = SaveTableModelTask(project, model, vf.file)
             ProgressManager.getInstance().run(task)
         }
