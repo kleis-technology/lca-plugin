@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [1.7.10]
+
+- Added a trace view in the assessment window.
+
 ## [1.7.6]
 
 - Upgraded core library lcaac
