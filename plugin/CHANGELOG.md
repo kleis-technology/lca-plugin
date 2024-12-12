@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [1.7.11]
+
+- Adapt to latest idea build `243.*`
+
 ## [1.7.10]
 
 - Added a trace view in the assessment window.
