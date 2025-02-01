@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [1.7.12]
+
+- Adapt to latest idea build `251.*`
+- Updated dependency LCAAC core
+
 ## [1.7.11]
 
 - Adapt to latest idea build `243.*`
