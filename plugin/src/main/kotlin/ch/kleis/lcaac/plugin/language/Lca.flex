@@ -98,6 +98,8 @@ CommentContent = .*
 <YYINITIAL> "between"                { return LcaTypes.BETWEEN_KEYWORD; }
 <YYINITIAL> "and"                { return LcaTypes.AND_KEYWORD; }
 
+<YYINITIAL> "@cached"                { return LcaTypes.ANNOTATION_CACHED_KEYWORD; }
+
 <YYINITIAL> "datasource"                { return LcaTypes.DATASOURCE_KEYWORD; }
 <YYINITIAL> "location"                { return LcaTypes.LOCATION_KEYWORD; }
 <YYINITIAL> "schema"                { return LcaTypes.SCHEMA_KEYWORD; }
