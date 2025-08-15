@@ -5,7 +5,6 @@ import ch.kleis.lcaac.core.config.LcaacConfig
 import ch.kleis.lcaac.core.datasource.ConnectorFactory
 import ch.kleis.lcaac.core.datasource.DefaultDataSourceOperations
 import ch.kleis.lcaac.core.datasource.csv.CsvConnectorBuilder
-import ch.kleis.lcaac.core.datasource.resilio_db.ResilioDbConnectorBuilder
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
@@ -30,7 +29,6 @@ class CsvProcessor(
         symbolTable,
         listOf(
             CsvConnectorBuilder(),
-            ResilioDbConnectorBuilder(),
         )
     )
     private val sourceOps = DefaultDataSourceOperations(ops, config, factory.buildConnectors())
