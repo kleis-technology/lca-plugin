@@ -66,11 +66,22 @@ class LcaMapper<Q>(
             biosphere = biosphere,
             impacts = impacts,
         )
+        val annotations = annotations(psiProcess.annotationList)
         return EProcessTemplate(
             params,
             locals,
             body,
+            annotations,
         )
+    }
+
+    private fun annotations(psiAnnotationList: List<LcaAnnotation>): Set<ProcessAnnotation> {
+        return psiAnnotationList.mapNotNull {
+            when (it.text) {
+                "@cached" -> ProcessAnnotation.CACHED
+                else -> null
+            }
+        }.toSet()
     }
 
     private fun generateTechnoProductExchanges(
