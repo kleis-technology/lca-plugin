@@ -28,7 +28,8 @@ class LanguageCompletionTest : LcaCompletionTestCase() {
             "unit",
             "variables",
             "test",
-            "datasource"
+            "datasource",
+            "@cached"
         )
     }
 
