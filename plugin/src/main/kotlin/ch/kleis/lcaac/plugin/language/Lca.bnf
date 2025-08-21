@@ -83,6 +83,8 @@
       HAT = "^"
       EQUAL = "="
       DOUBLE_QUOTE = '"'
+
+      ANNOTATION_CACHED_KEYWORD = '@cached'
   ]
 }
 
@@ -218,7 +220,7 @@ aliasForField ::= "alias_for" "=" dataExpression
     Process
  */
 
-process ::= "process" processRef
+process ::= annotation* "process" processRef
 "{" (
     params
     | labels
@@ -236,6 +238,8 @@ process ::= "process" processRef
     elementTypeClass="ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStubElementType"
     stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStub"
 }
+
+annotation ::= "@cached"
 
 labels ::= "labels" "{" labelAssignment* "}"
 labelAssignment ::= labelRef "=" STRING_LITERAL {

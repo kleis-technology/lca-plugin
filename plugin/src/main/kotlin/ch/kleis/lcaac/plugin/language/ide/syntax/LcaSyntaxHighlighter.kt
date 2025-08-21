@@ -22,6 +22,7 @@ class LcaSyntaxHighlighter : SyntaxHighlighterBase() {
                 DefaultLanguageHighlighterColors.IDENTIFIER
             )
         )
+        val ANNOTATION_KEYS = arrayOf(createTextAttributesKey("LCA_ANNOTATION", DefaultLanguageHighlighterColors.DOC_COMMENT_TAG_VALUE))
         val EMPTY_KEYS = emptyArray<TextAttributesKey>()
         val BAD_CHARACTER_KEYS = arrayOf(createTextAttributesKey("SIMPLE_BAD_CHARACTER", BAD_CHARACTER))
         val STRING_LITERAL_KEYS =
@@ -63,6 +64,8 @@ class LcaSyntaxHighlighter : SyntaxHighlighterBase() {
             NUMBER -> NUMBER_KEYS
 
             COMMENT_BLOCK_START, COMMENT_BLOCK_END, COMMENT_LINE, COMMENT_CONTENT -> BLOCK_COMMENT_KEYS
+
+            ANNOTATION_CACHED_KEYWORD -> ANNOTATION_KEYS
 
             else -> EMPTY_KEYS
         }

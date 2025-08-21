@@ -4,7 +4,6 @@ import ch.kleis.lcaac.core.assessment.ContributionAnalysisProgram
 import ch.kleis.lcaac.core.datasource.ConnectorFactory
 import ch.kleis.lcaac.core.datasource.DefaultDataSourceOperations
 import ch.kleis.lcaac.core.datasource.csv.CsvConnectorBuilder
-import ch.kleis.lcaac.core.datasource.resilio_db.ResilioDbConnectorBuilder
 import ch.kleis.lcaac.core.lang.SymbolTable
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
 import ch.kleis.lcaac.core.lang.evaluator.EvaluatorException
@@ -66,7 +65,6 @@ class LcaTestRunner(
                 symbolTable,
                 listOf(
                     CsvConnectorBuilder(),
-                    ResilioDbConnectorBuilder(),
                 )
             )
             val sourceOps = DefaultDataSourceOperations(ops, config, factory.buildConnectors())

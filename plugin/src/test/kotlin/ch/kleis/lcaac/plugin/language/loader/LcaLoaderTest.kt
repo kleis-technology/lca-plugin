@@ -62,6 +62,31 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
     }
 
     @Test
+    fun test_annotationCached() {
+        // given
+        val file = parseFile(
+            "hello", """
+                @cached
+                process p {
+                }
+            """.trimIndent()
+        ) as LcaFile
+        val parser = LcaLoader(
+            sequenceOf(file),
+            ops,
+        )
+
+        // when
+        val actual = parser.load().getTemplate("p")!!.annotations
+
+        // then
+        val expected = setOf(
+            ProcessAnnotation.CACHED
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun test_impactBlockForEach() {
         // given
         val file = parseFile(

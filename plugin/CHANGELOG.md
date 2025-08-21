@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [1.8.0]
+
+- Updated dependency LCAAC core
+- Support for annotation @cached
+
 ## [1.7.12]
 
 - Adapt to latest idea build `251.*`

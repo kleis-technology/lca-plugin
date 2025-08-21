@@ -3,10 +3,9 @@ package ch.kleis.lcaac.plugin.actions
 import ch.kleis.lcaac.core.datasource.ConnectorFactory
 import ch.kleis.lcaac.core.datasource.DefaultDataSourceOperations
 import ch.kleis.lcaac.core.datasource.csv.CsvConnectorBuilder
-import ch.kleis.lcaac.core.datasource.resilio_db.ResilioDbConnectorBuilder
 import ch.kleis.lcaac.core.lang.evaluator.EvaluationTrace
 import ch.kleis.lcaac.core.lang.evaluator.Evaluator
-import ch.kleis.lcaac.core.math.QuantityOperations
+import ch.kleis.lcaac.core.math.Operations
 import ch.kleis.lcaac.plugin.ide.config.LcaacConfigExtensions
 import ch.kleis.lcaac.plugin.language.loader.LcaFileCollector
 import ch.kleis.lcaac.plugin.language.loader.LcaLoader
@@ -14,12 +13,12 @@ import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressIndicator
 
-fun <Q> traceSystemWithIndicator(
+fun <Q, M> traceSystemWithIndicator(
     indicator: ProgressIndicator,
     file: LcaFile,
     processName: String,
     matchLabels: Map<String, String>,
-    ops: QuantityOperations<Q>,
+    ops: Operations<Q, M>,
 ): EvaluationTrace<Q> {
     indicator.isIndeterminate = true
 
@@ -42,7 +41,6 @@ fun <Q> traceSystemWithIndicator(
         symbolTable,
         listOf(
             CsvConnectorBuilder(),
-            ResilioDbConnectorBuilder(),
         )
     )
     val sourceOps = DefaultDataSourceOperations(ops, config, factory.buildConnectors())
