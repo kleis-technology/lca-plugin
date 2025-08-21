@@ -11,6 +11,8 @@
                 language="LCA"
                 implementationClass="ch.kleis.lcaac.plugin.language.ide.syntax.LanguageCompletion"/>
 
+        <typedHandler implementation="ch.kleis.lcaac.plugin.language.ide.syntax.MyDslTypedHandler"/>
+
         <fileType
                 name="LCA Definition File"
                 implementationClass="ch.kleis.lcaac.plugin.LcaFileType"

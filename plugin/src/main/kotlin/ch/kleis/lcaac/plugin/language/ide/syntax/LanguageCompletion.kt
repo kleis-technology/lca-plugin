@@ -1,14 +1,25 @@
 package ch.kleis.lcaac.plugin.language.ide.syntax
 
 import com.intellij.codeInsight.completion.CompletionContributor
+import com.intellij.codeInsight.completion.CompletionInitializationContext
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionResultSet
+import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.psi.PsiErrorElement
+import org.jetbrains.annotations.NotNull
 
 
 class LanguageCompletion : CompletionContributor() {
 
+    override fun beforeCompletion(@NotNull context: CompletionInitializationContext) {
+        if (context.completionType == CompletionType.BASIC) {
+            val trigger = context.file.text[context.startOffset - 1]
+            if (trigger == '@') {
+                context.dummyIdentifier = "" // so the PSI can parse it
+            }
+        }
+    }
 
     override fun fillCompletionVariants(parameters: CompletionParameters, result: CompletionResultSet) {
         super.fillCompletionVariants(parameters, result)
@@ -48,7 +59,8 @@ class LanguageCompletion : CompletionContributor() {
             "test", "given", "assert", "between", "and", // Test blocks
             "datasource", "schema", "location", // Data source blocks
             "for_each", // For each
-            "sum", "lookup", "default_record" // Primitives
+            "sum", "lookup", "default_record", // Primitives
+            "@cached"
         )
     private val listOfKeywordPattern = Regex("(LcaTokenType.*) expected, got")
     private val keywordsPattern = Regex("LcaTokenType\\.([^ ,]*)(, | or |)")

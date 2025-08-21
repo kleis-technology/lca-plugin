@@ -84,6 +84,7 @@
       EQUAL = "="
       DOUBLE_QUOTE = '"'
 
+      ANNOTATION_PREFIX_KEYWORD = "@"
       ANNOTATION_CACHED_KEYWORD = '@cached'
   ]
 }
@@ -239,6 +240,7 @@ process ::= annotation* "process" processRef
     stubClass = "ch.kleis.lcaac.plugin.language.psi.stub.process.ProcessStub"
 }
 
+annotationPrefix ::= "@"
 annotation ::= "@cached"
 
 labels ::= "labels" "{" labelAssignment* "}"
