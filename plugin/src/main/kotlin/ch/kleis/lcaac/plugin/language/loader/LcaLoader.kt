@@ -50,7 +50,7 @@ class LcaLoader<Q>(
                 throw EvaluatorException("Duplicate substance ${e.duplicates} defined")
             }
 
-            val globals = try {
+            val globalVariables = try {
                 DataRegister.empty<DataKey, DataExpression<Q>>()
                     .plus(
                         unitDefinitions
@@ -66,9 +66,20 @@ class LcaLoader<Q>(
                     )
                     .plus(
                         files
-                            .flatMap { it.getGlobalAssignments() }
+                            .flatMap { it.getGlobalVariables() }
                             .map { DataKey(it.first) to dataExpression(it.second) }
                             .asIterable()
+                    )
+            } catch (e: RegisterException) {
+                throw EvaluatorException("Duplicate global variable ${e.duplicates} defined")
+            }
+
+            val globalParameters = try {
+                DataRegister.empty<DataKey, DataExpression<Q>>()
+                    .plus(files
+                        .flatMap { it.getGlobalParameters() }
+                        .map { DataKey(it.first) to dataExpression(it.second) }
+                        .asIterable()
                     )
             } catch (e: RegisterException) {
                 throw EvaluatorException("Duplicate global variable ${e.duplicates} defined")
@@ -79,7 +90,7 @@ class LcaLoader<Q>(
                 DataSourceRegister.empty<DataSourceKey, EDataSource<Q>>()
                     .plus(
                         dataSourceDefinitions.map { DataSourceKey(it.getDataSourceRef().name) to dataSourceDefinition(it) }
-                        .asIterable()
+                            .asIterable()
                     )
             } catch (e: RegisterException) {
                 throw EvaluatorException("Duplicate data source ${e.duplicates} defined")
@@ -89,7 +100,7 @@ class LcaLoader<Q>(
                 ProcessTemplateRegister.empty<ProcessKey, EProcessTemplate<Q>>()
                     .plus(
                         processDefinitions
-                            .map { Pair(it.buildUniqueKey(), process(it, globals, dataSources)) }
+                            .map { Pair(it.buildUniqueKey(), process(it, globalVariables, dataSources)) }
                             .asIterable()
                     )
             } catch (e: RegisterException) {
@@ -97,7 +108,8 @@ class LcaLoader<Q>(
             }
 
             return SymbolTable(
-                data = globals,
+                globalParameters = globalParameters,
+                globalVariables = globalVariables,
                 dataSources = dataSources,
                 processTemplates = processTemplates,
                 dimensions = dimensions,

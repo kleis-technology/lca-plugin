@@ -40,7 +40,7 @@ class LcaMapper<Q>(
         val locals = psiProcess.getVariables().mapValues { dataExpression(it.value) }
         val params = psiProcess.getParameters().mapValues { dataExpression(it.value) }
         val symbolTable = SymbolTable(
-            data = try {
+            globalVariables = try {
                 Register(
                     globals
                         .plus(params.mapKeys { DataKey(it.key) })
