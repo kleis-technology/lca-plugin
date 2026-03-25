@@ -100,7 +100,7 @@ class LcaLoader<Q>(
                 ProcessTemplateRegister.empty<ProcessKey, EProcessTemplate<Q>>()
                     .plus(
                         processDefinitions
-                            .map { Pair(it.buildUniqueKey(), process(it, globalVariables, dataSources)) }
+                            .map { Pair(it.buildUniqueKey(), process(it, globalParameters, globalVariables, dataSources)) }
                             .asIterable()
                     )
             } catch (e: RegisterException) {

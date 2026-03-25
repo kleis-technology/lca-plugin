@@ -32,7 +32,8 @@ class LcaMapper<Q>(
 
     fun process(
         psiProcess: LcaProcess,
-        globals: DataRegister<Q>,
+        globalParameters: DataRegister<Q>,
+        globalVariables: DataRegister<Q>,
         dataSources: DataSourceRegister<Q>,
     ): EProcessTemplate<Q> {
         val name = psiProcess.name
@@ -40,9 +41,10 @@ class LcaMapper<Q>(
         val locals = psiProcess.getVariables().mapValues { dataExpression(it.value) }
         val params = psiProcess.getParameters().mapValues { dataExpression(it.value) }
         val symbolTable = SymbolTable(
+            globalParameters,
             globalVariables = try {
                 Register(
-                    globals
+                    globalVariables
                         .plus(params.mapKeys { DataKey(it.key) })
                         .plus(locals.mapKeys { DataKey(it.key) })
                 )
