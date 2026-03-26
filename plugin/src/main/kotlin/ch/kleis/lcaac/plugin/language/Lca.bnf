@@ -92,7 +92,7 @@
     LCA File
  */
 
-lcaFile ::= package? import* (process | test | dataSourceDefinition | unitDefinition | substance | globalVariables )*
+lcaFile ::= package? import* (process | test | dataSourceDefinition | unitDefinition | substance | globalParameters | globalVariables )*
 
 /*
     Package
@@ -129,6 +129,7 @@ columnDefinition ::= columnRef '=' dataExpression {
     Global variables
  */
 
+globalParameters ::= "params" '{' globalAssignment* '}'
 globalVariables ::= "variables" '{' globalAssignment* '}'
 globalAssignment ::= dataRef '=' dataExpression {
     implements=["ch.kleis.lcaac.plugin.language.psi.type.PsiGlobalAssignment"]

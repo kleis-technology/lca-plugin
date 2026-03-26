@@ -56,12 +56,17 @@ class SensitivityAnalysisTask(
         indicator.isIndeterminate = true
 
         // nb params via psi
-        val nbQuantitativeParams = runReadAction {
+        val nbGlobalParams = runReadAction {
+            val collector = LcaFileCollector(file.project)
+            collector.collect(file).flatMap { it.getGlobalParameters() }.toList().size
+        }
+        val nbProcessQuantitativeParams = runReadAction {
             val fqn = "${file.getPackageName()}.$processName"
             ProcessStubKeyIndex.findProcesses(project, fqn, matchLabels).first().getParameters()
                 .filter { it.value !is LcaStringExpression }
                 .size
         }
+        val nbQuantitativeParams = nbGlobalParams + nbProcessQuantitativeParams
         val ops = DualOperations(nbQuantitativeParams)
         if (nbQuantitativeParams == 0) {
             NotificationGroupManager.getInstance()
@@ -101,10 +106,29 @@ class SensitivityAnalysisTask(
             )
         )
         val sourceOps = DefaultDataSourceOperations(ops, config, factory.buildConnectors())
-        val (arguments, parameters) =
-            prepareArguments(ops, sourceOps, symbolTable, template.params)
-        val trace = Evaluator(symbolTable, ops, sourceOps).trace(template, arguments)
-        this.analysis = SensitivityAnalysisProgram(trace.getSystemValue(), trace.getEntryPoint(), parameters).run()
+        val (globalArguments, globalParameters) =
+            prepareArguments(
+                ops, sourceOps, symbolTable,
+                symbolTable.globalParameters.toMap().mapKeys { it.key.name },
+                offset = 0,
+            )
+        val st = symbolTable.overrideGlobalParameters(globalArguments)
+        val evaluator = Evaluator(st, ops, sourceOps)
+        val (processArguments, processParameters) =
+            prepareArguments(
+                ops, sourceOps, symbolTable,
+                template.params,
+                offset = globalParameters.size(),
+            )
+        val trace = evaluator.trace(template, processArguments)
+        val allParameters = globalParameters + processParameters
+        this.analysis =
+            SensitivityAnalysisProgram(
+                trace.getSystemValue(),
+                trace.getEntryPoint(),
+                allParameters,
+                ops,
+            ).run()
     }
 
     override fun onSuccess() {
@@ -142,7 +166,8 @@ class SensitivityAnalysisTask(
         ops: DualOperations,
         sourceOps: DataSourceOperations<DualNumber>,
         symbolTable: SymbolTable<DualNumber>,
-        params: Map<String, DataExpression<DualNumber>>
+        params: Map<String, DataExpression<DualNumber>>,
+        offset: Int = 0,
     ): Pair<Map<String, DataExpression<DualNumber>>, ParameterVector<DualNumber>> {
         val dataReducer = DataExpressionReducer(symbolTable.data, symbolTable.dataSources, ops, sourceOps)
         val reduced = params.mapValues { dataReducer.reduce(it.value) }
@@ -151,7 +176,7 @@ class SensitivityAnalysisTask(
             .mapIndexed { index: Int, (name, value): Pair<String, EQuantityScale<DualNumber>> ->
                 with(ops) {
                     name to EQuantityScale(
-                        value.scale * (pure(1.0) + basis(index)),
+                        value.scale * (pure(1.0) + basis(offset + index)),
                         value.base,
                     )
                 }

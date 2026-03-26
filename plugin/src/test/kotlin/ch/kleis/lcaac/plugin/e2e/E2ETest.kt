@@ -135,7 +135,7 @@ class E2ETest : BasePlatformTestCase() {
 
         // then
         Prelude.unitMap<BasicNumber>().forEach {
-            assertNotNull(symbolTable.getData(it.key))
+            assertNotNull(symbolTable.getGlobalVariable(it.key))
         }
     }
 
@@ -587,7 +587,7 @@ class E2ETest : BasePlatformTestCase() {
 
         // when
         val symbolTable = createFilesAndSymbols(vf)
-        val target = symbolTable.getData("q")!!
+        val target = symbolTable.getGlobalVariable("q")!!
         val reducer = DataExpressionReducer(symbolTable.data, symbolTable.dataSources, ops, mockk())
         val actual = with(ToValue(ops)) {
             reducer.reduce(target).toValue()

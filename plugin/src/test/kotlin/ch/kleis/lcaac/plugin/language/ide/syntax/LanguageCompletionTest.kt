@@ -21,15 +21,16 @@ class LanguageCompletionTest : LcaCompletionTestCase() {
         assertNotNull(lookupElementStrings)
         assertSameElements(
             lookupElementStrings!!,
+            "@cached",
+            "datasource",
             "import",
             "package",
+            "params",
             "process",
             "substance",
+            "test",
             "unit",
             "variables",
-            "test",
-            "datasource",
-            "@cached"
         )
     }
 
@@ -44,7 +45,7 @@ class LanguageCompletionTest : LcaCompletionTestCase() {
 
         // Then
         assertNotNull(lookupElementStrings)
-        assertSameElements(lookupElementStrings!!, "import", "package", "process")
+        assertSameElements(lookupElementStrings!!, "package", "params", "process", "import")
     }
 
     @Test
