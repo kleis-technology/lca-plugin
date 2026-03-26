@@ -13,7 +13,6 @@ import ch.kleis.lcaac.core.math.basic.BasicOperations
 import ch.kleis.lcaac.plugin.fixture.UnitFixture
 import ch.kleis.lcaac.plugin.language.psi.LcaFile
 import com.intellij.testFramework.ParsingTestCase
-import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -45,7 +44,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         // when
         val symbolTable = parser.load()
         val actual = listOf("a", "b", "c", "d", "e")
-            .associateWith { symbolTable.getData(it)!! }
+            .associateWith { symbolTable.getGlobalVariable(it)!! }
 
         // then
         val expected: Map<String, DataExpression<BasicNumber>> = mapOf(
@@ -310,7 +309,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         )
 
         // when
-        val actual = parser.load().getData("x")
+        val actual = parser.load().getGlobalVariable("x")
 
         // then
         val expected = EStringLiteral<BasicNumber>("hello")
@@ -412,7 +411,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val symbolTable = parser.load()
 
         // then
-        val actual = symbolTable.getData("lbs")
+        val actual = symbolTable.getGlobalVariable("lbs")
         val expect = EUnitAlias("lbs", EQuantityScale(ops.pure(2.2), EDataRef("kg")))
         assertEquals(expect, actual)
     }
@@ -436,7 +435,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val unit = "fooSymbol"
 
         // when
-        val quantity = symbolTable.getData("fooUnitName") as EUnitLiteral<BasicNumber>
+        val quantity = symbolTable.getGlobalVariable("fooUnitName") as EUnitLiteral<BasicNumber>
 
         // then
         assertEquals(quantity.symbol.toString(), unit)
@@ -771,7 +770,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
 
         // then
         val unitsSymbolTable = SymbolTable(
-            data = symbolTable.data
+            globalVariables = symbolTable.globalVariables,
         )
         val expected = EProcessTemplate(
             body = EProcess(
@@ -1078,7 +1077,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         // then
         val actual = ((symbolTable.getTemplate("carrot") as EProcessTemplate).body).products[0]
         val unitsSymbolTable = SymbolTable(
-            data = symbolTable.data
+            globalVariables = symbolTable.globalVariables
         )
         val expected = ETechnoExchange(
             EQuantityScale(ops.pure(1.0), EDataRef("kg")),
@@ -1111,7 +1110,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         // then
         val actual = ((symbolTable.getTemplate("carrot") as EProcessTemplate).body).products[0]
         val unitsSymbolTable = SymbolTable(
-            data = symbolTable.data
+            globalVariables = symbolTable.globalVariables
         )
         val expect = ETechnoExchange(
             EQuantityScale(ops.pure(1.0), EDataRef("kg")),
@@ -1234,7 +1233,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val symbolTable = parser.load()
 
         // then
-        val actual = symbolTable.getData("r")!!
+        val actual = symbolTable.getGlobalVariable("r")!!
         assertEquals(expected, actual)
     }
 
@@ -1267,7 +1266,7 @@ class LcaLoaderTest : ParsingTestCase("", "lca", LcaParserDefinition()) {
         val symbolTable = parser.load()
 
         // then
-        val actual = symbolTable.getData("r")!!
+        val actual = symbolTable.getGlobalVariable("r")!!
         assertEquals(expected, actual)
     }
 
