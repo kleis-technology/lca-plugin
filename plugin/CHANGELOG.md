@@ -2,41 +2,34 @@
 
 # LCA as Code Changelog
 
-## [Unreleased]
+## Unreleased
 
-## [2.3.0]
-
+## 2.3.0
 - Updated dependency LCAAC core
 - Support for global parameters
 
-## [2.0.1]
-
+## 2.0.1
 - Adapt to latest idea build `252.*`
 - Updated dependency LCAAC core
 
-## [1.8.0]
-
+## 1.8.0
 - Updated dependency LCAAC core
 - Support for annotation @cached
 
-## [1.7.12]
-
+## 1.7.12
 - Adapt to latest idea build `251.*`
 - Updated dependency LCAAC core
 
-## [1.7.11]
-
+## 1.7.11
 - Adapt to latest idea build `243.*`
 
-## [1.7.10]
-
+## 1.7.10
 - Added a trace view in the assessment window.
 
-## [1.7.6]
-
+## 1.7.6
 - Upgraded core library lcaac
 - Resilio DB connector
 - Fixes Sankey display for acyclic graph
 
-## [1.6.8]
+## 1.6.8
 First official release.
