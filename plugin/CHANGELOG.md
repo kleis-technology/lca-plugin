@@ -4,6 +4,9 @@
 
 ## Unreleased
 
+## 2.4.0
+- Updated dependency LCAAC core (performance improvements)
+
 ## 2.3.0
 - Updated dependency LCAAC core
 - Support for global parameters
