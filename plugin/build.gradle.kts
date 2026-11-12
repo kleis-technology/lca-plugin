@@ -11,6 +11,8 @@ val group = properties("lcaacGroup")
 val pluginVersion = properties("lcaacVersion")
 val javaVersion = properties("javaVersion")
 
+version = pluginVersion
+
 plugins {
     id("java")
     id("org.jetbrains.changelog")
@@ -172,14 +174,18 @@ tasks {
         systemProperty("jb.consents.confirmation.enabled", "false")
     }
 
+    // In CI, signing material comes from environment variables; locally, from .local/credentials
     signPlugin {
-        certificateChain.set(File("./.local/credentials/chain.crt").readText(Charsets.UTF_8))
-        privateKey.set(File("./.local/credentials/private.pem").readText(Charsets.UTF_8))
+        certificateChain.set(provider {
+            System.getenv("CERTIFICATE_CHAIN") ?: rootDir.resolve(".local/credentials/chain.crt").readText(Charsets.UTF_8)
+        })
+        privateKey.set(provider {
+            System.getenv("PRIVATE_KEY") ?: rootDir.resolve(".local/credentials/private.pem").readText(Charsets.UTF_8)
+        })
         password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
     }
 
     publishPlugin {
-        dependsOn("patchChangelog")
         token.set(System.getenv("PUBLISH_TOKEN"))
         // pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels, like 2.1.7-alpha.3
         // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
