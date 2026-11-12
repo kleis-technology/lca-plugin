@@ -1,0 +1,48 @@
+# Manually check that the signing secrets are valid: sign the plugin and verify the signature,
+# without publishing anything. Run it from the Actions tab after changing the secrets.
+#
+# Required secrets: CERTIFICATE_CHAIN, PRIVATE_KEY, PRIVATE_KEY_PASSWORD.
+
+name: Check Signing
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  check:
+    name: Sign and Verify
+    runs-on: ubuntu-latest
+    steps:
+
+      # Check out current repository
+      - name: Fetch Sources
+        uses: actions/checkout@v7
+
+      # Setup Java 17 environment for the next steps
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: zulu
+          java-version: 17
+          cache: gradle
+
+      # Check that the secrets are set before running Gradle, for a clearer error
+      - name: Check Secrets
+        env:
+          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+        run: |
+          [ -n "$CERTIFICATE_CHAIN" ] || { echo "::error::Secret CERTIFICATE_CHAIN is not set"; exit 1; }
+          [ -n "$PRIVATE_KEY" ] || { echo "::error::Secret PRIVATE_KEY is not set"; exit 1; }
+
+      # Sign the plugin archive and verify the signature
+      - name: Sign and Verify Plugin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+        run: ./gradlew :plugin:signPlugin :plugin:verifyPluginSignature
