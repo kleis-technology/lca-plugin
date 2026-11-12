@@ -3,6 +3,7 @@
 # LCA as Code Changelog
 
 ## Unreleased
+- Adapt to latest idea build `263.*`
 
 ## 2.4.0
 - Updated dependency LCAAC core (performance improvements)
