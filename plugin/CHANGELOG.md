@@ -3,6 +3,8 @@
 # LCA as Code Changelog
 
 ## Unreleased
+
+## 2.4.1
 - Adapt to latest idea build `263.*`
 
 ## 2.4.0
