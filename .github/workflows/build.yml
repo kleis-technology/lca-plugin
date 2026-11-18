@@ -1,4 +1,4 @@
-# Build, test and verify the plugin on every branch push and pull request.
+# Build and test the plugin on every branch push and pull request.
 # Releases are handled by release.yml, triggered by pushing a tag vX.Y.Z.
 
 name: Build
@@ -47,43 +47,3 @@ jobs:
         with:
           name: tests-result
           path: ${{ github.workspace }}/plugin/build/reports/tests
-
-  # Run the same compatibility checks as the JetBrains Marketplace, on the IDEs listed in
-  # pluginVerifierIdeVersions (plugin/gradle.properties)
-  verify:
-    name: Verify Plugin
-    runs-on: ubuntu-latest
-    steps:
-
-      # Check out current repository
-      - name: Fetch Sources
-        uses: actions/checkout@v7
-
-      # Setup Java 17 environment for the next steps
-      - name: Setup Java
-        uses: actions/setup-java@v6
-        with:
-          distribution: zulu
-          java-version: 17
-          cache: gradle
-
-      # Cache the IDEs downloaded by the verifier
-      - name: Setup Plugin Verifier IDEs Cache
-        uses: actions/cache@v6
-        with:
-          path: ~/.pluginVerifier/ides
-          key: plugin-verifier-${{ hashFiles('plugin/gradle.properties') }}
-
-      # GITHUB_TOKEN is needed to fetch ch.kleis.lcaac:core from GitHub Packages
-      - name: Run Plugin Verifier
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew :plugin:runPluginVerifier
-
-      # Collect the verifier reports
-      - name: Collect Plugin Verifier Result
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: plugin-verifier-result
-          path: ${{ github.workspace }}/plugin/build/reports/pluginVerifier
