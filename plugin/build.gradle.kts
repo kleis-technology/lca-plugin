@@ -2,6 +2,7 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
+import org.jetbrains.intellij.tasks.RunPluginVerifierTask.FailureLevel
 import task.GenerateEmissionFactorsTask30
 import task.GenerateEmissionFactorsTask31
 
@@ -158,6 +159,12 @@ tasks {
                 getOrNull(pluginVersion) ?: getLatest()
             }, Changelog.OutputType.HTML)
         })
+    }
+
+    // Same compatibility checks as the JetBrains Marketplace, run on the IDEs in pluginVerifierIdeVersions
+    runPluginVerifier {
+        ideVersions.set(properties("pluginVerifierIdeVersions").split(',').map(String::trim).filter(String::isNotEmpty))
+        failureLevel.set(listOf(FailureLevel.COMPATIBILITY_PROBLEMS, FailureLevel.INVALID_PLUGIN))
     }
 
     runIde {

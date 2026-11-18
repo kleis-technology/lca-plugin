@@ -1,0 +1,81 @@
+# Run the same compatibility checks as the JetBrains Marketplace, on the IDEs listed in
+# pluginVerifierIdeVersions (plugin/gradle.properties).
+# The verifier is slow, so it only runs on pull requests that prepare a release (from a release/vX.Y.Z branch)
+# or that change plugin/gradle.properties (supported builds, platform version), and on manual dispatch.
+
+name: Verify
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  # Decide whether the verifier should run on this pull request
+  changes:
+    name: Check Verifier Trigger
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    outputs:
+      verify: ${{ steps.check.outputs.verify }}
+    steps:
+
+      # Check out current repository, with the history needed to diff against the base branch
+      - name: Fetch Sources
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Check Release Branch Or Changed Properties
+        id: check
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [[ "$HEAD_REF" == release/v* ]] || git diff --name-only "$BASE_SHA"...HEAD | grep -qx 'plugin/gradle.properties'; then
+            echo "verify=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "verify=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  verify:
+    name: Verify Plugin
+    needs: changes
+    if: ${{ always() && (github.event_name == 'workflow_dispatch' || needs.changes.outputs.verify == 'true') }}
+    runs-on: ubuntu-latest
+    steps:
+
+      # Check out current repository
+      - name: Fetch Sources
+        uses: actions/checkout@v7
+
+      # Setup Java 17 environment for the next steps
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: zulu
+          java-version: 17
+          cache: gradle
+
+      # Cache the IDEs downloaded by the verifier
+      - name: Setup Plugin Verifier IDEs Cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.pluginVerifier/ides
+          key: plugin-verifier-${{ hashFiles('plugin/gradle.properties') }}
+
+      # GITHUB_TOKEN is needed to fetch ch.kleis.lcaac:core from GitHub Packages
+      - name: Run Plugin Verifier
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew :plugin:runPluginVerifier
+
+      # Collect the verifier reports
+      - name: Collect Plugin Verifier Result
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: plugin-verifier-result
+          path: ${{ github.workspace }}/plugin/build/reports/pluginVerifier
