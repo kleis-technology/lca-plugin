@@ -20,7 +20,6 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBViewport
 import com.intellij.ui.table.JBTable
 import io.mockk.mockk
-import org.jdesktop.swingx.plaf.basic.core.BasicTransferable
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -48,7 +47,7 @@ class ContributionAnalysisWindowTest : BasePlatformTestCase() {
         val sut = table.transferHandler as WithHeaderTransferableHandler
 
         // When
-        val result = sut.createTransferable(table) as BasicTransferable
+        val result = sut.createTransferable(table)!!
 
         // Then
         val html = result.getTransferData(DataFlavor("text/html;class=java.lang.String")) as String
@@ -98,7 +97,7 @@ class ContributionAnalysisWindowTest : BasePlatformTestCase() {
         val sut = table.transferHandler as WithHeaderTransferableHandler
 
         // When
-        val result = sut.createTransferable(table) as BasicTransferable
+        val result = sut.createTransferable(table)!!
 
         // Then
         val html = result.getTransferData(DataFlavor("text/html;class=java.lang.String")) as String
@@ -154,7 +153,7 @@ class ContributionAnalysisWindowTest : BasePlatformTestCase() {
         val sut = table.transferHandler as WithHeaderTransferableHandler
 
         // When
-        val result = sut.createTransferable(table) as BasicTransferable
+        val result = sut.createTransferable(table)!!
 
         // Then
         val html = result.getTransferData(DataFlavor("text/html;class=java.lang.String")) as String

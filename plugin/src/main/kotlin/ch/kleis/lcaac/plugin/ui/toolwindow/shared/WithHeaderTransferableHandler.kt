@@ -1,6 +1,5 @@
 package ch.kleis.lcaac.plugin.ui.toolwindow.shared
 
-import org.jdesktop.swingx.plaf.basic.core.BasicTransferable
 import java.awt.datatransfer.Transferable
 import javax.swing.JComponent
 import javax.swing.JTable
@@ -73,7 +72,7 @@ class WithHeaderTransferableHandler : TransferHandler(), UIResource {
             // remove the last newline
             plainStr.deleteCharAt(plainStr.length - 1)
             htmlStr.append("</table>\n</body>\n</html>")
-            return BasicTransferable(plainStr.toString(), htmlStr.toString())
+            return HtmlAndPlainTextTransferable(plainStr.toString(), htmlStr.toString())
         }
         return null
     }
