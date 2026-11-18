@@ -1,9 +1,14 @@
 package task
 
+import net.lingala.zip4j.io.outputstream.ZipOutputStream
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import java.io.File
+import java.util.zip.ZipFile
+import java.util.zip.ZipInputStream
 
 
 class StdLibTest {
@@ -73,4 +78,28 @@ class StdLibTest {
         assertEquals(expected, actual, desc)
     }
 
+    @Test
+    fun generateZipEntry_withNestedEntry_shouldProduceArchiveReadableSequentially(@TempDir tempDir: File) {
+        // given
+        val archive = File(tempDir, "test.jar")
+
+        // when
+        ZipOutputStream(archive.outputStream()).use {
+            generateZipEntry(it, "substance", "content")
+            generateZipEntry(it, "META-INF/dictionary.csv", "Name;Type")
+        }
+
+        // then
+        // JetBrains Marketplace reads plugin JARs sequentially, so every local entry
+        // must be readable and match the central directory
+        val sequentialEntries = ZipInputStream(archive.inputStream()).use { zip ->
+            generateSequence { zip.nextEntry }
+                .map { entry -> entry.name to zip.readBytes().decodeToString() }
+                .toList()
+        }
+        val centralDirectoryEntries = ZipFile(archive).use { zip -> zip.entries().toList().map { it.name } }
+        val expected = listOf("substance.lca" to "content", "META-INF/dictionary.csv" to "Name;Type")
+        assertEquals(expected, sequentialEntries)
+        assertEquals(expected.map { it.first }, centralDirectoryEntries)
+    }
 }
