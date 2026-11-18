@@ -4,6 +4,9 @@
 
 ## Unreleased
 
+## 2.4.2
+- Fix copying tables from tool windows in IDE `2026.3`
+
 ## 2.4.1
 - Adapt to latest idea build `263.*`
 
